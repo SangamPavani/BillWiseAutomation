@@ -1,0 +1,467 @@
+var clHashTag = new function()
+{
+    var me = this;
+    me.sTagSearchUrl = null;
+    me.sPrevTagValue ="";
+    me.sTWindowId="hashtag";
+    /*This method purpose is used to show hashtag combo on clicking Add image*/
+    this.onClkAdd = function()
+    {
+        cross.setVisible(document.getElementById("trSearchTag1"),true);
+        document.getElementById("hfTagId").value = 0;
+        msg.showToastWindow(document.getElementById("imgPlus"),document.getElementById("dvHashTags"),-1,null,180,false,false,me.sTWindowId,Constants.PRONG_TOP,false,null,null,true,null,null,false,"clHashTag.onDispTagCallback");
+    };
+
+    /*This method purpose is used to clear value and focus in hashtag combo
+    * @param isShow if true giving focus on hash tag combo*/
+    this.onDispTagCallback = function(isShow)
+    {
+        if(isShow)
+        {
+            getComboInstance("cbHashTags").setSelectedIndex(-1);
+            document.getElementById("cbHashTags").focus();
+        }
+    };
+    /*This method purpose is called on entering value in hash tag combo and validate tag on press enter
+    and saving tag by connecting to saveTag method in CLLabelsctl
+    * * @param evt event object*/
+    this.onKeyUpCreateTags = function(evt)
+    {
+        var objCombobox,sValue,iHashTagId,iPositions,iLeft,iClientWidth,iTagId,objMsgDiv;
+        sValue = document.getElementById("cbHashTags").value;
+        if(sValue.length>0 || evt.keyCode==8 || evt.keyCode==46) // 13:Enter,8:backspace,46:delete
+            me.sPrevTagValue = util.trim(sValue);
+        if(evt.keyCode==13)
+        {
+            objCombobox=getComboInstance("cbHashTags");
+            iHashTagId = objCombobox.getSelectedId();
+            if(iHashTagId>0)
+            {
+                sValue=objCombobox.getSelectedItem();
+                me.sPrevTagValue = sValue;
+            }
+            else
+            {
+                objCombobox.setSelectedKey(me.sPrevTagValue);
+                iHashTagId = objCombobox.getSelectedId();
+            }
+
+
+            Validation.reset();
+            Validation.clearMessage();
+            iPositions = cross.getPosition(document.getElementById("imgPlus"));
+            iLeft = iPositions[0];
+            iClientWidth = document.body.clientWidth;
+            objMsgDiv = document.getElementById("msgbox");
+            if(me.sPrevTagValue!=null && util.trim(me.sPrevTagValue).length>0)
+            {
+                if(me.isValidTag(me.sPrevTagValue))
+                {
+                    iTagId = document.getElementById("hfTagId").value;
+                    if(iHashTagId>0 && iTagId!=iHashTagId && document.getElementById("tag_"+iHashTagId))
+                    {
+                        iClientWidth = (iClientWidth/2)-190;
+                        objMsgDiv.style = "text-align:center";
+                        if(iLeft>=iClientWidth)
+                            objMsgDiv.style = "text-align:left";
+                        Validation.showMessage(MsgHandler.getMsg(MsgConstants.TAG_ALREADY_ATTACHED),Validation.ERROR_MSG,null,null,true);
+                    }
+                    else
+                    {
+                        var sParams = "&moduleId="+document.getElementById("moduleId").value;
+                        var text = me.sPrevTagValue;
+                        if(util.startsWith(text,"#"))
+                            text = text.substring(1,text.length);
+                        sParams+= "&tagName="+text;
+                        sParams+= "&tagId="+iTagId;
+                        sParams+= "&transId="+document.getElementById("transId").value;
+                        con.sendPostRequest("common/moduleLabels!saveTag.do",sParams,null,clHashTag.arhRes);
+                    }
+                }
+                else
+                {
+                    iClientWidth = (iClientWidth/2)-170;
+                    objMsgDiv.style = "text-align:center";
+                    if(iLeft>=iClientWidth)
+                        objMsgDiv.style = "text-align:left";
+                    Validation.showMessage(MsgHandler.getMsg(MsgConstants.INVALID,0,0,MsgHandler.getMsg(MsgConstants.TAG_NAME)),Validation.ERROR_MSG,null,null,true);
+
+                }
+            }
+            else
+            {
+                iClientWidth = (iClientWidth/2)-170;
+                objMsgDiv.style = "text-align:center";
+                if(iLeft>=iClientWidth)
+                    objMsgDiv.style = "text-align:left";
+                Validation.showMessage(MsgHandler.getMsg(MsgConstants.MANDATORY,0,0,MsgHandler.getMsg(MsgConstants.TAG_NAME)),Validation.ERROR_MSG,null,null,true);
+            }
+        }
+        return true;
+
+    };
+    /*This method purpose is used to validate tag with regular expr
+    * * @param sTag TagName*/
+
+    this.isValidTag = function(sTag)
+    {
+        var sPattern,isValid = true;
+//        sPattern =  /^[A-Z a-z 0-9 _ -]+$/;
+//        isValid = sPattern.test(sTag);
+        if(sTag.match(/[`~,.<>;':"\/\\|{}()#=^%*&@!?$+]/))
+            isValid = false;
+        return isValid;
+    };
+
+    /*This method purpose is used to create hashtag
+    * * @param iTagId tagId
+    * @param sTagName TagName
+    * @param isOnLoad if false hiding toast window of hashtagcombobox */
+
+    this.createTag = function(iTagId,sTagName,isOnLoad)
+    {
+        var objSpanTag,objHashTag;
+        objHashTag = getComboInstance("cbHashTags");
+        if(document.getElementById("tag_"+iTagId))
+        {
+            objSpanTag = document.getElementById("tag_"+iTagId);
+            objSpanTag.innerHTML = sTagName;
+            objHashTag.removeItemBySeqId(iTagId);
+            objHashTag.setSelectedIndex(-1);
+            objHashTag.checkAndAddItem(sTagName+"|"+iTagId,false,true);
+            if(!isOnLoad)
+                msg.hideToastWindowDlg(false,me.sTWindowId,objSpanTag,null,null,false);
+        }
+        else
+        {
+            clHashTag.addTagMenu(iTagId,sTagName,isOnLoad);
+            if(!isOnLoad)
+                msg.hideToastWindowDlg(false,me.sTWindowId,document.getElementById("imgPlus"),null,null,false);
+
+        }
+        cross.setVisible(document.getElementById("trSearchTag1"),false);
+        objHashTag.setSelectedIndex(-1);
+        me.sPrevTagValue="";
+    };
+    /*This method purpose is used to create hashtag view in response of controller
+     * * @param sResponse ResponseData(TagId,TagName)
+     */
+    this.arhRes = function(sResponse)
+    {
+        if(sResponse!=null && sResponse.length>0)
+        {
+            sResponse=eval(sResponse);
+            var iTagId=0,sTagName="";
+            iTagId = sResponse[0];
+            sTagName = sResponse[1];
+            clHashTag.createTag(iTagId,sTagName,false);
+        }
+    };
+
+    /*This method purpose is used to add tag
+     * * @param iTagId tagId
+     * @param sTagTitle TagName
+     * @param isOnLoad boolean value */
+    this.addTagMenu = function(iTagId,sTagTitle,isOnLoad)
+    {
+        var dvObj,objTable,objTr,objTagTd,objDelTd,objTagspan,objDiv;
+
+        dvObj = document.createElement("div");
+        objTable = document.createElement("table");
+        objTr = document.createElement("tr");
+        objTagTd = document.createElement("td");
+        objDelTd = document.createElement("td");
+        objTagspan = document.createElement("span");
+        objDiv = document.getElementById("dvTags");
+
+        objTable.style.height="100%";
+        objTable.cellPadding=0;
+        objTable.cellSpacing=0;
+
+        objTagspan.innerHTML = sTagTitle;
+        objTagspan.className = "tagTitle";
+
+        objTagTd.appendChild(objTagspan);
+        objDelTd.vAlign = "top";
+        dvObj.className = "hashTagDv";
+
+        var img = document.createElement('img');
+        img.src=app.getImagePath(true)+"reject.png";
+        img.style.opacity = 0.1;
+        img.style.padding = "5px";
+        img.setAttribute("id","delImg_"+iTagId);
+
+        objDelTd.appendChild(img);
+        objTr.appendChild(objTagTd);
+        objTr.appendChild(objDelTd);
+        objTable.appendChild(objTr);
+        dvObj.appendChild(objTable);
+        objDiv.appendChild(dvObj);
+
+        objTagspan.onmouseover =clHashTag.showDel;
+        img.onmouseover =clHashTag.showDel;
+        objTr.onmouseout =clHashTag.onMoutTag;
+
+        cross.addListener(img,cross.EVENT_ONCLICK,clHashTag.onClkDeleteTag,true,[iTagId]);
+        cross.addListener(objTagspan,cross.EVENT_ONCLICK,clHashTag.onClkTagsListview,true,[iTagId]);
+
+        objTagspan.setAttribute("id","spTag_"+iTagId);
+        dvObj.setAttribute("id","tag_"+iTagId);
+        dvObj.setAttribute("referenceId",iTagId);
+        objTagspan.setAttribute("referenceId",iTagId);
+        img.setAttribute("referenceId",iTagId);
+        if(!isOnLoad)
+        {
+            var objHashTags,arrItems;
+            objHashTags = getComboInstance("cbHashTags");
+            arrItems = objHashTags.getComboItems();
+            if(arrItems == null)
+                objHashTags.checkAndAddItem("|0",false,true);
+
+            objHashTags.checkAndAddItem(sTagTitle+"|"+iTagId,false,true);
+        }
+    };
+
+    /*This method purpose is used to redirect to listview by connecting to getTagsListView method in CLLabelsCtl
+     * * @param iTagId tagId
+      */
+    this.onClkTagsListview = function(iTagId)
+    {
+        var sParams = "&iModuleId="+document.getElementById("moduleId").value;
+        sParams+= "&tagId="+iTagId;
+        sParams+= "&transId="+document.getElementById("transId").value;
+        var objSpanTag = document.getElementById("spTag_"+iTagId);
+        sParams+= "&searchtagName="+objSpanTag.innerHTML;
+        if(document.getElementById("dvTWindowtag_"))
+            msg.removeToastWindowDlg(me.sTWindowId);
+        home.setCenterUI(me.sTagSearchUrl+sParams,null,false,false,null);
+    };
+
+    /*This method purpose is used to show delete icon
+     * * @param evt event
+     */
+    this.showDel = function(evt)
+    {
+        var objTd,iTagId;
+        objTd = cross.getSrcElement(evt);
+        iTagId = objTd.getAttribute("referenceId");
+        document.getElementById("delImg_"+iTagId).style.opacity=1;
+    };
+
+    /*This method purpose is used to delete tag by connecting to deleteTag in CLLabelsctl
+     * * @param iReferenceId tagId
+      */
+    this.onClkDeleteTag = function(iReferenceId)
+    {
+        var sParams ="";
+        sParams+="&iModuleId="+document.getElementById("moduleId").value;
+        sParams+="&iTransId="+document.getElementById("transId").value;
+        sParams+= "&tagId="+iReferenceId;//document.getElementById("hfTagId").value;
+        con.sendPostRequest("common/moduleLabels!deleteTag.do",sParams,null,clHashTag.arhDelRes);
+    };
+    /*This method purpose is used to remove tag in front end
+     * * @param sResponse status
+     */
+    this.arhDelRes = function(sResponse)
+    {
+        var iArrResponse,iReferenceId,objDelSpan;
+        if(sResponse!=null)
+        {
+            sResponse = eval(sResponse);
+            iArrResponse = sResponse[0];
+            if(iArrResponse[0]>0)
+            {
+                iReferenceId = iArrResponse[2];
+                if(iArrResponse[1]>=1)
+                    getComboInstance("cbHashTags").removeItemBySeqId(iReferenceId);
+                objDelSpan = document.getElementById("tag_"+iReferenceId);//tagname
+                document.getElementById("dvTags").removeChild(objDelSpan);
+            }
+        }
+    };
+
+    /*This method purpose is used to disable remoe image
+     * * @param evt event
+     */
+    this.onMoutTag = function(evt)
+    {
+        var objTd,iTagId;
+        objTd = cross.getSrcElement(evt);
+        iTagId = objTd.getAttribute("referenceId");
+        if(document.getElementById("delImg_"+iTagId))
+            document.getElementById("delImg_"+iTagId).style.opacity="0.1";
+    };
+
+    /*This method purpose is used to search tag from created tags
+      */
+    this.searchTag = function()
+    {
+        var i=0,isExists=false,text="",iLength,objTable,arrTrs,arrTds,objSearchTr,objSearchDiv;
+        text=document.getElementById("tagItem").value;
+        text = text.toLowerCase();
+        objTable=document.getElementById("tblDisplayTags");
+        arrTrs = objTable.tBodies[0].rows;
+        iLength = arrTrs.length;
+        document.getElementById("tdTagsView").className="";
+        objSearchTr = document.getElementById("trSearchTag1");
+        objSearchDiv = document.getElementById("dvSearchTag");
+        if(text.length>0)
+        {
+            if(util.startsWith(text,"#"))
+                text = text.substring(1,text.length);
+            for(i=1;i<iLength;i++)
+            {
+                objTable.className="";
+                arrTds = arrTrs[i].cells;
+                var txt=arrTds[0].innerHTML;
+                txt = txt.toLowerCase();
+                cross.setVisible(arrTrs[i],false);
+                isExists=false;
+                if(txt.indexOf(text)==0)
+                {
+                    cross.setVisible(objTable,true);
+                    cross.setVisible(arrTrs[i],true);
+                }
+                if(txt==text && arrTds[0].getAttribute("isTagExists")=="true")
+                {
+                    isExists=true;
+                    break;
+                }
+            }
+            cross.setVisible(objSearchTr,true);
+
+            objSearchDiv.innerHTML='"'+text+'"';
+            cross.setVisible(document.getElementById("tdTagsView"),true);
+            if(isExists)
+                cross.setVisible(objSearchTr,false);
+        }
+        else
+        {
+            document.getElementById("tagItem").value="";
+            cross.setVisible(document.getElementById("tdTagsView"),false);
+            cross.setVisible(objSearchTr,false);
+            objSearchDiv.innerHTML="";
+        }
+        return isExists;
+    };
+
+    /*This method purpose is used to get list of tags in onload
+     * * @param sUrl url
+     * @param sTagSearchUrl search url
+     */
+    this.onLoadDisplayTags = function(sUrl,sTagSearchUrl)
+    {
+        me.sTagSearchUrl = sTagSearchUrl;
+        var sParams = "&moduleId="+document.getElementById("moduleId").value;
+        sParams+= "&transId="+document.getElementById("transId").value;
+        con.sendPostRequest(sUrl,sParams,null,clHashTag.arhTagsRes,false,null,null,false,true);
+    };
+
+    /*This method purpose is used to add list of tags in onload
+     * @param sTagsResponse Object[](total tags and selected tags)
+     */
+    this.arhTagsRes = function(sTagsResponse)
+    {
+        var sResponse,sTotTags,iLength=0,iTotLen=0,i=0,iTagId,sTagName,sTagData,objHashTags;;
+        if(sTagsResponse!=null)
+        {
+            sTagsResponse = eval(sTagsResponse);
+            if(sTagsResponse[0])
+                sResponse = sTagsResponse[0];
+            sTotTags= sTagsResponse[1];
+
+            objHashTags = getComboInstance("cbHashTags");
+            if(sTotTags!=null)
+            {
+                iTotLen = sTotTags.length;
+                objHashTags.checkAndAddItem("|0",false,true);
+                for(i=0;i<iTotLen;i++)
+                {
+                    sTagData = sTotTags[i];
+                    iTagId = sTagData[1];
+                    sTagName = sTagData[0];
+                    objHashTags.checkAndAddItem(sTagName+"|"+iTagId,false,true);
+                }
+            }
+            if(sResponse!=null)
+            {
+                iLength = sResponse.length;
+                for(i=0;i<iLength;i++)
+                {
+                    sTagData = sResponse[i];
+                    iTagId = sTagData[1];
+                    sTagName = sTagData[0];
+                    clHashTag.createTag(iTagId,sTagName,true);
+                }
+            }
+        }
+        objHashTags.setKeyupAfterSelection(clHashTag.onKeyUpCreateTags);
+        cross.setVisible(document.getElementById("trSearchTag1"),true);
+
+    };
+    /* this.addDisplayTag = function(iTagId,sTagName,isTagExists)
+     {
+     var objTbl,objTr,objTd,tBodies,arrTrs;
+     objTbl=document.getElementById("tblDisplayTags");
+     tBodies = objTbl.tBodies[0];
+     arrTrs=tBodies.rows[0];
+
+     if(document.getElementById("trTag"+iTagId))
+     {
+     objTr=document.getElementById("trTag"+iTagId);
+     objTd=objTr.cells;
+     }
+     else
+     {
+     objTr=arrTrs.cloneNode(true);
+     objTr.id = "trTag"+iTagId;
+     cross.setVisible(objTr,false);
+     tBodies.appendChild(objTr);
+     objTd=objTr.cells;
+     objTd[0].innerHTML=sTagName;
+     }
+     objTd[0].setAttribute("isTagExists",isTagExists);
+     };
+     this.onClkEditTag = function(obj,evt)
+     {
+     var iPositions,iReferenceId,objSpanTag,objTWindow,objHashTag;
+     objHashTag = getComboInstance("cbHashTags");
+     iReferenceId = obj.getAttribute("referenceId");
+     objSpanTag = document.getElementById("tag_"+iReferenceId);
+     iPositions = cross.getPosition(objSpanTag);
+     document.getElementById("hfTagId").value=iReferenceId;
+     objTWindow=document.getElementById("tblTags");
+     cross.setVisible(document.getElementById("trSearchTag1"),false);
+     if(document.getElementById("dvTWindowtag_"))
+     document.getElementById("dvTWindowtag_").style.display="";
+     msg.showToastWindow(objSpanTag,document.getElementById("tblTags"),-1,null,170,false,false,me.sTWindowId,0,false,null,null,true);
+     objHashTag.checkAndAddItem(objSpanTag.innerHTML+"|"+iReferenceId,true,false);
+     cross.cancelBubble(evt);
+     getComboInstance("cbHashTags").setFocus();
+     };
+
+     */
+    /*This method purpose is used to get list of tags in onload by connecting to getHashTagsList method in CLLabelsCtl */
+    this.onLoadHashTags = function()
+    {
+        con.sendPostRequest("common/moduleLabels!getHashTagsList.do",null,null,me.arhTagsres);
+    };
+    /*This method purpose is used to add list of tags in onload
+     * @param sTagsResponse Object[](total tags and selected tags)
+     */
+    this.arhTagsres = function(sResponse)
+    {
+             if(sResponse!=null)
+             {
+                 sResponse = eval(sResponse);
+                 var sTag,iLength = sResponse.length;
+                 var cbHashTags = getComboInstance("cbHashTags");
+                 cbHashTags.checkAndAddItem("|0",false,true);
+                 for(var i=0;i<iLength;i++)
+                 {
+                     sTag = sResponse[i];
+                     cbHashTags.checkAndAddItem(sTag[0]+"|"+sTag[1],false,true);
+                 }
+             }
+    };
+};

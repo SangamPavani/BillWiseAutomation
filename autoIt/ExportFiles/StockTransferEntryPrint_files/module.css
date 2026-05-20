@@ -1,0 +1,283 @@
+
+.moduleField
+{
+    height: 34px;
+    border-radius: 0 !important;
+    padding-left: 2px;
+    margin-bottom: 1px;
+}
+
+.uppercase
+{
+    text-transform:uppercase;
+}
+
+.lowercase
+{
+    text-transform:lowercase;
+}
+
+.bannerText
+{
+    font-style:italic;
+    color:#C2C2C2;
+}
+
+.multiLine
+{
+    height:25px;
+    border:medium none;
+    padding: 5px 0px;
+    overflow: hidden;
+    resize: none;
+}
+
+/*.panel
+{
+    border-radius:5px 5px 5px 5px;
+    border:1px solid #DFDFDF;
+    margin-top:3px;
+    margin-bottom:3px;
+}
+
+.panelHeader
+{
+    background-color:#DFDFDF;
+    *//*padding-bottom:3px;*//*
+}
+
+.panelBody
+{
+    *//*margin:10px;*//*
+    padding:5px;
+}*/
+
+/*.shadow
+{
+    _height: 1px;
+    -moz-box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+    filter: progid:DXImageTransform.Microsoft.Shadow(color = '#BCBCBC', Direction = 135, Strength = 8);
+    width: 98%;
+    height: 110%;
+    margin-left: 15px;
+}
+
+.shadow-content {
+    _position: relative;
+    background: #fff;
+    top: 5px;
+
+}*/
+
+.dateLabel
+{
+  color: #6AACDE;
+}
+
+.paddingRightFld
+{
+    padding-right: inherit;
+    padding-left: 2px !important;
+}
+
+@media (min-width: 768px) {
+    .paddingRightFld
+    {
+        padding-right: 30px;
+    }
+
+}
+.extrdWidthColspan
+{
+    width: 18.5% !important;
+    /*background-color: red;*/
+}
+@media (min-width: 992px)
+{
+    .paddingRightFld {
+        padding-right: 60px;
+    }
+    .extrdWidthColspan
+    {
+        width: 18.5% !important;
+        /*background-color: orange;*/
+    }
+
+}
+@media (max-width: 800px)
+{
+
+    .extrdWidthColspan
+    {
+        width: 20% !important;
+        /*background-color: green;*/
+    }
+
+}
+.extrdWidthColspanMob
+{
+    width: 28.8% !important;
+
+}
+.extrdWidthColspanMobDlg
+{
+    width: 27% !important;
+
+}
+
+.combo-search-box {
+    left: -6px !important;
+    top:-10px !important;
+ }
+.extrdWidth
+{
+    width: 12.9% !important;
+}
+
+.tblUploadComp .imgMaxwidth{
+    height: auto !important;
+}
+.dvDetailedViewLayout .moduleFieldLabel
+ {
+     color: #828282 !important;
+     font-size: 14px !important;
+
+ }
+.dvDetailedViewLayout .tdModuleFldLabel
+{
+    margin-bottom: 3px !important;
+
+}
+.dvDetailedViewLayout .tdModuleFldValue
+{
+    color: #272727 !important;
+    font-size: 14px !important;
+    font-weight: 600;
+    border-bottom:1px solid #DADADA !important;
+    height: 80%;
+    padding-top:0px !important
+}
+.dvDetailedViewLayout .tdModuleFldValuemoduleFieldLabel
+ {
+    font-weight: 600;
+
+}
+.dvDetailedViewLayout .sGroupTitle > table
+{
+    height: 30px;
+    background-color: #EcEFF3 !important;
+}
+
+.dvDetailedViewLayout .chkModuleFldValue
+{
+
+    border-bottom:1px solid #DADADA !important;
+    padding-top:0px !important;
+
+}
+
+
+.dvDetailedView .sTable .sHeaderCell
+{
+    height:42px !important;
+    font-weight: 600 !important;
+    background-color: white !important;;
+    border-right: 1px solid whitesmoke !important;;
+    border-bottom: 1px solid #E2E2E2 !important;;
+}
+.dvDetailedViewLayout .sTable .sHeaderCell
+{
+    border-right: 1px solid white !important;;
+}
+.dvDetailedView .sTable .sRowColor1
+{
+    height: 42px!important;;
+    background-color: white !important;;
+    /*border-bottom: 1px solid #EFEFEF !important;;*/
+    border-bottom: 1px solid #F9F6F6 !important;;
+    border-right: 1px solid #EFEFEF !important;;
+}
+.dvDetailedView .sTable .sRowColor
+{
+    height: 42px!important;
+    background-color: white !important;;
+    /*border-bottom: 1px solid #EFEFEF !important;;*/
+    border-bottom: 1px solid #F9F6F6 !important;;
+    border-right: 1px solid #EFEFEF !important;;
+}
+
+.dvDetailedView .sTable .sRowColor2 TD {
+    /*border-bottom: 1px solid #EFEFEF !important;;*/
+    border-bottom: 1px solid #F9F6F6 !important;;
+    border-right: 1px solid #EFEFEF !important;;
+}
+.dvDetailedView  .sTable .sRowColor1 TD {
+    /*border-bottom: 1px solid #EFEFEF !important;;*/
+    border-bottom: 1px solid #F9F6F6 !important;;
+    border-right: 1px solid #EFEFEF !important;;
+}
+
+
+.dvDetailedView .sTable .sRowColor2 {
+    height: 42px!important;
+    background-color: white !important;;
+    /*border-bottom: 1px solid #EFEFEF !important;;*/
+    border-bottom: 1px solid #F9F6F6 !important;;
+    border-right: 1px solid #EFEFEF !important;;
+}
+
+.dvDetailedView .sTable .sRowColor TD
+{
+    /*border-right: 1px solid white !important;;*/
+    /*border-bottom: 1px solid #EFEFEF !important;;*/
+
+    border-right: 1px solid #EFEFEF !important;;
+    border-bottom: 1px solid #F9F6F6 !important;;
+}
+
+.bodyTableMax{
+    position :absolute;
+    background :#FFFFFF;
+    z-index:102;
+
+}
+
+.bodyTableMax>table{
+    margin-left: 15px;
+
+}
+
+.bodyTableMax>.titleMax{
+    margin-left: 15px;
+    margin-top: 15px;
+    border-bottom: 1px solid #f2efef;
+    width: 96%;
+    float: left;
+}
+.bodyTableMax>.titleImg{
+    margin-top: 15px;
+    float: left;
+}
+
+.bodyTableMax>.crm-dashlet-minimize::before {
+    color: #000000;
+    font-size: 13px;
+}
+.bodyTableMax>.sHeaderRow >.sHeaderCell{
+    top:0 !important;
+    background-color: red;
+}
+
+#dvEditview .crm-dashlet-maximize::before {
+    font-size: 12px !important;
+    color: #6C6A6A !important;
+}
+
+div.calendar {
+    z-index: 104 !important;
+}
+
+.combo-clear-btn {
+    /*padding-right:7px;*/
+}

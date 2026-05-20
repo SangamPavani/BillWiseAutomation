@@ -1,0 +1,245 @@
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700);
+
+/* customized default classes*/
+.bot-chat-body {
+    height: 100%;
+}
+
+
+.bot-chat-body {
+    font-family: 'Source Sans Pro', sans-serif;
+    /*font-size: 14px;*/
+    font-size: 0.875rem;
+    display: flex;
+    flex-direction: column;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/*overridde user msg classes*/
+.bot-chat-input {
+    /*padding: 5px;*/
+    /*padding-bottom: 0px;*/
+    /*padding: 20px;*/
+    background: #fff;
+    /*border-top: 1px solid #ccc;*/
+    border-top: 2px solid #ccc;
+    /*border-bottom: 0;*/
+}
+
+.bot-chat-input .bot-user-input {
+    width: 100%;
+    /*font-size: 14px;*/
+    font-size: 0.875rem;
+    /*border: 1px solid #ccc;*/
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    padding: 8px;
+    height: 40px !important;
+}
+
+/*font customization for  messages*/
+.bot-Monospace
+{
+    font-family:monospace, monospace;
+}
+
+.bot-small
+{
+    /*font-size: 12px;*/
+    font-size: 0.75rem;
+}
+
+.bot-medium
+{
+    /*font-size: 14px;*/
+    font-size: 0.875rem;
+}
+
+.bot-large
+{
+    /*font-size: 16px;*/
+    font-size: 1rem;
+}
+
+.bot-ExtraLarge
+{
+    /*font-size: 18px;*/
+    font-size: 1.125rem;
+}
+
+.bot-lighter
+{
+    font-weight:200 ;
+}
+
+.bot-bold
+{
+    font-weight:600 ;
+}
+
+.bot-bolder
+{
+    font-weight:800 ;
+}
+
+.bot-Danger
+{
+    color:#ff0000;
+}
+
+.bot-Warning
+{
+    color:#ffa500;
+}
+
+.bot-Success
+{
+    color:#008000;
+}
+
+.bot-Info
+{
+    color:#03A9F4;
+}
+
+.bot-Light
+{
+    color:#d3d3d3;
+}
+
+.bot-Dark
+{
+    color:#a9a9a9;
+}
+
+
+
+/*custom form feedback icons*/
+.bot-FBStar,.bot-FBLike {
+    color: #595a5a;
+    /*font-size:28px !important;*/
+    font-size: 1.75rem !important;
+}
+
+.bot-FBHappiness {
+    /*color: #ffc107;*/
+    color: #ffcc33;
+    /*font-size:28px !important;*/
+    font-size: 1.75rem !important;
+}
+
+
+/*lebels in forms*/
+.bot-form-label
+{
+    color:#626262;
+    line-height: 14px;
+    /*line-height: 1.5;*/
+    /*font-size: 14px;*/
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+/*multimedia msgs related styles*/
+.bot-media-title
+{
+    color:#000;
+    line-height: 14px;
+    /*font-size: 14px;*/
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 5px;
+    padding-left:0px;
+}
+
+.bot-media-desc
+{
+    color:#626262;
+    line-height: 14px;
+    /*font-size: 12px;*/
+    font-size: 0.75rem;
+    padding: 5px;
+    font-weight: 500;
+}
+
+.bot-media-sub-title
+{
+    color:#000;
+    line-height: 14px;
+    /*font-size: 14px;*/
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 5px;
+    padding-left:0px;
+}
+
+.bot-link-container,.bot-span-link-img,.bot-span-link,.bot-img-info
+{
+    padding: 5px;
+}
+
+.bot-link-url
+{
+    color: #03a9f4;
+    font-size: 0.75rem;
+    /*font-size: 12px;*/
+    font-weight: 600;
+    text-decoration: none;
+    vertical-align: middle;
+}
+
+.bot-link-url:hover
+{
+    text-decoration: underline !important;
+}
+
+.bot-custom-img-card{
+    padding: 0px !important;
+}
+
+.bot-custom-img
+{
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    min-height: 75px;
+}
+
+.botui-custom-button
+{
+    /*font-size: 14px !important;*/
+    font-size: 0.875rem !important;
+    font-weight: 600;
+}
+
+.spticketInfoLbl
+{
+    /*font-size: 12px;*/
+    font-size: 0.75rem;
+    font-weight:500;
+    color: #a9a9a9;
+}
+
+.spticketInfo
+{
+    /*font-size: 14px;*/
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #403f3f;
+}
+
+.spticketsInfoLbl
+{
+    /*font-size: 14px;*/
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #403f3f;
+    padding-left: 5px;
+}
+
+.spTicketStatus
+{
+    color:#fff;
+    padding:5px;
+}
+

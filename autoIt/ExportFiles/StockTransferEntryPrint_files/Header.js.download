@@ -1,0 +1,1086 @@
+var header = new function()
+{
+    var me = this,iThemeType=0;
+    this.sDlgTitle;
+    this.sAdvSearchUrl;
+    this.sTagSearchUrl;
+    var sTitle;
+    /**
+     *  This function is used for Set Save Encripted URL
+     */
+    this.onWLoadSetUrl = function(sAdvSearchUrl,sTagSearchUrl)
+    {
+        me.sAdvSearchUrl=sAdvSearchUrl;
+        me.sTagSearchUrl=sTagSearchUrl;
+    };
+    /**
+     * This function is used for set the Dialog Title
+     */
+    this.onWLoadSetDlgTitle = function(sDlgTitle,sSearchCaption,sAdvSrch)
+    {
+        me.sDlgTitle=sDlgTitle;
+        me.sSearchCaption=sSearchCaption;
+        me.sAdvSrchCap=sAdvSrch;
+    };
+    /**
+     * */
+    this.onLoad = function()
+    {
+        //                alert(1);
+        var iClientWidth,iClientHeight;
+        if (document.body)
+        {
+            iClientWidth = document.body.clientWidth;
+            //iClientHeight=document.body.clientHeight;
+            if (document.body.scrollHeight)
+                iClientHeight = parseInt(document.body.scrollHeight);
+            else
+                iClientHeight = document.body.clientHeight;
+        }
+        else
+        {
+            iClientWidth = window.innerWidth;
+            iClientHeight = window.innerHeight;
+        }
+        var objImg = document.getElementById("disableBGImg");
+        if (objImg)
+        {
+            objImg.style.width = iClientWidth;
+            objImg.style.height = iClientHeight;
+        }
+        document.getElementById("loadstatus").style.left = iClientWidth / 2; //setting 'loading' image left margin
+        if(document.getElementById("spHomeLabel"))
+            cross.setInnerText(document.getElementById("spHomeLabel"),MsgHandler.getMsg(MsgConstants.HOME));
+    };
+    this.setDlgTitle = function(sDlgTitle)
+    {
+        sTitle=sDlgTitle;
+
+    };
+    /** This function is called when setup is clicked.
+     * 'setup' is the action in struts.xml.
+     * This will display the page using tiles(tree menu)
+     * */
+    this.onClkShowLeftMenu = function()
+    {
+        var cbModule,iAppType;
+        if(cbModule = document.getElementById("modules"))
+            iAppType = cbModule.value;
+        else
+            iAppType = document.getElementById("iAppType").value;
+        location.href = "setup.do?appType="+iAppType;
+    };
+
+    /** This function is called when home menu item is clicked.
+     * 'crmhome' is the action in struts.xml.
+     * This will display the page using tiles(recent menu)
+     * */
+    this.onClkShowHomePage = function(sUrl)
+    {
+        home.setCenterUI(sUrl,null,false,false,null,true,null,true,true);
+        var objHome = document.getElementById("tbHome");
+        if(objHome)
+        {
+            var arrChilds = objHome.childNodes[1].childNodes;
+            if(arrChilds.length>0)
+            {
+                util.addClass(arrChilds[1],"selectedLink");
+                util.addClass(arrChilds[3],"selectedLink");
+            }
+        }
+        if(window["clNavMenu"]!=undefined)
+            clNavMenu.navHomeClick();
+        //location.href = "crmhome.do?appType="+document.getElementById("iAppType").value;
+    };
+    this.onClkActivePMCCall= function(sUrl)
+    {
+        var iTransId,clDlg,arrActions = new Array();
+        arrActions[0] = "Activate|clActivatePMCCall.onClkSave";
+        arrActions[1] = "Cancel";
+        iTransId=document.getElementById("transId").value;
+        clDlg = new DialogBox("dlgActivePMCCall","Activate PMC Call",140,160,430,300,"support/supportCall!getActivatePMCCall.do?transId="+iTransId, true, null, false,true,arrActions);
+        clDlg.setCenter();
+        clDlg.show();
+    };
+    this.onClkShowMyPage = function(sUrl)
+    {
+        home.setCenterUI(sUrl,null,true,true,null,true,null,true,true);
+    };
+    this.onClkWaboxPage = function(sUrl)
+    {
+        home.setCenterUI(sUrl,null,true,true,null,true,null,true,true);
+    };
+    this.onClkHomePageButton = function()
+    {
+        home.updateUrlStack(true);
+        location.href = "crmhome.do?appType="+document.getElementById("iAppType").value;
+    };
+    /*this.handleResponse = function()
+     {
+     //        alert("------**>"+me.setUp);
+     location.href="crmhome.do?setUp=1";
+     };*/
+    /*this.onClkHome = function()
+     {
+     location.href="crmhome.do";
+     }*/
+    this.onClkLogOut = function(sUrl,bIgnoreFeedback)
+    {
+        var singOutTd=document.getElementById("signout");
+        if(singOutTd) {
+            singOutTd.style.pointerEvents = "none";
+            singOutTd.style.backgroundColor = "#d0caca85";
+        }
+        if( typeof window["clAmeyo"]=="object")
+        {
+            clAmeyo.doAmyLogout();
+        }
+        else
+        {
+            var arrSSOImgTags = document.getElementsByClassName('fsso');
+
+            if(arrSSOImgTags && arrSSOImgTags.length>0)
+            {
+                var sSSOURL = null;
+                for (var i = 0; i < arrSSOImgTags.length; i++)
+                {
+                    sSSOURL = arrSSOImgTags[i].getAttribute('dlogout');
+                    if (sSSOURL && util.trim(sSSOURL).length>0)
+                    {
+                        //alert(sSSOURL)
+                        //sSubmitData, handlerObject, resHandler, responseAsXML, statusId, sSubActivity, isSync,byActionType,isExternalServer,objReqCache,sActionViewId
+                        arrSSOImgTags[i].src=sSSOURL;
+                        //con.sendGetRequest(sSSOURL, null, null, null, false, null, null, false, 0, true);
+                    }
+                }
+                window.setTimeout(function(){window.location.href = sUrl},10);
+            }
+            else
+            {
+                var sCrmInfo=null;
+                if( (sCrmInfo=util.readCookie("crminfo"))) {
+                    //= readCookie("crminfo");//.split(",");
+                    sCrmInfo = CryptoJS.AES.decrypt(sCrmInfo, "477786");
+                    sCrmInfo = sCrmInfo.toString(CryptoJS.enc.Utf8);
+                    sCrmInfo = sCrmInfo.split(",");
+                    if(sCrmInfo!=null && sCrmInfo[5] && sCrmInfo[5]>0)
+                    {
+                        sUrl+="?&sCCode="+sCrmInfo[5];
+                    }
+                }
+                if(bIgnoreFeedback)
+                {
+                    window.location.href = sUrl;
+                }
+                else {
+                    me.showFeedbackDialog(sUrl);
+                    singOutTd.style.pointerEvents = "block";
+                    singOutTd.style.backgroundColor = "";
+                }
+            }
+        }
+    };
+
+    this.showFeedbackDialog= function(lUrl)
+    {
+        var singOutTd=document.getElementById("signout");
+            singOutTd.style.pointerEvents = "";
+            singOutTd.style.backgroundColor = "";
+
+        var clImportDlg,arrActions,sUrl;
+        sUrl = con.getStruts2Url("security","users","getFeedbackForm",null,false);
+
+        clImportDlg = new DialogBox("clFeedbackStartDlg", "", 0, 0, 650, 200, sUrl, true, null, false, true, null,null,null,null,null,null,null,null,null,false,null,null,null,true);
+        clImportDlg.setOnClose(header.feedDlgClose);
+        var clFeedbackStartDlgtitlebar= document.getElementById('clFeedbackStartDlgtitlebar')
+        // clFeedbackStartDlgtitlebar.classList.remove("dialogHeader")
+        clFeedbackStartDlgtitlebar.style.backgroundColor="white"
+        clFeedbackStartDlgtitlebar.style.border="none"
+        clFeedbackStartDlgtitlebar.style.padding="8px"
+        clImportDlg.setCenter();
+        clImportDlg.show();
+    };
+    
+    this.feedDlgClose = function()
+    {
+        //${FocusTags:encrypt('login!logout.do')
+        var sCrmInfo=null,sUrl=document.getElementById("logt").value;
+        if( (sCrmInfo=util.readCookie("crminfo"))) {
+            //= readCookie("crminfo");//.split(",");
+            sCrmInfo = CryptoJS.AES.decrypt(sCrmInfo, "477786");
+            sCrmInfo = sCrmInfo.toString(CryptoJS.enc.Utf8);
+            sCrmInfo = sCrmInfo.split(",");
+            if(sCrmInfo!=null && sCrmInfo[5] && sCrmInfo[5]>0)
+            {
+                sUrl+="?&sCCode="+sCrmInfo[5];
+            }
+        }
+        window.location.href = sUrl;
+    }
+
+    this.mobileLogOut = function(sUrl)
+    {
+        con.sendPostRequest(sUrl, null, null, "header.arhLogout", false);
+    };
+
+    this.arhLogout=function(sRes)
+    {
+        window.location.href = clAppBuffer.getContextPath()+"/mlogin.do";
+    };
+    /**This function is used in onChange of modulestypes(application switcher)
+     * */
+    this.onchngApplicationMod = function(cbModuleType,sUrl)
+    {
+
+        //         location.href = me.moduleTypeUrl(cbModuleType.value);
+        //          document.getElementById("iAppType").value =  cbModuleType.value;
+
+        location.href = "crmhome.do?appType=" + cbModuleType.value;
+        //       var sSubmitData = "&appType=" + cbModuleType.value;
+        //       sendPostRequest("crmhome.do", sSubmitData, null, "header.arhHomePage", false, null);
+    };
+    /* this.moduleTypeUrl = function(iAppType)
+     {
+     var sHref = '';
+     if(iAppType == 1)
+     {
+     sHref = "marketing.do";
+     }
+     else if(iAppType == 2)
+     {
+     sHref = "teleMarketing.do";
+     }
+     else if(iAppType == 3)
+     {
+     sHref = "sales.do";
+     }
+     else
+     {
+     sHref = "support.do";
+     }
+     return sHref;
+     };*/
+
+    /* this.arhHomePage = function()
+     {
+     location.href = "crmhome.do";
+     };*/
+
+
+    this.onKUpAdvSearchFld = function(objFld,sUrl,evt)
+    {
+        var sSearchString;
+        sSearchString =  objFld.value;
+        if(util.trim(sSearchString) != "")
+        {
+            if(cross.getKeyCode(evt) == 13)//  13--Enter
+            {
+                objFld.blur();
+                window.focus();
+
+                clAppBuffer.setWindowType(Constants.IMODULE_WINDOW.TABBEDT_PANE);
+                if(util.startsWith(sSearchString,"#"))
+                {
+                    home.setCenterUI(me.sTagSearchUrl+"&searchTag="+sSearchString.substring(1,sSearchString.length)+"&advSeacrh=2",null,false,false,null,null,null,false,true,false);
+                }
+                else
+                    home.setCenterUI(sUrl+"&search="+sSearchString+"&isAllModules="+true,null,null,null,null,null,null,false,true,false);
+
+            }
+        }
+    };
+
+    /**
+     * This function is used for get Advance Search Dialog
+     */
+    this.onClkGetAdvSearchDlg=function(isEdit,evt)
+    {
+        var objImg =document.getElementById("imgAdvSearch");
+        objImg = objImg.parentNode;
+        if(isEdit)
+        {
+            header.onClkGetAdvSearchDlg(false,evt);
+            if(evt)
+                cross.cancelBubble(evt);
+            //cross.fireEvent(objImg,"click");
+        }
+        else
+        {
+            var sResult,sSearchStr;
+            sSearchStr =  "";//util.trim(document.getElementById("tfSearch").value);
+            sResult="?sSearch="+sSearchStr;
+            msg.showToastWindowFromURL(objImg,me.sAdvSearchUrl+sResult,false,null,0,false,null,null,true,true);//"advSearch"
+        }
+
+        /*var sId,sUrl,advSearchDlg;
+         if(sSearchStr == '' && !isEdit)
+         isEdit = true;
+         sId="AdvSearchView";
+
+         var arrActions = new Array();
+         var sAction1,sAction2;
+         advSearchDlg = getDialogBox(sId);
+         if((advSearchDlg==undefined || advSearchDlg==null) || !isEdit)
+         {
+         sAction1="clAdvanceSearch.onClkGetSearchResult";
+         sAction2="clAdvanceSearch.onClkCloseDlg";
+         arrActions[0] = "Ok|"+sAction1;
+         arrActions[1] = "Cancel|"+sAction2+"|"+Constants.CANCEL;
+         sUrl = me.sAdvSearchUrl+""+sResult;
+         advSearchDlg = new DialogBox(sId,":: "+me.sDlgTitle+" ::",140,160,610,410,sUrl, true, null, false,true,arrActions,false,['dvModItems'],false);
+         }
+         advSearchDlg.setCenter();
+         advSearchDlg.show();*/
+    };
+
+    this.toggleSearchSizeOn=function(objThis)
+    {
+        if(document.getElementById("dvTWindowUserDropDown")!=null){
+            document.getElementById("dvTWindowUserDropDown").style.display="none";
+        }
+        if(document.getElementById("dvTWindowhedrMenus")!=null){
+            document.getElementById("dvTWindowhedrMenus").style.display="none";
+        }
+        objThis.click();
+        objThis.size=objThis.offsetWidth+180;
+    };
+
+    this.toggleSearchSizeOff=function(objThis)
+    {
+        objThis.size=objThis.offsetWidth-1000;
+    };
+
+
+    this.callBackAdvSearchSort=function()
+    {
+        var  sSearch,sParams;
+        sSearch=document.getElementById("tfAdvSearch").value;
+        var objOperator = document.getElementById("cbOperator");
+        var sArrParams=new Array();
+        sArrParams[0]="";
+        sParams="&searchString="+sSearch+"&operator="+objOperator.options[objOperator.selectedIndex].value;
+        if(sSearch.length==1 && (sSearch.charCodeAt(0)==42 ||sSearch.charCodeAt(0)==63))
+            sParams+="&isAllRecords=true";
+        sArrParams[1]=sParams;
+        return sArrParams;
+    };
+
+    this.onClkChangePwd  = function()
+    {
+        var sId,sUrl,changePasswordDlg,arrActions = new Array();
+        changePasswordDlg = getDialogBox("clChangePwdDlg");
+        //        if(changePasswordDlg==undefined || changePasswordDlg==null)
+        //        {
+        /*arrActions[0] = "Change|clChangePwd.onClkChangePwd";
+         arrActions[1] = "Cancel|clChangePwd.onClkCancelPwd";*/
+        arrActions[0] = MsgHandler.getMsg(MsgConstants.CHANGE,0,0)+"|clChangePwd.onClkChangePwd";
+        arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL,0,0)+"|clChangePwd.onClkCancelPwd";
+        sUrl = con.getStruts2Url(null,"security/users!getChangePwd.do");
+        changePasswordDlg = new DialogBox("clChangePwdDlg",sTitle,140,160,600,520,sUrl, true, null, false,true,arrActions);
+        //        }
+        changePasswordDlg.setCenter();
+        changePasswordDlg.show();
+        //        setVisible(document.getElementById("dvURLTWindow"),false);
+    };
+
+    this.onClkApplicationMod = function(objtd)
+    {
+        util.toggleBackground(true,null,null,null,false);
+        home.updateUrlStack(true);
+
+        var dvModType=objtd.getAttribute('value');
+        var dvMenus= document.getElementById("dvMenus");
+        dvMenus.innerHTML= objtd.innerHTML;
+
+        location.href = "crmhome.do?appType=" + dvModType;
+        //        location.href = "crmhome.do?appType=" + cbModuleType.value;;
+    };
+
+    /*this.onClkReportCust = function()
+     {
+     var sUrl = con.getStruts2Url(null,"/common/report!getReportFields.do");
+     home.setCenterUI(sUrl,null,null,false);
+     };*/
+
+    this.onClkgetIntraMail= function(sUrl)
+    {
+        home.setCenterUI(sUrl,null,null,false,null,false,null,true);
+    };
+    this.toggleShowShortCutBar = function(objAnch, sTrId)
+    {
+        var objTr = document.getElementById(sTrId);
+        if(objAnch.getAttribute("isShowBar")==0)
+        {
+            objTr.style.display='block';
+//            CLTreeMenu.detachDiv();
+//            CLTreeMenu.attachDiv(cross.getPrevSibiling(document.getElementById("attachDiv")));
+            //objTr.style.height=0;
+            //$(objTr).slideDown(5000);
+            objAnch.setAttribute("isShowBar",1);
+        }
+        else{
+            objTr.style.display='none';
+            objAnch.setAttribute("isShowBar",0);
+        }
+        var objDiv,prevSibiling;
+        objDiv = document.getElementById("attachDiv");
+        prevSibiling = cross.getPrevSibiling(objDiv);
+        if(prevSibiling.nodeName == "UL")
+            CLTreeMenu.attachDiv(cross.getPrevSibiling(prevSibiling));
+        else
+            CLTreeMenu.attachDiv(prevSibiling);
+
+    };
+    this.onClkFormulaBar = function(sUrl)
+    {
+        var clFormulaDlg,arrActions;
+        arrActions = new Array();
+        arrActions[0] = "Ok|clFormulaBar.onClkTest";
+        arrActions[1] = "Cancel|clFormulaBar.hideFormulaDlg";
+        clFormulaDlg = new DialogBox("clFormulaDlg",MsgHandler.getMsg(MsgConstants.FORMULA_EDITOR),0,0,800,450,sUrl,true,null,true,true,arrActions);
+        clFormulaDlg.show();
+    };
+
+    /**Function is to set serach label and change color on run,advanced search and searchmenu.
+     * */
+    this.onClkSearchFld = function(obj,e)
+    {
+        var tblElem = obj.parentNode.parentNode.parentNode.parentNode,objSearch,sTblClassName = "",
+            iSrch=obj.getAttribute("iSearch");
+        // var sColor="",
+        //sColor = "white";
+        if(iSrch == Constants.SEARCH_RUN)
+        {
+            if((getComboInstance("cbRun")!=null &&  getComboInstance("cbRun").getSelectedId() < 0))
+            {
+                document.getElementById("cbRun").value = "";
+                getComboInstance("cbRun").checkAndAddItem("|-1");
+            }
+            //sTblClassName = "selmods";
+        }
+        else if(iSrch == Constants.SEARCH_ADVANCED)
+        {
+            objSearch = document.getElementById("tfSearch");
+            objSearch.value="";
+            objSearch.style.color = "black";
+            //sTblClassName = "userTab default";
+            util.toggleElementBackground(document.getElementById("navContentAreaDv"),true,true);
+        }
+        if(iSrch == Constants.SEARCH_MENU)
+        {
+            //objSearch = document.getElementById("tblMenuSearch");
+            //objSearch.className = "selmods";
+            //objSearch.style.border="2px solid whitesmoke";
+        }
+        else
+        {
+            //tblElem.className  = tblElem.className+sTblClassName;
+            //tblElem.style.backgroundColor = sColor;
+        }
+
+    };
+
+    /**Function is to set their respective colors to run,advanced search and searchmenu.
+     * */
+    this.clearSelection = function(e)
+    {
+        var tblElem = document.getElementById("tblSearch"),objSrc,sClass = "searchFld",objTable;
+        e = cross.getEvent(e);
+        objSrc = cross.getSrcElement(e);
+
+        objTable = document.getElementById("tblMenuSearch");
+        if(objTable)
+        {
+            //sClass = "selSearch";
+            //objTable.className = sClass+" selmods";
+            objTable.style.border="2px solid #D5D9B8";
+        }
+        if(tblElem != null)
+        {
+            //tblElem.className ="userTab default selmodssearch";
+            //tblElem.style.backgroundColor = "";
+            var tfSearch = document.getElementById("tfSearch");
+            tfSearch.value = "";//+me.sAdvSrchCap;
+            tfSearch.setAttribute("placeholder",me.sAdvSrchCap);
+            //tfSearch.style.color = "";
+            //tfSearch.className = sClass+" searchColor";
+
+        }
+        tblElem = document.getElementById("tblRunCntr");
+        if(tblElem != null)
+        {
+            if(parseInt(objSrc.getAttribute("iSearch")) != 0)
+            {
+                if(getComboInstance("cbRun")!=undefined)
+                {
+                    getComboInstance("cbRun").checkAndAddItem(me.sSearchCaption+"|-1",true);
+                    //document.getElementById("cbRun").style.color = "";
+                    //document.getElementById("cbRun").className = sClass+" searchModColor";
+                }
+            }
+            //tblElem.className = " selmods selSearch";
+            //tblElem.style.backgroundColor = "";
+        }
+        util.toggleElementBackground(document.getElementById("navContentAreaDv"),false,true);
+
+    };
+    /*
+     * This function is used to open BuildInfo dialog box.
+     * */
+    this.displayBuildInfo=function(isShowActions)
+    {
+        var arrActions = new Array();
+        var iHeight=570,iWidth=535,isNewLicense,isAdminAccess,isAskforNewlicenseSubscription,isUpgrade,isLicenseExpired;
+        var isActionExist=true, isCloud;
+        var sUrl = con.getStruts2Url("security","build","getBuildInfo",null);
+        isCloud = document.getElementById("isCloud").value;
+        isNewLicense = document.getElementById("isNewLicense").value;
+        isAdminAccess = document.getElementById("isAdminAccess").value;
+        isAskforNewlicenseSubscription = document.getElementById("isAskforNewlicenseSubscription").value;
+        isUpgrade = document.getElementById("isUpgrade").value;
+        isLicenseExpired = document.getElementById("isLicenseExpired").value;
+        if(!isShowActions)
+        {
+            if( isAdminAccess == "true" )
+            {
+                if( isNewLicense == "true" )
+                {
+                    if(isUpgrade == "true"  )
+                    {
+                        arrActions[0] = MsgHandler.getMsg(MsgConstants.RE_ACTIVATE)+"|header.onClkReActivateLicense";
+                        arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL)+"|";
+                    }
+                    else if(isCloud == "true" || isAskforNewlicenseSubscription == "true")
+                    {
+                        arrActions[0] = MsgHandler.getMsg(MsgConstants.ACTIVATE)+"|header.onClkActivate(1)";
+                        arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL)+"|";
+                    }
+                    else
+                    {
+                        arrActions[0] = MsgHandler.getMsg(MsgConstants.CLOSE)+"|";
+                    }
+                }
+                else
+                {
+                    if(isCloud == "true" || isAskforNewlicenseSubscription == "true")
+                    {
+                        arrActions[0] = MsgHandler.getMsg(MsgConstants.ACTIVATE)+"|header.onClkActivate(1)";
+                        arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL)+"|";
+                        //for old  license
+                        /*arrActions[0] = MsgHandler.getMsg(MsgConstants.ACTIVATE)+"|header.onClkActivate(1)";
+                        arrActions[1] = MsgHandler.getMsg(MsgConstants.REGISTER)+"|clBuildInfo.onClkCdIdRegInfo()";
+                        arrActions[2] = MsgHandler.getMsg(MsgConstants.CANCEL)+"|";*/
+                    }
+                    else if(isLicenseExpired == "true" || isAskforNewlicenseSubscription == "true")
+                    {
+                        arrActions[0] = MsgHandler.getMsg(MsgConstants.REGISTER)+"|clBuildInfo.onClkCdIdRegInfo";
+                        arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL)+"|";
+                    }
+                    else {
+                        arrActions[0] = MsgHandler.getMsg(MsgConstants.CLOSE) + "|";
+                    }
+                }
+            }
+            else
+                arrActions[0] = MsgHandler.getMsg(MsgConstants.CLOSE)+"|";
+        }
+        else
+        {
+            if(isCloud == "true" && isAskforNewlicenseSubscription == "true")
+            {
+                arrActions[0] = MsgHandler.getMsg(MsgConstants.ACTIVATE)+"|header.onClkActivate(1)";
+                arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL)+"|";
+            }
+            else {
+                arrActions[0] = MsgHandler.getMsg(MsgConstants.CLOSE) + "|";
+            }
+        }
+        //}
+        //todo need to enable once uninstall through .dll is done from vinay sir.
+        /*else
+         {
+         arrActions = new Array();
+         //arrActions[0] = MsgHandler.getMsg(MsgConstants.REGISTER)+"|clBuildInfo.onClkCdIdRegInfo";
+         arrActions[0] = "Un-Install|clBuildInfo.onClkUnInstall";
+         arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL)+"|";
+         }*/
+
+        var clBuildInfoDlg = new DialogBox("buildInfoDlg","",0,0,iWidth,iHeight,sUrl,true,null,true,true,arrActions,false,null,true,false,false,true,false,true,isActionExist);/*MsgHandler.getMsg(MsgConstants.ABOUT)*/
+        clBuildInfoDlg.setCenter();
+        clBuildInfoDlg.show();
+        //con.sendPostRequest(sUrl,null, null, "header.fnSaveCallBack", false);
+    };
+
+
+    /*this.fnBuildInfoCallback=function()
+     {
+
+     };*/
+    this.onClkUpdateLincenseLink = function(sUrl)
+    {
+        con.sendPostRequest(sUrl,null,null,header.arhLicenseLink,null,0,null,false,true,ACTION_PROCESSING);
+    };
+    this.arhLicenseLink = function(sResponse)
+    {
+        if(util.trim(sResponse).length>0)
+        {
+            msg.showToastMsg(sResponse);
+            getDialogBox("buildInfoDlg").hide();
+        }
+    };
+
+    this.isDST=function(date = new Date()) {
+        let sTimeZone=Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+        if(sTimeZone.indexOf("America")!=-1)
+        {
+            const january = new Date(date.getFullYear(), 0, 1);
+            const july = new Date(date.getFullYear(), 6, 1);
+
+            const standardOffset = Math.max(
+                january.getTimezoneOffset(),
+                july.getTimezoneOffset()
+            );
+
+            return date.getTimezoneOffset() < standardOffset;
+        }
+        else
+            return false;
+    }
+
+    this.onLoadSetTimer = function()
+    {
+        var myVar = setInterval(myTimer, 1000);
+        function myTimer()
+        {
+            var objDate = new Date();
+            var iLocalOffset=objDate.getTimezoneOffset();
+            var iServerOffset=clAppBuffer.getTimeZoneOffset()/60000;
+            //alert(iLocalOffset+" == "+iServerOffset);
+
+            //if( Math.abs(iLocalOffset)!=Math.abs(iServerOffset))//different timezones
+            //{
+                var dDate = util.getDateObject();//new Date();
+                dDate.setTime( dDate.getTime() + dDate.getTimezoneOffset()*60*1000);
+                dDate.setTime( dDate.getTime() + clAppBuffer.getTimeZoneOffset());
+                //alert("me.isDST() if == >"+(me.isDST()));
+
+                 if(document.getElementById("dsttime").value=="true")
+                   dDate.setHours(dDate.getHours()+1);
+
+                var sValue1=dateUtils.getDateString(dDate, clAppBuffer.getDateFormat(), true)
+                sValue1=sValue1.split(" ");
+                console.log("sValue1=="+sValue1);
+                document.getElementById("dvTimer").innerHTML = "<span id='spTime' class='spTime'>"+sValue1[1]+"<span class='spTimePeriod'>"+sValue1[2]+"</span></span>";
+            //}
+            /*else    // same timezones
+            {
+                if(me.isDST())
+                    objDate.setHours(objDate.getHours()+1);
+
+                var hours = objDate.getHours();
+                var minutes = objDate.getMinutes();
+                var ampm = (hours >= 12) ? 'PM' : 'AM';
+                if(clAppBuffer.getTimeFormat()==Constants.TIME_HHMMAMPM) // when time format is 12hrs
+                    hours = hours % 12;
+                hours = hours ? hours : 12; // the hour '0' should be '12'
+                hours = hours < 10? '0'+hours : hours;
+                minutes = minutes < 10 ? '0'+minutes : minutes;
+                var strTime = hours + ':' + minutes;
+                if(clAppBuffer.getFarsiCalendar() == "true")
+                    strTime = util.toPersianNumber(strTime);
+                document.getElementById("dvTimer").innerHTML = "<span id='spTime' class='spTime'>"+strTime+"<span class='spTimePeriod'>"+ampm+"</span></span>";
+            }*/
+        }
+    };
+
+    this.getProfileImage =function()
+    {
+        if(document.getElementById("userImage"))
+        {
+            var sUrl = document.getElementById("userImage").getAttribute("src");
+            con.sendPostRequest(sUrl, null, null, "header.arhImage", false);
+        }
+    }
+
+    this.arhImage = function(sFileName)
+    {
+        if(sFileName && document.getElementById("userImage")!=null)
+        {
+            if((sFileName.indexOf("onedrive:")!=-1) || sFileName.indexOf("gdrive:")!=-1)
+            {
+                if ((sFileName.indexOf("onedrive:") != -1)) {
+                    var sFileId=sFileName.substring(sFileName.indexOf(":")+1,sFileName.indexOf("|"));
+                    //sFileName = "https://onedrive.live.com/download?resid=" + sFileId;
+                    sFileName = sFileId;
+                }
+                else if (sFileName.indexOf("gdrive:") != -1) {
+                    sFileName = "https://drive.google.com/uc?authuser=0&" + sFileName + "&export=download";
+                }
+                document.getElementById("userImage").datasrc = sFileName;
+            }
+        }
+    }
+    this.onClkGetThemes = function()
+    {
+
+        var sUrl =  con.getStruts2Url("security","users","getCRMThemes",null,true);
+        var arrActions=new Array();
+        arrActions[0] = MsgHandler.getMsg(MsgConstants.APPLY,0,0)+"|clThemeSelection.onClkSaveThemes()";
+        arrActions[1] = MsgHandler.getMsg(MsgConstants.CLOSE)+"|";
+        var clThemeChange = new DialogBox("themesDlg", "", 100,50,450,490, sUrl, false, null, false, true, arrActions, null, null, null, null, null, null, null, true);
+        clThemeChange.setTitle("Change Theme");
+        //clThemeChange.callFn("clThemeSelection.onWLoad();");
+        clThemeChange.setCenter();
+        clThemeChange.show()
+
+
+    };
+    /**
+     * This method purpose is handle Activate License Dialog
+     * and handle Request help of Activate button Activate button call to  clWASuppUsers.onClkSave
+     */
+
+    this.onClkGetWAAccountActivation= function()
+    {
+        var sUrl = con.getStruts2Url("social", "sendWhatsapp", "getWAAccountActivation", null, true);
+        var arrActions = new Array();
+        MsgHandler.getMsg(MsgConstants.OTP_SEND)
+        arrActions[0] = MsgHandler.getMsg(MsgConstants.VERIFY_ADD, 0, 0) + "|clAddWhasAppBusiness.validateOTP()";
+        arrActions[1] = MsgHandler.getMsg(MsgConstants.CLOSE) + "";
+        var clWhatsApp = new DialogBox("clAddWhasAppBusiness", "", 90, 95, 700, 350, sUrl, true, null, false, true, arrActions, null, null, null, null, null, null, null, true);
+        clWhatsApp.setTitle("WhatsApp Support Activation");
+        clWhatsApp.setCenter();
+        clWhatsApp.show()
+    };
+
+    this.onClkActivate= function(isHeader)
+    {
+
+        var sUrl = con.getStruts2Url("common", "createCompany", "getActivateLicensePage", null, true);
+        var arrActions = new Array();
+        // isHeader ==0  from attaching licensd from About screen
+        // isHeader ==1  from attaching licensd from Header screen
+        arrActions[0] = MsgHandler.getMsg(MsgConstants.ACTIVATE, 0, 0) + "|clActicate.onClkLicenseactivate("+isHeader+")";
+        arrActions[1] = MsgHandler.getMsg(MsgConstants.CLOSE) + "";
+        var clActicate = new DialogBox("activateLicense", "", 90, 95, 500, 250, sUrl+"?isHeader="+isHeader, true, null, false, true, arrActions, null, null, null, null, null, null, null, true);
+        if(isHeader==1)
+            clActicate.setTitle("Activate-License");
+        else
+            clActicate.setTitle("Activate-New License");
+
+        clActicate.setCenter();
+        clActicate.show()
+    };
+    this.resLicenseactivate = function(sResponse)
+    {
+        util.toggleBackground(false);
+        if (sResponse != null && parseInt(sResponse) == 1)
+        {
+            msg.showToastMsg(MsgHandler.getMsg(MsgConstants.SUCCESSFULLY_ACTIVATED));
+
+            var objBuildLogo = parent.document.getElementById("buildLogo");
+            var objActions = parent.document.getElementById("buildInfoDlgframeActions");
+
+            if (getDialogBox("activateLicense") && objActions == null){
+                getDialogBox("activateLicense").hide();
+                window.location.href = clAppBuffer.getContextPath() + "/crmhome.do";
+            }
+
+            if (objActions != null) {
+                getDialogBox("activateLicense").hide();
+                objBuildLogo.setAttribute('onclick', 'header.displayBuildInfo(true)');
+                cross.setVisible(objActions, false);
+                var objFrame = parent.document.getElementById("buildInfoDlgcontentFrame");
+                objFrame.src = objFrame.src;
+                //objBuildLogo.getDialogBox("activateLicense").hide();
+                parent.window.location.href = clAppBuffer.getContextPath() + "/crmhome.do";
+
+            }
+            else{
+                parent.window.location.href = clAppBuffer.getContextPath() + "/crmhome.do";
+            }
+        }
+        else {
+            util.toggleBackground(false);
+            msg.showToastMsg(MsgHandler.getMsg(MsgConstants.FAIL_TO_ACTIVATION) + (sResponse == null ? " " : ", "+sResponse), null, null, false, "msgbox");
+        }
+
+    };
+    this.onClkReActivateLicense = function()
+    {
+        var sUrl='common/createCompany!reactivateLicense.do';
+        con.sendPostRequest(sUrl, null,null, "header.resReActivateLicense", false,null,null,null,null,ACTION_LOADING);
+
+    };
+    this.resReActivateLicense = function(sResponse)
+    {
+        util.toggleBackground(false);
+        if(sResponse != null &&  sResponse == 1){
+            msg.showToastMsg(MsgHandler.getMsg(MsgConstants.SUCCESSFULLY_REACTIVATED));
+            var objBuildLogo = parent.document.getElementById("buildLogo");
+            var objActions = parent.document.getElementById("buildInfoDlgframeActions");
+
+            if (objActions != null)
+            {
+                objBuildLogo.setAttribute('onclick', 'header.displayBuildInfo(true)');
+                cross.setVisible(objActions, false);
+                var objFrame = parent.document.getElementById("buildInfoDlgcontentFrame");
+                objFrame.src = objFrame.src;
+                parent.window.location.href = clAppBuffer.getContextPath() + "/crmhome.do";
+            }
+            else
+                window.location.href = clAppBuffer.getContextPath() + "/crmhome.do";
+        }else{
+            msg.showToastMsg(MsgHandler.getMsg(MsgConstants.FAIL_TO_REACTIVATE));
+        }
+    };
+    this.onClkAttachLicense= function()
+    {
+        var sUrl = con.getStruts2Url("common", "createCompany", "getAttachUserstoLicensePage", null, true);
+        var arrActions = new Array();
+
+        arrActions[0] = MsgHandler.getMsg(MsgConstants.ATTACH, 0, 0) + "|clAttachLicense.onClkAttachLicense()";
+        arrActions[1] = MsgHandler.getMsg(MsgConstants.CLOSE) + "";
+        var clAttachLicense = new DialogBox("attachLicenseToUser", "", 90, 95, 500, 250, sUrl, true, null, false, true, arrActions, null, null, null, null, null, null, null, true);
+        clAttachLicense.setTitle("Activate-license");
+        clAttachLicense.setCenter();
+        clAttachLicense.show()
+    };
+    this.onClkRemoveWAAccountActivation =function()
+    {
+        location.reload()
+        var sUrl = con.getStruts2Url("social", "sendWhatsapp", "removeWASupportAccount", null, true);
+        if(window.confirm(MsgHandler.getMsg(MsgConstants.WANT_TO_DELETE_WAS,0,0))) {
+            con.sendPostRequest(sUrl, "", null, "header.arhRemoveWAAccount()");
+        }
+    };
+    this.arhRemoveWAAccount = function(sResponse)
+    {
+        msg.showToastMsg(MsgHandler.getMsg(MsgConstants.WAS_REMOVE));
+        location.reload();
+    };
+    this.onMouseOverEnableDisableMore=function(iDisplay)
+    {
+        iDisplay=parseInt(iDisplay);
+        cross.setVisible(document.getElementById("aMore"),iDisplay==1);
+    };
+
+    /**
+     * This method helps to call api based on iType and sTitle
+     * @param iType identifies facebook, gmail, twitter
+     * @param sTitle identifies the website name facebook, gmail, twitter
+     */
+    this.onClkSocialInit = function(iType,sTitle)
+    {
+        var sSocialServerURL,sAppRedirectCRMURL,sSocialConnectUrl,iWindowWidth=600,iWindowHeight=500;
+        sSocialServerURL=document.getElementById("hfHeaderSocialServerURL").value;
+        sAppRedirectCRMURL=document.getElementById("hfHeaderAppRedirectCRMURL").value;
+        sSocialConnectUrl=sSocialServerURL+"?stype="+iType+"&skey=crm&appredirecturl="+util.encodeURI(sAppRedirectCRMURL+"?loginType="+Constants.ISOCIAL_LOGIN_TYPE.HEADER_DROPDOWN);
+        //var sSocialConnectUrl="https://7d487101f4ef.ngrok.io/socialconnect/sociallogin?stype="+iType+"&skey=crm&appredirecturl=http://192.168.2.62:9000/streamline/social/userSocial!linkSocialAccountCallback.do?loginType=2";
+        window.open(sSocialConnectUrl,sTitle,"width="+iWindowWidth+",height="+iWindowHeight+",top="+(document.body.clientHeight-iWindowHeight)/4+",left="+(document.body.clientWidth-iWindowWidth)/2);
+    };
+
+    /**
+     * callback will be called  from crm callback
+     * @param arrData list of social company info
+     * @param shType Gmail,facebook,linkedin,twitter
+     * @param iStatus 1=Saved successfully,3=Exception occur and
+     *      if iStatus==2 it will redirect to SocialCompanySelection.jsp[it contains list of social company info]
+     *      else iStatus==1 it will redirect to login page.
+     */
+    this.onSocialSignIn=function(shType,iStatus,sStatusMsg)
+    {
+        iStatus=parseInt(iStatus);
+        shType=parseInt(shType);
+        if(iStatus==Constants.ISOCIAL_TYPE_STATUS.SINGLE_COMPANY)
+        {
+            var objHeaderDropDownWindow=document.getElementById("dvTWindowUserDropDown");
+            if(objHeaderDropDownWindow)
+                objHeaderDropDownWindow.remove();
+            msg.showToastMsg(MsgHandler.getMsg(MsgConstants.SOCIAL_LINK)+" "+(MsgHandler.getMsg(MsgConstants.SAVED_SUCCESSFULLY)).toLowerCase());
+            location.reload();
+        }
+        else if(iStatus==Constants.ISOCIAL_TYPE_STATUS.EXCEPTION)
+        {
+            var sErrorMsg;
+            if(sStatusMsg!=null && util.trim(sStatusMsg).length>0)
+                sErrorMsg=sStatusMsg;
+            else
+            {
+                var sSocialName=me.getSocialSiteName(shType);
+                sErrorMsg=sSocialName+" id is incorrect";
+            }
+            msg.showMessage(0,sErrorMsg,null,null,null,null);
+        }
+        else
+            msg.showMessage(0,sStatusMsg,null,null,null,null);
+    };
+
+    /**
+     * This method helps to get the social website name based on iType
+     * @param iType
+     * @returns {string}
+     */
+    this.getSocialSiteName=function(iType)
+    {
+        var iSocialName=0;
+        iType=parseInt(iType);
+        switch (iType)
+        {
+            case Constants.ISOCIAL_TYPES.TWITTER:iSocialName=MsgConstants.TWITTER;break;
+            case Constants.ISOCIAL_TYPES.LINKEDIN:iSocialName=MsgConstants.LINKEDIN;break;
+            case Constants.ISOCIAL_TYPES.FACEBOOK:iSocialName=MsgConstants.FACEBOOK;break;
+            case Constants.ISOCIAL_TYPES.GOOGLE:iSocialName=MsgConstants.GMAIL;break;
+            default:{
+                iSocialName=0;
+            }
+        }
+        return (iSocialName>0)?MsgHandler.getMsg(iSocialName):"Enter";
+    };
+    /**
+     * This method helps to get the social info ManageSocialInfo.jsp
+     * @param sUrl
+     */
+    this.onClkLinkSocialAccount= function(sUrl)
+    {
+        home.setCenterUI(sUrl,null,null,false,null,false,null,true);
+    };
+
+    this.arhSaveTheme = function(sResponse,iStatusCode,iReturn)
+    {
+        if($.trim(sResponse).length>0)
+        {
+            getDialogBox("themesDlg").hide();
+            window.location.href=clAppBuffer.getContextPath()+"/crmhome.do";
+        }
+
+    }
+
+    this.onClkGetUpgradeDetails = function()
+    {
+        var sUrl = "cloud/subscription!getPlanUpgradeDet.do?chkBuffer=true";
+        home.setCenterUI(sUrl);
+    };
+    this.onClkGetPlanDetails= function()
+    {
+        var sUrl = "cloud/subscription!getPlanDet.do?isHeaderAction=true";
+        home.setCenterUI(sUrl);
+    };
+
+
+
+
+    this.onClkAttachDefaultCompanyLogo=function()
+    {
+        var sTitle=MsgHandler.getMsg(MsgConstants.ATTACH,0,0)+" "+MsgHandler.getMsg(MsgConstants.COMPANY_LOGO,0,0).toLowerCase();
+        clOverlay.showOverlay("dvOverlayAttachCompanyLogo","dvAttachCompanyLogo","320px","310px",clOverlay.OVERLAY_LEFT,null,50,null,sTitle);
+        con.sendPostRequest("common/createCompany!getAttachDefImage.do",null,null,me.resAttachCompanyLogo, null, "dvAttachCompanyLogo", null);
+
+    };
+
+    /**
+     * Author:Ayyappa
+     * This Method purpose is open the details of Attach Company Logo
+     * CTL:CLCompanyCtl.getAttachDefImage
+     */
+    this.onClkAttachCompanyLogo=function()
+    {
+        var sTitle=MsgHandler.getMsg(MsgConstants.ATTACH,0,0)+" "+MsgHandler.getMsg(MsgConstants.COMPANY_LOGO,0,0).toLowerCase();
+        clOverlay.showOverlay("dvOverlayAttachCompanyLogo","dvAttachCompanyLogo","320px","312px",clOverlay.OVERLAY_RIGHT,null,50,null,sTitle);
+        con.sendPostRequest("common/createCompany!getAttachDefImage.do",null,null,me.resAttachCompanyLogo, null, "dvAttachCompanyLogo", null);
+
+    };
+    /**
+     * Author:Ayyappa
+     * This method helps to response method of onClkAttachCompanyLogo
+     * @param sResponse
+     */
+    this.resAttachCompanyLogo=function(sResponse)
+    {
+        var objDiv = document.getElementById("dvAttachCompanyLogo");
+        objDiv.innerHTML = sResponse;
+        loadResources(objDiv, util.onScriptsLoad);
+    };
+    /**
+     * Author:Ayyappa
+     * This method helps to upload a file using attach company logo
+     * @param sDisplayName
+     * @param sFileSource
+     * @param sId
+     */
+    this.onUploadDone=function(sDisplayName,sFileSource,sId)
+    {
+        if(util.trim(sDisplayName).length > 0)
+            document.getElementById("preview_"+sId).src=sFileSource;
+        else
+        {
+            document.getElementById("uploadFileName_defUploadImg").value="";
+            document.getElementById("company_defUploadImg").value="";
+            document.getElementById("hfIsImageEdit").value=true;
+
+        }
+    };
+    /**
+     * Author:Ayyappa
+     * This method purpose is save the company logo
+     * CTL:CLCompanyCtl.saveAttachCompanyLogo
+     */
+    this.onClkSaveAttachCompanyLogo=function()
+    {
+        var sFileName,sSubmitData="",isEdit;
+        sFileName=document.getElementById("company_defUploadImg").value;
+        isEdit=document.getElementById("hfIsImageEdit").value;
+        if(sFileName.length>0)
+            sSubmitData="fileName="+sFileName;
+        if(document.getElementById("hfRemoveFileName")!=null && isEdit)
+            sSubmitData+="&removeLogo="+document.getElementById("hfRemoveFileName").value;
+        con.sendPostRequest("common/createCompany!saveAttachCompanyLogo.do",sSubmitData,null,me.resSaveAttachCompanyLogo, null, "dvAttachCompanyLogo", null);
+    };
+    /**
+     * Author:Ayyappa
+     * This method purpose is response method of onClkSaveAttachCompanyLogo
+     * @param iStatus helps to update the toast message
+     */
+    this.resSaveAttachCompanyLogo=function(iStatus)
+    {
+        var sMsg;
+        if(document.getElementById("dvOverlayAttachCompanyLogo")!=null)
+            clOverlay.closeOverlay(null,clOverlay.OVERLAY_RIGHT,'dvOverlayActivities');
+        if(iStatus==Constants.MSG_SUCCESS)
+            sMsg=MsgHandler.getMsg(MsgConstants.COMPANY_LOGO,0,0,MsgHandler.getMsg(MsgConstants.UPDATED_SUCCESSFULLY,0,0));
+        else
+            sMsg=MsgHandler.getMsg(MsgConstants.COMPANY_LOGO,0,0,"not "+(MsgHandler.getMsg(MsgConstants.UPDATED_SUCCESSFULLY,0,0)));
+        msg.showToastMsg(sMsg);
+        window.location.reload()
+    };
+    /*this.onClkInfoPanel=function()
+     {
+     var sURL;
+     sURL="/infobar/infopanel!getInfoPanel.do?infoPanelDTO.panelId=1&infoPanelDTO.moduleType=1001";
+     home.setCenterUI(sURL);
+     };*/
+    this.onClkInfoPanelLayout=function()
+    {
+        var sURL,sParams,iModuleId;
+        if(document.getElementById("iModuleId")!=null)
+            iModuleId=document.getElementById("iModuleId").value;
+        //sParams="?moduleId="+iModuleId+"&iPanel=1";
+        sParams="?moduleId="+iModuleId;
+        sURL="/module/moduleView!infoTabbedPane.do"+sParams;
+        home.setCenterUI(sURL);
+    };
+    /*this.responseInfoPanel=function(response)
+     {
+     document.getElementById("dvCenter").innerHTML=response;
+     };*/
+};
+
+function handlePageLoading(bVisible)
+{
+    document.getElementById("loadstatus").style.display = "none";
+    //    toggleBackground(bVisible);
+    if(document.getElementById("disableBGImg") && document.getElementById("disableBGImg").value)
+        document.getElementById("disableBGImg").style.display = "none";
+}
+

@@ -1,0 +1,169 @@
+var clButtonPane = new function()
+{
+    var me= this;
+    /* var g_liObj= null;
+     var g_iCurrentBtId= 0;
+     var g_sPrefix=null;*/
+    var fnCallback=null;
+
+    this.SRC_TYPE_URL=0;
+    this.SRC_TYPE_JAVASCRIPT=1;
+
+//    var g_liObj= null;
+
+    /*
+     *   This function is used to select the tab and get the coresponding details of Button.
+     * */
+    this.onClkButton= function(obj,sUrl,fnCallback,iSrcType)
+    {
+        var liObj,objCurContentDv,sPrefix,objMainDiv,liObjId,iCurrentBtId ;
+        liObj = document.getElementById(obj.parentNode.id);
+        if(liObj.getAttribute("disabled")!=null)
+            return;
+
+        liObjId = liObj.id;
+        objMainDiv = liObj.parentNode.parentNode;
+        iCurrentBtId = liObjId.substring(liObjId.indexOf("[")+1,liObjId.indexOf("]"));
+//        sPrefix = objMainDiv.id;
+
+        me.onSelectTab(objMainDiv.id,iCurrentBtId );
+        /*liObjId =liObj .id;
+         iCurrentBtId = liObjId.substring(liObjId.indexOf("[")+1,liObjId.indexOf("]"));
+
+         objCurContentDv= document.getElementById(sPrefix+"content"+iCurrentBtId);*/
+
+
+        if(sUrl!= null && util.trim(sUrl).length>0)
+        {
+            if(iSrcType==me.SRC_TYPE_JAVASCRIPT)
+                fnCallback(sUrl,objMainDiv.id);
+            else
+            {
+                me.fnCallback = fnCallback;
+                me.onClkLoadUrl(sUrl,objMainDiv.id);
+            }
+        }
+    };
+
+    /*
+     * This function is used to load the data.
+     * */
+    this.onClkLoadUrl=function(sUrl,sTabpaneId)
+    {
+        var objMainDiv = document.getElementById(sTabpaneId);
+        var iCurrentBtId = objMainDiv.getAttribute("iSelectedBtId");
+        var objDivContent=document.getElementById(sTabpaneId+"content"+iCurrentBtId);
+        //var objDivContent=document.getElementById(me.g_sPrefix+"content"+me.g_iCurrentBtId);
+        if(objDivContent.getAttribute("hasContent")==null) {
+            objDivContent.style.height = '150px';
+
+            function arhLoadUrl(sResponse)
+            {
+                //         alert(sResponse)
+                util.toggleBackground(false);
+                //var objDivContent=document.getElementById(me.g_sPrefix+"content"+sSrcId);
+
+                //var objDivContent=me.getContentDiv();//document.getElementById(me.g_sPrefix+"content"+me.g_iCurrentBtId);
+
+                //if(objDivContent.id==sSrcId)
+                //{
+                //        dvResolution.style.display="";
+                //        document.getElementById(me.g_sPrefix+"content"+(me.g_iCurrentBtId-1)).style.display="none";
+
+                objDivContent.style.height = '';
+                objDivContent.innerHTML = sResponse;
+                objDivContent.setAttribute("hasContent", true);
+                if (me.fnCallback != null)
+                    me.fnCallback();
+                if (typeof window["initAllCombos"] == "function")
+                    initAllCombos = null;
+                loadResources(objDivContent, util.onScriptsLoad);
+                me.fnCallback = null;
+                //}
+            }
+
+            util.toggleBackground(true);
+            con.sendPostRequest(sUrl, null, arhLoadUrl, null, con.RESPONSE_HTML, objDivContent);
+        }
+    };
+
+    this.getContentDiv=function(sTabpaneId)
+    {
+        var objMainDiv = document.getElementById(sTabpaneId);
+        var iCurrentBtId = objMainDiv.getAttribute("iSelectedBtId");
+        return document.getElementById(sTabpaneId+"content"+iCurrentBtId);
+        //return document.getElementById(me.g_sPrefix+"content"+me.g_iCurrentBtId);
+    };
+
+    /*
+     * This function is used to diable the tab.
+     * */
+    this.disableTab=function(sTabpaneId,iTabIndex)
+    {
+        var objMainDiv = document.getElementById(sTabpaneId);
+        var liObj = cross.getChildren(cross.getChildren(objMainDiv)[0])[iTabIndex];
+        //alert(iTabIndex+","+liObj)
+        liObj.setAttribute("disabled",true);
+    };
+
+    /*
+     * This function is used to enable the tab.
+     * */
+    this.enableTab=function(sTabpaneId,iTabIndex)
+    {
+        var objMainDiv = document.getElementById(sTabpaneId);
+        var liObj = cross.getChildren(cross.getChildren(objMainDiv)[0])[iTabIndex];
+        if(liObj.getAttribute("disabled"))
+            liObj.removeAttribute("disabled");
+    };
+
+    /*
+     * This function is used to select the tab.
+     * */
+    this.onSelectTab = function(sTabpaneId,iTabIndex)
+    {
+        var iSelectedBtId,objPrevContentDv,objMainDiv,sPrefix,iCurrentBtId,objCurContentDv,liObj ;
+        objMainDiv = document.getElementById(sTabpaneId);
+
+        liObj = cross.getChildren(cross.getChildren(objMainDiv)[0])[iTabIndex];
+        sPrefix = objMainDiv.id;
+        iSelectedBtId = parseInt(objMainDiv.getAttribute("iSelectedBtId"));
+        objPrevContentDv= objMainDiv.getAttribute("sBtContentObj");
+        var gliObjId = objMainDiv.getAttribute("sBtLiObj");
+        var g_liObj = document.getElementById(gliObjId);
+        if(util.hasClass(liObj,"bPaneBorder"))
+            if(util.hasClass(liObj,"bPaneBorder"))
+            {
+                if(g_liObj == null)
+                {
+                    g_liObj = document.getElementById(liObj.parentNode.childNodes[0].id);
+                }
+                util.removeClass(g_liObj,"bPItemSelected");
+                util.addClass(g_liObj,"bPaneBorder");
+                util.addClass(liObj," bPItemSelected");
+                g_liObj = liObj;
+                objMainDiv.setAttribute("sBtLiObj",g_liObj.id);
+            }
+        var liObjId = liObj.id;
+        iCurrentBtId = liObjId.substring(liObjId.indexOf("[")+1,liObjId.indexOf("]"));
+        objPrevContentDv = document.getElementById(sPrefix+"content"+iSelectedBtId);
+        objCurContentDv= document.getElementById(sPrefix+"content"+iCurrentBtId);
+
+        if(iSelectedBtId != iCurrentBtId)
+        {
+            objCurContentDv.style.display = '';
+            objPrevContentDv.style.display = 'none';
+        }
+        me.g_iCurrentBtId = iCurrentBtId;
+        me.g_sPrefix = sPrefix;
+        objMainDiv.setAttribute("iSelectedBtId",iCurrentBtId);
+        objMainDiv.setAttribute("sBtContentObj",objCurContentDv.id);
+    };
+
+    //returns selected Button Index
+    this.getSelectedIndex=function(sButtonpaneId)
+    {
+        var objButtonpane=document.getElementById(sButtonpaneId);
+        return objButtonpane.getAttribute("iselectedbtid");
+    };
+};

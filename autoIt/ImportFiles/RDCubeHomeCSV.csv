@@ -1,0 +1,357 @@
+﻿,,,Testing 22
+,,,CUBE RD
+,,,[As on date 11/03/2026]
+Particulars,Item.Name,Quantity,Rate,Gross,Voucher name
+1,,,,,
+   21/11/2020,RMA1,2.00,3.00,6.00,Delivery Notes
+   05/01/2023,item1,10.00,3.60,36.00,New SI
+   18/04/2023,item2,1.00,8.00,8.00,Material Receipt Notes
+   19/04/2023,RMA1,1.00,6.00,6.00,Purchases Returns
+   20/04/2023,batch1,57.50,6.00,172.50,Purchases Vouchers
+   27/04/2023,item1,20.00,3.00,60.00,Sales Invoices
+   25/05/2023,RMA1,,6.00,,Stock Transfers
+   05/09/2023,ZARA-TOP,199.00,9.00,1791.00,New Sales Invoice
+   26/09/2023,item1,5.00,5.00,12.00,New PR
+   26/12/2023,item2,10.00,11.00,1.00,Sales Returns
+2,,,,,
+   10/02/2023,item3,15.00,3.00,45.00,New SI
+   10/04/2023,RMA1,1.00,3.00,3.00,Purchases Returns
+   18/04/2023,item4,1.00,2.00,2.00,Material Receipt Notes
+   04/05/2023,item4,15.00,9.00,68.00,Sales Invoices
+   25/05/2023,RMA1,,6.00,,Stock Transfers
+   17/07/2023,RMA1,1.00,2.00,2.00,Delivery Notes
+   26/12/2023,RMA3,,11.00,1.00,Shortages in Stock
+   27/12/2023,item2,15.00,,,Sales Returns
+3,,,,,
+   18/04/2023,item4,1.00,2.00,2.00,Material Receipt Notes
+   20/04/2023,item2,15.00,9.00,135.00,New SI
+   21/04/2023,item3,5.00,3.00,15.00,Purchases Returns
+   04/05/2023,item2,2.00,6.00,12.00,Sales Invoices
+   17/07/2023,RMA1,1.00,2.00,2.00,Delivery Notes
+   26/09/2023,item3,15.00,5.00,40.00,New Pv
+   27/12/2023,item3,25.00,11.00,140.00,New PR
+   22/01/2024,item3,5.00,6.00,30.00,Sales Returns
+4,,,,,
+   18/04/2023,item4,1.00,2.00,2.00,Material Receipt Notes
+   04/05/2023,item3,4.00,5.00,20.00,Sales Invoices
+   25/05/2023,RMA1,,6.00,,Stock Transfers
+   31/05/2023,item2,35.00,9.00,165.00,Purchases Returns
+   18/07/2023,item4,9.00,8.00,72.00,New SI
+   27/07/2023,RMA1,1.00,5.00,5.00,Delivery Notes
+   26/09/2023,item2,25.00,5.00,60.00,New Pv
+5,,,,,
+   18/04/2023,item2,1.00,5.00,5.00,Material Receipt Notes
+   24/04/2023,item1,10.00,3.00,30.00,Sales Invoices
+   14/06/2023,item1,57.50,13.00,522.50,Purchases Returns
+   17/09/2023,item1,10.00,3.60,36.00,New SI
+   26/09/2023,item3,15.00,6.00,45.00,New Pv
+   08/11/2023,RMA2,1.00,6.00,6.00,Delivery Notes
+6,,,,,
+   18/04/2023,item4,1.00,2.00,2.00,Material Receipt Notes
+   02/05/2023,item4,22.00,13.29,143.35,Sales Invoices
+   28/08/2023,item2,10.00,6.00,60.00,Purchases Returns
+   07/11/2023,RMA3,2.00,6.00,12.00,New Pv
+   16/11/2023,RMA2,1.00,5.00,5.00,Delivery Notes
+7,,,,,
+   21/11/2020,RMA1,1.00,5.00,5.00,Delivery Notes
+   18/04/2023,item4,1.00,2.00,2.00,Material Receipt Notes
+   01/05/2023,item3,6.00,6.00,36.00,Sales Invoices
+   13/06/2023,RMA1,,4.00,,Stock Transfers
+   08/11/2023,item3,13.00,4.00,52.00,Purchases Returns
+   20/11/2023,item1,5.00,8.00,40.00,New Pv
+8,,,,,
+   21/11/2020,RMA1,2.00,6.00,12.00,Delivery Notes
+   18/04/2023,item1,1.00,3.00,3.00,Material Receipt Notes
+   01/05/2023,item4,2.00,8.00,16.00,Sales Invoices
+   31/08/2023,RMA1,,10.00,,Stock Transfers
+   08/11/2023,item2,10.00,6.00,60.00,Purchases Returns
+   20/11/2023,item2,4.00,1.00,4.00,New Pv
+9,,,,,
+   18/04/2023,item4,1.00,2.00,2.00,Material Receipt Notes
+   04/05/2023,item3,5.00,6.00,30.00,Sales Invoices
+   31/08/2023,RMA1,,16.00,,Stock Transfers
+   21/11/2023,RMA1,4.00,28.00,34.00,Purchases Returns
+   29/11/2023,RMA3,5.00,8.00,40.00,Delivery Notes
+   27/12/2023,item3,25.00,11.00,140.00,New Pv
+10,,,,,
+   18/04/2023,item2,1.00,5.00,5.00,Material Receipt Notes
+   05/05/2023,item1,10.00,5.00,50.00,Sales Invoices
+   15/09/2023,RMA1,,4.00,,Stock Transfers
+   01/12/2023,RMA2,1.00,9.00,9.00,Delivery Notes
+   27/12/2023,item3,25.00,11.00,140.00,New Pv
+11,,,,,
+   18/04/2023,item2,1.00,4.00,4.00,Material Receipt Notes
+   01/06/2023,item2,25.00,,,Sales Invoices
+   15/09/2023,RMA1,,12.00,,Stock Transfers
+   21/12/2023,item1,10.00,5.00,50.00,New Pv
+12,,,,,
+   18/04/2023,item4,1.00,7.00,7.00,Material Receipt Notes
+   20/06/2023,item4,16.00,11.89,86.90,Sales Invoices
+   26/12/2023,RMA3,1.00,9.00,9.00,Delivery Notes
+13,,,,,
+   18/04/2023,item3,1.00,6.00,6.00,Material Receipt Notes
+   20/06/2023,item1,5.00,3.00,15.00,Sales Invoices
+   26/10/2023,RMA1,,12.00,,Stock Transfers
+   27/12/2023,RMA1,1.00,6.00,6.00,Delivery Notes
+14,,,,,
+   18/04/2023,item2,1.00,4.00,4.00,Material Receipt Notes
+   19/06/2023,item1,10.00,3.00,30.00,Sales Invoices
+   26/10/2023,RMA1,,12.00,,Stock Transfers
+   27/12/2023,RMA3,1.00,2.00,2.00,Delivery Notes
+15,,,,,
+   18/04/2023,item1,1.00,32.00,32.00,Material Receipt Notes
+   02/05/2023,item2,2.00,9.00,18.00,Sales Invoices
+   28/12/2023,RMA1,1.00,5.00,5.00,Delivery Notes
+16,,,,,
+   18/04/2023,item3,1.00,4.00,4.00,Material Receipt Notes
+   16/06/2023,item3,8.00,22.00,176.00,Sales Invoices
+   28/12/2023,RMA1,1.00,5.00,5.00,Delivery Notes
+17,,,,,
+   29/05/2023,item1,5.00,10.00,50.00,Material Receipt Notes
+   16/06/2023,item4,5.00,12.00,60.00,Sales Invoices
+   29/12/2023,RMA1,1.00,3.00,3.00,Delivery Notes
+18,,,,,
+   03/07/2023,item1,5.00,122.00,610.00,Sales Invoices
+   06/11/2023,RMA1,,12.00,,Stock Transfers
+19,,,,,
+   29/05/2023,item2,2.00,16.00,16.00,Material Receipt Notes
+   07/08/2023,item2,10.00,66.00,660.00,Sales Invoices
+   06/11/2023,RMA1,,12.00,,Stock Transfers
+20,,,,,
+   03/07/2023,item1,5.00,4.00,20.00,Material Receipt Notes
+   25/09/2023,item1,5.00,3.00,15.00,Sales Invoices
+21,,,,,
+   23/08/2023,item2,57.50,25.00,612.50,Material Receipt Notes
+   25/09/2023,item1,7.00,6.00,21.00,Sales Invoices
+22,,,,,
+   25/09/2023,item3,9.00,15.00,135.00,Material Receipt Notes
+   30/10/2023,item1,63.00,32.00,1099.00,Sales Invoices
+23,,,,,
+   06/11/2023,item3,10.00,10.00,100.00,Sales Invoices
+   29/11/2023,RMA3,,10.00,,Stock Transfers
+   30/11/2023,RMA3,5.00,8.00,40.00,Material Receipt Notes
+24,,,,,
+   07/11/2023,RMA1,2.00,8.00,8.00,Sales Invoices
+   01/12/2023,RMA2,1.00,9.00,9.00,Material Receipt Notes
+25,,,,,
+   07/11/2023,RMA2,3.00,11.00,17.00,Sales Invoices
+   29/11/2023,RMA3,,10.00,,Stock Transfers
+   04/12/2023,item1,5.00,10.00,50.00,Material Receipt Notes
+26,,,,,
+   08/11/2023,item4,10.00,5.00,50.00,Sales Invoices
+   29/11/2023,RMA3,,10.00,,Stock Transfers
+   01/12/2023,item2,2.50,6.00,15.00,Material Receipt Notes
+27,,,,,
+   08/11/2023,RMA1,4.00,11.00,22.00,Sales Invoices
+   29/11/2023,RMA3,,10.00,,Stock Transfers
+   04/12/2023,item1,10.00,15.00,75.00,Material Receipt Notes
+28,,,,,
+   16/11/2023,RMA1,3.00,,,Sales Invoices
+   26/12/2023,item2,16.00,6.00,48.00,Material Receipt Notes
+29,,,,,
+   30/10/2023,item1,15.00,,,Sales Invoices
+   29/11/2023,RMA3,,10.00,,Stock Transfers
+   26/12/2023,item1,12.00,16.00,92.00,Material Receipt Notes
+30,,,,,
+   30/10/2023,item1,50.00,,,Sales Invoices
+   26/12/2023,item3,30.00,9.00,150.00,Material Receipt Notes
+31,,,,,
+   30/10/2023,item1,20.00,,,Sales Invoices
+   29/11/2023,RMA3,,10.00,,Stock Transfers
+   26/12/2023,item4,60.00,24.00,350.00,Material Receipt Notes
+32,,,,,
+   01/06/2023,item1,25.00,,,Sales Invoices
+   26/12/2023,item1,10.00,10.00,100.00,Material Receipt Notes
+33,,,,,
+   21/11/2023,item1,9.00,,,Sales Invoices
+   29/11/2023,RMA3,,10.00,,Stock Transfers
+   26/12/2023,item1,10.00,10.00,100.00,Material Receipt Notes
+34,,,,,
+   30/10/2023,item1,20.00,,,Sales Invoices
+   26/12/2023,RMA3,11.00,24.00,135.00,Material Receipt Notes
+35,,,,,
+   29/11/2023,RMA3,,10.00,,Stock Transfers
+   04/12/2023,item3,18.00,,,Sales Invoices
+   27/12/2023,item3,10.00,5.00,50.00,Material Receipt Notes
+36,,,,,
+   04/12/2023,RMA1,,10.00,,Stock Transfers
+   12/12/2023,RMA3,6.00,12.00,60.00,Sales Invoices
+   28/12/2023,RMA2,1001.00,14.00,6008.00,Material Receipt Notes
+37,,,,,
+   18/12/2023,item4,14.00,,,Sales Invoices
+38,,,,,
+   04/12/2023,RMA1,,10.00,,Stock Transfers
+   26/12/2023,item4,30.00,,,Sales Invoices
+39,,,,,
+   27/12/2023,item1,10.00,,,Sales Invoices
+40,,,,,
+   27/12/2023,item2,1.00,,,Sales Invoices
+41,,,,,
+   04/12/2023,RMA1,,12.00,,Stock Transfers
+   27/12/2023,item2,1.00,,,Sales Invoices
+42,,,,,
+   01/01/2024,item2,5.00,,,Sales Invoices
+43,,,,,
+   01/01/2024,item3,5.00,,,Sales Invoices
+44,,,,,
+   04/12/2023,RMA1,,12.00,,Stock Transfers
+   20/01/2024,item2,4.00,,,Sales Invoices
+45,,,,,
+   22/01/2024,item3,10.00,,,Sales Invoices
+46,,,,,
+   27/12/2023,item3,10.00,15.00,75.00,Sales Invoices
+47,,,,,
+   16/06/2023,item4,14.77,34.00,220.84,Sales Invoices
+48,,,,,
+   04/12/2023,RMA1,,12.00,,Stock Transfers
+   27/12/2023,item2,2.00,6.00,12.00,Sales Invoices
+49,,,,,
+   20/11/2023,item2,5.00,8.00,19.00,Sales Invoices
+50,,,,,
+   04/12/2023,RMA1,,18.00,,Stock Transfers
+51,,,,,
+   04/12/2023,RMA1,,18.00,,Stock Transfers
+53,,,,,
+   04/12/2023,RMA1,,18.00,,Stock Transfers
+56,,,,,
+   18/12/2023,RMA2,,6.00,,Stock Transfers
+57,,,,,
+   18/12/2023,RMA2,,6.00,,Stock Transfers
+60,,,,,
+   26/12/2023,RMA2,,12.00,,Stock Transfers
+61,,,,,
+   26/12/2023,RMA2,,12.00,,Stock Transfers
+64,,,,,
+   26/12/2023,RMA2,,12.00,,Stock Transfers
+66,,,,,
+   27/12/2023,RMA1,,10.00,,Stock Transfers
+67,,,,,
+   27/12/2023,RMA1,,12.00,,Stock Transfers
+69,,,,,
+   27/12/2023,RMA1,,12.00,,Stock Transfers
+72,,,,,
+   28/12/2023,RMA2,,6.00,,Stock Transfers
+74,,,,,
+   29/12/2023,RMA2,,4.00,,Stock Transfers
+76,,,,,
+   19/01/2024,RMA1,,6.00,,Stock Transfers
+77,,,,,
+   19/01/2024,RMA1,,6.00,,Stock Transfers
+79,,,,,
+   19/01/2024,RMA1,,6.00,,Stock Transfers
+81,,,,,
+   24/01/2024,RMA1,,10.00,,Stock Transfers
+85,,,,,
+   24/01/2024,RMA1,,10.00,,Stock Transfers
+87,,,,,
+   08/02/2024,RMA2,,10.00,,Stock Transfers
+88,,,,,
+   08/02/2024,RMA2,,10.00,,Stock Transfers
+89,,,,,
+   08/02/2024,RMA2,,10.00,,Stock Transfers
+91,,,,,
+   08/02/2024,RMA2,,10.00,,Stock Transfers
+94,,,,,
+   08/02/2024,RMA2,,10.00,,Stock Transfers
+Focus_1,,,,,
+   20/11/2020,RMA1,2.00,3.00,6.00,Opening Stocks
+   17/04/2023,item2,15.00,15.00,105.00,Purchases Vouchers
+Focus_2,,,,,
+   20/11/2020,RMA1,8.00,9.00,33.00,Opening Stocks
+   17/04/2023,item3,27.00,11.00,156.00,Purchases Vouchers
+Focus_3,,,,,
+   20/11/2020,RMA1,12.00,6.00,72.00,Opening Stocks
+   17/04/2023,item1,18.00,7.00,62.00,Purchases Vouchers
+Focus_4,,,,,
+   20/11/2020,RMA1,10.00,6.00,60.00,Opening Stocks
+   10/04/2023,RMA1,1.00,3.00,3.00,Purchases Vouchers
+Focus_5,,,,,
+   20/11/2020,RMA2,1.00,3.00,3.00,Opening Stocks
+   21/04/2023,item3,5.00,3.00,15.00,Purchases Vouchers
+Focus_6,,,,,
+   20/11/2020,item1,10.00,5.00,50.00,Opening Stocks
+   04/05/2023,item1,3.00,4.00,12.00,Purchases Vouchers
+Focus_7,,,,,
+   20/11/2020,RMA1,18.00,7.00,41.00,Opening Stocks
+   04/05/2023,item1,20.00,16.00,114.00,Purchases Vouchers
+Focus_8,,,,,
+   20/11/2020,RMA2,10.00,3.00,30.00,Opening Stocks
+   31/05/2023,item2,35.00,9.00,165.00,Purchases Vouchers
+Focus_9,,,,,
+   20/11/2020,RMA2,10.00,3.00,30.00,Opening Stocks
+   14/06/2023,item2,57.50,13.00,522.50,Purchases Vouchers
+Focus_10,,,,,
+   20/11/2020,RMA2,5.00,6.00,30.00,Opening Stocks
+   21/06/2023,item1,10.00,10.00,100.00,Purchases Vouchers
+Focus_11,,,,,
+   20/11/2020,RMA2,6.00,13.00,26.00,Opening Stocks
+   21/06/2023,item1,10.00,10.00,100.00,Purchases Vouchers
+Focus_12,,,,,
+   20/11/2020,RMA2,2.00,3.00,6.00,Opening Stocks
+   18/07/2023,item3,45.00,39.00,565.00,Purchases Vouchers
+Focus_13,,,,,
+   20/11/2020,RMA1,1.00,5.00,5.00,Opening Stocks
+   18/07/2023,item3,45.00,39.00,565.00,Purchases Vouchers
+Focus_14,,,,,
+   18/08/2023,item3,20.00,19.00,107.00,Purchases Vouchers
+Focus_15,,,,,
+   23/08/2023,item2,57.50,25.00,612.50,Purchases Vouchers
+Focus_16,,,,,
+   20/11/2020,RMA3,1013.00,55.00,45065.00,Opening Stocks
+   28/08/2023,item2,25.00,9.00,105.00,Purchases Vouchers
+Focus_17,,,,,
+   20/11/2020,RMA3,6.00,12.00,36.00,Opening Stocks
+   28/08/2023,item3,21.00,9.00,90.00,Purchases Vouchers
+Focus_18,,,,,
+   20/11/2020,RMA2,6.00,9.00,21.00,Opening Stocks
+   28/08/2023,item3,21.00,25.00,255.00,Purchases Vouchers
+Focus_19,,,,,
+   20/11/2020,RMA3,1.00,5.00,5.00,Opening Stocks
+   23/08/2023,item2,17.50,25.00,212.50,Purchases Vouchers
+Focus_20,,,,,
+   20/11/2020,RMA1,1.00,5.00,5.00,Opening Stocks
+   29/08/2023,item3,20.00,21.00,121.00,Purchases Vouchers
+Focus_21,,,,,
+   20/11/2020,RMA3,1.00,6.00,6.00,Opening Stocks
+   20/10/2022,item2,35.00,9.00,150.00,Purchases Vouchers
+Focus_22,,,,,
+   20/11/2020,RMA3,11.00,8.00,35.00,Opening Stocks
+   28/08/2023,item1,15.00,8.00,50.00,Purchases Vouchers
+Focus_23,,,,,
+   20/11/2020,RMA1,1.00,3.00,3.00,Opening Stocks
+   07/11/2023,RMA2,4.00,5.00,10.00,Purchases Vouchers
+Focus_24,,,,,
+   20/11/2020,RMA1,1011.00,10.00,2053.00,Opening Stocks
+   08/11/2023,item1,40.00,13.00,178.00,Purchases Vouchers
+Focus_25,,,,,
+   20/11/2020,RMA3,1.00,5.00,5.00,Opening Stocks
+   08/11/2023,RMA3,12.00,17.00,68.00,Purchases Vouchers
+Focus_26,,,,,
+   20/11/2020,RMA1,13.00,15.00,75.00,Opening Stocks
+   17/11/2023,item3,40.00,19.00,247.00,Purchases Vouchers
+Focus_27,,,,,
+   20/11/2020,RMA1,1.00,3.00,3.00,Opening Stocks
+   21/11/2023,RMA1,5.00,6.00,30.00,Purchases Vouchers
+Focus_28,,,,,
+   20/11/2020,RMA3,70.00,9.00,255.00,Opening Stocks
+   04/12/2023,item2,30.00,15.00,200.00,Purchases Vouchers
+Focus_29,,,,,
+   20/11/2020,RMA3,23.00,47.00,537.00,Opening Stocks
+   05/12/2023,item3,,30.00,,Purchases Vouchers
+Focus_30,,,,,
+   20/11/2020,RMA3,8.00,61.00,295.00,Opening Stocks
+   22/12/2023,item3,40.00,21.00,273.00,Purchases Vouchers
+Focus_31,,,,,
+   26/12/2023,item1,,32.00,,Purchases Vouchers
+Focus_32,,,,,
+   26/12/2023,item4,60.00,24.00,350.00,Purchases Vouchers
+Focus_33,,,,,
+   27/12/2023,item2,,16.00,,Purchases Returns
+Focus_34,,,,,
+   04/01/2024,item2,20.00,3.00,60.00,Purchases Returns
+   11/01/2024,RMA1,1.00,,,Purchases Vouchers
+Focus_35,,,,,
+   11/01/2024,RMA1,1.00,8.00,8.00,Purchases Returns
+Focus_36,,,,,
+   11/01/2024,RMA1,1.00,8.00,8.00,Purchases Returns
+Grand Total,,3476.73,2456.38,55990.91,

@@ -1,0 +1,1221 @@
+
+var tabmenu = new function()
+{
+
+    //    var divX,divY;
+
+    this.iLastTab=0;
+    this.varId=null;
+    this.varIframe=null;
+    this.varMincount=null;
+    this.prevSelectedtab=-1;
+    this.iListenerId=0;
+    this.sEvtSrc=null;
+    var me=this;
+    //app.registerInstance("tabmenu",this);
+    /*var timeout         = 100;
+     var closetimer		= 0;
+     var ddmenuitem      = 0;
+     */
+    this.swap=function(popupTD,tabTD,isThemewise)
+    {
+        //                    alert(popupTD.attr("className")+"   "+tabTD.html())
+        var chVal=0;
+        if(isThemewise){
+            chVal=1;}
+        else
+            chVal=0;
+        var popupDiv = $(popupTD.children()[0]);
+        var menucDiv = $(tabTD.children()[chVal]);
+        var swapDiv = $(menucDiv.children()[0]);
+        menucDiv.append(popupDiv.remove());
+        popupTD.append(swapDiv.remove());
+
+        return this;
+    };
+
+    this.sendAttributes=function(sId,sFrameId,iMinCount,isThemewise,sSelectedTabId)
+    {
+        var iSelectdTab=0;
+        var sTdSwapId="";
+        this.varId=sId;
+        this.varIframe=sFrameId;
+        this.varMincount=iMinCount;
+
+       if(sSelectedTabId!=null)
+       {
+           if(document.getElementById(sSelectedTabId+"tablink")!=null)
+           {
+               var objspanId=document.getElementById(sSelectedTabId+"tablink");
+               iSelectdTab=objspanId.getAttribute("tabcount");
+
+               if(iSelectdTab>=iMinCount)
+               {
+                   sTdSwapId=sSelectedTabId+"tab"+iSelectdTab;
+                   var objTd=document.getElementById(sTdSwapId);
+                   tabmenu.onClkPopUpTD(objTd,iSelectdTab,isThemewise);
+                   iSelectdTab=iMinCount-1;
+               }
+               /*if(sSelectedTabId!="tbHome")
+               {
+                    cross.callFunction(window,eval(objspanId.onclick));
+               }*/
+           }
+       }
+        me.prevSelectedtab=iSelectdTab;
+    };
+
+
+    var iTimeout,objPopupDiv;
+
+    this.hideThisDiv=function(div,evt)
+    {
+        //        alert(div.innerHTML)
+        evt=evt?evt:window.event;
+        window.status="mouseout"+evt.srcElement.nodeName;
+        if(evt.srcElement.nodeName!="TABLE")
+            return false;
+
+        objPopupDiv=div;
+        iTimeout = setTimeout('this.createObjectCallback(this, this.hideThis)',5000);
+        //    iTimeout=setTimeout("hideThis()",1000);
+
+        this.hideThis=function()
+        {
+            if(objPopupDiv!=null)
+            {
+                alert(1);
+                clearTimeout(iTimeout);
+                objPopupDiv.style.display='none';
+                objPopupDiv=null;
+            }
+        };
+        return false;
+    };
+
+    this.createObjectCallback=function(obj, fn, arguments)
+    {
+        return function()
+        {
+            //        alert("newargs1  ")
+            var newargs = [arguments];
+            for (var i = 0; i < arguments.length; i++)
+                newargs.push(arguments[i]);
+            //        fn.apply(obj, arguments);
+        };
+    };
+
+    this.setMenuSelection=function(spanId,tabcount,e)
+    {
+        e=cross.getEvent(e);
+        if((cross.isIE() && ( e!=undefined &&  (e.button==4) ||e.button==1)))//ignoring mouse scrollwheelclick
+        {}
+        else
+        {
+        var objspanId=document.getElementById(spanId+"tablink");
+        var isThemewise=objspanId.getAttribute("themeswise");
+        var sTdSwapId="";
+        var iSelTabCount=-1;
+        if(!tabcount)
+        {
+            iSelTabCount=0;
+            tabcount=objspanId.getAttribute("tabcount");
+        }
+//        alert(tabcount)
+        if(iSelTabCount==0 && tabcount>=me.varMincount)// tabcount ==0 whn called maually fro tab selection
+        {
+//            alert(objspanId.getAttribute("tabcount"))
+            sTdSwapId=spanId+"tab"+tabcount;
+//            alert(sTdSwapId)
+            var objTd=document.getElementById(sTdSwapId);
+            objspanId.setAttribute("tabcount",me.varMincount-1);
+//            alert(objspanId.getAttribute("tabcount"))
+            tabmenu.onClkPopUpTD(objTd,tabcount,isThemewise);
+            me.prevSelectedtab=me.varMincount-1;
+        }
+        if(isThemewise)
+            me.setMenuSelectionthm2(objspanId,tabcount);
+        else{
+            me.setMenuSelectionthm1(objspanId,tabcount);
+        }
+        if(tabcount>=me.varMincount)
+            objspanId.setAttribute("tabcount",me.prevSelectedtab)
+        //        }
+        }
+    };
+    this.setMenuSelectionthm2 = function(spanId,tabcount)
+    {
+        me.setMoreTab(false);
+        var objDiv1,objDiv;
+        var tabTds=$("#"+me.varId+"tblmenu > li");
+        objDiv1 = $(spanId).parent()[0];
+        objDiv = $(objDiv1).parent()[0];
+        var tabstyleTD = $(objDiv).parent()[0];
+//        alert("prevTab=="+me.prevSelectedtab+"tabCOunt=="+tabcount)
+        var tabTdChildDiv=$(tabTds[me.prevSelectedtab]).children()[1];
+        var tabDivChild=$(tabTdChildDiv).children()[0];
+        var prevSpan=$(tabDivChild).children()[0];
+
+        if(me.prevSelectedtab==0)
+            $(tabTds[me.prevSelectedtab]).removeClass('homeHover').addClass('home');
+        else
+            $(tabTds[me.prevSelectedtab]).removeClass('activeTab').addClass('deactiveTab');
+
+        $(prevSpan).removeClass("magLinkmOver").addClass("magLinkmOut");
+        $(tabTdChildDiv).removeClass('activeMenu').addClass('deactiveMenu');
+        $(tabDivChild).removeClass('actvmagDiv').addClass('deactvmagDiv');
+        if(tabcount>=me.varMincount)
+            tabcount=me.varMincount-1;
+        me.prevSelectedtab=tabcount;
+        var divsrc=$(objDiv).children()[0];
+        if(tabcount==0)
+            $(tabstyleTD).removeClass('home').addClass('homeHover');
+        else
+            $(tabstyleTD).removeClass('deactiveTab').addClass('activeTab');
+        $(objDiv).removeClass('deactiveMenu').addClass('activeMenu');
+        $(divsrc).removeClass('deactvmagDiv').addClass('actvmagDiv');
+    };
+
+    this.setMenuSelectionthm1 = function(spanId,tabCount)
+    {
+        var objDiv1,objDiv;
+        var tabTds=$("#"+me.varId+"tblmenu > li");
+        objDiv1 = $(spanId).parent()[0];
+        objDiv = $(objDiv1).parent()[0];
+        var tabstyleTD = $(objDiv).parent()[0];
+        var tabTdChildDiv=$(tabTds[me.prevSelectedtab]).children()[0];
+        var tabDivChild=$(tabTdChildDiv).children()[0];
+
+        $(tabTds[me.prevSelectedtab]).removeClass('activeTab').addClass('deactiveTab');
+        $(tabTdChildDiv).removeClass('activeMenu').addClass('deactiveMenu');
+        $(tabDivChild).removeClass('actvmagDiv').addClass('deactvmagDiv');
+        me.prevSelectedtab=tabCount;
+
+
+        var divsrc=$(objDiv).children()[0];
+        $(tabstyleTD).removeClass('deactiveTab').addClass('activeTab');
+        $(objDiv).removeClass('deactiveMenu').addClass('activeMenu');
+        $(divsrc).removeClass('deactvmagDiv').addClass('actvmagDiv');
+    };
+
+    var oldCellIndex=0;
+    this.loadSrcIntoIFrame=function(objSpan,iVal,tabcount,isThemewise,e)
+    {
+        e=cross.getEvent(e);
+        if((cross.isIE() && ( e!=undefined &&  (e.button==4) ||e.button==1)))//ignoring mouse scrollwheelclick
+        {}
+        else
+        {
+        if(tabcount<me.varMincount || me.iLastTab!=0)
+        {
+            if(iVal==2)
+                objSpan=document.getElementById(objSpan+"tablink");
+            else if(iVal==1)
+                tabcount=me.iLastTab;
+            if(isThemewise)
+                me.setMenuSelectionthm2(objSpan,tabcount);
+            else
+                me.setMenuSelectionthm1(objSpan,tabcount);
+        }
+        }
+    };
+
+
+
+
+    this.onClkArrwImg=function(objSpan,e)
+    {
+        var sPosition=cross.getPosition(objSpan);
+        //            alert("else sPosition: "+sPosition)
+        var popDiv=document.getElementById(me.varId+"divMenu");
+
+        if(popDiv.style.display=="" || popDiv.style.display=="none")
+            $("#"+me.varId+"divMenu").css({left:sPosition[0]-30,top:sPosition[1]+24}).show();
+        else
+            $("#"+me.varId+"divMenu").hide();
+        me.setMoreTab(true);
+        me.sEvtSrc = cross.getSrcElement(e);
+        if(me.iListenerId>=0)
+            cross.unregisterEventListener(me.iListenerId);
+        me.iListenerId=cross.registerEventListener(cross.EVENT_ONCLICK,me.hideMenuDiv,[e]);
+
+    };
+    this.hideMenuDiv = function(e)
+    {
+        if(cross.getSrcElement(e).className!="disable")
+        {
+            if(me.sEvtSrc)
+            {
+                me.sEvtSrc=null;
+                return;
+            }
+
+            //        alert("hiding "+me.iListenerId);
+            me.setMoreTab(false);
+            $("#"+me.varId+"divMenu").hide();
+            if(me.iListenerId>=0)
+                cross.unregisterEventListener(me.iListenerId);
+        }
+    };
+    this.setMoreTab = function(bActive)
+    {
+        var objDiv1,objDiv,tabTds,tabstyleTD;
+        var objMoreSpan=document.getElementById("spMore");
+        objDiv1 = $(objMoreSpan).parent()[0];
+        objDiv = $(objDiv1).parent()[0];
+        tabstyleTD = $(objDiv).parent()[0];
+         if(bActive)
+         {
+            $(objDiv1).removeClass('deactvmagDiv').addClass('actvmagDiv');
+            $(objDiv).removeClass('deactiveMenu').addClass('activeMenu');
+            $(tabstyleTD).removeClass('more').addClass('moreact');
+         }
+        else
+         {
+            $(objDiv1).removeClass('actvmagDiv').addClass('deactvmagDiv');
+            $(objDiv).removeClass('activeMenu').addClass('deactiveMenu');
+            $(tabstyleTD).removeClass('moreact').addClass('more');
+         }
+    };
+
+
+    this.onClkPopUpTD=function(objTd,tabCount,isThemewise,e,isSelection)
+    {         
+        e=cross.getEvent(e);
+        if((cross.isIE() && ( e!=undefined &&  (e.button==4) ||e.button==1)))//ignoring mouse scrollwheelclick
+        {$("#"+me.varId+"divMenu").hide();}
+        else
+        {
+            var ul = $("#"+me.varId+"tblmenu > li:last");
+            var tabTds = ul.prev("li");
+            //        alert(tabTds)
+            var objSpan,objDiv1,objDiv2,aTag;
+            var dvBeofreSwap = $(objTd).children()[0];
+            var spanBeforeSwap = $(dvBeofreSwap).children()[0];
+            //alert(spanBeforeSwap)
+            var iBeofreTabCnt= spanBeforeSwap.getAttribute("tabcount");
+            me.setMoreTab(false);
+            me.iLastTab=tabmenu.varMincount-1;
+            //                                   alert(tabTds.length+" , "+tabTds.eq(tabmenu.iLastTab).html())
+            //objTd.childNodes[0].childNodes[1].onclick
+            if(isSelection==undefined)
+                me.swap($(objTd),tabTds,isThemewise);
+            me.iLastTab=(me.varMincount)-1;
+            if(isThemewise)
+                objDiv1=$(tabTds).children()[1];
+            else
+                objDiv1=$(tabTds).children()[0];
+
+            objDiv2=$(objDiv1).children()[0];
+            $(objDiv2).removeClass("magMoverDiv");
+            objSpan=$(objDiv2).children()[0];
+            aTag=$(objSpan).children()[0];
+            //        alert(objTd.childNodes[0].childNodes[1].onclick)
+
+            objSpan.setAttribute("tabcount",me.iLastTab);
+            me.loadSrcIntoIFrame(objSpan,1,me.iLastTab,isThemewise,e);
+
+            $(objTd).removeClass("activeMenu").addClass("mouseOut");
+            var popUpTr=$(objTd).parent()[0];
+            //        if($(popUpTr).hasClassName("activeTab"))
+            $(popUpTr).removeClass("activeTab");
+            $(popUpTr).removeClass("homeHover");
+
+            var popupDiv1 = $(objTd).children()[0];
+            var span = $(popupDiv1).children()[0];
+            /*alert("after="+iBeofreTabCnt);
+             alert("attr="+span.getAttribute("tabcount"));*/
+            var sId=span.id;
+            var iModId = sId.substring(0,sId.indexOf("tablink"));
+            objTd.id=iModId+"tab"+iBeofreTabCnt;
+            span.setAttribute("tabcount",iBeofreTabCnt);
+            var popATag = $(span).children()[0];
+            //        aTag.href=span.getAttribute("src");
+            //        popATag.href="#";
+            $(popupDiv1).removeClass("deactvmagDiv").addClass("magMoverDiv");
+            $(popupDiv1).removeClass("actvmagDiv").addClass("magMoverDiv");
+            $(span).removeClass("magLinkmOver").addClass("magLinkmOut");
+
+            $("#"+me.varId+"divMenu").hide();
+        }
+    };
+
+    /* this.showMagMenuSrc=function(objThis,event)     // mag menu funtion(not Used)
+     {
+     //     alert(objThis.getAttribute('src'));
+     this.stopEventPropagation(event);
+     document.getElementById(this.varIframe).src=objThis.getAttribute('src');
+     };*/
+
+    /**
+     * stops the event propagations once an event attached to formElement
+     * @param event
+     */
+    this.stopEventPropagation=function(event)
+    {
+        if (event.preventDefault)
+        {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        else
+        {
+            event.returnValue = false;
+            event.cancelBubble = true;
+        }
+    };
+
+
+
+    var timeout=100,closetimer=0,ddmenuitem=0,swapdiv=null;
+
+    this.mopen=function(thisObj,isThemeswise,iTabCount)
+    {
+        this.mcancelclosetime();
+        if(isThemeswise=='true')
+        {
+            me.mopenthms2(thisObj,isThemeswise,iTabCount);
+        }
+        else
+            me.mopenthms1(thisObj,isThemeswise,iTabCount);
+    };
+
+    this.mopenthms1=function(thisObj,isThemeswise,iTabCount)
+    {
+        if(ddmenuitem)
+        {
+            ddmenuitem.css({display:"none"});
+        }
+        var mainDiv = $(thisObj).children()[0];
+
+        var popupDiv = $($(mainDiv).children()[0]).children()[1];
+        swapdiv=$(mainDiv).children()[0];
+        ddmenuitem=$(popupDiv);
+        ddmenuitem.css({display:"block"});
+    };
+
+    this.mopenthms2=function(thisObj,isThemeswise,iTabCount)
+    {
+        var mainDiv;
+        if(ddmenuitem)
+        {
+            ddmenuitem.css({display:"none"});
+        }
+        if(iTabCount==0)
+            thisObj.className="homeHover";
+        else
+            thisObj.className="activeTab";
+
+        var img=$(thisObj).children()[0];
+        if(iTabCount==0)
+            img.style.display="none";
+        else
+            img.style.display="block";
+        if(isThemeswise){
+            mainDiv = $(thisObj).children()[1];
+            mainDiv.className="activeMenu";
+        }
+        var popupDiv = $($(mainDiv).children()[0]).children()[1];
+        swapdiv=$(mainDiv).children()[0];
+        ddmenuitem=$(popupDiv);
+        ddmenuitem.css({display:"block"});
+    };
+
+    this.mclosetime=function(objthis,isThemeswise,iTabCount)
+    {
+
+        if(isThemeswise)
+        {
+            me.mclosetimethms(objthis,isThemeswise,iTabCount);
+        }
+
+        closetimer=window.setTimeout(this.mclose,timeout);
+    };
+
+    this.mclosetimethms=function(objthis,isThemeswise,iTabCount)
+    {
+        var mainDiv;
+//             alert(me.prevSelectedtab)
+        if(me.prevSelectedtab!=iTabCount)
+        {
+            if(iTabCount==0)
+                objthis.className="home";
+            else
+                objthis.className="deactiveTab";
+        }
+
+        var img=$(objthis).children()[0];
+        img.style.display="none";
+        mainDiv = $(objthis).children()[1];
+        if(me.prevSelectedtab!=iTabCount)
+            mainDiv.className="deactiveMenu";
+    };
+
+
+    this.getTargetElement = function(e)
+    {
+        e = e ? e : window.event;
+        var targetElem=e.srcElement || e.target;
+        while (targetElem.nodeType != 1)
+            targetElem = targetElem.parentNode;
+        return targetElem;
+    };
+
+    this.mclose=function()
+    {
+        if(ddmenuitem)
+        {
+            ddmenuitem.css({display:"none"});
+        }
+        //    swapdiv.style.position="absolute";
+    };
+
+
+
+    this.mcancelclosetime=function()
+    {
+        if(closetimer)
+        {
+            window.clearTimeout(closetimer);
+            closetimer=null;
+        }
+    };
+
+    this.hidepopTabstable=function(objthis)
+    {
+        //    alert(objthis.className);
+//        tabmenu.setMoreTab(false);
+//        $("#"+this.varId+"divMenu").hide();
+    };
+    this.showpopupTabsTable=function(objthis)
+    {
+        //    alert(objthis.className);
+        tabmenu.setMoreTab(true);
+//        $("#"+this.varId+"divMenu").show();
+    };
+
+    this.subPopup1=function(divId,objThis)
+    {
+        //        var objSpan=cross.getFirstElement(objThis.childNodes);
+        //        var sPosition=me.getPosition(objSpan);
+
+        //        $("#"+divId).css({left:sPosition[0]-400,top:sPosition[1]+10}).show();
+        //             $("#"+objThis).show();
+        $("#"+divId).css("visibility","visible");
+    };
+    this.subPopup0=function(divId)
+    {
+        //        $("#"+objThis).hide();
+        $("#"+divId).css("visibility","hidden");
+    };
+
+
+
+    //document.onclick=this.mclose;
+
+};
+
+
+
+
+var  clActionBar = new function()
+{
+    var me = this;
+
+    this.init=function(sId)
+    {
+        //var sViewAsId="tdActbr"+sId+"_Rgt_viewas_";
+        var sBufferId="tdActbr"+sId+"_Rgt_buffer_";
+        //var sMndtId="tdActbr"+sId+"_Rgt_mndt_";
+        var objTopRightElement = document.getElementById(sBufferId+"1");
+        var objBottomRightElement = document.getElementById(sBufferId+"0");
+
+        if(objTopRightElement && objBottomRightElement)
+        {
+            objBottomRightElement.style.width=objTopRightElement.offsetWidth;
+        }
+        /*objTopRightElement = document.getElementById(sViewAsId+"1");
+        objBottomRightElement = document.getElementById(sViewAsId+"0");
+        if(objTopRightElement && objBottomRightElement)
+        {
+            objBottomRightElement.style.width=objTopRightElement.offsetWidth;
+        }
+        objTopRightElement = document.getElementById(sMndtId+"1");
+        objBottomRightElement = document.getElementById(sMndtId+"0");
+        if(objTopRightElement && objBottomRightElement)
+        {
+            objBottomRightElement.style.width=objTopRightElement.offsetWidth;
+        }*/
+
+    }
+
+    this.toggleActionBar = function(objImg1,sIdImg2,sContentId,sActionsId)
+    {
+        var objContentId= document.getElementById(sContentId);
+        var arrContentChild=cross.getChildren(objContentId);
+        objImg1.style.display="none";
+        document.getElementById(sIdImg2).style.display="block";
+         var objFld =document.getElementById(sActionsId);
+        if(objImg1.getAttribute("isDown") == 'true')
+        {
+//            objContentId.style.display = "none";
+             util.animateToggle(arrContentChild[0],{"transition-property":"height","transition-duration":"0.5s","transition-timing-function":"linear"});     /*cubic-bezier(0.2, 0.0, 0.58, 1.0)*/
+
+            if(objFld)
+            objFld.style.display = "none";
+        }
+        else
+        {
+//            objContentId.style.display="block";
+            arrContentChild[0].style.visibility = "hidden";
+          util.animateToggle(arrContentChild[0],{"transition-property":"height","transition-duration":"0.5s","transition-timing-function":"linear"});
+
+            if(objFld)
+            objFld.style.display = "block";
+        }
+    };
+
+    this.showActionBar=function(objImg1,sIdImg2,sContentId,sActionsId,isHide)
+    {
+        var objContentId= document.getElementById(sContentId);
+        var arrContentChild=cross.getChildren(objContentId);
+        var objElement=arrContentChild[0];
+
+        objImg1.style.display="none";
+        document.getElementById(sIdImg2).style.display="block";
+
+        if(util.hasClass(objElement,"toggleTransition"))
+            util.removeClass(objElement,"toggleTransition");
+
+        if(isHide)
+        {
+            objElement.setAttribute("iOriginalWidth", objElement.offsetWidth);
+            objElement.setAttribute("iOriginalHeight", objElement.offsetHeight);
+
+            objElement.style.height="0px";
+            objElement.style.visibility="hidden";
+        }
+        else
+        {
+            objElement.style.height="";
+            objElement.style.visibility="visible";
+
+            setTimeout(function()
+            {
+                if (objElement.offsetHeight > 0)
+                {
+                    objElement.setAttribute("iOriginalWidth", objElement.offsetWidth);
+                    objElement.setAttribute("iOriginalHeight", objElement.offsetHeight);
+                    objElement.style.height = objElement.offsetHeight;
+                }
+            },50);
+        }
+    };
+
+    this.setBottomVisibility=function(isShow,sId)
+    {
+        if(isShow)
+            document.getElementById("actBarAct_"+sId).style.display="";
+        else
+            document.getElementById("actBarAct_"+sId).style.display="none";
+    };
+
+    this.onMDownAction=function(sUrl, e)
+    {
+        e=cross.getEvent(e);
+        if((cross.isIE() && e.button==4) ||e.button==1)
+        {
+            if (e.preventDefault)
+                    e.preventDefault();
+                else
+                    e.returnValue= false;
+                window.open(clAppBuffer.getContextPath()+"/crmhome.do?url="+sUrl); // CHK WITH YUG OR NAG
+                return;
+        }
+        else
+        {
+            if(sUrl.indexOf("isCancel=1")!=-1)
+                home.moveToBackUrl(false);
+            else
+            {
+                var sUserCallBack=null;
+                if(document.getElementById("hfTabIndex")!=null)
+                    sUserCallBack="clModuleTabbedPane.handleResponse";
+                if(sUrl.indexOf("byAction="+Constants.NEW)!=-1 && sUrl.indexOf("byActionType="+Constants.LIST_LAYOUT)!=-1)
+                {
+                    var iSrcviewtype = Constants.LIST_LAYOUT;
+                    home.setCenterUI(sUrl, null, false, false, sUserCallBack, false, null, false, false, false, iSrcviewtype);
+                }
+                else
+                    home.setCenterUI(sUrl,null,false,false,sUserCallBack);
+            }
+        }
+    };
+
+
+    this.enableButtonGroup = function(iActionId){
+
+        for(var i=0;i<2;i++){
+            var objBtn = document.getElementById("buttongroup_actbar"+i+"_"+iActionId)
+            if(objBtn){
+                if(objBtn.getAttribute("action")){
+                    objBtn.setAttribute("onclick",objBtn.getAttribute("action"))
+                    objBtn.removeAttribute("action")
+                    if(util.hasClass(objBtn,"btnGroup")){
+                        objBtn.setAttribute("class","btn btn-default btnGroup");
+                    }
+                    else{
+                        objBtn.removeAttribute("class");
+                    }
+                }
+            }
+        }
+    };
+
+    this.disableButtonGroup = function(iActionId){
+
+        for(var i=0;i<2;i++){
+            var objBtn = document.getElementById("buttongroup_actbar"+i+"_"+iActionId)
+            if(objBtn){
+                if(objBtn.getAttribute("onclick")){
+                    objBtn.setAttribute("action",objBtn.getAttribute("onclick"))
+                    objBtn.removeAttribute("onclick")
+                    if(util.hasClass(objBtn,"btnGroup")){
+                        objBtn.setAttribute("class","btn btn-default btnGroup btnGroupMain-disabled")
+                    }
+                    else{
+                        objBtn.setAttribute("class","btnGroup-disabled");
+                    }
+                }
+            }
+        }
+
+    };
+
+};
+
+
+
+        
+function SortableTable(oTable, oSortTypes, isAltRowColor,iSortColumn,iSortOrder,fnOnSort,iArrIgnoreIndexes)
+{
+    /*if(oTable.childNodes.length==0)
+        return;*/
+
+    this.element = oTable;
+	this.tHead = oTable.getElementsByTagName("TR").item(0);
+	this.tBody = oTable.tBodies[0];
+	this.document = oTable.ownerDocument || oTable.document;
+    this.iSortOrder=iSortOrder;
+    //this.iSortOrder=SortableTable.SORT_ORDER_DESC;
+
+
+    //iArrIgnoreIndexes=[0,1];
+
+    if(iArrIgnoreIndexes)
+    {
+        for(var i=0; i < iArrIgnoreIndexes.length; i++)
+            if(iArrIgnoreIndexes[i]<0)
+                iArrIgnoreIndexes[i]=this.tHead.cells.length+iArrIgnoreIndexes[i];
+    }
+
+    this.iArrIgnoreIndexes=iArrIgnoreIndexes;
+
+    //alert(this.iArrIgnoreIndexes)
+	/*if(isAltRowColor)
+	{
+        var rows = this.tBody.rows;
+        if(rows>=2)
+        {
+            this.rowClass1 = rows[0].className;
+            this.rowClass2 = rows[1].className;
+        }
+        else
+            this.rowClass1 = this.rowClass2 = "";
+
+        this.isAltRowColor = true;
+    }*/
+
+	this.fnOnSort = fnOnSort;
+	this.sortColumn = iSortColumn;
+	this.descending = null;
+	//alert("tHead "+this.tHead.innerHTML);
+	//alert("tBody "+this.tBody.innerHTML);
+	var oThis = this;
+	this._headerOnclick = function (e) {
+		oThis.headerOnclick(e);
+	};
+	// only IE needs this
+	var win = this.document.defaultView || this.document.parentWindow;
+	this._onunload = function () {
+		oThis.destroy();
+	};
+	if (win && typeof win.attachEvent != "undefined") {
+		win.attachEvent("onunload", this._onunload);
+	}
+	this.initHeader(oSortTypes || []);
+}
+
+
+    SortableTable.SORT_ORDER_NONE=0;
+    SortableTable.SORT_ORDER_ASC=1;
+    SortableTable.SORT_ORDER_DESC=2;
+
+    SortableTable.gecko = navigator.product == "Gecko";
+    SortableTable.msie = /msie/i.test(navigator.userAgent);
+    // Mozilla is faster when doing the DOM manipulations on
+    // an orphaned element. MSIE is not
+    SortableTable.removeBeforeSort = SortableTable.gecko;
+    SortableTable.prototype.onsort = function () {};
+
+    // adds arrow containers and events
+    // also binds sort type to the header cells so that reordering columns does
+    // not break the sort types
+
+    SortableTable.prototype.isHandleSorting = function (i,objThis)
+    {
+        if(!objThis)
+            objThis=this;
+        for(var j=0; j < objThis.iArrIgnoreIndexes.length; j++)
+        {
+            if(objThis.iArrIgnoreIndexes[j]==i)
+                return false;
+        }
+        return true;
+    };
+
+
+    SortableTable.prototype.initHeader = function (oSortTypes)
+    {
+      //  alert("in initHeader");
+        var cells = this.tHead.cells;
+        var len = cells.length;
+        var img, c;
+        for (var i = 0; i < len; i++)
+        {
+            if(this.iArrIgnoreIndexes)
+            {
+                if(!this.isHandleSorting(i))
+                    continue;
+            }
+
+            c = cells[i];
+            img = this.document.createElement("span"); /*img = this.document.createElement("IMG");*/
+        /*   img.src = app.getImagePath(true)+"blank.png";*/
+            var sClsName="sTable-arrow";
+
+            if(this.iSortOrder==SortableTable.SORT_ORDER_ASC)
+            {
+                sClsName+= "crm crm-arrowup";   /*crm-crm-sortA-Z*/     /*fa fa-long-arrow-up*/
+            }
+            else if(this.iSortOrder==SortableTable.SORT_ORDER_DESC)
+            {
+                sClsName+= "crm crm-arrowdown";           /*crm-sortZ-A */           /*fa fa-long-arrow-down*/
+                this.descending = true;
+            }
+
+            img.className=sClsName;
+            /*if(this.sortColumn!=i)
+            {
+//                img.style.display="none";
+            }*/
+
+            c.appendChild(img);
+            if (oSortTypes[i] != null) {
+                c._sortType = oSortTypes[i];
+            }
+            if (typeof c.addEventListener != "undefined")
+                c.addEventListener("click", this._headerOnclick, false);
+            else if (typeof c.attachEvent != "undefined")
+                c.attachEvent("onclick", this._headerOnclick);
+
+        }
+        this.updateHeaderArrows();//TODO: uncomment this to show sorting img on window load
+    };
+
+//remove arrows and events
+SortableTable.prototype.uninitHeader = function () {
+	var cells = this.tHead.cells;
+	var len = cells.length;
+	var c;
+	for (var i = 0; i < len; i++) {
+		c = cells[i];
+		c.removeChild(c.lastChild);
+		if (typeof c.removeEventListener != "undefined")
+			c.removeEventListener("click", this._headerOnclick, false);
+		else if (typeof c.detachEvent != "undefined")
+			c.detachEvent("onclick", this._headerOnclick);
+	}
+};
+
+SortableTable.prototype.updateHeaderArrows = function (objThis) {
+    if(!objThis)
+        objThis=this;
+	var cells = objThis.tHead.cells;
+	var len = cells.length;
+	var img;
+	for (var i = 0; i < len; i++) {
+         if(objThis.iArrIgnoreIndexes)
+        {
+            if(!objThis.isHandleSorting(i,objThis))
+                continue;
+        }
+		img = cells[i].lastChild;
+		if (i == objThis.sortColumn)
+        {
+            img.className = "sTable-arrow " + (objThis.descending ? "crm crm-arrowdown" : "crm crm-arrowup");   /*fa fa-long-arrow-down*/       /*fa fa-long-arrow-up*/
+            img.style.display="inline";
+        }
+		else
+        {
+            img.className = "sTable-arrow";
+            img.style.display="none";
+        }
+	}
+};
+
+SortableTable.prototype.headerOnclick = function (e) {
+	// find TD element
+//    if(typeof window["isColumnResized"]=="function" && isColumnResized())
+//        return;
+	var el = e.target || e.srcElement;
+	while (el.tagName != "TD")
+		el = el.parentNode;
+	
+	this.sort(el.cellIndex);	
+};
+
+SortableTable.prototype.getSortType = function (nColumn) {
+	var cell = this.tHead.cells[nColumn];
+	var val = cell._sortType;
+	if (val != "")
+		return val;
+	return "String";
+};
+
+// only nColumn is required
+// if bDescending is left out the old value is taken into account
+// if sSortType is left out the sort type is found from the sortTypes array
+
+SortableTable.prototype.sort = function (nColumn, bDescending, sSortType) {
+	if (sSortType == null)
+		sSortType = this.getSortType(nColumn);
+
+	// exit if None	
+	if (sSortType == "None")
+		return;
+	
+	if (bDescending == null) {
+		if (this.sortColumn != nColumn)
+			this.descending = false;
+		else
+			this.descending = !this.descending;
+	}	
+	
+	this.sortColumn = nColumn;
+
+    /*if (typeof this.onbeforesort == "function")
+		this.onbeforesort();*/
+
+    if(this.fnOnSort)
+        this.fnOnSort(this.descending,nColumn,this.updateHeaderArrows,[this],this.element.id);
+    else
+    {
+        var f = this.getSortFunction(sSortType, nColumn);
+        var a = this.getCache(sSortType, nColumn);
+        var tBody = this.tBody;
+
+        a.sort(f);
+
+        if (this.descending)
+            a.reverse();
+
+        if(SortableTable.removeBeforeSort) {
+            // remove from doc
+            var nextSibling = tBody.nextSibling;
+            var p = tBody.parentNode;
+            p.removeChild(tBody);
+        }
+
+        // insert in the new order
+        var len = a.length;
+        for (var i = 1; i < len; i++)
+            tBody.appendChild(a[i].element);
+
+        if (SortableTable.removeBeforeSort) {
+            // insert into doc
+            p.insertBefore(tBody, nextSibling);
+        }
+        this.destroyCache(a);
+        this.updateHeaderArrows();
+        if (typeof this.onsort == "function")
+		    this.onsort();
+    }
+
+
+
+	/*if(this.isAltRowColor)
+	    this.setRowStyles();*/
+	
+
+};
+
+SortableTable.prototype.setRowStyles = function()
+{
+  	var rows = this.tBody.rows;
+	var len = rows.length;
+
+	for (var i = 1; i < len; i++)
+	{
+	    if((i % 2) == 0 )
+		    rows[i].className = this.rowClass2;
+        else
+            rows[i].className = this.rowClass1;
+    }
+}
+SortableTable.prototype.asyncSort = function (nColumn, bDescending, sSortType) {
+	var oThis = this;
+	this._asyncsort = function () {
+		oThis.sort(nColumn, bDescending, sSortType);
+	};
+	window.setTimeout(this._asyncsort, 1);	
+};
+
+SortableTable.prototype.getCache = function (sType, nColumn) {
+	var rows = this.tBody.rows;
+	var len = rows.length;
+	var a = new Array(len-1);
+	var r;
+	for (var i = 0; i < len; i++) {
+
+        r = rows[i];
+        /*if(i==0)
+            alert("r  "+r.outerHTML)*/
+        a[i] =
+		{
+			value:		this.getRowValue(r, sType, nColumn),
+			element:	r
+		};
+	};
+	return a;
+};
+
+SortableTable.prototype.destroyCache = function (oArray) {
+	var len = oArray.length;
+	for (var i = 0; i < len; i++) {
+		oArray[i].value = null;
+		oArray[i].element = null;
+		oArray[i] = null;
+	}
+}
+
+SortableTable.prototype.getRowValue = function (oRow, sType, nColumn) {
+	var s;
+	var c = oRow.cells[nColumn];
+	if (typeof c.innerText != "undefined")
+		s = c.innerText;
+	else
+		s = SortableTable.getInnerText(c);
+	return this.getValueFromString(s, sType);
+};
+
+SortableTable.getInnerText = function (oNode) {
+	var s = "";	
+	var cs = oNode.childNodes;
+	var len = cs.length;
+	for (var i = 0; i < len; i++) {
+		switch (cs[i].nodeType) {
+			case 1: //ELEMENT_NODE
+				s += SortableTable.getInnerText(cs[i]);
+				break;
+			case 3:	//TEXT_NODE
+				s += cs[i].nodeValue;
+				break;
+		}
+	}
+	return s;
+}
+
+SortableTable.prototype.getValueFromString = function (sText, sType) {
+	switch (sType) {
+		case "Number":
+			return Number(sText);
+		case "CaseInsensitiveString":
+			return sText.toUpperCase();
+		case "Date":
+			var parts = sText.split("/");
+			var d = new Date(0);
+			d.setDate(parts[0]);
+			d.setMonth(parts[1] - 1);
+			d.setFullYear(parts[2]);
+			return d.valueOf();		
+		case "DateTime":
+			var parts0 = sText.split(" ");
+			var parts = parts0[0].split("/");
+			var d = new Date(0);
+			d.setDate(parts[0]);
+			d.setMonth(parts[1] - 1);
+			d.setFullYear(parts[2]);
+			var parts2 = parts0[1].split(":");
+			d.setHours(parts2[0]);
+			d.setMinutes(parts2[1]);
+			return d.valueOf();		
+	}
+	return sText;
+};
+
+SortableTable.prototype.getSortFunction = function (sType, nColumn)
+{
+	return function compare(n1, n2)
+	{
+		if (n1.value < n2.value)
+			return -1;
+		if (n2.value < n1.value)
+			return 1;
+		return 0;
+	};
+};
+
+SortableTable.prototype.destroy = function () {
+	this.uninitHeader();
+	var win = this.document.parentWindow;
+	if (win && typeof win.detachEvent != "undefined") {	// only IE needs this
+		win.detachEvent("onunload", this._onunload);
+	}	
+	this._onunload = null;
+	this.element = null;
+	this.tHead = null;
+	this.tBody = null;
+	this.document = null;
+	this._headerOnclick = null;
+	this.sortTypes = null;
+	this._asyncsort = null;
+	this.onsort = null;
+};
+
+var clTaskPane = new function()
+{
+    var arrTaskPane = [];
+    var sActiveTaskPane=null;
+    /*this.setHideActive = function(bInActive)
+    {
+        this.bHideActive = bInActive;
+    };*/
+
+    this.addTaskPaneId = function(sId)
+    {
+        arrTaskPane[arrTaskPane.length] = sId;
+    };
+
+
+    this.hideActivePane = function(sCurrentTaskPane)
+    {
+        var chkPane = document.getElementById("chk"+sCurrentTaskPane);
+        if(chkPane.getAttribute("active")!=null)
+        {
+            this.showTaskPane(!(chkPane.checked), sCurrentTaskPane, true);
+            chkPane.checked=!chkPane.checked;
+        }
+        /*if(sActiveTaskPane)
+        {
+            this.showTaskPane(false,sActiveTaskPane);
+            //alert(sActiveTaskPane+","+sCurrentTaskPane)
+            if(sActiveTaskPane!=sCurrentTaskPane)
+                this.showTaskPane(true,sCurrentTaskPane);
+            else
+                sActiveTaskPane=null;
+
+        }
+        else
+        {
+            var isShow;
+            sActiveTaskPane=null;
+            for(var iIndex = 0; iIndex < arrTaskPane.length; iIndex++)
+            {
+                isShow = true;
+                 if((arrTaskPane[iIndex] != sCurrentTaskPane) || document.getElementById(arrTaskPane[iIndex]).style.display == "")
+                    isShow = false;
+                this.showTaskPane(isShow,arrTaskPane[iIndex],sCurrentTaskPane);
+
+                if(isShow)
+                    break;
+            }
+        }*/
+    };
+
+    this.showTaskPane = function(isShow,sTaskPaneId,isIgnoreAnimation)
+    {
+        var sDisplay,sImg;
+        if(isShow)
+        {
+            sDisplay = "inline-block";
+            sImg='fa facrm-minusTaskPane';
+            sActiveTaskPane=sTaskPaneId;
+        }
+        else
+        {
+            sDisplay = "none";
+            sImg='fa facrm-plusTaskPane';
+            //sActiveTaskPane=null;
+        }
+
+        document.getElementById("img"+sTaskPaneId).className= sImg;
+        if(!isIgnoreAnimation) {
+            util.animateToggle(document.getElementById(sTaskPaneId), {
+                "transition-property": "height",
+                "transition-duration": "0.3"
+            });
+            if(isShow==true)
+            {
+                setTimeout(function()
+                {
+                    document.getElementById(sTaskPaneId).style.height = (parseInt(document.getElementById(sTaskPaneId).getAttribute("ioriginalheight"))+12)+"px";
+
+                },50);
+
+            }
+        }
+        else
+            document.getElementById(sTaskPaneId).style.display = sDisplay;
+
+//        document.getElementById(sTaskPaneId).style.display = sDisplay;
+
+        //alert(document.getElementById(sTaskPaneId).style.display)
+    };
+
+    this.toggleTaskPane=function(elemImg,sCurrentTaskPane,fnOnClick)
+    {
+        var bToggle = true;
+        if(arrTaskPane.length>  0)
+        {
+            var iLen=arrTaskPane.length,i;
+            for(i=0;i<iLen;i++)
+            {
+                if(arrTaskPane[i]==sCurrentTaskPane)
+                    bToggle = false;
+            }
+        }
+        if(bToggle)
+        {
+            var sShow = (document.getElementById(sCurrentTaskPane).style.visibility == "hidden");
+            this.showTaskPane(sShow,sCurrentTaskPane);
+        }
+        else
+            this.hideActivePane(sCurrentTaskPane);
+        if(fnOnClick)
+            fnOnClick(document.getElementById(sCurrentTaskPane).style.visibility == "hidden");
+    };
+
+    this.checkAllItems =function(elmChk,mainDv,fnOnClick)
+    {
+        if(fnOnClick)
+            fnOnClick(elmChk.checked);
+
+        if(elmChk.getAttribute("active")!=null)
+        {
+            //this.showTaskPane(elmChk.checked, mainDv, true);
+        }
+        else
+            elmChk.setAttribute("active",1);
+    };
+};

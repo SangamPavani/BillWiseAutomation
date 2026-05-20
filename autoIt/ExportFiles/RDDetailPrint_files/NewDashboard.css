@@ -1,0 +1,3539 @@
+﻿html, body {
+    height: 100%;
+}
+  @media screen and (min-width: 320px) and (max-width: 500px){
+        #divheader>div{
+			overflow :auto
+		}
+    }
+  /*::-webkit-scrollbar {
+    width: 6px;
+}*/
+  @media (max-width: 500px){
+        .maximizeDashlet{
+            overflow:auto
+  }
+    }
+   @media screen and (min-width: 500px) and (max-width: 776px){
+        .colm-lg-3{
+            overflow:auto !important;
+            
+  }
+        .hasSummary{
+height:auto !important;
+margin:5px !important;
+        }
+    }
+  @media screen and (min-width: 776px) and (max-width: 1024px){
+        .colm-lg-3{
+            overflow:auto !important;
+            
+  }
+        .hasSummary{
+height:auto !important;
+margin:5px !important;
+        }
+    }
+/*::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    border-radius: 10px;
+}
+ 
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}*/
+
+.Dashboardmodal {
+    position: fixed;
+    top: 60px;
+    right: 0;
+    bottom: 0;
+    left: 200px;
+    z-index: 1050;
+    display: none;
+    overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+    outline: 0;
+}
+
+
+
+/* Tabs Button CSS*/
+#DashBoardScreen .Dashboard_header-button {
+    text-align: left;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    padding: 6px 10px !important;
+}
+
+    #DashBoardScreen .Dashboard_header-button span {
+        padding-left: 5px;
+    }
+
+    #DashBoardScreen .Dashboard_header-button:hover {
+        background-color: white !important;
+        /*color: #34c4f9 !important;*/
+    }
+
+#DashBoardScreen .Dashboard_stop-overflow-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/*Slidebar Menu */
+#DashBoardScreen .Dashboard_sidebarmenu {
+    /*position: absolute;*/
+    display: none;
+    /*left: -260px;*/
+    /*top: 56px;*/
+    /*width: 22%;*/
+    background-color: #dddbdc;
+    border: 1px solid #ccc;
+    border-top: none;
+    height: 489px;
+}
+/*RIGHT PANEL CSS*/
+#DashBoardScreen #Dashboard_Dash_Config:hover {
+    /*color: #34c4f9;*/
+}
+
+#DashBoardScreen #Dashboard_AddDash:hover {
+    /*color: #34c4f9;*/
+}
+
+#DashBoardScreen .Dashboard_dash_Panel {
+    float: right;
+    font-size: 18px;
+    color: #797979;
+    margin: 15px 0 0 15px;
+    padding: 0px;
+}
+
+#DashBoardScreen .Dashboard_Dash_body {
+    margin: 0px;
+    padding: 0px;
+    float: left;
+    width: 70%;
+}
+
+#divContainerCust .Dashboard_Graph_panel {
+    background: #6e6e6e;
+    /*height: 500px;*/
+    top: 0px;
+    right: 0%;
+    margin: 0px;
+    margin-top: 0px;
+    padding: 0px 0px 0 0px;
+    position: absolute;
+    left: 4%;
+}
+
+#divContainerCust .Dashboard_Panelh3 {
+    font-size: 15px;
+    color: #ffffff;
+    padding: 0px 0px 0px 11px;
+    margin-bottom: 22px;
+}
+
+#divContainerCust .Dashboard_Graph_panel .search {
+    margin: 0px 0 20px 0;
+    padding: 0px 0 0 20px;
+    position: relative;
+}
+
+    #divContainerCust .Dashboard_Graph_panel .search .Graph_search {
+        margin: 0px;
+        padding: 0px 0 0 6px;
+        border-radius: 3px;
+        width: 84%;
+        height: 28px;
+        border: 1px solid #dddbdc;
+    }
+
+    #divContainerCust .Dashboard_Graph_panel .search .searchicon {
+        cursor: pointer;
+        margin: 0px 0 0 -5px;
+        padding: 4px 1px 0px 4px;
+        font-size: 15px;
+        color: #9f9f9f;
+        position: absolute;
+        width: 26px;
+        height: 28px;
+        border-radius: 0px 3px 3px 0px;
+        background: #ffffff;
+        border: 1px solid #dddbdc;
+    }
+
+#divContainerCust .Dashboard_Graph_panel .Graph_List {
+    margin: 15px 0 0 0;
+    padding: 0px;
+}
+
+    #divContainerCust .Dashboard_Graph_panel .Graph_List ul {
+        margin: 0px;
+        padding: 0px;
+    }
+
+        #divContainerCust .Dashboard_Graph_panel .Graph_List ul li {
+            margin: 5px 0 5px 0;
+            padding: 10px 5px 10px 20px;
+            list-style: none;
+            font-size: 14px;
+        }
+
+.ltr #divContainerCust .Dashboard_Graph_panel .Graph_List ul li a {
+    text-decoration: none;
+    color: #ffffff;
+}
+
+.rtl #divContainerCust .Dashboard_Graph_panel .Graph_List ul li a { /*Absolute problem of showing all dashlet so added bellow code margin right !! It only happen specific to company*/
+    text-decoration: none;
+    color: #ffffff;
+    margin-right: 10px;
+    direction: initial;
+}
+
+.ltr #divContainerCust .Dashboard_Graph_panel .Graph_List ul li a label {
+    cursor: pointer !important;
+    margin-bottom: -4px !important;
+}
+
+.rtl #divContainerCust .Dashboard_Graph_panel .Graph_List ul li a label {
+    cursor: pointer !important;
+    margin-bottom: -4px !important;
+}
+
+#divContainerCust .Dashboard_Graph_panel .Graph_List ul li:hover {
+    background: #545252;
+}
+
+#divContainerCust .Dashboard_Graph_panel .Graph_List ul li a .Graph_icon {
+    margin: 0px 15px 0 0;
+    padding: 0px;
+    font-size: 19px;
+    display: block;
+    /*float: left;*/
+}
+
+#divContainerCust .Dashboard_Graph_panel .Graph_List ul li a .Report_icon {
+    margin: 0px 15px 0 0;
+    padding: 0px;
+    font-size: 19px;
+    display: block;
+    /*float: left;*/
+}
+
+#divContainerCust .Dashboard_Graph_panel .Graph_List ul li a .Panel_icon {
+    margin: 0px 15px 0 0;
+    padding: 0px;
+    font-size: 19px;
+    display: block;
+    /*float: left;*/
+}
+
+#divContainerCust .Dashboard_Graph_panel .Graph_List ul li a .Document_icon {
+    margin: 0px 15px 0 0;
+    padding: 0px;
+    font-size: 19px;
+    display: block;
+    /*float: left;*/
+}
+
+#divContainerCust .Dashboard_Graph_panel .Graph_List ul li a .Alerts_icon {
+    margin: 0px 15px 0 0;
+    padding: 0px;
+    font-size: 19px;
+    display: block;
+    float: left;
+}
+
+#divContainerCust .Dashboard_Graph_panel .Graph_List ul li a .KPI_icon {
+    margin: 0px 15px 0 0;
+    padding: 0px;
+    font-size: 19px;
+    display: block;
+    float: left;
+}
+
+#divContainerCust .Dashboard_Graph_panel .Graph_List ul li a .plues1 {
+    margin: 0px 15px 0 0;
+    padding: 0px;
+    font-size: 16px;
+    display: block;
+    /*float: right;*/
+}
+
+#divContainerCust .Dashboard_Graph_panel .Graph_List ul li a .plues2 {
+    margin: 0px 15px 0 0;
+    padding: 0px;
+    font-size: 16px;
+    display: block;
+    /*float: right;*/
+}
+
+#divContainerCust .Dashboard_Graph_panel .Graph_List ul li a .plues3 {
+    margin: 0px 15px 0 0;
+    padding: 0px;
+    font-size: 16px;
+    display: block;
+    /*float: right;*/
+}
+
+#divContainerCust .Dashboard_Graph_panel .Graph_List ul li a .plues4 {
+    margin: 0px 15px 0 0;
+    padding: 0px;
+    font-size: 16px;
+    display: block;
+    float: right;
+}
+
+#divContainerCust .Dashboard_Graph_panel .Graph_List ul li a .plues5 {
+    margin: 0px 15px 0 0;
+    padding: 0px;
+    font-size: 16px;
+    display: block;
+    float: right;
+}
+
+#divContainerCust .Dashboard_Graph_panel .Graph_List ul ul {
+    position: absolute;
+    left: -999px;
+    top: 0px;
+    /*display: none;*/
+    background: #6e6e6e;
+    padding: 0px !important;
+    margin: 12px -4px -15px -19px !important;
+}
+
+#divContainerCust .Dashboard_Graph_panel .Graph_List ul .GsubmenuTrans {
+    margin: 0px;
+    padding: 0px;
+    position: relative;
+    left: 0px;
+    top: 0px;
+    display: block;
+}
+
+    #divContainerCust .Dashboard_Graph_panel .Graph_List ul .GsubmenuTrans li .PANEl_DELetE {
+        cursor: pointer;
+        margin: 3px 32px 0px 0;
+        padding: 0px;
+        display: none;
+        /*float: right;*/
+        font-size: 13px;
+        color: #fff;
+    }
+
+    #divContainerCust .Dashboard_Graph_panel .Graph_List ul .GsubmenuTrans li:hover .PANEl_DELetE {
+        display: block;
+    }
+
+    #divContainerCust .Dashboard_Graph_panel .Graph_List ul .GsubmenuTrans li .PANEl_DELetE:hover {
+        color: red;
+    }
+
+    #divContainerCust .Dashboard_Graph_panel .Graph_List ul .GsubmenuTrans li .PANEl_EDiTE {
+        cursor: pointer;
+        margin: 3px 7px 0px 0;
+        padding: 0px;
+        display: none;
+        /*float: right;*/
+        font-size: 13px;
+        color: #fff;
+    }
+
+    #divContainerCust .Dashboard_Graph_panel .Graph_List ul.GsubmenuTrans li:hover .PANEl_EDiTE {
+        display: block;
+    }
+
+    #divContainerCust .Dashboard_Graph_panel .Graph_List ul .GsubmenuTrans li .PANEl_EDiTE:hover {
+        color: #34c4f9;
+    }
+
+
+    #divContainerCust .Dashboard_Graph_panel .Graph_List ul .GsubmenuTrans li {
+        margin: 2px 0 0 0;
+        padding: 8px 5px 8px 53px;
+        font-size: 13px;
+        list-style: none;
+    }
+
+#divContainerCust .Dashboard_Graph_panel .Graph_List ul .GsubmenuTrans li:hover {
+    background: #808080;
+}
+
+#divContainerCust .Dashboard_Graph_panel .Graph_List ul .GsubmenuTrans li:hover a {
+    /*/*color: #34c4f9;*/*/
+}
+
+#divContainerCust .Dashboard_Graph_panel .Graph_List ul .GsubmenuTrans li:hover .iconCircle {
+    /*color: #34c4f9;*/
+}
+
+#divContainerCust .iconCircle {
+    font-size: 8px;
+    color: #fff;
+    position: relative;
+    left: -10px;
+    top: -2px;
+}
+
+#DashBoardScreen .Dashboard_Graph_panel {
+    background: #6e6e6e;
+    /*height: 500px;*/
+    top: 0px;
+    right: -5%;
+    margin: 0px;
+    margin-top: 0px;
+    padding: 0px 0px 0 0px;
+    position: absolute;
+    left: 4%;
+}
+
+#DashBoardScreen .Dashboard_Panelh3 {
+    font-size: 15px;
+    color: #ffffff;
+    padding: 0px 0px 0px 11px;
+    margin-bottom: 22px;
+}
+
+#DashBoardScreen .Dashboard_Graph_panel .search {
+    margin-left: 20px;
+    padding: 0px 0 0 20px;
+    position: relative;
+}
+
+    #DashBoardScreen .Dashboard_Graph_panel .search .Graph_search {
+        margin: 0px;
+        padding: 0px 0 0 6px;
+        border-radius: 3px;
+        width: 84%;
+        height: 28px;
+        border: 1px solid #dddbdc;
+    }
+
+    #DashBoardScreen .Dashboard_Graph_panel .search .searchicon {
+        cursor: pointer;
+        margin: 0px 0 0 -5px;
+        padding: 4px 1px 0px 4px;
+        font-size: 15px;
+        color: #9f9f9f;
+        position: absolute;
+        width: 26px;
+        height: 28px;
+        border-radius: 0px 3px 3px 0px;
+        background: #ffffff;
+        border: 1px solid #dddbdc;
+    }
+
+#DashBoardScreen .Dashboard_Graph_panel .Graph_List {
+    margin: 15px 0 0 0;
+    padding: 0px;
+}
+
+    #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul {
+        margin: 0px;
+        padding: 0px;
+    }
+
+        #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li {
+            margin: 5px 0 5px 0;
+            padding: 10px 5px 10px 20px;
+            list-style: none;
+            font-size: 14px;
+        }
+
+.ltr #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a {
+    text-decoration: none;
+    color: #ffffff;
+}
+
+.rtl #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a { /*Absolute problem of showing all dashlet so added bellow code margin right !! It only happen specific to company*/
+    text-decoration: none;
+    color: #ffffff;
+    margin-right: 10px;
+    direction: initial;
+}
+
+.ltr #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a label {
+    cursor: pointer !important;
+    margin-bottom: -4px !important;
+}
+
+.rtl #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a label {
+    cursor: pointer !important;
+    margin-bottom: -4px !important;
+}
+
+#DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li:hover {
+    background: #545252;
+}
+
+#DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .Graph_icon {
+    margin: 0px 15px 0 0;
+    padding: 0px;
+    font-size: 19px;
+    display: block;
+    /*float: left;*/
+}
+
+#DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .Report_icon {
+    margin: 0px 15px 0 0;
+    padding: 0px;
+    font-size: 19px;
+    display: block;
+    /*float: left;*/
+}
+
+#DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .Panel_icon {
+    margin: 0px 15px 0 0;
+    padding: 0px;
+    font-size: 19px;
+    display: block;
+    /*float: left;*/
+}
+
+#DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .Alerts_icon {
+    margin: 0px 15px 0 0;
+    padding: 0px;
+    font-size: 19px;
+    display: block;
+    float: left;
+}
+
+#DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .KPI_icon {
+    margin: 0px 15px 0 0;
+    padding: 0px;
+    font-size: 19px;
+    display: block;
+    float: left;
+}
+
+#DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .plues1 {
+    margin: 0px 15px 0 0;
+    padding: 0px;
+    font-size: 15px;
+    display: block;
+    /*float: right;*/
+}
+
+#DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .plues2 {
+    margin: 0px 15px 0 0;
+    padding: 0px;
+    font-size: 15px;
+    display: block;
+    /*float: right;*/
+}
+
+#DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .plues3 {
+    margin: 0px 15px 0 0;
+    padding: 0px;
+    font-size: 15px;
+    display: block;
+    /*float: right;*/
+}
+
+#DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .plues4 {
+    margin: 0px 15px 0 0;
+    padding: 0px;
+    font-size: 15px;
+    display: block;
+    float: right;
+}
+
+#DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .plues5 {
+    margin: 0px 15px 0 0;
+    padding: 0px;
+    font-size: 15px;
+    display: block;
+    float: right;
+}
+
+#DashBoardScreen .Dashboard_Graph_panel .Graph_List ul ul {
+    position: absolute;
+    left: -999px;
+    top: 0px;
+    /*display: none;*/
+    background: #6e6e6e;
+    padding: 0px !important;
+    margin: 12px -4px -15px -19px !important;
+}
+
+#DashBoardScreen .Dashboard_Graph_panel .Graph_List ul .Gsubmenu {
+    margin: 0px;
+    padding: 0px;
+    position: relative;
+    left: 0px;
+    top: 0px;
+    display: block;
+}
+
+    #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul .Gsubmenu li .PANEl_DELetE {
+        cursor: pointer;
+        margin: 3px 32px 0px 0;
+        padding: 0px;
+        display: none;
+        /*float: right;*/
+        font-size: 13px;
+        color: #fff;
+    }
+
+    #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul .Gsubmenu li:hover .PANEl_DELetE {
+        display: block;
+    }
+
+    #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul .Gsubmenu li .PANEl_DELetE:hover {
+        color: red;
+    }
+
+    #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul .Gsubmenu li .PANEl_EDiTE {
+        cursor: pointer;
+        margin: 3px 7px 0px 0;
+        padding: 0px;
+        display: none;
+        /*float: right;*/
+        font-size: 13px;
+        color: #fff;
+    }
+
+    #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul.Gsubmenu li:hover .PANEl_EDiTE {
+        display: block;
+    }
+
+    #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul .Gsubmenu li .PANEl_EDiTE:hover {
+        /*color: #34c4f9;*/
+    }
+
+
+    #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul .Gsubmenu li {
+        margin: 2px 0 0 0;
+        padding: 8px 5px 8px 53px;
+        font-size: 13px;
+        list-style: none;
+    }
+
+#DashBoardScreen .Dashboard_Graph_panel .Graph_List ul .Gsubmenu li:hover {
+    background: #808080;
+}
+
+    #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul .Gsubmenu li:hover a {
+        /*color: #34c4f9;*/
+    }
+
+    #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul .Gsubmenu li:hover .iconCircle {
+        /*color: #34c4f9;*/
+    }
+
+#DashBoardScreen .Dashboard_ddlmenu {
+    cursor: pointer;
+    /*display: none;*/
+}
+
+#DashBoardScreen #Dashboard_ddlList li:hover .Dashboard_ddlmenu {
+    display: block;
+    /*color: #34c4f9;*/
+}
+
+#DashBoardScreen .Dashboard_ddlmenu .icon-delete:hover {
+    /*display: block;*/
+    color: red;
+}
+
+#DashBoardScreen .NewDashboard_active {
+    /*color: #34c4f9 !important;*/
+}
+
+#DashBoardScreen .iconcolor {
+    /*color: #34c4f9;*/
+}
+
+#DashBoardScreen .Dashboard_dropdown ul li a {
+    padding: 10px;
+}
+
+#DashBoardScreen #Select_dash .Dashboard_ddltoggle:hover {
+    /*color: #34c4f9;*/
+}
+
+#DashBoardScreen .Dashboard_ddltoggle {
+    color: black;
+}
+
+#DashBoardScreen .iconCircle {
+    font-size: 8px;
+    color: #fff;
+    position: relative;
+    left: -10px;
+    top: -2px;
+}
+
+/*RIGHT PANEL CSS END*/
+@media(min-width:1200px) {
+    .mcol-lg-3 {
+        width: 22%;
+        /*width:25%;*/
+        float: left;
+        position: relative;
+        min-height: 1px;
+        padding-right: 0px;
+        /*padding-right:30px;*/
+        padding-left: 0px;
+    }
+
+    .mcol-lg-12 {
+        width: 95.667%;
+        float: left;
+        position: relative;
+        min-height: 1px;
+        padding-right: 15px;
+        padding-left: 0px;
+    }
+}
+
+@media(max-width:1199px) {
+    .mcol-md-3 {
+        width: 25%;
+        float: left;
+        position: relative;
+        min-height: 1px;
+        padding-right: 15px;
+        padding-left: 0px;
+        /*left: 50px;*/
+    }
+
+    .mcol-md-12 {
+        width: 95.667%;
+        float: left;
+        position: relative;
+        min-height: 1px;
+        padding-right: 15px;
+        padding-left: 0px;
+    }
+
+    .mcol-md-8 {
+        width: 73%;
+        float: left;
+        position: relative;
+        min-height: 1px;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+}
+
+@media(max-width:800px) {
+    .mcol-sm-3 {
+        width: 32.333%;
+        float: left;
+        position: relative;
+        min-height: 1px;
+        padding-right: 15px;
+        padding-left: 0px;
+        left: 13px;
+    }
+
+    .mcol-sm-12 {
+        width: 95.667%;
+        float: left;
+        position: relative;
+        min-height: 1px;
+        padding-right: 15px;
+        padding-left: 0px;
+    }
+
+    .mcol-sm-8 {
+        width: 64%;
+        float: left;
+        position: relative;
+        min-height: 1px;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+}
+
+@media(max-width:680px) {
+    .mcol-vxs-8 {
+        width: 49.666667%;
+        float: left;
+        position: relative;
+        min-height: 1px;
+        padding-right: 15px;
+        padding-left: 0px;
+    }
+
+    .mcol-vxs-3 {
+        width: 47.333%;
+        float: left;
+        position: relative;
+        min-height: 1px;
+        /* padding-right: 15px; */
+        padding-left: 0px;
+        left: 0;
+    }
+
+    .mcol-xs-12 {
+        width: 86.667%;
+        float: left;
+        position: relative;
+        min-height: 1px;
+        padding-right: 15px;
+        padding-left: 0px;
+    }
+}
+
+@media(max-width:320px) { /*This is for id Graph_Small div id content*/
+    #DashBoardScreen #Dash_Config:hover {
+        /*color: #34c4f9;*/
+    }
+
+    #DashBoardScreen #AddDash:hover {
+        /*color: #34c4f9;*/
+    }
+
+    #DashBoardScreen .dash_Panel {
+        float: right;
+        font-size: 18px;
+        color: #797979;
+        margin: 15px 0 0 15px;
+        padding: 0px;
+    }
+
+    #DashBoardScreen .Dash_body {
+        margin: 0px;
+        padding: 0px;
+        float: left;
+        width: 70%;
+    }
+
+
+
+    #DashBoardScreen .Panelh3 {
+        font-size: 12px;
+        color: #ffffff;
+        padding: 15px 0px 0px 18px;
+        margin-bottom: 25px;
+    }
+
+    #DashBoardScreen.Dashboard_Graph_panel .search {
+        margin: 0px 0 20px 0;
+        padding: 0;
+        padding-right: 10px;
+        padding-left: 10px;
+        position: relative;
+    }
+
+        #DashBoardScreen .Dashboard_Graph_panel .search .Graph_search {
+            margin: 0px;
+            padding: 0px 0 0 6px;
+            border-radius: 3px;
+            width: 80%;
+            height: 28px;
+            border: 1px solid #dddbdc;
+        }
+
+        #DashBoardScreen .Dashboard_Graph_panel .search .searchicon {
+            cursor: pointer;
+            margin: 0px 0 0 -5px;
+            padding: 6px 1px 0px 4px;
+            font-size: 15px;
+            color: #9f9f9f;
+            position: absolute;
+            width: 24px;
+            height: 28px;
+            border-radius: 0px 3px 3px 0px;
+            background: #ffffff;
+            border: 1px solid #dddbdc;
+        }
+
+    #DashBoardScreen .Dashboard_Graph_panel .Graph_List {
+        margin: 15px 0 0 0;
+        padding: 0px;
+    }
+
+        #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul {
+            margin: 0px;
+            padding: 0px;
+        }
+
+            #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li {
+                margin: 5px 0 5px 0;
+                padding: 0;
+                padding-bottom: 10px;
+                padding-left: 5px;
+                list-style: none;
+                font-size: 10px;
+            }
+
+                #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a {
+                    text-decoration: none;
+                    color: #ffffff;
+                }
+
+                #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li:hover {
+                    background: #545252;
+                }
+
+                #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .Graph_icon {
+                    margin: 0px 5px 0 0;
+                    padding: 0px;
+                    font-size: 13px;
+                    display: block;
+                    /*float: left;*/
+                }
+
+                #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .Report_icon {
+                    margin: 0px 5px 0 0;
+                    padding: 0px;
+                    font-size: 13px;
+                    display: block;
+                    /*float: left;*/
+                }
+
+                #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .Panel_icon {
+                    margin: 0px 5px 0 0;
+                    padding: 0px;
+                    font-size: 13px;
+                    display: block;
+                    float: left;
+                }
+
+                #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .Alerts_icon {
+                    margin: 0px 5px 0 0;
+                    padding: 0px;
+                    font-size: 13px;
+                    display: block;
+                    float: left;
+                }
+
+                #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .KPI_icon {
+                    margin: 0px 5px 0 0;
+                    padding: 0px;
+                    font-size: 13px;
+                    display: block;
+                    float: left;
+                }
+
+                #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .plues1 {
+                    margin: 0px 15px 0 0;
+                    padding: 0px;
+                    font-size: 12px;
+                    display: block;
+                    /*float: right;*/
+                }
+
+                #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .plues2 {
+                    margin: 0px 8px 0 0;
+                    padding: 0px;
+                    font-size: 12px;
+                    display: block;
+                    /*float: right;*/
+                }
+
+                #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .plues3 {
+                    margin: 0px 8px 0 0;
+                    padding: 0px;
+                    font-size: 12px;
+                    display: block;
+                    /*float: right;*/
+                }
+
+                #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .plues4 {
+                    margin: 0px 8px 0 0;
+                    padding: 0px;
+                    font-size: 12px;
+                    display: block;
+                    float: right;
+                }
+
+                #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .plues5 {
+                    margin: 0px 8px 0 0;
+                    padding: 0px;
+                    font-size: 12px;
+                    display: block;
+                    float: right;
+                }
+
+            #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul ul {
+                position: absolute;
+                left: -999px;
+                top: 0px;
+                /*display: none;*/
+                background: #6e6e6e;
+                padding: 0px !important;
+                margin: 0px 0px 0px 0px !important;
+            }
+
+            #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul .Gsubmenu {
+                margin: 0px;
+                padding: 0px;
+                position: relative;
+                left: 0px;
+                top: 0px;
+                display: block;
+            }
+
+                #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul .Gsubmenu li .PANEl_DELetE {
+                    cursor: pointer;
+                    margin: 3px 15px 0px 0;
+                    padding: 0px;
+                    display: none;
+                    /*float: right;*/
+                    font-size: 13px;
+                    color: #fff;
+                }
+
+                #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul .Gsubmenu li:hover .PANEl_DELetE {
+                    display: block;
+                }
+
+                #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul .Gsubmenu li .PANEl_DELetE:hover {
+                    color: red;
+                }
+
+
+                #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul .Gsubmenu li .PANEl_EDiTE {
+                    cursor: pointer;
+                    margin: 3px 8px 0px 0;
+                    padding: 0px;
+                    display: none;
+                    /*float: right;*/
+                    font-size: 9px;
+                    color: #fff;
+                }
+
+                #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul.Gsubmenu li:hover .PANEl_EDiTE {
+                    display: block;
+                }
+
+                #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul.Gsubmenu li .PANEl_EDiTE:hover {
+                    /*color: #34c4f9;*/
+                }
+
+                #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul .Gsubmenu li {
+                    margin: 0px 0 0 0;
+                    padding: 0;
+                    font-size: 10px;
+                    list-style: none;
+                }
+
+                    #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul .Gsubmenu li:hover {
+                        background: #808080;
+                    }
+
+                        #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul .Gsubmenu li:hover a {
+                            /*color: #34c4f9;*/
+                        }
+
+                        #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul .Gsubmenu li:hover .iconCircle {
+                            /*color: #34c4f9;*/
+                        }
+}
+
+/*Dashboard_dropdown*/
+
+#DashBoardScreen .NEw_DAsh {
+    float: left;
+    margin: 14px 0 0 0;
+    padding: 0px;
+}
+
+#DashBoardScreen .dash_icon {
+    float: left;
+    /*font-size: 18px;*/
+    margin: 0px 0 0 15px;
+    padding: 0px;
+}
+
+#DashBoardScreen .dash_Panel {
+    float: right;
+    font-size: 18px;
+    color: #797979;
+    margin: 10px 0 0 15px;
+    padding: 0px;
+}
+
+.ltr #DashBoardScreen .NEWdash_icon {
+    float: left;
+    font-size: 16px;
+    color: #797979;
+    margin: 0px 0 0 8px;
+    padding: 0px;
+    display: block;
+}
+
+.rtl #DashBoardScreen .NEWdash_icon {
+    float: left;
+    font-size: 16px;
+    color: #797979;
+    margin: 0px 8px 0 0px;
+    padding: 0px;
+    display: block;
+}
+
+#DashBoardScreen .NEWdash_icon:hover {
+    /*color: #34c4f9;*/
+}
+
+#DashBoardScreen .dash_icon:hover {
+    /*color: #34c4f9 !important;*/
+}
+
+#DashBoardScreen .bnhover:hover {
+    /*color: #34c4f9;*/
+    font-size: 30px;
+}
+
+#DashBoardScreen .Select_dashboard {
+    z-index: 999999;
+    position: absolute;
+    margin: 0px;
+    width: 250px;
+    top: 36px;
+    /*left: 72px;*/
+    padding: 10px 0px 0px 0px;
+    background: #ffffff;
+    border: 1px solid #c6c6c6;
+    -webkit-box-shadow: 1px 3px 5px -4px black;
+    -moz-box-shadow: 1px 3px 5px -4px black;
+    box-shadow: 1px 3px 5px -4px black;
+    border-radius: 3px;
+}
+
+    #DashBoardScreen .Select_dashboard .Select_header {
+        margin: 0px;
+        padding: 0px;
+        border-bottom: 1px solid #ccc;
+        background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f0f0f0), to(#ffffff));
+        background: -webkit-linear-gradient(top, #ffffff, #f0f0f0);
+        background: -moz-linear-gradient(top, #ffffff, #f0f0f0);
+        background: -o-linear-gradient(top, #ffffff, #f0f0f0);
+    }
+
+        #DashBoardScreen .Select_dashboard .Select_header .select_icon {
+            margin: -2px 11px 0 10px;
+            padding: 0px 0 0 0;
+            font-size: 18px !important;
+        }
+
+        #DashBoardScreen .Select_dashboard .Select_header h4 {
+            margin: 0px 0 0 0;
+            padding: 0px 0 8px 10px;
+            font-size: 15px;
+            color: #474646;
+        }
+
+    #DashBoardScreen .Select_dashboard .Dashboard_ddlmenu {
+        margin: 0px;
+        padding: 0px;
+    }
+
+        #DashBoardScreen .Select_dashboard .Dashboard_ddlmenu ul li {
+            margin: 0px 0 0 0;
+            padding: 10px 5px 4px 11px;
+            list-style: none;
+            font-family: 13px;
+            border-bottom: 1px solid #dddbdc;
+        }
+
+.Select_dashboard .Dashboard_ddlmenu ul li a {
+    text-decoration: none;
+    color: #474646;
+    font-weight: 500;
+}
+
+    .Select_dashboard .Dashboard_ddlmenu ul li a .select_icon {
+        margin: 0px 9px 0 8px;
+        padding: 0px 0 0 0;
+        font-size: 15px !important;
+    }
+
+#DashBoardScreen .Select_dashboard .Dashboard_ddlmenu ul li .NEW_DELetE {
+    cursor: pointer;
+    margin: 3px 15px 0px 0;
+    padding: 0px;
+    display: block;
+    float: right;
+    font-size: 13px;
+    color: #808080;
+}
+
+#DashBoardScreen .Select_dashboard .Dashboard_ddlmenu ul li .NEW_EDiTE {
+    cursor: pointer;
+    margin: 3px 10px 0 0;
+    padding: 0px;
+    font-size: 13px;
+    display: block;
+    float: right;
+    color: #808080;
+}
+
+#DashBoardScreen .Select_dashboard .Dashboard_ddlmenu ul li .NEW_DELetE:hover {
+    color: red;
+}
+
+#DashBoardScreen .Select_dashboard .Dashboard_ddlmenu ul li .NEW_EDiTE:hover {
+    /*color: #34c4f9;*/
+}
+
+#DashBoardScreen .Select_dashboard .Dashboard_ddlmenu ul li:hover a {
+    /*color: #34c4f9;*/
+}
+
+#DashBoardScreen .Dashboard_Main_Container_DIv h1 {
+    margin: 1% 0 0 0;
+    padding: 0%;
+    font-size: 18px !important;
+    font-weight: normal;
+    color: #646464;
+}
+
+#DashBoardScreen .Dashboard_Main_DIv .Footer_Div {
+    margin: 0%;
+    padding: 0%;
+    height: 30px;
+    width: 100%;
+    background: #f2f1f1;
+    border: 0px solid #d1d2d2;
+    border-width: 1px 0px 1px 0px;
+    clear: both;
+}
+
+.colm-lg-3 {
+    width: 23%;
+    float: left;
+    position: absolute !important;
+    min-height: 1px;
+    padding-right: 0px;
+    padding-left: 0px;
+}
+
+
+
+/*Graph Header Icon Start here*/
+#DashBoardScreen .graphIcon:hover {
+    /*color: #34c4f9;*/
+}
+
+#DashBoardScreen .GraphDDL {
+    z-index: 999999;
+    position: absolute;
+    margin: 0px;
+    width: 133px;
+    top: 34px;
+    /*left: 72px;*/
+    padding: 4px 0px 0px 0px;
+    background: #ffffff;
+    border: 1px solid #c6c6c6;
+    -webkit-box-shadow: 1px 3px 5px -4px black;
+    -moz-box-shadow: 1px 3px 5px -4px black;
+    box-shadow: 1px 3px 5px -4px black;
+    border-radius: 3px;
+}
+
+    #DashBoardScreen .GraphDDL ul li:hover {
+        cursor: pointer;
+        /*color: #34c4f9;*/
+    }
+
+    #DashBoardScreen .GraphDDL ul li {
+        padding: 2px 0px 4px 0px;
+        border-bottom: 1px solid #dddbdc;
+    }
+
+/*css for Expression type Infopanel graph generation*/
+#DashBoardScreen .expData {
+    border-radius: 50%;
+    background-color: #02b9fb;
+    padding: 5%;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    margin-left: 20%;
+    max-width: 60%;
+}
+
+#DashBoardScreen .GraphDDL ul li {
+    padding: 2px 0px 4px 0px;
+    /*border-bottom:1px solid #dddbdc;*/
+}
+
+#DashBoardScreen .expText {
+    width: 60%;
+    height: 60px;
+    border: 3px solid #34c4f9;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+#DashBoardScreen .circleLabel {
+    /*background-color: #34c4f9;*/
+    padding: 12px;
+    margin: 10px;
+    border-radius: 50%;
+    height: 65px;
+    width: 65px;
+}
+
+@media screen and (max-width:1024px) {
+    #DashBoardScreen .circleLabel {
+        /*background-color: #34c4f9;*/
+        padding: 10px;
+        margin: 10px;
+        border-radius: 50%;
+        height: 56px;
+        width: 56px;
+    }
+}
+
+@media screen and (max-width:768px) {
+    #DashBoardScreen .circleLabel {
+        /*background-color: #34c4f9;*/
+        padding: 8px;
+        margin: 10px;
+        border-radius: 50%;
+        height: 52px;
+        width: 52px;
+    }
+}
+
+@media screen and (max-width:640px) {
+    #DashBoardScreen .circleLabel {
+        /*background-color: #34c4f9;*/
+        padding: 6px;
+        margin: 5px;
+        border-radius: 50%;
+        height: 45px;
+        width: 45px;
+    }
+}
+
+@media screen and (max-width:480px) {
+    #DashBoardScreen .circleLabel {
+        /*background-color: #34c4f9;*/
+        padding: 3px;
+        margin: 5px;
+        border-radius: 50%;
+        height: 35px;
+        width: 35px;
+    }
+
+    #DashBoardScreen #mainPartialContainer .modalContent {
+        height: 80em !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .modalDialog {
+        width: 65% !important;
+        left: 15%;
+    }
+}
+
+@media screen and (max-width:320px) {
+    #DashBoardScreen .circleLabel {
+        /*background-color: #34c4f9;*/
+        padding: 2px;
+        margin: 5px;
+        border-radius: 50%;
+        height: 25px;
+        width: 25px;
+    }
+}
+
+#DashBoardScreen .btn-group.open .Dashboard_dropdown-toggle {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+/*End Here*/
+
+#DashBoardScreen .scrollable:hover {
+    overflow: auto !important;
+}
+
+#DashBoardScreen .scrollable {
+    overflow: auto !important;
+}
+
+    /*#DashBoardScreen .scrollable::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+    }
+
+    #DashBoardScreen .scrollable::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        border-radius: 3px;
+    }
+
+    #DashBoardScreen .scrollable::-webkit-scrollbar-thumb {
+        border-radius: 3px;
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+    }*/
+
+#DashBoardScreen .scrollCustum:hover {
+    overflow: auto !important;
+}
+
+#DashBoardScreen .scrollCustum { /*It added due to scroable color inside dashbord custumization become not visible*/
+    overflow: auto !important;
+}
+
+    /*#DashBoardScreen .scrollCustum::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+    }
+
+    #DashBoardScreen .scrollCustum::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        border-radius: 3px;
+    }
+
+    #DashBoardScreen .scrollCustum::-webkit-scrollbar-thumb {
+        border-radius: 3px;
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+        background-color: black !important;
+    }*/
+
+#divContainerCust .scrollCustum:hover {
+    overflow: auto !important;
+}
+
+#divContainerCust .scrollCustum { /*It added due to scroable color inside dashbord custumization become not visible*/
+    overflow: auto !important;
+}
+
+/*#divContainerCust .scrollCustum::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+#divContainerCust .scrollCustum::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    border-radius: 3px;
+}
+
+#divContainerCust .scrollCustum::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+    background-color: black !important;
+}*/
+
+
+/*end*/
+
+/*End Here*/
+/*For Custum Menu*/
+
+.context-menu-list {
+    min-width: 100px !important;
+    width: 116px !important;
+}
+
+#DashBoardScreen .overflow {
+    width: 10em;
+    position: absolute;
+    /**
+   * Required properties to achieve text-overflow
+   */
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#DashBoardScreen .ellipsis {
+    text-overflow: ellipsis;
+}
+/*Setting Maximize Dashboard_modal fullscreen*/
+
+#DashBoardScreen #Dashboard_ModalMaximize .modal-dialog {
+    position: absolute;
+    top: 53% !important;
+    transform: translate(0, -49%) !important;
+    -ms-transform: translate(0, -49%) !important;
+    -webkit-transform: translate(0, -49%) !important;
+    margin: auto 9%;
+    width: 90% !important;
+    height: 90% !important;
+}
+
+#DashBoardScreen #Dashboard_ModalMaximize .modal-content {
+    min-height: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+#DashBoardScreen .Dashboard_modal {
+    text-align: initial !important;
+}
+
+#DashBoardScreen #Dashboard_ModalMaximize .modal-body {
+    position: absolute;
+    top: 45px; /*height of header*/
+    bottom: 45px; /* height of footer*/
+    left: 0;
+    right: 0;
+    overflow-y: auto;
+}
+
+#DashBoardScreen .Dashboard_modal-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+#DashBoardScreen #Dashboard_ModalBackTrack .modal-dialog {
+    position: absolute;
+    top: 53% !important;
+    transform: translate(0, -49%) !important;
+    -ms-transform: translate(0, -49%) !important;
+    -webkit-transform: translate(0, -49%) !important;
+    margin: auto 9%;
+    width: 90% !important;
+    height: 90% !important;
+}
+
+#DashBoardScreen #Dashboard_ModalBackTrack .modal-content {
+    min-height: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+#DashBoardScreen #Dashboard_ModalBackTrack .modal-body {
+    position: absolute;
+    top: 45px; /*height of header*/
+    bottom: 45px; /* height of footer*/
+    left: 0;
+    right: 0;
+    overflow-y: auto;
+}
+
+.colm-sm-3 {
+    width: 100% !important;
+    /*position:relative;*/
+}
+
+/*Start CSS OF CreateDashBoardPartial Page*/
+
+li {
+    /*outline: none !important;*/ /*Befor Uncomment this line you need to change the li to any class or id like .dashboard_Li*/
+}
+
+#DashBoardScreen .active1 {
+    /*color: #34c4f9;*/
+}
+
+#DashBoardScreen .ImportantAttributeClass {
+    background-color: #34C4F9 !important;
+    color: white !important;
+}
+/*FOR input group ADDONS*/
+#DashBoardScreen .left-inner-addon {
+    position: relative;
+}
+
+    #DashBoardScreen .left-inner-addon input {
+        padding-left: 30px;
+    }
+
+    #DashBoardScreen .left-inner-addon i {
+        position: absolute;
+        padding: 10px 12px;
+        pointer-events: none;
+    }
+
+#DashBoardScreen .right-inner-addon {
+    position: relative;
+}
+
+    #DashBoardScreen .right-inner-addon input {
+        padding-right: 30px;
+        cursor: pointer;
+    }
+
+    #DashBoardScreen .right-inner-addon i {
+        position: absolute;
+        right: 0px;
+        padding: 8px 12px;
+        pointer-events: none;
+    }
+
+
+
+
+/*start CreateDashboardPartial CSS*/
+
+#DashBoardScreen #mainPartialContainer #First-Body-Row {
+    margin-top: 15px;
+    margin-left: -10px;
+    padding-right: 4px;
+
+}
+
+#DashBoardScreen #mainPartialContainer #Second-Body-Row {
+    margin-top: 8px;
+    margin-left: -10px;
+    padding-right: 4px;
+}
+
+#DashBoardScreen #mainPartialContainer #Third-Body-Row {
+    margin-left: -10px;
+}
+
+#DashBoardScreen #mainPartialContainer #Fourth-Body-Row {
+    margin-left: -10px;
+}
+
+#DashBoardScreen #mainPartialContainer #Fifth-Body-Row {
+    margin-top: 8px;
+    margin-left: -10px;
+}
+
+#DashBoardScreen #mainPartialContainer #Sixth-Body-Row {
+    margin-top: 8px;
+    margin-left: -4px;
+}
+
+#DashBoardScreen #mainPartialContainer #Seventh-Body-Row {
+    margin-left: -10px;
+}
+
+#DashBoardScreen #mainPartialContainer #Eighth-Body-Row {
+    margin-left: -9px;
+}
+
+#DashBoardScreen #mainPartialContainer #Tenth-Body-Row {
+    margin-top: 17px;
+    margin-left: -10px;
+}
+
+#DashBoardScreen #mainPartialContainer .iTxtIcon {
+    padding: 0px 10px 13px 10px !important;
+    /*background-color: #34c4f9;
+    color: white;*/
+}
+
+#DashBoardScreen #mainPartialContainer .iSecurity {
+    cursor: pointer;
+    border: 1px solid;
+    border-radius: 3px;
+    padding: 5px 5px 2px 5px !important;
+    background-color: #afafaf !important;
+    color: white !important;
+    display: inline-block;
+}
+
+#DashBoardScreen #mainPartialContainer #FFDiv {
+    margin-left: 6px;
+    padding-right: 5px;
+    padding-left: 20px;
+}
+
+#DashBoardScreen #mainPartialContainer #txtAreaDescription {
+    width: 100%;
+    margin-left: 11px;
+    padding-right: 8px;
+}
+
+#DashBoardScreen #mainPartialContainer #FourthSDiv {
+    margin-left: 10px;
+}
+
+#DashBoardScreen #mainPartialContainer #FourthTDiv {
+    margin-left: 30px;
+}
+
+#DashBoardScreen #mainPartialContainer #FourthFDiv {
+    margin-left: -40px;
+    padding-right: 8px;
+}
+
+#DashBoardScreen #mainPartialContainer #FifthSDiv {
+    margin-left: 10px;
+}
+
+#DashBoardScreen #mainPartialContainer #Ninth-Body-Row {
+    margin-left: 7px;
+    margin-right: -6px;
+}
+
+#DashBoardScreen #mainPartialContainer #EighthSDiv {
+    margin-left: -15px;
+    margin-top: 0px;
+}
+
+#DashBoardScreen #mainPartialContainer #EighthSFDiv {
+    margin-left: -15px;
+}
+
+#DashBoardScreen #mainPartialContainer #EighthTDiv {
+    margin-top: 0px;
+    margin-left: 42px;
+}
+
+#DashBoardScreen #mainPartialContainer #NinthFdiv {
+    border: 1px solid #D9D9D9;
+    width: 47%;
+    height: 120px;
+    height: 120px;
+}
+
+#DashBoardScreen #mainPartialContainer #NinthFFdiv {
+    border: 1px solid #D9D9D9;
+    height: 120px;
+    margin-left: 31px;
+}
+
+#DashBoardScreen #mainPartialContainer #Shareduser {
+    margin-left: -15px;
+    margin-top: 5px;
+}
+
+#DashBoardScreen #mainPartialContainer #sNinthDiv {
+    width: 6%;
+}
+
+#DashBoardScreen #mainPartialContainer .SecurityDiv {
+    margin-top: -10px;
+}
+
+@media screen and (max-width: 392px) {
+
+    #DashBoardScreen #mainPartialContainer #FFDiv {
+        width: 100%;
+        margin-left: -5px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #DescriDiv {
+        margin-left: -10px;
+        padding-right: 7px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #txtAreaDescription {
+        width: 100%;
+        margin-left: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthSDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+        width: 100%;
+    }
+
+    #DashBoardScreen #mainPartialContainer .iTxtIcon {
+        padding: 0px 10px 2px 10px !important;
+        /*background-color: #34c4f9;
+        color: white;*/
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthTDiv {
+        margin-left: 0px;
+        margin-top: 8px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthFDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+        width: 100%;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FifthSDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+        width: 100%;
+    }
+
+    #DashBoardScreen #mainPartialContainer #chkDiv {
+        margin-left: -55px !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Sixth-Body-Row {
+        margin-top: 8px;
+        margin-left: 50px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #EighthTDiv {
+        margin-top: 0px;
+        margin-left: 5px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #EighthSFDiv {
+        margin-left: 0px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Eighth-Body-Row {
+        margin-left: -9px;
+        margin-top: 0px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #NinthFdiv {
+        border: 1px solid #D9D9D9;
+        width: 38%;
+        height: 120px;
+        height: 120px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #NinthFFdiv {
+        border: 1px solid #D9D9D9;
+        height: 120px;
+        width: 86%;
+        margin-left: 3px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Tenth-Body-Row {
+        margin-top: 0px;
+        margin-left: -10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #availUsers {
+        margin-top: 0px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #sNinthDiv {
+        width: 6%;
+    }
+
+    #DashBoardScreen #mainPartialContainer #widthDiv {
+        border: 1px solid #D9D9D9;
+        width: 39%;
+        height: 120px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #ulMainDiv {
+        padding: 0;
+    }
+
+    #DashBoardScreen #mainPartialContainer #ulDiv {
+        padding: 0;
+        margin-left: 25px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #fpanel {
+        margin-right: -15px !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer #glyphRow1 {
+        margin-right: -15px;
+        margin-left: -9px;
+        margin-top: 5px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #glyphRow2 {
+        margin-right: -15px;
+        margin-left: -9px;
+        margin-top: 11px;
+    }
+
+    #DashBoardScreen #mainPartialContainer .SecurityDiv {
+        margin-top: 0px;
+        top: 15px;
+    }
+
+    #DashBoardScreen #mainPartialContainer .iSecurity {
+        border: 1px solid;
+        border-radius: 3px;
+        padding: 2px 4px 2px 4px !important;
+        background-color: white !important;
+        color: #9F9F9F !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .modalContent {
+        height: 75em !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .modalDialog {
+        width: 65% !important;
+        left: 15%;
+    }
+}
+
+@media (min-width: 393px) and (max-width:480px) {
+    #DashBoardScreen #mainPartialContainer #FFDiv {
+        width: 100%;
+        margin-left: -5px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #DescriDiv {
+        margin-left: -10px;
+        padding-right: 7px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #txtAreaDescription {
+        width: 100%;
+        margin-left: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthSDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+        width: 100%;
+    }
+
+    #DashBoardScreen #mainPartialContainer .iTxtIcon {
+        padding: 0px 10px 3px 10px !important;
+        /*background-color: #34c4f9;
+        color: white;*/
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthTDiv {
+        margin-left: 0px;
+        margin-top: 8px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthFDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+        width: 100%;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FifthSDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+        width: 100%;
+    }
+
+    #DashBoardScreen #mainPartialContainer #chkDiv {
+        margin-left: -55px !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Sixth-Body-Row {
+        margin-top: 8px;
+        margin-left: 50px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #EighthTDiv {
+        margin-top: 0px;
+        margin-left: 0px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #EighthSFDiv {
+        margin-left: 0px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #NinthFdiv {
+        border: 1px solid #D9D9D9;
+        width: 44%;
+        height: 120px;
+        height: 120px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #NinthFFdiv {
+        border: 1px solid #D9D9D9;
+        height: 120px;
+        width: 86%;
+        margin-left: 3px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Tenth-Body-Row {
+        margin-top: 0px;
+        margin-left: -10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #availUsers {
+        margin-top: -10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #sNinthDiv {
+        width: 10%;
+    }
+
+    #DashBoardScreen #mainPartialContainer #widthDiv {
+        border: 1px solid #D9D9D9;
+        width: 44%;
+        height: 120px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #ulMainDiv {
+        padding: 0;
+    }
+
+    #DashBoardScreen #mainPartialContainer #ulDiv {
+        padding: 0;
+        margin-left: 25px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #fpanel {
+        margin-right: -15px !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer #glyphRow1 {
+        margin-right: -15px;
+        margin-left: -9px;
+        margin-top: 5px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #glyphRow2 {
+        margin-right: -15px;
+        margin-left: -9px;
+        margin-top: 11px;
+    }
+
+    #DashBoardScreen #mainPartialContainer .SecurityDiv {
+        margin-top: 0px;
+    }
+
+
+    #DashBoardScreen #mainPartialContainer .iSecurity {
+        border-radius: 3px;
+        padding: 2px 4px 2px 4px !important;
+        background-color: white !important;
+        color: #9F9F9F !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .modalContent {
+        height: 65em !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .modalDialog {
+        width: 65% !important;
+        left: 15%;
+    }
+}
+
+@media (min-width: 481px) and (max-width:640px) {
+
+    #DashBoardScreen #mainPartialContainer #FFDiv {
+        width: 96%;
+        margin-left: -5px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #DescriDiv {
+        margin-left: -10px;
+        padding-right: 7px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #txtAreaDescription {
+        width: 96%;
+        margin-left: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthSDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+        width: 96%;
+    }
+
+    #DashBoardScreen #mainPartialContainer .iTxtIcon {
+        padding: 0px 10px 3px 10px !important;
+        /*background-color: #34c4f9;
+        color: white;*/
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthTDiv {
+        margin-left: 0px;
+        margin-top: 8px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthFDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+        width: 96%;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FifthSDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+        width: 96%;
+    }
+
+    #DashBoardScreen #mainPartialContainer #chkDiv {
+        margin-left: -55px !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Sixth-Body-Row {
+        margin-top: 8px;
+        margin-left: 50px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #EighthTDiv {
+        margin-top: 0px;
+        margin-left: -14px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Eighth-Body-Row {
+        margin-left: -9px;
+        margin-top: 0px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #NinthFdiv {
+        border: 1px solid #D9D9D9;
+        width: 45%;
+        height: 120px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #NinthFFdiv {
+        border: 1px solid #D9D9D9;
+        height: 120px;
+        width: 86%;
+        margin-left: 3px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Ninth-Body-Row {
+        margin-left: 7px;
+        margin-right: -6px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Tenth-Body-Row {
+        margin-top: 0px;
+        margin-left: -10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #availUsers {
+        margin-top: -10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #sNinthDiv {
+        width: 9%;
+    }
+
+    #DashBoardScreen #mainPartialContainer #widthDiv {
+        border: 1px solid #D9D9D9;
+        width: 45%;
+        height: 120px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #ulMainDiv {
+        padding: 0;
+    }
+
+    #DashBoardScreen #mainPartialContainer #ulDiv {
+        padding: 0;
+        margin-left: 25px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #fpanel {
+        margin-right: -5px !important;
+    }
+
+
+    #DashBoardScreen #mainPartialContainer #glyphRow1 {
+        margin-right: -10px;
+        margin-left: -9px;
+        margin-top: 5px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #glyphRow2 {
+        margin-right: -10px;
+        margin-left: -9px;
+        margin-top: 11px;
+    }
+
+    #DashBoardScreen #mainPartialContainer .SecurityDiv {
+        margin-top: 0px;
+    }
+
+    #DashBoardScreen #mainPartialContainer .iSecurity {
+        border-radius: 3px;
+        padding: 2px 4px 2px 4px !important;
+        background-color: white !important;
+        color: #9F9F9F !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .modalContent {
+        height: 65em !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .modalDialog {
+        width: 65% !important;
+        left: 15%;
+    }
+}
+
+@media (min-width: 641px) and (max-width:680px) {
+
+    #DashBoardScreen #mainPartialContainer #FFDiv {
+        width: 96%;
+        margin-left: -5px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #DescriDiv {
+        margin-left: -10px;
+        padding-right: 7px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #txtAreaDescription {
+        width: 96%;
+        margin-left: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthSDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+        width: 96%;
+    }
+
+    #DashBoardScreen #mainPartialContainer .iTxtIcon {
+        padding: 0px 10px 3px 10px !important;
+        /*background-color: #34c4f9;
+        color: white;*/
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthTDiv {
+        margin-left: 0px;
+        margin-top: 8px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthFDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+        width: 96%;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FifthSDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+        width: 96%;
+    }
+
+    #DashBoardScreen #mainPartialContainer #chkDiv {
+        margin-left: -55px !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Sixth-Body-Row {
+        margin-top: 8px;
+        margin-left: 50px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #EighthTDiv {
+        margin-top: 0;
+        margin-left: -32px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #NinthFdiv {
+        border: 1px solid #D9D9D9;
+        width: 44%;
+        height: 120px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #NinthFFdiv {
+        border: 1px solid #D9D9D9;
+        height: 120px;
+        width: 86%;
+        margin-left: 3px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Ninth-Body-Row {
+        margin-left: 7px;
+        margin-right: -6px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Tenth-Body-Row {
+        margin-top: 0px;
+        margin-left: -10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #availUsers {
+        margin-top: -10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #sNinthDiv {
+        width: 6%;
+    }
+
+    #DashBoardScreen #mainPartialContainer #widthDiv {
+        border: 1px solid #D9D9D9;
+        width: 45%;
+        height: 120px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #ulMainDiv {
+        padding: 0;
+    }
+
+    #DashBoardScreen #mainPartialContainer #ulDiv {
+        padding: 0;
+        margin-left: 25px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #fpanel {
+        margin-right: 5px !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer #glyphRow1 {
+        margin-right: -10px;
+        margin-left: -9px;
+        margin-top: 5px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #glyphRow2 {
+        margin-right: -10px;
+        margin-left: -9px;
+        margin-top: 11px;
+    }
+
+    #DashBoardScreen #mainPartialContainer .SecurityDiv {
+        margin-top: 0px;
+    }
+
+    #DashBoardScreen #mainPartialContainer .iSecurity {
+        border-radius: 3px;
+        padding: 2px 4px 2px 4px !important;
+        background-color: white !important;
+        color: #9F9F9F !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .modalContent {
+        height: 60em !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .modalDialog {
+        width: 65% !important;
+        left: 15%;
+    }
+}
+
+@media (min-width: 681px) and (max-width:768px) {
+    #DashBoardScreen #mainPartialContainer #glyphRow1 {
+        margin-right: -15px;
+        margin-left: -6px;
+        margin-top: 5px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #glyphRow2 {
+        margin-right: -15px;
+        margin-left: -6px;
+        margin-top: 11px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FFDiv {
+        margin-left: -5px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #DescriDiv {
+        margin-left: -10px;
+        padding-right: 7px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #txtAreaDescription {
+        margin-left: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthSDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer .iTxtIcon {
+        padding: 0px 10px 3px 10px !important;
+        /*background-color: #34c4f9;
+        color: white;*/
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthTDiv {
+        margin-left: 0px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthFDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FifthSDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #chkDiv {
+        margin-left: 0px !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Sixth-Body-Row {
+        margin-top: 8px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #EighthTDiv {
+        margin-top: 0;
+        margin-left: -130px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #NinthFdiv {
+        border: 1px solid #D9D9D9;
+        width: 47%;
+        height: 120px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #NinthFFdiv {
+        border: 1px solid #D9D9D9;
+        height: 120px;
+        width: 86%;
+        margin-left: 3px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Ninth-Body-Row {
+        margin-left: 7px;
+        margin-right: -6px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Tenth-Body-Row {
+        margin-top: 0px;
+        margin-left: -10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #availUsers {
+        margin-top: -10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #sNinthDiv {
+        width: 6%;
+    }
+
+    #DashBoardScreen #mainPartialContainer #widthDiv {
+        border: 1px solid #D9D9D9;
+        width: 47%;
+        height: 120px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #ulMainDiv {
+        padding: 0;
+    }
+
+    #DashBoardScreen #mainPartialContainer #ulDiv {
+        padding: 0;
+        margin-left: 25px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #fpanel {
+        margin-right: -22px !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .SecurityDiv {
+        margin-top: 0px;
+    }
+
+    #DashBoardScreen #mainPartialContainer .iSecurity {
+        border-radius: 3px;
+        padding: 2px 4px 2px 4px !important;
+        background-color: white !important;
+        color: #9F9F9F !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .modalContent {
+        height: 60em !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .modalDialog {
+        width: 65% !important;
+        left: 15%;
+    }
+}
+
+@media (min-width: 769px) and (max-width:992px) {
+    /*.col-sm-3 {
+        width: 100% !important;
+    }*/
+
+    #DashBoardScreen #mainPartialContainer #glyphRow1 {
+        margin-right: -15px;
+        margin-left: -6px;
+        margin-top: 5px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #glyphRow2 {
+        margin-right: -15px;
+        margin-left: -6px;
+        margin-top: 11px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FFDiv {
+        margin-left: -5px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #DescriDiv {
+        margin-left: -10px;
+        padding-right: 7px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #txtAreaDescription {
+        margin-left: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthSDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer .iTxtIcon {
+        padding: 0px 10px 3px 10px !important;
+        /*background-color: #34c4f9;
+        color: white;*/
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthTDiv {
+        margin-left: 0px;
+        margin-top: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthFDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+        margin-top: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FifthSDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #chkDiv {
+        margin-left: 0px !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Sixth-Body-Row {
+        margin-top: 8px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #EighthTDiv {
+        margin-top: 0;
+        margin-left: -130px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #NinthFdiv {
+        border: 1px solid #D9D9D9;
+        width: 47%;
+        height: 120px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #NinthFFdiv {
+        border: 1px solid #D9D9D9;
+        height: 120px;
+        width: 86%;
+        margin-left: 3px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Ninth-Body-Row {
+        margin-left: 7px;
+        margin-right: -6px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Tenth-Body-Row {
+        margin-top: 0px;
+        margin-left: -10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #availUsers {
+        margin-top: -10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #sNinthDiv {
+        width: 6%;
+    }
+
+    #DashBoardScreen #mainPartialContainer #widthDiv {
+        border: 1px solid #D9D9D9;
+        width: 47%;
+        height: 120px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #ulMainDiv {
+        padding: 0;
+    }
+
+    #DashBoardScreen #mainPartialContainer #ulDiv {
+        padding: 0;
+        margin-left: 25px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #fpanel {
+        margin-right: -22px !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .SecurityDiv {
+        margin-top: 0px;
+    }
+
+    #DashBoardScreen #mainPartialContainer .iSecurity {
+        border-radius: 3px;
+        padding: 2px 4px 2px 4px !important;
+        background-color: white !important;
+        color: #9F9F9F !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .modalContent {
+        height: 34em !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .modalDialog {
+        width: 65% !important;
+    }
+}
+
+
+
+@media (min-width: 993px) and (max-width:1200px) {
+    #DashBoardScreen #mainPartialContainer .mcol-md-2 {
+        width: 70% !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer #glyphRow1 {
+        margin-right: -15px;
+        margin-left: 0px;
+        margin-top: 5px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #glyphRow2 {
+        margin-right: -15px;
+        margin-left: 0px;
+        margin-top: 11px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FFDiv {
+        margin-left: -5px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #DescriDiv {
+        margin-left: -10px;
+        padding-right: 7px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #txtAreaDescription {
+        margin-left: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthSDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer .iTxtIcon {
+        padding: 0px 10px 6px 10px !important;
+        /*background-color: #34c4f9;
+        color: white;*/
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthTDiv {
+        margin-left: 0px;
+        margin-top: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthFDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+        margin-top: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FifthSDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #chkDiv {
+        margin-left: 0px !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Sixth-Body-Row {
+        margin-top: 8px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #EighthTDiv {
+        margin-top: 0;
+        margin-left: 30px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #NinthFdiv {
+        border: 1px solid #D9D9D9;
+        width: 47%;
+        height: 120px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #NinthFFdiv {
+        border: 1px solid #D9D9D9;
+        height: 120px;
+        width: 86%;
+        margin-left: 3px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Ninth-Body-Row {
+        margin-left: 7px;
+        margin-right: -6px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Tenth-Body-Row {
+        margin-top: 0px;
+        margin-left: -10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #availUsers {
+        margin-top: 0px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #sNinthDiv {
+        width: 6%;
+    }
+
+    #DashBoardScreen #mainPartialContainer #widthDiv {
+        border: 1px solid #D9D9D9;
+        width: 47%;
+        height: 120px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #ulMainDiv {
+        padding: 0;
+    }
+
+    #DashBoardScreen #mainPartialContainer #ulDiv {
+        padding: 0;
+        margin-left: 25px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #fpanel {
+        margin-right: -25px !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .SecurityDiv {
+        margin-top: 0px;
+    }
+
+    #DashBoardScreen #mainPartialContainer .iSecurity {
+        border-radius: 3px;
+        padding: 2px 4px 2px 4px !important;
+        background-color: white !important;
+        color: #9F9F9F !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .modalContent {
+        height: 32em !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .modalDialog {
+        width: 65% !important;
+    }
+}
+
+@media (min-width: 1201px) and (max-width:1520px) {
+    #DashBoardScreen .clsPaddingLeft {
+        padding-left: 65px;
+    }
+
+    .rtl #DashBoardScreen #mainPartialContainer {
+        padding-left: 330px;
+    }
+
+    .ltr #DashBoardScreen #mainPartialContainer {
+        padding-right: 330px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #glyphRow1 {
+        margin-right: -15px;
+        margin-left: 2px;
+        margin-top: 5px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #glyphRow2 {
+        margin-right: -15px;
+        margin-left: 2px;
+        margin-top: 11px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FFDiv {
+        width: 83.2%;
+        margin-left: -5px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #DescriDiv {
+        margin-left: -10px;
+        padding-right: 7px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #txtAreaDescription {
+        margin-left: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthSDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer .iTxtIcon {
+        padding: 0px 10px 8px 10px !important;
+        /*background-color: #34c4f9;
+        color: white;*/
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthTDiv {
+        margin-left: 0px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthFDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FifthSDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #chkDiv {
+        margin-left: 0px !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Sixth-Body-Row {
+        margin-top: 8px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #EighthTDiv {
+        margin-top: 0;
+        margin-left: 39px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #NinthFdiv {
+        border: 1px solid #D9D9D9;
+        width: 47%;
+        height: 120px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #NinthFFdiv {
+        border: 1px solid #D9D9D9;
+        height: 120px;
+        width: 86%;
+        margin-left: 3px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Ninth-Body-Row {
+        margin-left: 7px;
+        margin-right: -6px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Tenth-Body-Row {
+        margin-top: 0px;
+        margin-left: -10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #sNinthDiv {
+        width: 6%;
+    }
+
+    #DashBoardScreen #mainPartialContainer #widthDiv {
+        border: 1px solid #D9D9D9;
+        width: 47%;
+        height: 120px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #ulMainDiv {
+        padding: 0;
+    }
+
+    #DashBoardScreen #mainPartialContainer #ulDiv {
+        padding: 0;
+        margin-left: 25px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #fpanel {
+        margin-right: -25px !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .modalContent {
+        height: 32em !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .modalDialog {
+        width: 65% !important;
+    }
+}
+
+@media (min-width: 1521px) and (max-width:2060px) {
+    #DashBoardScreen #mainPartialContainer .clsPaddingLeft {
+        padding-left: 65px;
+    }
+
+    .rtl #DashBoardScreen #mainPartialContainer {
+        padding-left: 330px;
+    }
+
+    .ltr #DashBoardScreen #mainPartialContainer {
+        padding-right: 330px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FFDiv {
+        width: 83.2%;
+        margin-left: -5px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #DescriDiv {
+        margin-left: -10px;
+        padding-right: 7px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #txtAreaDescription {
+        margin-left: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthSDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer .iTxtIcon {
+        padding: 0px 10px 8px 10px !important;
+        /*background-color: #34c4f9;
+        color: white;*/
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthTDiv {
+        margin-left: 0px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthFDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FifthSDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #chkDiv {
+        margin-left: 0px !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Sixth-Body-Row {
+        margin-top: 8px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #EighthTDiv {
+        margin-top: 0;
+        margin-left: 39px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #NinthFdiv {
+        border: 1px solid #D9D9D9;
+        width: 47%;
+        height: 120px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #NinthFFdiv {
+        border: 1px solid #D9D9D9;
+        height: 120px;
+        width: 86%;
+        margin-left: 3px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Ninth-Body-Row {
+        margin-left: 7px;
+        margin-right: -6px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Tenth-Body-Row {
+        margin-top: 0px;
+        margin-left: -10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #sNinthDiv {
+        width: 6%;
+    }
+
+    #DashBoardScreen #mainPartialContainer #widthDiv {
+        border: 1px solid #D9D9D9;
+        width: 47%;
+        height: 120px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #ulMainDiv {
+        padding: 0;
+    }
+
+    #DashBoardScreen #mainPartialContainer #ulDiv {
+        padding: 0;
+        margin-left: 25px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #fpanel {
+        margin-right: -25px !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer #glyphRow1 {
+        margin-right: -15px;
+        margin-left: 17px;
+        margin-top: 5px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #glyphRow2 {
+        margin-right: -15px;
+        margin-left: 17px;
+        margin-top: 11px;
+    }
+
+    #DashBoardScreen #mainPartialContainer .modalContent {
+        height: 32em !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .modalDialog {
+        width: 65% !important;
+    }
+}
+
+@media screen and (min-width: 2061px) {
+    #mainPartialContainer .clsPaddingLeft {
+        padding-left: 65px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #glyphRow1 {
+        margin-right: -15px;
+        margin-left: 45px;
+        margin-top: 5px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #glyphRow2 {
+        margin-right: -15px;
+        margin-left: 45px;
+        margin-top: 11px;
+    }
+
+    .rtl #DashBoardScreen #mainPartialContainer {
+        padding-left: 330px;
+    }
+
+    .ltr #DashBoardScreen #mainPartialContainer {
+        padding-right: 330px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FFDiv {
+        width: 83.2%;
+        margin-left: -5px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #DescriDiv {
+        margin-left: -10px;
+        padding-right: 7px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #txtAreaDescription {
+        margin-left: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthSDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer .iTxtIcon {
+        padding: 0px 10px 8px 10px !important;
+        /*background-color: #34c4f9;
+        color: white;*/
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthTDiv {
+        margin-left: 0px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FourthFDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #FifthSDiv {
+        margin-left: 0px;
+        padding-right: 10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #chkDiv {
+        margin-left: 0px !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Sixth-Body-Row {
+        margin-top: 8px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #EighthTDiv {
+        margin-top: 0;
+        margin-left: 39px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #NinthFdiv {
+        border: 1px solid #D9D9D9;
+        width: 47%;
+        height: 120px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #NinthFFdiv {
+        border: 1px solid #D9D9D9;
+        height: 120px;
+        width: 86%;
+        margin-left: 3px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Ninth-Body-Row {
+        margin-left: 7px;
+        margin-right: -6px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #Tenth-Body-Row {
+        margin-top: 0px;
+        margin-left: -10px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #sNinthDiv {
+        width: 6%;
+    }
+
+    #DashBoardScreen #mainPartialContainer #widthDiv {
+        border: 1px solid #D9D9D9;
+        width: 47%;
+        height: 120px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #ulMainDiv {
+        padding: 0;
+    }
+
+    #DashBoardScreen #mainPartialContainer #ulDiv {
+        padding: 0;
+        margin-left: 25px;
+    }
+
+    #DashBoardScreen #mainPartialContainer #fpanel {
+        margin-right: -25px !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .modalContent {
+        height: 32em !important;
+    }
+
+    #DashBoardScreen #mainPartialContainer .modalDialog {
+        width: 65% !important;
+    }
+}
+
+/*End CSS OF CreateDashBoardPartial Page*/
+
+
+
+
+
+
+
+
+/*Css For Dashlet Delete Dashboard_modal*/
+/*@media (min-width: 768px) {
+    #DashBoardScreen .modal-dialog {
+        width: 24% !important;
+        margin-top: 7px;
+    }
+}
+
+@media (max-width: 768px) {
+    #DashBoardScreen .modal-dialog {
+        width: 36% !important;
+        margin-top: 7px;
+        margin: 30px auto;
+    }
+}
+
+@media (max-width: 480px) {
+    #DashBoardScreen .modal-dialog {
+        width: 70% !important;
+        margin-top: 7px;
+        margin: 30px auto;
+    }
+}*/
+/*End Here*/
+#DashBoardScreen #searchedLi li {
+    margin: 5px 0 0 22px !important;
+    padding: 5px 8px 8px 5px;
+    font-size: 13px;
+    list-style: none;
+}
+
+    #DashBoardScreen #searchedLi li:hover {
+        /*background-color: #808080 !important;
+         background-color: rgb(222, 245, 253)  !important;
+       }
+
+    #DashBoardScreen #searchedLi li a {
+        text-decoration: none;
+        color: #ffffff;
+    }
+
+        #DashBoardScreen #searchedLi li a label {
+            cursor: pointer;
+            margin-bottom: -4px;
+        }
+
+    #DashBoardScreen #searchedLi li .PANEl_DELetE {
+        cursor: pointer;
+        margin: 3px 15px 0px 0;
+        padding: 0px;
+        display: none;
+        float: right;
+        font-size: 13px;
+        color: #fff;
+    }
+
+    #DashBoardScreen #searchedLi li .PANEl_EDiTE {
+        cursor: pointer;
+        margin: 3px 15px 0px 0;
+        padding: 0px;
+        display: none;
+        float: right;
+        font-size: 13px;
+        color: #fff;
+    }
+
+        #DashBoardScreen #searchedLi li .PANEl_EDiTE:hover {
+            color: rgb(52, 196, 249);
+        }
+
+    #DashBoardScreen #searchedLi li .PANEl_DELetE:hover {
+        color: red;
+    }
+
+    #DashBoardScreen #searchedLi li:hover .PANEl_DELetE {
+        display: block;
+    }
+
+    #DashBoardScreen #searchedLi li:hover .PANEl_EDiTE {
+        display: block;
+    }
+
+#divContainerCust #searchedLiTrans li {
+margin: 5px 0 0 0;
+padding: 8px 5px 8px 53px;
+font-size: 13px;
+list-style: none;
+}
+
+#divContainerCust #searchedLiTrans li:hover {
+    background-color: #808080 !important;
+}
+
+#divContainerCust #searchedLiTrans li a {
+    text-decoration: none;
+    color: #ffffff;
+}
+
+    #divContainerCust #searchedLiTrans li a label {
+        cursor: pointer;
+        margin-bottom: -4px;
+    }
+
+#divContainerCust #searchedLiTrans li .PANEl_DELetE {
+    cursor: pointer;
+    margin: 3px 15px 0px 0;
+    padding: 0px;
+    display: none;
+    float: right;
+    font-size: 13px;
+    color: #fff;
+}
+
+#divContainerCust #searchedLiTrans li .PANEl_EDiTE {
+    cursor: pointer;
+    margin: 3px 15px 0px 0;
+    padding: 0px;
+    display: none;
+    float: right;
+    font-size: 13px;
+    color: #fff;
+}
+
+    #divContainerCust #searchedLiTrans li .PANEl_EDiTE:hover {
+        color: rgb(52, 196, 249);
+    }
+
+#divContainerCust #searchedLiTrans li .PANEl_DELetE:hover {
+    color: red;
+}
+
+#divContainerCust #searchedLiTrans li:hover .PANEl_DELetE {
+    display: block;
+}
+
+#divContainerCust #searchedLiTrans li:hover .PANEl_EDiTE {
+    display: block;
+}
+
+
+/*Added ruby Danish for Dashboard definition FontControl PopUp Dashboard_modal*/
+#DashBoardScreen #mainPartialContainer .noWrap {
+    white-space: nowrap;
+}
+
+/*#DashBoardScreen .clsBlueColor:hover {
+    color: #34C4F9 !important;
+    cursor: pointer !important;
+}
+
+#DashBoardScreen #mainPartialContainer .ddlclsBlueColor {
+    color: #34C4F9 !important;
+}
+
+#DashBoardScreen #mainPartialContainer .clsBlueColor {
+    color: black !important;
+}*/
+
+#DashBoardScreen #mainPartialContainer .Dashboard_modalDialog {
+    width: 65% !important;
+    left: 20% !important;
+}
+
+@media (max-width:992px) {
+    /*.col-md-8{
+       width: 70.667% !important;
+   }*/
+}
+
+.rtl .dashName {
+    margin-left: 10px !important;
+}
+
+.rtl #DashBoardScreen .icon-cancel {
+}
+
+.rtl #DashBoardScreen .icon-save {
+    left: 7px;
+}
+
+.rtl .Dashboard_Panelh3 {
+    margin-right: 15px;
+}
+
+.rtl #DashBoardScreen .Dashboard_Graph_panel .search {
+    padding: 0px 25px 0px 14px;
+}
+
+.rtl #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .Graph_icon {
+    margin: 0px 15px 0px 10px;
+}
+
+.rtl #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .Report_icon {
+    margin: 0px 15px 0px 10px;
+}
+
+.rtl #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul li a .Panel_icon {
+    margin: 0px 15px 0px 10px;
+}
+
+.rtl #DashBoardScreen .iconCircle {
+    margin-left: 12px;
+}
+
+.rtl #DashBoardScreen .Dashboard_Graph_panel .Graph_List ul .Gsubmenu li .PANEl_DELetE {
+    margin: 2px 12px 0px 0;
+}
+
+.rtl #DashBoardScreen .icon-ok {
+    padding-left: 10px;
+}
+
+.ltr #DashBoardScreen .icon-ok {
+    padding-right: 10px;
+}
+
+.ltr #DashBoardScreen .icon-clear {
+    padding-right: 10px;
+}
+
+.ltr #DashBoardScreen .icon-cancel {
+    padding-right: 12px;
+}
+
+.ltr .selectDashboard {
+    margin-right: 12px;
+}
+
+.rtl .selectDashboard {
+    margin-left: 6px !important;
+}
+
+.rtl .ddlDateFilter {
+    right: -465% !important;
+}
+
+.ltr .ddlDateFilter {
+    right: 0 !important;
+}
+
+.rtl .filterDropDown {
+    right: -500% !important;
+}
+
+.ltr .filterDropDown {
+    right: 0 !important;
+}
+
+.clsinLine {
+    margin-right: 0px;
+    padding-left: 0px;
+}
+
+.rtl #urltext {
+    margin-right: 5px;
+}
+
+.ltr .foospancls {
+    color: #D9D9D9;
+    float: left;
+    margin-left: -13px;
+}
+
+.rtl .foospancls {
+    color: #D9D9D9;
+    float: right;
+    margin-left: -13px;
+}
+
+.ltr .mirrorchk {
+}
+
+.rtl .mirrorchk {
+    transform: rotate(0deg) scaleX(-1);
+}
+
+.ltr .Filtericoncls {
+    cursor: pointer;
+    padding-right: 10px;
+}
+
+.rtl .Filtericoncls {
+    cursor: pointer;
+}
+
+.ltr .infoiconcls {
+    cursor: pointer;
+}
+
+.rtl .infoiconcls {
+    cursor: pointer;
+    padding-left: 0px;
+}
+
+.ltr .DashInfocls {
+    cursor: pointer;
+}
+
+.rtl .DashInfocls {
+    cursor: pointer;
+    padding-left: 30px;
+}
+
+#fieldtab li span:hover {
+    color: #34c4f9;
+}
+
+.graphIconPinterEventNone {
+    pointer-events: none;
+}
+
+.clcompactive1:hover {
+    color: #34c4f9;
+}
+
+.hideLegend {
+     display: none !important;
+}
+
+.showLegend {
+    display: inline-block !important;
+}
+
+@@media screen and (max-width: 500px) {
+    .amchartsMainBottomCss2 {
+        padding-left: 45px !important;
+        width: 101% !important;
+    }
+}
+
+.amChartsLegendBottom {
+    left: -76px !important;
+}
+
+.amExportButton {
+    top: 4px !important;
+}
+
+.amchartsMainBottomCss {
+    padding-left: 90px !important;
+    width: 100% !important;
+}
+    svg:not(:root) {
+    overflow: initial !important;
+}
+.amchartsMainSBottomCss {
+    padding-left: 0px;
+}
+
+.amchartsChartBottomCss {
+    left: -50px !important;
+}
+
+.amchartsChartTopCss {
+    left: -17px !important;
+}
+
+.amchartsChartNoneCss {
+    left: -60px !important;
+}
+
+.amchartsMainNoneCss {
+    width: 100% !important;
+    margin-right: 50px !important;
+    padding-left: 40px !important;
+}
+
+.amchartsLegendLeftCss {
+    left: -15px !important;
+}
+
+.amchartsChartLeftCss {
+    left: 120px !important;
+}
+
+.amcharts-legend-value {
+    display: none !important;
+}
+
+.MainDivWidth {
+    width: 82.7% !important;
+    margin-left: 17.3% !important;
+}
+
+.sMainDivWidth {
+    width: 77.7% !important;
+}
+
+.scrollable {
+    overflow-y: auto !important;
+}
+
+.fDate {
+    height: 28px !important;
+}
+
+#chartdiv {
+    width: 100%;
+    height: 435px;
+    font-size: 11px;
+}
+                
+#GraphList a {
+    color: black;
+}
+
+.ddlSide {
+}
+
+.SideDiv {
+    margin-top: 8px;
+}
+
+.Dashboard_sidebarmenu {
+    z-index: 1;
+    background-color: #f2f1f1;
+}
+
+.OverFlowhiddenClass {
+    /*overflow: hidden !important;*/
+}
+        
+.option_container {    
+  z-index:9999999999 !important;
+  position:fixed !important;
+}

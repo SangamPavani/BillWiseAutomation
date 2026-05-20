@@ -1,0 +1,59 @@
+var clRefresh=new function()
+{
+    var me=this;
+    this.showFields = function(thisObj,evt,sCallbackFunction,iScrnType)
+    {
+        var iId,iTimeInterval,tfRefreshTime;
+        iId = thisObj.id;
+        tfRefreshTime = document.getElementById("tfRefreshTime");
+        if(iId == "rbCustomizeTime")
+        {
+            tfRefreshTime.disabled = false;
+            tfRefreshTime.focus();
+            //            tfRefreshTime.value = "0";
+        }
+        else
+        {
+            tfRefreshTime.disabled = true;
+            tfRefreshTime.value = "";
+            iTimeInterval = thisObj.value;
+            //if(iTimeInterval > 0)
+                sCallbackFunction(iTimeInterval);
+            /*else if(iScrnType == 1 && iTimeInterval == 0)
+                clLocationTracker.clearAutoRefresh();*/
+            //            cross.setVisible(document.getElementById("imgDown"),false);
+            if(iScrnType == 0)
+                msg.hideToastWindowDlg(false,"refresh",document.getElementById("imgRefresh"));
+            else
+                msg.hideToastWindowDlg(false,"refreshLcnTrac",document.getElementById("imgRefreshLcnTrac"));
+        }
+    };
+    this.onkeyPressValidateData = function(thisObj,evt,sCallbackFunction,iScrnType)
+    {
+
+        var iKeyCode, iTimeInterval,iLength;
+        evt = cross.getEvent(evt);
+        iKeyCode = cross.getKeyCode(evt);
+        iTimeInterval = util.trim(thisObj.value);
+        iLength = iTimeInterval.length;
+        if(iLength > 0 && (iKeyCode == 9 || iKeyCode == 13))
+        {
+
+            if(iTimeInterval > 0)
+                sCallbackFunction(iTimeInterval);
+            if(iScrnType == 0)
+                msg.hideToastWindowDlg(false,"refresh",document.getElementById("imgRefresh"));
+            else
+                msg.hideToastWindowDlg(false,"refreshLcnTrac",document.getElementById("imgRefreshLcnTrac"));
+
+        }
+        if(iKeyCode == 13)
+        {
+            cross.cancelBubble(evt,false);
+            return false;
+        }
+
+
+    };
+
+};

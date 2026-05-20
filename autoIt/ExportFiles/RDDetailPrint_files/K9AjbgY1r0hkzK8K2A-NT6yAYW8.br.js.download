@@ -1,0 +1,1 @@
+sj_evt.bind("csLaunchFeedback",function(){if(typeof Feedback!="undefined"&&typeof Feedback.Bootstrap!="undefined"){var n=Feedback.Bootstrap.launchFeedback;n&&n("ca_dislike")}});var CopilotSearch;(function(n){function t(t){var i=n.Citation;i&&i.init(t.locStrings.allSources)}n.SecondBundle={init:t};sj_evt.fire("ShellSecondBundleLoaded")})(CopilotSearch||(CopilotSearch={}))

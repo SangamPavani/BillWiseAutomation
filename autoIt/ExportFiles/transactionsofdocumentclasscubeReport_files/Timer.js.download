@@ -1,0 +1,111 @@
+/**
+ * Created by samresh on 06-03-2017.
+ */
+
+var clTimer=new function()
+{
+    app.registerInstance("clTimer",clTimer);
+
+    var me=this;
+    var arrTimerIds=null; //[{"fldId":"F35001","timerId":""},{"fldId":"F35002","timerId":""}]
+
+    this.pad=function(val)
+    {
+        var valString = val + "";
+        if(valString.length < 2)
+        {
+            return "0" + valString;
+        }
+        else
+        {
+            return valString;
+        }
+    };
+
+
+    this.startTimer=function(id)
+    {
+        //var lastDgt =id.substr(id.length - 1);
+        //alert(lastDgt)
+        //var elementList = document.querySelectorAll('*[id^="timer"]');
+        //alert(elementList.length)
+
+        var iTotalSeconds=document.getElementById(id).getAttribute("totalSeconds");
+
+        if(!iTotalSeconds)
+        {
+            iTotalSeconds=0;
+            var sDefaultValue=document.getElementById(id).getAttribute("value");
+
+            if (sDefaultValue.indexOf(":") != -1)
+            {
+                iTotalSeconds = 0;
+                var arrTime = sDefaultValue.split(":");
+                iTotalSeconds = 0;
+                if (arrTime[0] > 0)
+                    iTotalSeconds += parseInt(arrTime[0]) * 60 * 60;
+                if (arrTime[1] > 0)
+                    iTotalSeconds += parseInt(arrTime[1]) * 60;
+                if (arrTime[2] > 0)
+                    iTotalSeconds += parseInt(arrTime[2]);
+            }
+        }
+        else
+        {
+            iTotalSeconds=parseInt(iTotalSeconds);
+        }
+
+        if(arrTimerIds==null)
+            arrTimerIds=[];
+
+        var iInterval=setInterval(function(){
+            var hour,minute,seconds;
+            //alert(iTotalSeconds)
+            //iTotalSeconds1= ++totalSeconds;
+            ++iTotalSeconds;
+            hour = Math.floor(iTotalSeconds /3600);
+            minute = Math.floor((iTotalSeconds - hour*3600)/60);
+            seconds = iTotalSeconds - (hour*3600 + minute*60);
+            var sTime =clTimer.pad(hour)+ ":" + clTimer.pad(minute) + ":" + clTimer.pad(seconds);
+            if(clAppBuffer.getFarsiCalendar()=="true")
+                sTime = util.toPersianNumber(sTime);
+            document.getElementById(id).value =sTime;
+
+
+
+            document.getElementById(id).setAttribute("totalSeconds",iTotalSeconds);
+
+        }, 1000);
+
+        arrTimerIds[arrTimerIds.length]={"fldId":id,"timerId":iInterval};
+    };
+
+
+    this.stopTimer=function(id)
+    {
+        if(arrTimerIds!=null)
+        {
+            for (var i = 0; i < arrTimerIds.length; i++)
+            {
+                if (arrTimerIds[i].fldId == id)
+                {
+                    clearInterval(arrTimerIds[i].timerId);
+                    arrTimerIds.splice(i,1);
+                    break;
+                }
+            }
+            //var duration=document.getElementById(id);
+        }
+    };
+
+    this.clearAllTimers=function()
+    {
+         if(arrTimerIds!=null)
+         {
+             for(var i=0;i < arrTimerIds.length;i++)
+                 clearInterval(arrTimerIds[i].timerId);
+             arrTimerIds=null;
+         }
+    }
+
+};

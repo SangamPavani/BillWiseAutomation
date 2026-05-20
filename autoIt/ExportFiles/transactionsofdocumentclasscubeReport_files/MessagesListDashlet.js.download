@@ -1,0 +1,75 @@
+
+var clMessagesListDashlet=new function()
+{
+   // app.registerInstance("MessagesListDashlet",this);
+    var me= this;
+    this.deleteShortCut = function(e)
+   {
+       var sUrl = con.getStruts2Url("security","home","deleteShortcut");//security/home!saveShortcuts.do
+       var spDelete = document.getElementById("spDelete_"+me.dashletId);
+       con.sendPostRequest(sUrl,"&moduleId="+spDelete.getAttribute("moduleId")+"&viewMode="+spDelete.getAttribute("viewMode"),null,clMessagesListDashlet.arhDelete);
+       cross.cancelBubble(e)  ;
+        return false;
+   };
+
+    this.arhDelete =function(status)
+    {          
+       if(parseInt(status) == 1)
+       {
+                 
+          var dashletId = me.dashletId;//document.getElementById("spDelete_"+me.dashletId).getAttribute("dashletId");
+           var spDelete = document.getElementById("spDelete_"+dashletId);
+           document.body.appendChild(spDelete);
+           me.objDv.parentNode.removeChild(me.objDv);
+
+           if((cross.getInnerText(document.getElementById("dv_"+dashletId))).length ==0 )
+           {
+               document.getElementById("dvNoDataFound_"+dashletId).style.display="";
+           }
+       }
+
+    }
+
+   /* this.colorChange=function()
+    {    document.getElementById("listTable").style.cursor = "pointer";
+         document.getElementById("listTable").style.backgroundColor="#DFCEB2";
+        
+    };
+    this.leave=function()
+    {
+     document.getElementById("listTable").style.backgroundColor="";   
+    };*/
+
+     this.onMOverMessages = function(objDv,bHover,bOver,moduleId,viewMode,dashletId,e)
+    {
+    var index= 2;
+      //objDv.className = bOver?"shortcutsRowColor":"";
+        if(dashletId==undefined)
+        {
+            dashletId="";
+            index=1;
+        }
+      //var tbl = cross.getFirstElement(objDv.childNodes),tr;
+      //tr = tbl.tBodies[0].rows[0];
+      var spDelete = document.getElementById("spDelete_"+dashletId);
+//alert(spDelete)
+
+      me.dashletId = dashletId;
+
+      if(bHover)
+      {
+
+        me.objDv = objDv;
+        spDelete.setAttribute("viewMode",viewMode);
+        spDelete.setAttribute("moduleId",moduleId);
+//        spDelete.setAttribute("dashletId",dashletId);
+        spDelete.style.display = "";
+        //tr.cells[index].appendChild(spDelete);
+          me.objDv.appendChild(spDelete);
+      }
+      else
+        spDelete.style.display = "none";
+
+    };
+
+};

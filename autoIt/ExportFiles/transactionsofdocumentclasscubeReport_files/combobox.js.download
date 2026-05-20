@@ -1,0 +1,5424 @@
+/*
+    me.checkAndAddItem(me.txtField.value,true)
+ */
+ /*me.checkAndAddItem(me.txtField.value,true)
+
+ @form form reference
+ @ltxtField input field refernce
+ @sComboId combo id
+ @iMasterType
+ @iSelectionBy
+ @iSelectionType
+ @iAccountType
+
+
+ ex
+ ----------------------------------
+ |                                  |---------- Text Field
+ ----------------------------------
+ -------------------------------------
+ |  -------------------------          |----- main divConatiner
+ |  |      clDiv              |        |
+ |  |                         |        |
+ |  |                                  |
+ |  |                         |
+ ---------------------------------------
+ action position
+ |---------------------------------------
+ |                         |---- data div container-------------------
+ |                         |
+ |                         |
+ ------------------------
+
+ list of functions............
+ -------------------------
+ init()
+ getItemCount()
+ getIndexFromTag();
+ highlightRow(iRow)
+ highlightItem(element)
+
+ getSelectedItem() return value as string
+ getSelectedId() returns id of the selected item
+ getSelectedMaster() returns [0]=id,[1]=type
+ getSelectedIndex() returns selected item index
+ getAccountType()
+ getMasterType()
+
+ setSelectedIndex(index)
+ setSelectedMasterId(iMasterId)
+
+ setAccountType(iAcctType)
+ setMasterType(iMasterType)
+ setMasterType2(iMasterType,selectby,selecttype,parentid,iTargetModule)
+
+
+ checkAndAddItem(var sMasterName,var iMasterId ,var clAttributes)
+ getNewComboItem(var sMasterName,var sMasterId ,var clAttributes)
+
+ HidePopUp();
+ ShowPopUp();
+ isPopUpVisible();
+
+ removeAllItems();
+ searchByKey(sKey)
+ showPopupItems(iItems); no of items to be show in the popup
+ clearSelection() - clears combo selection
+
+
+ getSelectedElement() returns value as element
+ setElementToBuffer(sFieldId,clElement)
+
+ getElementFromBuffer(sFieldId)
+ checkAndAddElement(clElement,isselect)
+
+ */
+
+
+function SComboBox(lform, ltxtField, sHiddenName, url, onFocus, onLost,
+                   lFieldValue,
+                   sNamesArray, iIds,
+                   clArrtibutes,
+                   scrollId,
+                   ilDisplayItems,
+                   iParentSeqId,
+                   sRefTable,
+                   sCondition,
+                   sColAttrNames,
+                   sAttrNames,
+                   sAttrValues,
+                   sEmptyValue,
+                   sCascadeFields,
+                   isCascadeModParents,
+                   isAllowMultiSelect,
+                   isAllowToAddItems,
+                   isErpRelated,iFieldId,sCustDispArray,iCustWidths,iSelectBy,sAfterKeyUpHandler,
+                   scrollId2,bDoNotShowHeader,arrSrcFilterFields
+)
+{
+
+
+
+    var me = this;
+
+    this.sEmptyValue=((sEmptyValue)?sEmptyValue:"");
+    this.isAppScope = false;
+    this.scrollId = scrollId;
+    this.iParentSeqId = 0;
+
+    if (iParentSeqId)//&& util.trim(iParentSeqId).length>0
+        this.iParentSeqId = iParentSeqId;
+    if (sRefTable)
+        this.sRefTable = sRefTable;
+    else
+        this.sRefTable = '';
+
+    this.sCondition = sCondition;
+    this.sColAttrNames = sColAttrNames;
+
+    if (!this.scrollId)
+    {
+
+        var clElement = document.getElementById("dialogscroller")
+        if (clElement)
+            this.scrollId = "dialogscroller";
+        else if(document.getElementById("dvContentView"))
+            this.scrollId = "dvContentView";
+        else
+            this.scrollId = "containerDiv";// center content part dive id
+
+        // alert(this.scrollId)
+        /*  if(clElements)
+         { for (var i = 0; i < clElements.length; i++)
+         {
+         alert(clElements[i].id+"  "+clElements[i].nodeName+" "+clElements[i].src)
+         if(clElements[i].className.toLowerCase() =='contentframe') // assdumed for the dialog
+         {
+         this.scrollId=clElements[i].id;
+         break;
+         }
+         }
+         }*/
+        //  if(!this.scrollId)
+
+    }
+    this.parentElement = document.getElementById(this.scrollId);
+    this.parentElement2=null;
+    if(scrollId2)
+        this.parentElement2 = document.getElementById(scrollId2);
+    this.stopHandlingEvts = false;
+    this.isMouseDown = false;
+
+    // used in the focus gained event of main conatainer or  div tag to avoid showing the containers
+    this.isAjaxSupported = false;
+    this.isIE = document.all;//|| document.getElementById
+    this.isNetscape = document.layers
+    //this.sHiddenName=sHiddenName;
+
+    this.sLastValue = "";
+    this.FieldValue = "";
+    if (lFieldValue)
+        this.FieldValue = lFieldValue;// drop
+
+    this.txtField = ltxtField;
+    this.txtField.setAttribute('hiddenName', sHiddenName);
+    this.txtField.setAttribute('instanceid', this.txtField.id);
+    this.currentRow = -1;
+    this.sComboId = ltxtField.getAttribute('id');
+
+
+    this.sDivTag = "DIV";
+    this.sSpanTag = "DIV";
+    this.frameElement = null;
+    this.clForm = lform;
+    this.clDiv = null;
+
+    this.bDoNotShowHeader=false;
+    this.clHeaderDiv = null;
+    this.isAppendVariables=false;
+    // main DIV i,e completeDIV
+    this.clContainer = null;
+    this.iMasterType2=0;
+    this.iSqlfcMasterType=0;
+    this.iMasterType = ltxtField.getAttribute('mastertype');
+    this.iTargetModule = ltxtField.getAttribute('targetmodule');
+    this.iSelectionBy = ltxtField.getAttribute('selectionby');
+    if(iSelectBy && iSelectBy>=0)
+        this.iSelectionBy =iSelectBy;
+    this.iOrgSelectionBy=this.iSelectionBy;
+    this.iSelectionType = ltxtField.getAttribute('selectiontype');
+    this.iAccountType = ltxtField.getAttribute('accounttype');
+    this.isAppendscrollId = ltxtField.getAttribute('appendscrollId');
+    //  this.iFieldId=  ltxtField.getAttribute('ifieldid');;
+
+    this.rlBorderWidth = 1;
+    this.tbBorderWidth = 1;
+
+    //this.iTotCustWidth=800;
+    //this.iFirstColWidth=150;
+
+    if(!iCustWidths || iCustWidths[0]<=0)
+    {
+        this.iFirstColWidth=-1;
+        if(this.iMasterType==Constants.PRODUCTS)
+            this.iWidth = 88;
+        else
+            this.iWidth = 82;
+
+        if(sCustDispArray)
+        {
+            this.iFirstColWidth=0;
+            this.iWidth = 0;
+        }
+
+    }
+    else
+    {
+        // me.setCustColumnsWidth(iCustWidths);
+
+        this.iFirstColWidth=iCustWidths[0];
+        this.iWidth =iCustWidths[1];//[0]=first col width,[1]=total of all cols including first col
+        //this.iWidth =(this.iFirstColWidth/2)+iCustWidths[1];//[0]=first col width,[1]=total of all cols including first col
+    }
+
+
+
+    this.iRowHeight = 28;//19,8;
+    this.iDisplayItems = 8;//5
+    if (ilDisplayItems)
+        this.iDisplayItems = ilDisplayItems;
+
+    if (url && url != '') {
+        this.sUrl = url;
+        //  alert(this.sUrl)
+    }
+    else
+        this.sUrl = "masters.class";
+
+    //this.sUrl = "http://127.0.0.1:6000/fow/masters.class";
+    this.sServlet = null;
+
+    this.onFocusScript = onFocus;
+    this.onLostScript = onLost;
+
+
+
+    this.funcScriptCallBack = null; // used in case master type is SCRIPTVALUES
+    this.isAlwaysFetchValues = false;
+    this.isRequestInProgress = false;
+    this.isPaused = false;
+    this.isSelectItemText=false;
+    this.arrRelMods=null;
+    this.isAllowMultiSelect=isAllowMultiSelect;
+
+    //this.isShowPopUp=true;
+    //this.isSelectItem=isSelectItem;// used in case of searchByKey
+
+    if (!this.isAppendscrollId)
+        this.isAppendscrollId = false;
+
+    // alert(this.m_iFieldId)
+    this.m_iFieldId=iFieldId;
+    this.arCascadeFields=sCascadeFields;
+    this.isCascadeModParents=isCascadeModParents;
+    this.arCascadeChildFields=null;
+    this.arrLastCastVals=null;//[0]=casfieldid,[1]=casparentids,[2]=casvals
+
+    this.isEnterKey=false;
+    this.isErpRelated=(isErpRelated)?isErpRelated:false;
+    this.iCurDivTop=0;
+    this.iCurPos=-1;
+    this.fKeyUpBeforeHandler=null;
+    this.fKeyUpAfterHandler=sAfterKeyUpHandler;
+    this.iRenderMode=-1;//Constants.COMBO_RENDER_MODE_REAL;//commented default Render
+    this.sMasterSeqIds=null;
+    this.fComboItemRenderer=null;/// function clElement,isSelected,sName,sCode,iMasterId)
+    this.byResultBy=-1;
+    this.isAppendItems=false;
+    this.arrSrcFilterFields=arrSrcFilterFields;
+
+
+
+    this.getForm = function ()
+    {
+        return this.clForm;
+    }
+
+
+
+    this.getComboElements=function()
+    {
+        return me.clDiv.childNodes;//getElementsByTagName(me.sDivTag)
+    }
+
+    //It will return array of keys at 0th index and values at 1st index of main array. Returns null if no items exists
+    this.getComboItems = function () {
+        var iItemCount = this.getItemCount();
+        if (iItemCount > 0) {
+            var arrItemNames = new Array(), arrItemIds = new Array();//,cbSelectBox;
+            var dvSelect;
+
+            for (var i = 0; i < iItemCount; i++) {
+                dvSelect = this.getItemElement(i);
+                arrItemIds[arrItemIds.length] = dvSelect.getAttribute("MasterId");
+
+                if(me.isFetchValues())
+                    arrItemNames[arrItemNames.length] = dvSelect.getElementsByTagName(this.sDivTag)[1].innerHTML;
+                else  if(dvSelect && me.iSelectionBy==Constants.COMBO_BY_CODE)
+                    arrItemNames[arrItemNames.length] = dvSelect.getAttribute("code");
+                else if(dvSelect) //if(me.iSelectionBy==Constants.COMBO_BY_NAME)
+                        arrItemNames[arrItemNames.length] =getTextFromElement(getTextElement(dvSelect));
+
+            }
+
+            return [arrItemNames, arrItemIds];  //itemnames,itemids
+        }
+        return null;
+    };
+
+    this.init = function ()
+    {
+        //objCurrentTxtField=me.txtField;
+        this.txtField.autocomplete = "off";
+        this.isAjaxSupported = true
+        var iframeUrl = this.url + "?hl=" + this.lang;
+
+        /* if (!this.isAjaxSupported)
+         this.setCookie("qu", "", 0, this.url, null, null)
+         */
+        if (!this.FieldValue)
+            this.FieldValue = this.txtField.value;
+
+        this.rlBorderWidth = 1;
+        this.tbBorderWidth = 1;
+
+
+        this.clContainer = document.createElement("DIV");
+
+        /*this.clContainer.style.height = (this.iRowHeight * this.iDisplayItems) + 2 + "px";*/
+
+        this.clContainer.style.position = "absolute";
+        this.clContainer.style.zIndex = "9110";
+        this.clContainer.style.paddingRight = "0";
+        this.clContainer.style.paddingLeft = "0";
+        this.clContainer.style.paddingTop = "0";
+        this.clContainer.style.paddingBottom = "0";
+        this.clContainer.style.overflow = 'auto';
+        //this.clContainer.style.visibility = "hidden";
+        this.clContainer.style.display = "none";
+
+
+        //this.clContainer.style.cssText="filter:progid:DXImageTransform.Microsoft.Shadow(color='#BCBCBC', Direction=135, Strength=8);"
+
+        this.clContainer.style.borderRight = "#D2D2D2 " + this.rlBorderWidth + "px solid ";
+        this.clContainer.style.borderLeft = "#D2D2D2 " + this.rlBorderWidth + "px solid";
+        this.clContainer.style.borderTop = "#D2D2D2 " + this.tbBorderWidth + "px solid";
+        this.clContainer.style.borderBottom = "#D2D2D2 " + this.tbBorderWidth + "px solid";
+
+        this.clDiv = document.createElement("DIV");
+        this.clDiv.id = "completeDiv" + this.sComboId;
+        this.clDiv.style.top=(!this.bDoNotShowHeader?this.iRowHeight:0)+"px";
+        this.clDiv.style.zIndex = "110";
+        this.clDiv.style.paddingRight = "0";
+        this.clDiv.style.paddingLeft = "0";
+        this.clDiv.style.paddingTop = "0";
+        this.clDiv.style.paddingBottom = "0";
+
+        /*this.clDiv.style.height = (this.iRowHeight * this.iDisplayItems) + "px";*/
+
+        /*        this.clContainer.style.height = (this.iRowHeight * this.iDisplayItems) + 2 + "px";*/
+
+        //this.clDiv.style.visibility = "hidden";
+        this.clDiv.style.display = "none";
+        this.clDiv.style.position = "absolute";
+
+
+        if(!this.bDoNotShowHeader)
+        {
+            this.clHeaderDiv = document.createElement("DIV");
+            this.clHeaderDiv.id = "hdiv" + this.sComboId;
+            this.clHeaderDiv.style.zIndex = "111";
+            this.clHeaderDiv.style.paddingRight = "0";
+            this.clHeaderDiv.style.paddingLeft = "0";
+            this.clHeaderDiv.style.paddingTop = "0";
+            this.clHeaderDiv.style.paddingBottom = "0";
+            this.clHeaderDiv.style.display = "none";
+            this.clHeaderDiv.style.position = "absolute";
+        }
+
+
+        this.resizeDiv();
+
+        if(!this.bDoNotShowHeader)
+        {
+            this.clContainer.appendChild(this.clHeaderDiv);
+        }
+
+        this.clContainer.appendChild(this.clDiv);
+
+        document.body.appendChild(this.clContainer);
+
+        this.AddStyles(this.clContainer);
+        this.AddStyles(this.clDiv);
+
+
+        this.clContainer.onfocus = this.onFocusHandler;
+        this.clDiv.onkeydown = onComboKeyUpHandler;
+
+
+
+////async () =>
+
+       //this.clContainer.addEventListener("scroll",
+       //     function ()
+       //       {
+       //         const nearBottom = me.clContainer.scrollTop + me.clContainer.clientHeight >= me.clContainer.scrollHeight - 5;
+       //         const nearTop = me.clContainer.scrollTop <= 5;
+       //         if (nearBottom)
+       //         {
+       //
+       //            if(!me.isRequestInProgress && !me.isAppendItems)// already isAppendItems request in progress
+       //                 me.movedown((me.getItemCount()-1));
+       //         }
+       //         else if (nearTop)
+       //         {
+       //              //    me.currentRow = 0;
+       //              //  me.moveup(0);
+       //             //me.clContainer.scrollTop = 10;
+       //         }
+       //       }
+       //    );
+
+
+        if (this.FieldValue && this.FieldValue.length > 0)
+        {
+            /*this.getValues();
+             this.txtField.value = this.FieldValue;*/ // commedted on account of exter moduleconfig   popup issue
+        }
+        else if (sNamesArray != null)
+        {
+
+            this.fillCombo(sNamesArray, iIds, clArrtibutes, sAttrNames, sAttrValues,0,sCustDispArray);
+            this.sNamesArray = null;
+            this.iId = null;
+            this.clArrtibutes = null;
+
+        }
+  };
+
+
+  this.getRelatedModSeqId=function(iType)
+    {
+        if(this.arrRelMods)
+        {
+            return this.arrRelMods['\''+iType+'\''];
+        }
+
+    };
+
+  this.setRelatedMod=function(iType,iSeqId)
+    {
+        if( !isNaN(iType)  && !isNaN(iSeqId))
+        {
+            if(!this.arrRelMods)
+                this.arrRelMods=new Object();
+                this.arrRelMods['\''+iType+'\'']=iSeqId;
+        }
+
+    };
+
+    this.clearRelatedMods=function()
+    {
+        if(this.arrRelMods)
+        {
+            var value=null;
+            var key=null;
+            for(key in me.arrRelMods)
+            {
+                value=me.arrRelMods[key];
+                if(me.arrRelMods[key])
+                {
+                    delete me.arrRelMods[key];
+                    value=null;
+                }
+            }
+
+            this.arrRelMods={};
+            // this.arrRelMods.length = 0;
+
+
+            //  alert(this.arrRelMods.length+"  "+this.arrRelMods['2305'])
+            // this.arrRelMods.clear();
+        }
+    };
+
+
+    this.showClearButton=function()
+    {
+
+        var clClearElement=document.getElementById("clear" + me.sComboId);
+
+        if(clClearElement)
+        {
+            if (!clClearElement.hasAttribute("pClass"))
+                clClearElement.setAttribute("pClass", clClearElement.className);
+
+            clClearElement.className = 'combo-clear-btn'
+            clClearElement.innerHTML = '&times'
+            clClearElement.style.fontSize = '1.6rem'
+
+            if (me.isAllowMultiSelect)
+                if(clMultiCombo.getSelectedIds(me.sComboId)>0)
+                    clClearElement.className = 'combo-multi-clear-btn'
+
+        }
+
+    }
+    this.hideClearButton=function(hideArrowButton)
+    {
+        var clClearElement=document.getElementById("clear" + me.sComboId);
+
+        if(clClearElement )
+        {
+            if (!clClearElement.hasAttribute("pClass"))
+                clClearElement.setAttribute("pClass", clClearElement.className);
+            if (clClearElement.getAttribute("pClass"))
+            {
+                if (hideArrowButton) {
+
+                    clClearElement.className = '';//clClearElement.getAttribute("pClass");//'fa fa-chevron-down combo-clear-btn'
+                }
+                else {
+                    clClearElement.className = clClearElement.getAttribute("pClass");//'fa fa-chevron-down combo-clear-btn'
+                }
+                clClearElement.innerHTML = '&nbsp;'
+                clClearElement.style.fontSize = '0.88rem'
+            }
+            else {
+                if (hideArrowButton) {
+
+                    clClearElement.className = '';//clClearElement.getAttribute("pClass");//'fa fa-chevron-down combo-clear-btn'
+                }
+            }
+        }
+
+        //clClearElement.style.display = "none"
+    }
+
+    this.handleClearButton= function (clClearButton,ignoreTogglePopup,ignoreFocus)
+    {
+
+        if(!clClearButton)
+        {
+            clClearButton = document.getElementById("clear" + me.sComboId);
+        }
+        //else
+        //{
+        // }
+
+
+        if(clClearButton)
+        {
+
+            if (clClearButton.textContent == "\u00D7")//&times;
+            {
+
+               if(me.isEnable())
+               {
+                   let txtField = me.getTextField();// to fire onfocus event of combo
+                   txtField.focus();
+
+                   me.clearSelection();
+                   me.hideClearButton(false);
+                   cross.fireEvent(me.txtField,"blur");
+                   cross.fireEvent(me.txtField,"focus");
+               }
+            }
+            else
+            {
+                if(!ignoreTogglePopup)
+                    clComboBox.togglePopup(null,me.sComboId);
+
+                if(!ignoreFocus) {
+                    let txtField = me.getTextField()
+                    txtField.focus();
+                }
+
+
+            }
+
+        }
+
+
+
+    }
+    //this.createClearButton= function (txtField)
+    //{
+    //    var clClearButton= document.createElement("button");
+    //    //clClearButton.setAttribute("className","clear-btn")
+    //    //clClearButton.setAttribute("className","fa fa-arrow-down");
+    //
+    //    clClearButton.setAttribute("aria-hidden","true");
+    //
+    //    clClearButton.setAttribute("type", "button");
+    //    clClearButton.setAttribute("id", "clear"+this.sComboId);
+    //    //clClearButton.textContent = '\u00D7'; // X icon ;
+    //    //clClearButton.innerHTML='&times'
+    //    //clClearButton.className='combo-clear-btn'
+    //    clClearButton.className='fa fa-chevron-down combo-clear-btn'
+    //    clClearButton.style.fontSize='0.88rem'
+    //
+    //
+    //    clClearButton.addEventListener("click", () => {
+    //
+    //
+    //        //clClearButton.style.display = "none";
+    //        //console.info(clClearButton.textContent+"  "+(clClearButton.textContent ==="\u00D7"))
+    //        if(clClearButton.textContent=="\u00D7")//&times;
+    //        {
+    //
+    //            me.clearSelection();
+    //            me.hideClearButton();
+    //
+    //        }
+    //       else
+    //        {
+    //            me.ShowPopUp()
+    //        }
+    //
+    //        txtField.focus();
+    //
+    //        //list.parentElement.setAttribute("aria-expanded", "false");
+    //        //updateAriaActiveDescendant();
+    //    });
+    //
+    //
+    //    //clClearButton.setAttribute(
+    //    //    'style',
+    //    //    `            position: absolute;
+    //    //    right: 12px;
+    //    //    top: 50%;
+    //    //    transform: translateY(-50%);
+    //    //    background: transparent;
+    //    //    border: none;
+    //    //    font-size: 22px;
+    //    //    color: #999;
+    //    //    cursor: pointer;
+    //    //    padding: 0;
+    //    //    line-height: 1;
+    //    //    transition: color 0.3s ease;
+    //    //    display:block;
+    //    //    `
+    //    //);
+    //    txtField.parentNode.style.position="relative";
+    //    txtField.parentNode.appendChild(clClearButton);
+    //
+    //}
+
+    //this will create hidden field for holding combovalue.
+    this.createHiddenField = function (txtFieldId)
+    {
+
+        var clHiddenTag = null;//Hidden tagid will be  ' combobox fieldid+"sId" ' so that it must be unique. Changed for handling fieldid problem in table combobox.
+        var sHiddenName = txtFieldId.getAttribute('hiddenName');
+        if (sHiddenName)
+            clHiddenTag = document.getElementById(txtFieldId.id + "Id"); //asummption....
+        else
+            clHiddenTag = document.getElementById(txtFieldId.name + 'Id');
+
+
+        //alert("creating "+(sHiddenName+"Id")+","+clHiddenTag)
+        if (clHiddenTag == null)
+        {
+            clHiddenTag = document.createElement("input");
+            clHiddenTag.setAttribute("combohidden","1")
+            clHiddenTag.setAttribute("type", "hidden");
+
+            if (sHiddenName) { //alert("sHiddenName="+me.sHiddenName)
+                clHiddenTag.setAttribute("name", sHiddenName);
+                clHiddenTag.setAttribute("id", txtFieldId.id + "Id");
+                //alert("creating "+sHiddenName)
+            }
+            else {
+                clHiddenTag.setAttribute("name", txtFieldId.name + 'Id');
+                clHiddenTag.setAttribute("id", txtFieldId.id + 'Id');
+            }
+            txtFieldId.parentNode.appendChild(clHiddenTag);
+        }
+    };
+
+    this.getTextField= function()
+    {
+        return me.txtField ;
+    };
+    this.initTextField = function (ltxtField, lcurrentRow)
+    {
+        me.txtField = ltxtField
+
+        //console.error("initTextField--lcurrentRow=="+me.sComboId+" "+lcurrentRow)
+
+        if (lcurrentRow || lcurrentRow >= 0)
+            me.currentRow = lcurrentRow;
+        else
+            me.currentRow = -1;
+
+
+        me.iParentSeqId = me.txtField.getAttribute("parentseqid");
+
+        if (!me.iParentSeqId ||  (util.trim(me.iParentSeqId).length == 0) )
+            me.iParentSeqId = 0;
+
+        me.sComboId = me.txtField.getAttribute('id');
+
+        me.txtField.autocomplete = "off";
+        me.isEnterKey=false;
+
+    };
+
+    this.setScriptCallBack = function (funcScriptCallBack) {
+        this.funcScriptCallBack = funcScriptCallBack;
+
+    };
+
+    function searchItems(oItems,iForceSelRow,isHighlightRow,isAstrikSearch)
+    {     var isFound=false;
+        if (oItems)
+        {
+
+            if(iForceSelRow==undefined)
+                iForceSelRow==-1;
+            if(isHighlightRow==undefined)
+                isHighlightRow=true;
+
+            var sItemValue = "";
+            var isSelect=false;
+            var sSearchItem = util.trim(me.FieldValue).toLowerCase();
+            if(sSearchItem.length==0)
+                sSearchItem=" ";
+            var clFirstElement=null;
+            //util.writeToLog("sSearchItem="+sSearchItem+" - "+me.isAppendItems+"- "+isAstrikSearch);
+            if(sSearchItem.length>0 &&  (isAstrikSearch || me.isAppendItems) )//iForceSelRow>=0
+            {
+                if(sSearchItem.charAt(0)=='*')
+                {
+                    sSearchItem=sSearchItem.substring(1,sSearchItem.length);
+
+
+                }
+
+            }
+
+            //if(me.byResultBy>=0)
+            //  iForceSelRow=1;
+
+            for (var i = 0; i < oItems.length; i++)
+            {
+                //aAutoComplete>lAutoComplete>cAutoCompelte>sAutoComplete
+                //aAutoComplete>lAutoComplete>dAutoCompelte>cbTbl
+
+                clFirstElement=oItems.item(i).childNodes[0].childNodes[0].childNodes[0];
+                sItemValue =clFirstElement.innerHTML;
+                sItemValue=util.replaceHtmlTags(sItemValue,"b","");
+                me.highlightText(clFirstElement,sItemValue,sSearchItem);
+
+                if(me.byResultBy>=0)
+                {
+                    if(me.byResultBy==Constants.COMBO_BY_CODE)
+                        sItemValue =oItems.item(i).getAttribute("name");
+                    else
+                        sItemValue =oItems.item(i).getAttribute("code");
+                    if(sItemValue)
+                        sItemValue=util.replaceHtmlTags(sItemValue,"b","");
+
+                }
+
+
+
+                //  util.writeToLog(sSearchItem+"  "+sItemValue.toLowerCase()+"   "+util.startsWith(sItemValue.toLowerCase(), sSearchItem)+"  "+sSearchItem.length)
+
+                //eastern time (us & canada) Eastern Time (US & Canada)
+                //eastern time (us & canada) eastern time (us & canada) false 26
+
+
+
+                if(iForceSelRow==i)
+                {
+                    me.highlightRow(i);
+                    isFound=true;
+                }
+                else if (isHighlightRow && !isFound &&  sItemValue)
+                {
+                    sItemValue=util.trim(sItemValue);
+                    if(util.startsWith(sItemValue.toLowerCase(), sSearchItem))
+                    {
+                        me.highlightRow(i);
+                        isFound = true;
+                    }
+                    //    alert(clFirstElement.innerHTML+"   "+sItemValue.toLowerCase()+"  "+sSearchItem+"  "+isFound)
+                }
+
+            }
+
+            if(!isFound && isHighlightRow)
+                me.highlightRow(0);
+        }
+
+        return isFound;
+    };
+
+
+    this.isFetchValues=function()
+    {
+        return ( (me.iMasterType > 0
+        && (me.iMasterType != Genernal_StaticValues
+            && me.iMasterType != Genernal_Narration
+            && me.iMasterType != Genernal_Narration_WITH_ID
+            && me.iMasterType != Genernal_Master
+            && me.iMasterType != Genernal_SCRIPTValues
+
+            && (  !(me.iMasterType >= Constants.LISTMASTER && me.iMasterType < (Constants.LISTMASTER + Constants.MODULE_SLAB))
+                || me.isAlwaysFetchValues
+            )
+        )) );
+    };
+
+
+
+
+    this.getValues = function (isRefresh,isSync)
+    {
+
+        var isFound=false;
+        var isFetchValues=false;
+        if(isRefresh==undefined)
+            isRefresh=false;
+
+        if(isRefresh)
+            isFetchValues=true;
+
+
+        //console.error("1 "+isRefresh+","+me.sLastValue+","+util.trim(me.sLastValue).length+","+me.FieldValue)
+    if (isRefresh || util.trim(me.sLastValue).length == 0  || me.sLastValue != me.FieldValue)// last-searched string is no equal to current string in the textfield
+       {
+
+
+         if(!isRefresh)
+           {
+                if(me.FieldValue=='*')
+                    return true;
+
+                me.sLastValue = "";
+                isFetchValues=me.isFetchValues()
+
+             if(me.clDiv)
+               {
+                  if( !isFetchValues || (me.sEmptyValue != util.trim(me.FieldValue)) )
+                    {
+                        var oItems = me.getComboElements();//me.clDiv.childNodes;//getElementsByTagName(me.sDivTag);
+                        isFound = searchItems(oItems, -1);
+                    }
+               }
+
+            }
+
+           //console.error("2 "+isRefresh+","+me.sLastValue+","+me.FieldValue+","+isFound)
+
+          if(!isFound)
+            {
+
+                if(isFetchValues)
+                {
+                    me.removeAllItems();
+                    if (me.isAjaxSupported)// in case XHTTP is supported
+                    {
+                        me.OpenConnection(isSync)
+                    }
+                    else // use the iframe concept
+                    {
+                        me.setCookie("qu", util.encodeURI(me.FieldValue), null, me.url, null, null);
+                        frames["completionFrame" + me.sComboId].document.location.reload(true)
+                    }
+                }
+                else if (me.iMasterType == Genernal_SCRIPTValues)
+                {
+                    if (this.funcScriptCallBack)
+                        this.funcScriptCallBack(sSearchItem);
+                }
+                else
+                {
+                    me.txtField.value = me.FieldValue;
+                }
+
+
+                if( me.txtField==document.activeElement
+                    && util.hasClass(me.txtField,"clzonfocus")
+                    && !me.isPopUpVisible() )
+                {
+                    me.ShowPopUp();
+                    me.txtField.focus();
+                }
+            }
+            //}
+
+
+        }
+        else if (me.sLastValue.length != 0)
+        {
+            //  if(!bHidePopUp)
+            me.ShowPopUp();
+        }
+
+
+        //    me.sLastValue = me.FieldValue;
+        //  return true
+
+        // else
+        //{
+        me.sLastValue = me.FieldValue;
+        return (!isFound);
+
+    }
+
+    this.getColAttributes = function () {
+        return me.sColAttrNames;
+    };
+
+    function OpenConnection2() {
+        me.isPaused = false;
+        me.OpenConnection(false);
+    };
+
+    this.OpenConnection = function (isSync,isReachedLastRow)
+    {
+
+
+        if (me.isRequestInProgress) {
+            if (!me.isPaused) {
+                me.isPaused = true;
+                setTimeout(cross.createCallbackFunc(me, OpenConnection2, null), 100);
+            }
+            return;
+        }
+
+        me.isRequestInProgress = true;
+        var sUrl = con.getStruts2Url("module", "moduleView", "getModulesForCombo", null, true);
+        var sSearchBy=null;
+        if(me.isAppendItems) {
+
+            if(isReachedLastRow)
+                sSearchBy = util.encodeURI(me.getItemText((me.getItemCount()-1)));
+            else
+                sSearchBy = util.encodeURI(me.getItemText(me.currentRow));
+
+            //sSearchBy = util.encodeURI(me.getItemText((me.getItemCount()-1)));
+
+            me.byResultBy=Constants.RESULT_BY_FOR_SCROLL_DOWN;
+
+
+        }
+        else
+        {
+            //me.iSelectionBy = me.iOrgSelectionBy;
+            sSearchBy = util.encodeURI(me.FieldValue)
+        }
+
+
+        var sSubmitData = "moduleid=" + me.iMasterType + "&selectby=" + (me.iSelectionBy != null ? me.iSelectionBy : 0) + "&selecttype=" + (me.iSelectionType != null ? me.iSelectionType : 0) + "&searchkey=" +sSearchBy  + "&isAppendscrollId=" + this.isAppendscrollId + "&isExtraInfo=" + ltxtField.getAttribute('isOtherInfo') + "&parentid=" + me.iParentSeqId + "&reftable=" + me.sRefTable + "&targetmod=" + me.iTargetModule;
+        if(me.sCondition)
+            sSubmitData += "&cond=" + util.encodeURI(me.sCondition);
+        if(me.sColAttrNames)
+            sSubmitData += "&attrnames=" + me.sColAttrNames;
+        if(me.iRenderMode)
+            sSubmitData += "&rendermode=" + me.iRenderMode;
+        if(me.sModuleSeqIds)
+            sSubmitData += "&modseqids=" + me.sModuleSeqIds;
+        if(me.byResultBy && me.byResultBy>=0 )
+            sSubmitData += "&resultby=" + me.byResultBy;
+
+            sSubmitData += "&fieldid=" + (me.m_iFieldId==undefined?0:me.m_iFieldId);
+
+
+        if(me.arCascadeFields)
+        {
+            //--me.iTargetModule
+            // [fieldid],[parent-fieldid,parent-value]
+            // alert(me.arCascadeFields)
+            var arrCascadeValues=me.getCascadeValues();
+            if(arrCascadeValues && arrCascadeValues[2])
+            {
+                //    alert(arrCascadeValues)
+                if(me.arrLastCastVals==null)
+                    me.arrLastCastVals=new Array();
+                me.arrLastCastVals[me.sComboId]=null;
+                me.arrLastCastVals[me.sComboId]=arrCascadeValues;
+                sSubmitData += "&iscasmods="+(me.isCascadeModParents==true?1:0)+"&casfieldid=" + arrCascadeValues[0]+"&casparentids="+arrCascadeValues[1]+"&casvals="+(arrCascadeValues[2].join(',')+",");
+            }
+
+        }
+        if(me.arrRelMods)
+        {
+            var arrRelModValues=me.getRelModValues()
+            sSubmitData +="&rmodtypes="+arrRelModValues[0];
+            sSubmitData +="&rmodids="+arrRelModValues[1];
+        }
+        if(me.arrSrcFilterFields)
+        {
+            var arrFieldValues=me.getFieldFilterValues();
+            //alert(arrFieldValues)
+            if(arrFieldValues && arrFieldValues[2])
+            {   sSubmitData += "&ffieldids=" + arrFieldValues[1];
+                sSubmitData += "&ffieldsvals=" + (arrFieldValues[2].join(','));
+                // alert(arrFieldValues[1])
+                //alert((arrFieldValues[2].join(',')))
+                //me.arrLastCastVals[me.sComboId]=arrFieldValues;
+            }
+
+        }
+
+        sSubmitData += "&relerp=" +(me.isErpRelated?1:0);
+
+        con.sendPostRequest(sUrl, sSubmitData, this.sendRPCDone, null, con.RESPONSE_PLAIN, 'ajax',null,isSync,true);
+
+
+
+    };
+
+
+    /*  this.sendRPCDone = function (fr, sNamesArray, iIds, clArrtibutes, sAttrNames, sAttrValues)
+     {
+
+     me.isRequestInProgress = false;
+     // writeToLog("sendRPCDone--"+me.isRequestInProgress+"--"+me.isPaused)
+
+     if (me.iMasterType == Genernal_SERVER_VALUES)
+     me.iMasterType = Genernal_Master;
+
+     me.fillCombo(sNamesArray, iIds, clArrtibutes, sAttrNames, sAttrValues);
+     var oItems = me.clDiv.getElementsByTagName(me.sDivTag);
+     var iNoOfRows = oItems.length;
+
+     if (me.FieldValue == "" || iNoOfRows == 0)
+     me.HidePopUp()
+     else
+     me.ShowPopUp()
+
+     if (iNoOfRows > 0) {
+     for (var c = 0; c < iNoOfRows; c++)
+     me.setStyle(oItems.item(c), "aAutoComplete");
+
+     var sItemValue = null;
+
+     for (var c = 0; c < oItems.length; c++) {
+     sItemValue = oItems.item(c).childNodes[0].childNodes[0].innerHTML;
+     if (util.startsWith(sItemValue.toLowerCase(), me.FieldValue.toLowerCase())) {
+     me.highlightRow(c);
+     break;
+     }
+     if (c == 2)
+     break;
+     }
+     }
+
+     };*/
+
+    this.setCustColumnsWidth= function(iCustWidths)
+    {
+        if(iCustWidths) // used in case of activiry module, where relatedto selection is present
+        {
+            //   alert(iCustWidths)
+            me.iFirstColWidth=iCustWidths[0];
+            me.iWidth =iCustWidths[1];//[0]=first col width,[1]=total of all cols including first col
+            //this.iWidth =(this.iFirstColWidth/2)+iCustWidths[1];//[0]=first col width,[1]=total of all cols including first col
+        }
+    }
+
+    this.sendRPCDone = function (fr, sNamesArray, iIds, clArrtibutes, sAttrNames, sAttrValues,isAstrikSearch,sCustDispValues,sHeaderDispValues,iCustWidths)
+    {
+
+
+        me.isRequestInProgress = false;
+
+        // writeToLog("sendRPCDone--"+me.isRequestInProgress+"--"+me.isPaused)
+
+        if (me.iMasterType == Genernal_SERVER_VALUES)
+        {
+            if(me.iMasterType2>0)
+                me.iMasterType = me.iMasterType2;
+            else
+                me.iMasterType = Genernal_Master;
+        }
+
+        //  if(me.iMasterType==2463)
+        //  alert(sNamesArray)
+        //  alert(sHeaderDispValues)
+
+        me.setCustColumnsWidth(iCustWidths);
+
+        //if(iCustWidths) // used in case of activiry module, where relatedto selection is present
+        //{
+        // //   alert(iCustWidths)
+        //    me.iFirstColWidth=iCustWidths[0];
+        //    me.iWidth =iCustWidths[1];//[0]=first col width,[1]=total of all cols including first col
+        //    //this.iWidth =(this.iFirstColWidth/2)+iCustWidths[1];//[0]=first col width,[1]=total of all cols including first col
+        //}
+        me.fillCombo(sNamesArray, iIds, clArrtibutes, sAttrNames, sAttrValues,-1,sCustDispValues,sHeaderDispValues);
+
+        var oItems = me.getComboElements();//me.clDiv.childNodes;//getElementsByTagName(me.sDivTag);
+        var iNoOfRows = oItems.length;
+
+
+        //(isAstrikSearch?0:-1)
+
+        if (iNoOfRows > 0)
+        {
+            var sItemValue = null;
+            var isSelect=false;
+
+            for (var c = 0; c < iNoOfRows; c++)
+                me.setStyle(oItems.item(c), "aAutoComplete",true);
+
+
+            if(me.isAppendItems)
+                isSelect = searchItems(oItems, -1,false,isAstrikSearch);
+            else if (isAstrikSearch)
+                isSelect = searchItems(oItems, 0,true,isAstrikSearch);
+            else
+                isSelect = searchItems(oItems, -1,true,isAstrikSearch);
+
+
+
+            /* for (var c = 0; c < oItems.length; c++)
+             {
+             sItemValue = oItems.item(c).childNodes[0].childNodes[0].innerHTML;
+             if (util.startsWith(sItemValue.toLowerCase(), me.FieldValue.toLowerCase()))
+             {
+             me.highlightRow(c,true);
+             isSelect=true;
+             break;
+             }
+             }*/
+
+
+        }
+
+        if(me.byResultBy>=0)
+        {
+            //alert(me.FieldValue)
+            me.byResultBy = -1;
+          //  me.iSelectionBy = me.iOrgSelectionBy;
+        }
+
+        //    util.writeToLog(me.txtField.hasAttribute("hidepopup")+"--"+me.txtField.getAttribute("hidepopup"));
+        if(isSelect  && me.isEnterKey)
+        {
+            me.setSelectedText(me.getItemText(me.currentRow));
+            me.HidePopUp();
+            if(window["moduleView"]!=undefined)// only for the module
+                moduleView.callbackCheckInput(me.txtField,null,13);
+
+            me.isEnterKey=false;
+            me.txtField.setAttribute("hidepopup",1);
+            // }
+        }
+        else
+        {
+            if( me.txtField.getAttribute("hidepopup") &&  me.txtField.getAttribute("hidepopup")==0 && util.hasClass(me.txtField,"clzonfocus"))
+            {
+                me.ShowPopUp();
+
+            }
+            else if (me.FieldValue == "" || iNoOfRows == 0)
+            {  // alert("1")
+                // me.HidePopUp();
+            }
+            //else
+            //me.txtField.focus();// F2--silent-loading
+            me.txtField.setAttribute("hidepopup",0);
+
+        }
+        if(me.isAppendItems)
+        {
+            //  util.writeToLog(me.currentRow+"last append "+me.getItemText(me.currentRow));
+
+            me.highlightRow(me.currentRow,true)
+        }
+
+        me.isAppendItems = false;
+
+
+
+        // else
+        //   me.ShowPopUp();
+
+
+
+    };
+
+    this.setCascadeChildId=function(iChildFieldId)
+    {
+        if(me.arCascadeChildFields==null)
+            me.arCascadeChildFields=new Array();
+
+        me.arCascadeChildFields[me.arCascadeChildFields.length]=iChildFieldId;
+    };
+
+    this.getCascadeParentIds=function()
+    {
+        return me.arCascadeFields;
+    };
+
+    this.getRecentCascadeValues = function()
+    {
+        if(me.arrLastCastVals)
+            return me.arrLastCastVals[me.sComboId]
+        else
+            return null;
+    };
+
+    this.setRecentCascadeValues = function(arrRecentCastVals)
+    {
+        if(me.arrLastCastVals==null)
+            me.arrLastCastVals=new Array();
+        me.arrLastCastVals[me.sComboId]=null;
+        me.arrLastCastVals[me.sComboId]=arrRecentCastVals;
+
+    };
+
+    this.setFilterFields= function(arrSrcFilterFields)
+    {
+        me.arrSrcFilterFields=arrSrcFilterFields;
+    };
+
+    this.notifyAllCascadeChilds=function(sComboId,sValue)
+    {
+        if(me.isCascadeChildDefined() && !isStopCascadeNotify)
+        {
+            var sTextFieldId=null;
+            var iRow=-1;
+            var clComboInstance=null;
+            for (var i = 0; i < me.arCascadeChildFields.length; i++) {
+
+                clComboInstance=objComboInstances[me.arCascadeChildFields[i]];
+                if(me.arCascadeChildFields[i]
+                    &&  me.arCascadeChildFields[i].indexOf('[0]')>=0)//body
+                {
+                    sTextFieldId=me.txtField.id;
+                    iRow=parseInt(sTextFieldId.substring(sTextFieldId.indexOf('[')+1,sTextFieldId.indexOf(']')));
+                    sTextFieldId=me.arCascadeChildFields[i].replace("[0]","["+(iRow)+"]");
+                    var txtField = document.getElementById(sTextFieldId);
+                    if(txtField)
+                    {
+                        //   txtField.style.backgroundColor='red';
+                        clComboInstance.initTextField(txtField, txtField.getAttribute('selectedIndex'));
+                        //clComboInstance.initTextField(txtField, -1);
+                    }
+                }
+                clComboInstance.notifyCascadeChange();
+            }
+        }
+    };
+
+    this.notifyCascadeChange=function()// child combo
+    {
+
+        //var sOldParentValue=me.arrLastCastVals[sParentComboId];
+
+        if(me.isCascadeChanged())//!sOldParentValue || !sValue || sOldParentValue!=sValue)
+        {
+            me.txtField.value = '';
+            me.removeAllItems();
+
+            if (me.isAllowMultiSelect)
+                clMultiCombo.removeAllItems(me.sComboId);
+
+            if (me.iMasterType == 0
+                || me.iMasterType == Genernal_Master) {   // alert("focus="+me.iMasterType)
+                me.iParentSeqId = parseInt(me.txtField.id.substring(1));// YUG need to change
+                //  alert(parseInt(me.txtField.id.substring(1)))
+                me.iMasterType2 = me.iMasterType;
+                me.iMasterType = Genernal_SERVER_VALUES;
+            }
+            me.handleClearButton(null,true,true);
+
+
+            me.notifyAllCascadeChilds();
+        }
+
+    };
+
+    this.isCascadeParentDefined=function()
+    {
+        return ( (me.arCascadeFields && me.arCascadeFields!=null)?true:false);
+    };
+
+    this.isRelatedModsDefined=function()
+    {
+        return ( (me.arrRelMods )?true:false);
+    };
+
+    this.isCascadeChildDefined=function()
+    {
+        return ( (me.arCascadeChildFields && me.arCascadeChildFields!=null)?true:false);
+    };
+
+    this.isCascadeChanged=function()
+    {
+        // alert(me.arrLastCastVals)
+        var arrLastCastInfo=null;
+
+        if(me.arrLastCastVals &&  (arrLastCastInfo=me.arrLastCastVals[me.sComboId]))
+        {
+
+            var arrLastCastVals=arrLastCastInfo[2];
+
+            if(arrLastCastVals)
+            {
+                var arrLastCastParentIds = arrLastCastInfo[1].toString().split(",");
+                //var arrLastCastParentIds=arrLastCastInfo[1].split(",");
+                var clComboInstance = null;
+                var clElement = null;
+                var arCascadeFields = me.arCascadeFields;
+                var iRow = 0;
+                var sFieldId = me.txtField.id;
+
+                for (var i = 0; i < arCascadeFields.length; i++)
+                {     //alert(me.m_iFieldId)
+                    if (sFieldId && sFieldId.indexOf('[') >= 0)
+                    {
+                        iRow = parseInt(sFieldId.substring(sFieldId.indexOf('[') + 1, sFieldId.indexOf(']')));
+                        sFieldId = sFieldId.substring(0, sFieldId.indexOf('['));
+                        //  alert(iRow)
+                    }
+                    clElement = document.getElementById("F" + arCascadeFields[i] + (iRow >= 0 ? ('[' + iRow + ']') : ''));
+                    if (!clElement)
+                        clElement = document.getElementById("F" + arCascadeFields[i]);
+                    if (clElement) {
+
+                        if (!clElement.getAttribute(Constants.COMBO_ATTR_SYSVAL))//
+                        {
+                            clComboInstance = getComboInstance(clElement.id);
+                            if (clComboInstance) {
+                                // alert(me.arrLastCastVals.length+me.arrLastCastVals[0]+ me.arrLastCastVals+"  "+me.txtField.id+"  "+me.arrLastCastVals[i]+"   "+clComboInstance.getSelectedMaster()+" "+ clComboInstance.getSelectedId()+"  "+clElement.id+"  ")
+
+                                if (clComboInstance.isAllowMultiSelect) {
+
+                                    var sSelIds = clMultiCombo.getSelectedIds(clComboInstance.sComboId);
+
+                                    if (sSelIds) {
+                                        var iParentId = parseInt(clComboInstance.sComboId.substring(1));
+                                        var iArrSelIds = null;
+                                        var iValFnd = 0;
+                                        var iLastSelCnt = 0;
+
+                                        if (typeof(sSelIds) == 'string')
+                                            iArrSelIds = sSelIds.split(",");
+                                        else
+                                            iArrSelIds = sSelIds;
+
+
+                                        for (var a = 0; a < arrLastCastParentIds.length; a++) {
+                                            if (iParentId == arrLastCastParentIds[a]) {
+                                                iLastSelCnt++;
+                                                for (var b = 0; b < iArrSelIds.length; b++) {
+                                                    if (iArrSelIds[b] == arrLastCastVals[a]) {
+                                                        iValFnd++;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            else if (iLastSelCnt > 0)
+                                                break;
+                                        }
+                                    }
+
+                                    if (iValFnd != iLastSelCnt)
+                                        return true;
+                                }
+                                else {
+                                    if (clComboInstance.getSelectedId() != arrLastCastVals[i])
+                                        return true;
+                                }
+                            }
+
+                        }
+                        else // in case of online creation of module..........
+                        {
+                            clElement.setAttribute(Constants.COMBO_ATTR_SYSVAL, "0");
+                            arrLastCastVals[i] = -1;
+                            return false;
+                        }
+
+                    }
+                }
+            }
+            //  alert("fal")
+            return false;
+        }
+        else
+            return true;
+    }
+
+
+    this.getFieldFilterValues=function()
+    {
+        var arrReturn=null;
+        if(me.arrSrcFilterFields)
+            arrReturn=me.getFieldValuesFromIds(me.arrSrcFilterFields,true)
+
+        return arrReturn;
+        //return [null,null];
+
+    }
+    this.getRelModValues=function()
+    {
+        //
+
+        var key=null;
+        var rmodtypes=null;
+        var rmodids=null;
+
+        for (var key in me.arrRelMods)//for(i=0,keys = me.arrRelMods.keys;i<me.arrRelMods.length;i++)
+        {
+            if(!rmodtypes)
+            {   rmodtypes='';
+                rmodids='';
+            }
+            rmodtypes=rmodtypes+parseInt(key.replace('\'',''))+",";
+            rmodids=rmodids+me.arrRelMods[key]+",";
+
+        }
+        if(rmodtypes)
+        {
+            rmodtypes=rmodtypes.substring(0,rmodtypes.length-1);
+            rmodids=rmodids.substring(0,rmodids.length-1);
+
+        }
+
+        return [rmodtypes,rmodids,me.iTargetModule];
+    }
+    this.getCascadeValues=function()
+    {
+        var arCascadeFields  =null;
+        var arrReturn=null;
+        if( (arCascadeFields=me.arCascadeFields))
+        {
+            arrReturn=me.getFieldValuesFromIds(arCascadeFields,false);
+        }
+
+        return arrReturn;
+    }
+
+    this.getFieldValuesFromIds=function(arFieldIds,isAllFieldTypes)
+    {
+
+
+        if( arFieldIds)
+        {
+            var iParentFieldId=0;
+            var clElement=null;
+            var clComboInstance=null;
+            var arrFieldValues=null;
+            var iParentVal=null;
+            var iParentVals=null;
+
+            var iParentFieldIds=0;
+            var iFieldId=0;
+            var iRow=-1;
+
+            for(var i=0;i< arFieldIds.length;i++)
+            {
+
+
+                iParentFieldId=arFieldIds[i];
+
+                if(iParentFieldId>0)
+                {
+                    iFieldId=me.txtField.id;
+
+                  if(iFieldId.indexOf('[')>=0)
+                    {
+                        iRow=parseInt(iFieldId.substring(iFieldId.indexOf('[')+1,iFieldId.indexOf(']')));
+                        iFieldId=iFieldId.substring(0,iFieldId.indexOf('['));
+                    }
+
+                    if(me.m_iFieldId)
+                        iFieldId=me.m_iFieldId;
+                    else if(!me.m_iFieldId)
+                        iFieldId=iFieldId.substring(1);
+
+
+                    clElement=document.getElementById("F"+iParentFieldId+(iRow>=0?('['+iRow+']'):''));
+                    if(!clElement)
+                        clElement=document.getElementById("F"+iParentFieldId);
+
+                    if(!clElement)
+                        clElement=document.getElementById("O"+iParentFieldId);
+
+                    if(clElement)
+                    {
+
+                        clComboInstance=getComboInstance(clElement.id);
+                        if(clComboInstance )
+                        {
+                            if(!arrFieldValues)
+                            {
+                                arrFieldValues=new Array();
+                                iParentFieldIds="";
+                            }
+
+                            if (clComboInstance.isAllowMultiSelect)
+                            {
+                                var sSelIds = clMultiCombo.getSelectedIds(clComboInstance.sComboId);
+                                if (sSelIds)
+                                {
+
+
+                                    var iArrSelIds
+                                    if(typeof(sSelIds)=='string' )
+                                        iArrSelIds = sSelIds.split(",");
+                                    else
+                                        iArrSelIds=sSelIds;
+
+                                    arrFieldValues[arrFieldValues.length]=iArrSelIds.length;
+                                    for (var k = 0; k < iArrSelIds.length; k++)
+                                    {
+
+                                        //else
+                                        //iParentFieldIds = iParentFieldIds + iParentFieldId;
+                                        arrFieldValues[arrFieldValues.length] = iArrSelIds[k];
+                                    }
+                                    iParentFieldIds = iParentFieldIds + iParentFieldId;
+                                    if((i+1)!=arFieldIds.length)
+                                        iParentFieldIds = iParentFieldIds + ",";
+                                    iArrSelIds = [];
+                                }
+                            }
+                            else// single sel
+                            {
+                                iParentVal = clComboInstance.getSelectedId();
+                                iParentFieldIds = iParentFieldIds + iParentFieldId;
+                                if((i+1)!=arFieldIds.length)
+                                    iParentFieldIds=iParentFieldIds+",";
+
+                                arrFieldValues[arrFieldValues.length] = iParentVal;
+
+                            }
+                            //   alert((i+1)+" ** "+arrFieldValues.length);
+
+
+
+                        }
+                        else if(clElement.style.display!="none")
+                        {
+                            if(isAllFieldTypes)
+                            {
+                                iParentFieldIds = iParentFieldIds + iParentFieldId;
+
+                                if(i+1!=arFieldIds.length)
+                                {
+                                    iParentFieldIds=iParentFieldIds+",";
+                                    //sCascadeValues=sCascadeValues+",";
+                                }
+                                arrFieldValues[arrFieldValues.length] = clElement.value;// non combo types
+                            }
+                            else
+                                util.writeToConsole(" Failed to find combo instance  of the cascade parent field-(" + "F" + iParentFieldId + (iRow >= 0 ? ('[' + iRow + ']') : '') + ")" + "  " + me.currentRow);
+                        }
+
+
+
+
+                    }
+                    else
+                    {
+                        util.writeToConsole(" Failed to find the cascade parent field-(" + "F" + iParentFieldId + (iRow >= 0 ? ('[' + iRow + '] as well as header level') : '') + ")" + "  " + me.currentRow);
+
+                    }
+                }
+            }
+            return [iFieldId,iParentFieldIds,arrFieldValues];
+        }
+        else
+            return null;
+    }
+
+
+    this.searchAndAddItem=function(sValue,isSelect,sElementId,isPickFromServer,iMasterId,isSyncRequest,isRefreshCascadeVals)
+    {
+        if(!me.checkItem(sValue,isSelect,true,isRefreshCascadeVals,true,true))  // first check in combo box
+        {
+            // alert(sElementId)
+            if(isPickFromServer && (me.iMasterType != Genernal_StaticValues
+                && me.iMasterType != Genernal_Narration
+                && me.iMasterType != Genernal_Narration_WITH_ID
+                && me.iMasterType != Genernal_Master
+                && me.iMasterType != Genernal_SCRIPTValues))
+            {
+                var sUrl = con.getStruts2Url("module", "search", "getModuleComboLine", null, true);
+                sUrl = sUrl+"?moduleId="+me.iMasterType+"&selectionBy="+me.iSelectionBy+"&txtFieldId="+sElementId+"&parentid=" + me.iParentSeqId + "&reftable=" + me.sRefTable + "&targetmod=" + me.iTargetModule;
+
+
+                if(iMasterId!=null && !isNaN(iMasterId) && parseInt(iMasterId)>0)
+                {
+                    sUrl +="&transId="+parseInt(iMasterId)+"&isReqFromCombo=1";
+                }
+                else
+                    sUrl +="&searchKey="+util.encodeURI(sValue);
+                if(me.arCascadeFields)
+                {
+                    var arrCascadeValues=me.getCascadeValues();
+                    if(arrCascadeValues && arrCascadeValues[2])
+                    {
+
+                        if(me.arrLastCastVals==null)
+                            me.arrLastCastVals=new Array();
+                        me.arrLastCastVals[me.sComboId]=null;
+                        me.arrLastCastVals[me.sComboId]=arrCascadeValues;
+
+                        sUrl += "&casfieldid=" + arrCascadeValues[0]+"&casparentids="+arrCascadeValues[1]+"&casvals="+(arrCascadeValues[2].join(',')+",");
+                    }
+
+                }
+                if(me.sColAttrNames)
+                    sUrl += "&attrnames=" + me.sColAttrNames;
+
+
+
+                if(!isSyncRequest)
+                    isSyncRequest=false;
+
+//               alert(sUrl+"==surl")
+                con.sendPostRequest(sUrl,null, me.arhSelectModule,null, false,null,null,isSyncRequest,true);// get the value from server
+                return null;
+            }
+            else
+            {
+
+                return ([me.iMasterType,sValue,me.iSelectionBy,sElementId]);
+
+            }
+        }
+        else
+        {   me.arhSelectModule(sValue,sElementId);
+            return null;
+        }
+    };
+
+    this.arhSelectModule=function(sResponse,sElementId) // set the value to combo
+    {
+//        alert(sResponse+'==')
+        if(sElementId) //sElementId will be null from AJAX response
+        {
+            var txtField = document.getElementById(sElementId);
+            me.initTextField(txtField, -1);
+        }
+        if(sResponse != null)
+        {
+            me.checkAndAddItem(sResponse, true);
+
+            var event;// = new Event("focus");
+            //me.txtField.dispatchEvent(event);
+            //me.onTxtFocusHandler()
+
+
+            //    setTimeout(function()
+            // {
+            //event = new Event("blur");
+            //me.txtField.dispatchEvent(event);
+            // },100);
+
+
+            //me.onBlurHandler(null);// added 14/11--sri-for rule queue err
+
+
+            //  var arrCascadeValues=me.getCascadeValues();
+        }
+        else
+            me.clearSelection();
+
+    };
+
+
+    this.searchByKey = function (sKey, isIgnoreFocus)
+    {
+        //util.writeToLog("focus-searchByKey")
+        //this.removeAllItems();
+        this.txtField.value = sKey;
+        //String.fromCharCode(evt.keyCode);
+        if (!isIgnoreFocus)
+            this.txtField.focus();
+        this.FieldValue = sKey;
+        this.getValues(false,false);
+    };
+    this.clearCombo = function (isIgnoreSelected)
+    {
+        this.removeAllItems(isIgnoreSelected);
+        if(me.arrLastCastVals)
+            me.arrLastCastVals[me.sComboId]=null;
+        me.setEnable(me.isEnable());
+    };
+    this.removeAllItems = function (isIgnoreSelected)
+    {
+        if(isIgnoreSelected==undefined)
+            isIgnoreSelected=false;
+
+        while (me.clDiv.childNodes.length > 0)
+        {
+            me.clDiv.removeChild(me.clDiv.childNodes[(me.clDiv.childNodes.length-1)]);
+        }
+
+        if(!isIgnoreSelected)
+        {
+
+
+            me.currentRow = -1;
+
+            //me.txtField.value = null;
+            //objSelectedTags[me.txtField.id] = null;
+            setSelectedTag(me.txtField.id,null);
+
+            var clElement = me.getHiddenField();
+            if (clElement)
+            {
+                clElement.value = -1;
+            }
+
+        }
+
+        //   if(me.arrLastCastVals)
+        //       me.arrLastCastVals[me.sComboId]=null;
+
+
+    }
+
+    this.removeItemBySeqId = function (iMasterId) {
+        var iRow = this.getRowFromSeqId(iMasterId)
+        if (iRow >= 0) {
+            me.clDiv.removeChild(this.getItemElement(iRow));
+            if (this.currentRow == iRow)
+                this.currentRow = -1;
+        }
+    }
+
+
+    /**
+     @param  sNamesArray master names..................
+     @param  iIdsArray of master ids
+     @param  clAttributes as arrayof arraibutes as [0].name,[0].value.....
+     @param  sAttrNames  as single dimension array
+     @param  sAttrValues as two dimension array relating to items
+     **/
+    this.fillCombo = function (sNamesArray, iIdsArray, clAttributes, sAttrNames, sAttrValues,iSelRow,sCustDispArray,sHeaderDispValues)
+    {
+        try
+        {
+
+
+            if(!me.isAppendItems)
+                me.removeAllItems();
+
+            if (sNamesArray)
+            {
+                var index = -1;
+                var iMasterId = 0;
+                //                var clAttributes = null;
+                var clAttributesArray = null;
+                var oDivTag = null;
+                var clAttribute = null;
+
+                if(!this.bDoNotShowHeader && sHeaderDispValues)
+                {
+
+                    //if(me.clHeaderDiv.childNodes.length==0)
+                    {
+
+                        me.clHeaderDiv.innerHTML = sHeaderDispValues;
+                        me.setStyle(me.clHeaderDiv, "hAutoComplete");
+
+                    }
+                }
+            for (var c = 0; c < sNamesArray.length; ++c)
+                {
+
+
+                    /*if (me.iMasterType>Genernal_SCRIPTValues)
+                     iMasterId = iIdsArray[c];*/
+                    /*else  */
+                    if(sNamesArray[c]!=null)
+                    {
+                        if (me.iMasterType > Genernal_SCRIPTValues || me.iMasterType == Genernal_SCRIPTValues || me.iMasterType == Genernal_SERVER_VALUES)
+                        {
+                            if(c==0  )
+                            {
+
+                                if(((iIdsArray && iIdsArray[c]>0) || (sNamesArray && util.trim(sNamesArray[c]).length>0)))
+                                {
+                                    if(!me.isAppendItems)
+                                    {
+                                        oDivTag = me.getNewComboItem("", 0, null, null, null)
+                                        me.clDiv.appendChild(oDivTag)
+                                    }
+                                }
+                                else if(me.isAppendItems)
+                                {   //c++;/// ignore empty and first which lll be same as last scrolled row
+                                    continue;
+                                }
+                            }
+                            iMasterId = iIdsArray[c];
+                        }
+                        else
+                        {
+                            // if(c==0)
+                            //&& (iIdsArray[c] > 0
+
+                            if (c == 0  )// in case header row is not presnet
+                            {
+
+                                if(util.trim(sNamesArray[c]).length > 0)
+                                {
+                                    oDivTag = me.getNewComboItem("", -1, null, null, null) // @@ NEED TO check for foreigh key constraint issues
+                                    me.clDiv.appendChild(oDivTag)
+                                }
+                            }
+
+                            if (iIdsArray[c] > 0 || iIdsArray[c]==-1 || (me.iMasterType == Genernal_Master))
+                                iMasterId = iIdsArray[c];
+                            else
+                                iMasterId = c;
+                        }
+
+                        //   if(me.iMasterType == 58)
+                        //            alert("iMasterId ="+iIdsArray[c]+"----"+iMasterId )
+
+                        if (clAttributes)
+                            clAttribute = clAttributes[c];
+                        else if (sAttrNames)
+                            clAttributesArray = sAttrValues[c]
+
+                        /*else if(sAttrNames)
+                         {
+                         sAttrValues[c]
+                         for (var i = 0; c < sAttrNames .length; ++i)
+                         sAttrNames[i]+":"+
+
+
+                         }*/
+                        //   if(iMasterId<0 )
+                        //   alert(sNamesArray[c]+" ="+iMasterId);
+
+                        oDivTag = me.getNewComboItem(sNamesArray[c], iMasterId, clAttribute, sAttrNames, clAttributesArray,(sCustDispArray?sCustDispArray[c]:null))
+                        me.clDiv.appendChild(oDivTag)
+                    }
+                }
+
+
+
+                /* if(iSelRow>=0)
+                 {
+                 //alert(iSelRow+"--"+ me.iMasterType)
+                 if (    me.iMasterType==0
+                 || me.iMasterType == Genernal_Narration
+                 || me.iMasterType == Genernal_StaticValues
+                 || me.iMasterType == Genernal_SERVER_VALUES
+                 || me.iMasterType == Genernal_SCRIPTValues
+                 || me.iMasterType ==Genernal_Master
+                 || me.iMasterType ==LISTMASTER)
+                 {
+                 //  alert("0")
+                 if(me.getItemCount()>0)
+                 me.setSelectedIndex(1);
+
+                 }
+                 }
+                 */
+                //  if(iSelRow>=0)
+                // {
+                //  if(me.getItemCount()>0)
+                //  me.setSelectedIndex(1);
+                //}
+
+            }
+        }
+        catch (exception) {
+            if (exception.message)
+                alert("c1001:" + exception.type + '=' + exception.message + ' ' + exception.location)
+            else
+                alert("c1001:" + exception);
+        }
+    };
+
+    this.getNewComboItem = function (sMasterName, sMasterId, clAttributes, sAttrNames, clAttributesArray,sCustDispValue)
+    {
+        var oDivTag = document.createElement(me.sDivTag);
+        // normal style....
+        //problem: setattribute with value=0
+
+        if(!sMasterId )
+            sMasterId=0;
+
+      if( (sMasterId <= 0 && util.trim(sMasterName).length==0) )
+        {
+            sMasterName=me.sEmptyValue;
+            oDivTag.setAttribute("MasterId",sMasterId);
+        }
+        else
+            oDivTag.setAttribute("MasterId", sMasterId);
+
+            oDivTag.onmousedown = me.onMouseDown;
+            oDivTag.onmouseover = me.onMouseOver;
+            oDivTag.onmouseout = me.onMouseOut;
+
+
+        if (clAttributes)
+        {
+          for(var i = 0; i < clAttributes.length; ++i)
+              {
+                if(clAttributes[i].value)
+                    clAttributes[i].value = clAttributes[i].value.toString().replace(/&apos;/g,'\'');
+                oDivTag.setAttribute(clAttributes[i].name, clAttributes[i].value);
+            }
+        }
+        else if (sAttrNames && clAttributesArray)
+        {
+            for (var i = 0; i < sAttrNames.length; ++i)
+                oDivTag.setAttribute(sAttrNames[i], clAttributesArray[i]);
+        }
+
+        var oMainSpan = document.createElement(me.sSpanTag);
+        me.setStyle(oMainSpan, "lAutoComplete");
+
+        var oFirstString = document.createElement(me.sSpanTag);
+        var oFirstCell = document.createElement(me.sSpanTag);
+        me.setStyle(oFirstCell, "cAutoComplete");
+
+        var index =0;
+
+
+        if(sCustDispValue)
+        {
+
+            index =0;// sCustDispValue.indexOf("\t");
+        }
+        else
+            index = sMasterName.indexOf("\t");
+
+        if (index == -1 && me.iMasterType < Genernal_Master)
+            index = sMasterName.indexOf("  ");
+
+
+        var oSecondString = document.createElement(me.sSpanTag);
+        me.setStyle(oSecondString, "dAutoComplete");
+        //    oSecondString.style.display="block";
+        //display:block;")
+
+
+        if(index == -1) // in case of static values which does not hava multi columns values...........
+        {
+            if(util.trim(sMasterName).length==0)
+                sMasterName=me.sEmptyValue;
+
+            oFirstString.innerHTML = sMasterName;//+"<div style='color:green;display:block'> Hello msg</div>";//+"-"+me.iMasterType+" - "+me.iParentSeqId;
+            //oFirstString.innerHTML = "<div style='color:green;display:block'> sMasterName</div>";//+"-"+me.iMasterType+" - "+me.iParentSeqId;
+            oSecondString.innerHTML = '';
+
+            //  me.width ='85';// Fresize;// in case second tag is empty other wise 65--note- % is not working IE
+            // alert(sCustDispValue)
+        }
+        else
+        {
+            //sMasterName=sMasterName.replace('&','&amp;');
+
+            if(index>0)
+                oFirstString.innerText = sMasterName.substring(0, index);
+            else
+                oFirstString.innerText = sMasterName;
+
+
+
+            if(sCustDispValue)
+            {
+                oSecondString.innerHTML = sCustDispValue;
+            }
+            else
+                oSecondString.innerHTML = sMasterName.substring(index + 1);
+
+            if(me.iWidth>0)
+                oSecondString.style.width = (me.iWidth-me.iFirstColWidth)+"px";// in case second tag is empty other wise 65--note- % is not working IE
+
+            //  oSecondString.innerHTML=sMasterName // TODO remove
+        }
+
+        //  if(util.trim(sMasterName).length>0)
+        {
+            // as colums
+            //oSecondString.innerHTML="<table border='1'><tr><td>&nbsp;"+me.width+"&nbsp;</td><td>&nbsp;World2&nbsp;</td><td>&nbsp;World3&nbsp;</td></tr></table>"
+
+            // as rows
+            /*  oSecondString.innerHTML="<br><div>Hello</div>"
+             oSecondString.style.borderBottom="lightgrey .5px solid";
+             oSecondString.style.color="green";
+             oSecondString.style.fontSize ="10px";
+             me.iRowHeight=16+18;  //16 for first line,12 for second line*/
+
+        }
+
+        //oSecondString.innerHTML=" 123Hello"
+
+
+
+        oFirstCell.appendChild(oFirstString);
+        me.setStyle(oFirstString, "sAutoComplete");
+
+        oMainSpan.appendChild(oFirstCell);
+        oMainSpan.appendChild(oSecondString);
+
+        oDivTag.appendChild(oMainSpan);
+
+
+
+        me.setStyle(oDivTag, "aAutoComplete",true);
+
+        //aAutoComplete  --- row
+        //    --lAutoComplete  -- display inline-table
+        //        --cAutoComplete -- first columns
+        //        --dAutoComplete -- second  column -- div with columns
+
+
+
+        return oDivTag;
+
+    };
+
+    /*
+     * to show combobox set bDisplay as true
+     * to hide combobox set bDisplay as false
+     * */
+    this.setVisible = function (bDisplay)
+    {
+        if (bDisplay)
+            me.txtField.style.display = '';
+        else
+            me.txtField.style.display = 'none';
+    };
+
+    /*
+     * to enable combobox set isEnable as true
+     * to disable combobox set isEnable as false
+     * */
+    this.setEnable = function (isEnable)
+    {
+        me.txtField.disabled = !isEnable;
+
+
+        if(!isEnable)
+        {
+            me.hideClearButton(true);
+        }
+        else
+        {
+            //var iSelValue=this.getSelectedId()
+
+            if ( (me.isComboItemSelected()) )
+                me.showClearButton();
+            else
+                me.hideClearButton(false);
+        }
+
+    };
+
+    /*
+     * used to return combobox is enable or not
+     * */
+    this.isEnable = function () {
+        return (!me.txtField.disabled ? !me.txtField.readOnly:!me.txtField.disabled);
+    };
+
+    this.isReadOnly = function () {
+        return (!me.txtField.disabled ? !me.txtField.readOnly:me.txtField.disabled);
+    };
+
+    /*
+     * used to set focus to textfield of a combobox
+     * */
+    this.setFocus = function () {
+        return me.txtField.focus();
+    };
+
+    this.checkAndSelectItem = function (sMaster)
+    {
+        me.checkItem(sMaster,true,false,false);
+    }
+
+    this.checkAndAddItem = function (sMaster, isSelect,isAddItem,isRefrehCascadeVals)
+    {
+        return me.checkItem(sMaster,isSelect,true,isRefrehCascadeVals,false);
+    }
+    this.checkItem = function (sMaster, isSelect,isAddItem,isRefrehCascadeVals,isMasterName,isCheckForAttributes)
+    {
+        //  alert("checkAndAddItem="+sMaster)
+        var sMasterTo = sMaster;
+        if (typeof(sMaster ) == 'string')
+        {
+            me.clearHighlight();
+            //alert(sMaster + "  " + isSelect)
+
+            var l_sMasterId = null, sMasterId = null, sItemValue = null, iMasterId = -1;
+            var sAttributes = null;
+            var iEndIndex = -1;
+            var iIndex=-1;
+            var sCustDispValues=null;
+            //  alert(sMaster)
+
+            sMaster=util.replaceHtmlEntites(sMaster);
+
+            if ((iEndIndex = sMaster.indexOf('|')) != -1)// name|id|code; rate:12 ,units:default|0;custDispValue
+            {
+
+
+                sMasterId = sMaster.substring(iEndIndex + 1);
+                sMaster = sMaster.substring(0, iEndIndex);
+                sMaster=sMaster.replace(/%3B/g,';');
+                sMaster=sMaster.replace(/%3A/g,':');
+                sMaster=sMaster.replace(/%7C/g,'|');
+                //  sMaster=sMaster.replace(/%27/g,'\\\'');
+
+                if ((iEndIndex = sMasterId.lastIndexOf(';')) != -1)
+                {
+                    if((iIndex=sMasterId.indexOf(';'))==iEndIndex)
+                    {   sAttributes = sMasterId.substring(iEndIndex + 1);
+                        sMasterId = sMasterId.substring(0, iEndIndex);
+                    }
+                    else
+                    {
+                        iEndIndex=sMasterId.indexOf(';',iIndex+1);
+                        sAttributes = sMasterId.substring(iIndex+1,iEndIndex);
+
+                        sCustDispValues=sMasterId.substring(iEndIndex + 1);
+
+                        sCustDispValues=sCustDispValues.replace(/%3B/g,';');
+                        sCustDispValues=sCustDispValues.replace(/%3A/g,':');
+                        sCustDispValues=sCustDispValues.replace(/%7C/g,'|');
+                        // sCustDispValues=sCustDispValues.replace(/%27/g,'\\\\\'');
+                        //sCustDispValues = sCustDispValues.replace(/&apos;/g,'\'');
+
+                        sMasterId = sMasterId.substring(0, iIndex);
+                    }
+                    if(sAttributes) {
+                        sAttributes = sAttributes.replace(/%3B/g,';');
+                        sAttributes = sAttributes.replace(/%3A/g,':');
+                        sAttributes = sAttributes.replace(/%27/g,'\\\\\\\'');
+                        sAttributes = sAttributes.replace(/%7C/g,'|');
+
+                        //sAttributes = sAttributes.replace(/&apos;/g,'\'');
+                    }
+
+
+
+
+                }
+
+
+                if ((iEndIndex = sMasterId.indexOf('|')) != -1)
+                    iMasterId = parseInt(sMasterId.substring(0, iEndIndex));
+                else
+                {
+                    iMasterId = parseInt(sMasterId);
+                    iEndIndex = 1;
+                }
+                ///// attributes.............
+
+                ////////////////////////////////////////
+
+            }
+            else
+            {
+                if ((iEndIndex = sMaster.lastIndexOf(';')) != -1)
+                {
+                    if((iIndex=sMaster.indexOf(';'))==iEndIndex)
+                    {
+                        sAttributes = sMaster.substring(iEndIndex + 1);
+                    }
+                    else
+                    {
+                        sAttributes = sMaster.substring(iIndex+1,iEndIndex);
+                        sCustDispValues=sMaster.substring(iEndIndex + 1);
+
+                    }
+                }
+
+                if (me.iMasterType >= Genernal_Master
+                    && me.iMasterType!=Genernal_Narration_WITH_ID
+                    && !isMasterName
+                )// currency=16  or rct/issues=13
+                {
+                    if (!isNaN(sMaster))
+                    {
+                        iMasterId = parseInt(sMaster);
+                        iEndIndex = 1;
+                    }
+                }
+            }
+
+
+
+            // alert("iEndIndex=  "+iEndIndex+"   "+sMaster )
+            var oItems =me.getComboElements();// me.clDiv.childNodes;//getElementsByTagName(me.sDivTag);
+
+            if (oItems.length > 0)
+            {
+                for (var i = 0; i < oItems.length; i++)
+                {
+                    if (iEndIndex != -1)// in case
+                    {
+
+
+                        if ( iMasterId == parseInt(oItems.item(i).getAttribute('MasterId')))
+                        {
+
+                            if (isSelect)
+                            {
+
+                                me.setSelectedIndex(i);
+
+                            }
+                            return true;
+                        }
+                        else if( i == oItems.length-1 && iMasterId==sMasterTo) //returning false if item not found (in case of masterid passed for item selectiion)
+                        {
+                            if( me.iMasterType == Genernal_Narration || me.iMasterType == Genernal_Narration_WITH_ID)
+                                break;
+                            else
+                                return false;
+                        }
+                    }
+                    else {
+//                        sItemValue = util.trim(oItems.item(i).childNodes[0].childNodes[0].innerHTML);
+                        sItemValue = util.trim(cross.getInnerText(oItems.item(i).childNodes[0].childNodes[0]));
+                        /*To get Selected Text*/
+
+                        if (sMaster.toLowerCase() == sItemValue.toLowerCase()) {
+
+                            if (isSelect)
+                                me.setSelectedIndex(i);
+                            return true;
+                        }
+                        else if (i == oItems.length - 1) //returning false if item not found (in case of masterid passed for item selectiion)
+                        {
+                            if( me.iMasterType == Genernal_Narration || me.iMasterType == Genernal_Narration_WITH_ID)
+                                break;
+                            else
+                                return false;
+                        }
+                    }
+                }
+            }
+            else {
+                iEndIndex = 1;
+            }
+
+            if(isCheckForAttributes && me.sColAttrNames  && !sAttributes)
+            {
+                return false;
+            }
+
+
+
+            if(isRefrehCascadeVals)
+            {
+                var arrCascadeValues=me.getCascadeValues();
+                if(arrCascadeValues && arrCascadeValues[2])
+                {
+
+                    if (me.arrLastCastVals == null)
+                        me.arrLastCastVals = new Array();
+                    me.arrLastCastVals[me.sComboId] = null;
+                    me.arrLastCastVals[me.sComboId] = arrCascadeValues;
+                }
+            }
+
+            if(isAddItem)
+            {
+                if (iEndIndex != -1
+                    || me.iMasterType == Genernal_Narration
+                    ||  me.iMasterType == Genernal_Narration_WITH_ID )// in case
+                {
+
+                    var clDivTag = null;
+
+                    if(me.iMasterType == Genernal_Narration_WITH_ID && !sMasterId)
+                        sMasterId="16777215";//new item id//0xFFFFFF
+                    if (sAttributes)
+                    {
+                        //commented escaping of single quote in attributes since its working correctly without this line
+                        if(sAttributes.indexOf("\\\\\'")!=-1)
+                        {
+                            //  alert("a "+sAttributes);
+                        }
+                        else if(sAttributes.indexOf("\'")!=-1)
+                        {
+                            //alert("b "+sAttributes)
+                            sAttributes=sAttributes.replace(/\\'/g, '\'');
+                            // sAttributes=sAttributes.replace(/\'/g, '\\\'');
+//                        alert("after "+  sAttributes)
+                        }
+
+
+//                  alert('sAttributes '+sAttributes);
+                        //   alert('eval( sAttributes )'+eval( sAttributes ));
+                        //console.log(sMasterId+","+sAttributes)
+
+
+
+                        clDivTag = this.getNewComboItem(sMaster, sMasterId, eval( sAttributes ),null,null,sCustDispValues);
+                    }
+                    else
+                        clDivTag = this.getNewComboItem(sMaster, sMasterId, null,null,null,sCustDispValues);
+
+                    me.clDiv.appendChild(clDivTag)
+
+                }
+
+                if (isSelect)
+                {
+                    me.setSelectedIndex(oItems.length - 1);
+                }
+                return true;
+            }
+
+
+        }
+        return false;
+    }
+
+
+    this.getItemCount = function () {
+        var oItems = me.getComboElements();//me.clDiv.childNodes;//  getElementsByTagName(me.sDivTag);
+        if (oItems)
+            return  oItems.length;
+        else
+            return 0;
+
+    }
+
+
+    this.setCondition = function (sCondition) {
+        me.sCondition = sCondition;
+    }
+    this.getCondition = function ()
+    {
+        /*if(me.sCondition)
+         {
+         if(util.trim(me.sCondition).length==0)
+         return null;
+         else*/
+        return me.sCondition;
+        /*}*/
+    }
+
+
+    this.getSelectionBy = function () {
+        return me.iSelectionBy;
+    }
+
+    this.getFieldId = function () {
+        return me.m_iFieldId;
+    }
+    this.getTargetModuleId= function () {
+        return me.iTargetModule;
+    }
+
+    this.getSelectionType = function () {
+        return me.iSelectionType;
+    }
+    this.setSelectionType = function (iSelectionType) {
+        me.iSelectionType=iSelectionType;
+    }
+
+
+    this.setElementToBuffer = function (sFieldId, clElement) {
+        //objSelectedTags[sFieldId] = clElement;
+        setSelectedTag(sFieldId,clElement);
+
+    }
+    this.getElementFromBuffer = function (sFieldId) {
+        return objSelectedTags[sFieldId];
+    }
+
+
+    this.getItemElement = function (irow) {
+
+        //console.error("getItemElement--iROW=="+irow);
+        if (irow >= 0) {
+
+            var oItems = me.getComboElements();//me.clDiv.childNodes;//getElementsByTagName(me.sDivTag);
+            //console.error("getItemElement="+irow+" "+oItems[irow]+"  "+oItems)
+            return oItems[irow];
+        }
+        else
+            return null;
+    }
+
+    this.checkAndAddElement = function (clDivObject, isSelect) {
+        var index = me.getIndexFromTag(clDivObject);
+
+        if (index <0)
+        {
+            me.clDiv.appendChild(clDivObject)
+            if (isSelect) {
+                var oItems =me.getComboElements();// me.clDiv.childNodes;//getElementsByTagName(me.sDivTag);
+                me.setSelectedIndex(oItems.length - 1);
+            }
+        }
+        else {
+            if (isSelect)
+                me.setSelectedIndex(index);
+        }
+    }
+
+
+    this.getIndexFromTag = function (clDivObject) {
+
+        var oItems =me.getComboElements();// me.clDiv.childNodes;//getElementsByTagName(me.sDivTag);
+        var index = -1;
+        for (var i = 0; i < oItems.length; i++) {
+            if (clDivObject == oItems.item(i)) {
+                index = i;
+                break;
+            }
+        }
+
+        return index;
+    };
+
+    this.clearHighlight = function () {
+        var selectedDiv = me.getItemElement(me.currentRow);
+        // clear highlight color
+        if (selectedDiv) {
+            me.setStyle(selectedDiv, "aAutoComplete",true);
+            //var oSecondString = document.createElement(me.sSpanTag);
+            me.currentRow = -1
+        }
+    };
+
+
+    this.highlightText= function (clFristElement,sMasterName,sSearchText)
+    {
+
+        // var clFristElement=cross.getFirstElement(clElement);
+        if(clFristElement)
+        {
+            // var sMasterName=sValue;//clFristElement.innerHTML;
+            var iSindex=-1;
+
+            //   util.writeToLog(me.FieldValue+" "+util.trim(me.FieldValue).length)
+            //sSearchText=util.replaceHtmlEntites(sSearchText);
+
+            //util.writeToLog(sMasterName+"  "+clFristElement.innerHTML);
+            //sSearchText= sSearchText;
+
+            // sMasterName=util.replaceHtmlTags(sMasterName,"b","");
+
+            sMasterName= util.decodeHTML(sMasterName);
+
+            var sMasterName2=sMasterName.toLowerCase();
+            var  sSearchText2=sSearchText.toLowerCase();
+            //
+            if(util.trim(sSearchText).length>0
+                && (iSindex=sMasterName2.indexOf(sSearchText2))>=0)
+            {
+                // me.FieldValue=htmlEnDeCode.htmlDecode(me.FieldValue)
+
+
+                sMasterName=sMasterName.substring(0,iSindex)+"<b>"+sMasterName.substring(iSindex,iSindex+sSearchText.length)+"</b>"+sMasterName.substring(iSindex+sSearchText.length);
+                //  util.writeToLog(sMasterName+"  "+iSindex+"  "+sSearchText2+" "+sMasterName.substring(iSindex,sSearchText.length));
+
+
+                //  alert(sSearchText+" "+util.replaceHtmlEntites(sSearchText)+" "+sMasterName.substring(iSindex,iSindex+sSearchText.length))
+                //     util.writeToLog(sMasterName.substring(0,iSindex)+"==="+sMasterName.substring(iSindex+sSearchText.length));
+                //  sMasterName=sMasterName.substring(0,iSindex)+"<b>"+sSearchText+"</b>"+sMasterName.substring(iSindex+sSearchText.length);
+                //sMasterName=sMasterName.substring(0,iSindex)+"<b>"+util.encodeHTML( sMasterName.substring(iSindex,iSindex+sSearchText.length))+"</b>"+sMasterName.substring(iSindex+sSearchText.length);
+                //   util.writeToLog(sMasterName+"  "+clFristElement.innerHTML);
+                //sMasterName=sMasterName.substring(0,iSindex)+"<b>"+sSearchText+"</b>"+sMasterName.substring(iSindex+sSearchText.length);
+                //util.writeToLog(sSearchText.length+" "+iSindex+"--"+me.FieldValue+"---"+sMasterName+" ==  "+sMasterName.substring(iSindex+sSearchText.length,sMasterName.length)+"----"+util.encodeHTML( sSearchText))
+            }
+            clFristElement.innerHTML=sMasterName;
+        }
+    }
+
+    /**
+     **/
+    this.highlightRow = function (selRow,isIgnoreScroll) {
+
+        var iNoOfRows = me.getItemCount();
+
+        var selectedDiv = null;
+
+        if (iNoOfRows <= 0)
+            return;
+
+        var oItems = me.getComboElements();//me.clDiv.childNodes;//getElementsByTagName(me.sDivTag);
+        if ( me.txtField==document.activeElement && util.hasClass(me.txtField,"clzonfocus"))
+        {
+            me.ShowPopUp();
+        }
+        //window.status=window.status+'selRow='+selRow;
+        if (selRow >= iNoOfRows)
+            selRow = iNoOfRows - 1
+
+        //window.status=window.status+' ---selRow2='+selRow;
+
+
+
+        if (selRow < 0)
+        {
+            // util.writeToLog("***"+selRow);
+            me.currentRow = -1;
+            //console.error("333333"+me.sComboId+" "+me.currentRow)
+            me.txtField.focus();
+            return
+        }
+        else if (me.currentRow >= 0 && selRow != me.currentRow)
+        {
+            selectedDiv = me.getItemElement(me.currentRow);
+
+            // clear highlight color
+            if (selectedDiv)
+            {   me.setStyle(selectedDiv, "aAutoComplete",true);
+                // me.currentRow = -1
+            }
+        }
+
+
+        /* if (selRow >= me.currentRow)
+         me.movedown(selRow);
+         else
+         {
+
+         for (var i = me.currentRow - 1; i >= selRow; i--)
+         me.moveup(i);
+         }
+         */
+        if(!isIgnoreScroll)
+        {
+            me.clDiv.style.top = "0px";
+            this.iCurDivTop=(me.iRowHeight*selRow);
+
+            this.iCurPos=-1;
+            me.clDiv.style.top = ((!this.bDoNotShowHeader?me.iRowHeight:0)+(-this.iCurDivTop)) + "px";//me.iRowHeight
+            //util.writeToLog("high--"+me.clDiv.style.top)
+            /*
+             if (selRow >= me.currentRow )
+             {
+             var iTotRows=(selRow);
+             var i=0;
+             for ( i = me.currentRow; i <iTotRows ; i++)
+             me.movedown(i);
+
+             var iGapPos=(me.iCurPos);
+             util.writeToLog(" DOWN-highlightRow"+" "+selRow+" "+me.currentRow+" "+(iGapPos)+","+me.iCurPos+" "+"  "+this.iCurDivTop+" "+this.iRowHeight );
+             if(iGapPos>0)
+             {
+             for ( var c =0 ; c <=iGapPos ; c++,i++)
+             me.movedown(i);
+             }
+
+             //me.movedown(selRow);
+             }
+             else
+             {
+             //util.writeToLog("up-highlightRow");
+
+             for (var i = me.currentRow ; i > selRow; i--)
+             me.moveup(i);
+
+             var iGapPos=((me.iDisplayItems-me.iCurPos)-1);
+
+             util.writeToLog(" UP-highlightRow"+" "+selRow+" "+me.currentRow+" "+(iGapPos)+","+me.iCurPos+"  "+this.iCurDivTop+" "+this.iRowHeight );
+
+             //if(me.iCurPos>0)
+             {  for ( var c =0 ; c <iGapPos ; c++,i--)
+             me.moveup(i);
+
+             }
+
+             }
+             */
+
+
+        }
+        else
+        {
+
+            // me.clDiv.style.top = 0 + "px";
+        }
+
+        me.currentRow = selRow;
+
+        //window.status='me.currentRow='+me.currentRow
+        // current selection
+
+        selectedDiv = me.getItemElement(me.currentRow);
+        if (selectedDiv)
+        {
+            me.setStyle(selectedDiv, "bAutoComplete",true);
+            me.rightAlign(selectedDiv);
+        }
+
+
+        me.txtField.setAttribute('selectedIndex', me.currentRow)
+
+        if(me.isSelectItemText)
+        {
+
+            me.setSelectedText(me.getItemText(me.currentRow));
+            me.isSelectItemText=false;
+        }
+
+    };
+
+    this.highlightItem = function (clSelectDiv)
+    {
+        var selectedDiv = me.getItemElement(me.currentRow);
+        // clear highlight color
+        if (selectedDiv)
+            me.setStyle(selectedDiv, "aAutoComplete",true);
+
+        me.currentRow = me.getIndexFromTag(clSelectDiv);
+        me.setStyle(clSelectDiv, "bAutoComplete",false);
+        me.rightAlign(clSelectDiv);
+
+
+
+    };
+
+
+    /*this.getItemElement = function(irow)
+     {
+
+     if (irow >= 0)
+     {
+     var oItems = me.clDiv.getElementsByTagName(me.sDivTag);
+     alert(oItems[irow])
+     return oItems[irow];
+     }
+     else
+     return null;
+     }*/
+
+    function getTextElement(clSelectedTag)
+    {
+        return clSelectedTag.getElementsByTagName(me.sSpanTag)[2]
+    }
+
+    function getTextFromElement(clTextTag)
+    {
+        return cross.getInnerText(clTextTag);
+    }
+
+    this.getItemText = function (row) {
+        var clSelectedTag = me.getItemElement(row);
+
+
+
+        if (clSelectedTag)
+        {
+            if (clSelectedTag.childNodes)
+            {
+                //this.getItemText= function (isRefresh,isSync)
+                //aAutoComplete>lAutoComplete>cAutoCompelte>sAutoComplete
+                //aAutoComplete>lAutoComplete>dAutoCompelte>cbTbl
+                //[0]=lAutoComplete [1]cAutoCompelte [2] sAutoComplete
+
+                var objSpan = getTextElement(clSelectedTag);//.getElementsByTagName(me.sSpanTag)[2];//.innerHTML;
+                //console.info("*** objSpan new child"+objSpan.outerHTML);
+                return cross.getInnerText(objSpan);
+
+                /*if (objSpan.textContent)
+                 return util.trim(objSpan.textContent);
+                 else
+                 return util.trim(objSpan.innerText);*/
+
+
+            }
+        }
+        return "";
+    }
+
+    this.getSelectedAttr = function (sName) {
+        var clElement = objSelectedTags[me.txtField.id];
+        if (clElement != null)
+            return clElement.getAttribute(sName);
+        else
+            return null;
+    }
+    this.getSelectedElement = function (sComboId)
+    {
+        //return objSelectedTags[me.txtField.id];
+        var clSelectedTag=null;
+        //console.error(me.txtField.id+" *****getSelectedElement  "+sComboId+"  "+objSelectedTags.length)
+        if(sComboId)
+            clSelectedTag = objSelectedTags[sComboId];
+        else
+            clSelectedTag = objSelectedTags[me.txtField.id];
+
+        return clSelectedTag;
+    }
+    this.getSelectedItem = function (sComboId)
+    {
+
+        //var clSelectedTag=me.txtField.getAttribute('selectedTag')
+        //var clSelectedTag = objSelectedTags[me.txtField.id];
+        var clSelectedTag=null;
+        if(sComboId)
+            clSelectedTag = objSelectedTags[sComboId];
+        else
+            clSelectedTag = objSelectedTags[me.txtField.id];
+
+
+        if (clSelectedTag)
+        {
+            if (clSelectedTag.childNodes)
+            {
+
+
+                var sItemValue = cross.getInnerText(getTextElement(clSelectedTag));//.innerText;
+                return util.trim(sItemValue);
+            }
+        }
+        return "";
+    };
+
+    /**
+     * It is used to check whether combo item is selected or not
+     */
+    this.isComboItemSelected= function ()
+    {
+
+        /*
+
+         if ( me.iMasterType == Genernal_StaticValues
+         || me.iMasterType2 == Genernal_StaticValues
+         || me.iMasterType == Genernal_SERVER_VALUES
+         || me.iMasterType == Genernal_Narration
+         || me.iMasterType2 == Genernal_Narration
+         || me.iMasterType == Genernal_Narration_WITH_ID
+         || me.iMasterType == Genernal_Master)
+         return -1;
+         else
+         return 0;
+         */
+
+        var isReturn=true;
+
+        if(me.iMasterType == Genernal_StaticValues
+            || me.iMasterType2 == Genernal_StaticValues
+            || me.iMasterType == Genernal_Narration
+            || me.iMasterType2 == Genernal_Narration)
+        {
+
+            if(util.trim(me.txtField.value).length == 0 || me.getSelectedId()<0)
+                isReturn=false;
+        }
+        else if (    me.iMasterType==0
+                || me.iMasterType == Genernal_SERVER_VALUES
+                || me.iMasterType == Genernal_Narration_WITH_ID
+                || me.iMasterType == Genernal_Master
+            )
+        {
+
+            if( (me.getSelectedId()<0 || util.trim(me.getSelectedItem()).length==0) && !(util.trim(me.sEmptyValue).length>0  &&  me.getSelectedItem()==me.sEmptyValue))//  util.trim(me.txtField.value).length==0)
+                isReturn= false;
+        }
+        else if( me.getSelectedId()<=0 && !(me.getSelectedId()==0 && util.trim( me.sEmptyValue).length >0  &&  me.getSelectedItem()==me.sEmptyValue))//  util.trim(me.txtField.value).length==0)
+        {
+            isReturn= false;
+        }
+
+
+
+        return isReturn;
+
+    }
+
+    /**
+     returns masterid from div's attribute i,e MasterId... set at the time of filling the combobox
+     **/
+
+    this.getSelectedId = function (sComboId)
+    {
+        var clSelectedTag=null;
+        if(sComboId)
+            clSelectedTag = objSelectedTags[sComboId];
+        else
+            clSelectedTag = objSelectedTags[me.txtField.id];
+
+
+        if (clSelectedTag)
+        {
+            if ( me.iMasterType == Genernal_StaticValues  || me.iMasterType2 == Genernal_StaticValues
+                || me.iMasterType2 == Genernal_Narration || me.iMasterType == Genernal_Narration)
+            {
+                var sItemValue = cross.getInnerText(getTextElement(clSelectedTag));//.getElementsByTagName(me.sSpanTag)[2]);//.innerText;
+                return util.trim(sItemValue);
+            }
+            else
+            {
+                var sItemValue = clSelectedTag.getAttribute('MasterId');
+
+
+
+                if (typeof(sItemValue ) == 'string')
+                {
+                    sItemValue = util.trim(sItemValue);
+                    var index = sItemValue.indexOf('|');
+                    if (index > 0)
+                        return sItemValue.substring(0, sItemValue.indexOf('|'));
+                    else
+                        return sItemValue;
+                }
+                else
+                    return sItemValue;
+            }
+        }
+
+
+
+        if ( me.iMasterType == Genernal_StaticValues
+            || me.iMasterType2 == Genernal_StaticValues
+            || me.iMasterType == Genernal_SERVER_VALUES
+            || me.iMasterType == Genernal_Narration
+            || me.iMasterType2 == Genernal_Narration
+            || me.iMasterType == Genernal_Narration_WITH_ID
+            || me.iMasterType == Genernal_Master
+            || me.iMasterType==0
+        )
+            return -1;
+        else
+            return 0;
+
+
+
+    }
+
+
+    /*this.getSelectedId = function()
+     {
+     if (me.currentRow >= 0)
+     {
+     var oItems = me.clDiv.getElementsByTagName(me.sDivTag);
+     if(oItems.length>0)
+     {
+     var sItemValue = oItems[me.currentRow].getAttribute('MasterId');
+     if(typeof(sItemValue )=='string')
+     {
+     sItemValue = me.trim(sItemValue)
+     var index=sItemValue.indexOf('|');
+     if(index>0)
+     return sItemValue.substring(0, sItemValue.indexOf('|'));
+     else
+     return sItemValue;
+     }
+     else
+     return sItemValue;
+     }
+
+     }
+     return "";
+     }*/
+    this.getSelectedMasterString = function () {
+        //var clSelectedTag=me.txtField.getAttribute('selectedTag')
+        var clSelectedTag = objSelectedTags[me.txtField.id];
+        if (clSelectedTag)
+        {
+            //var oItems = me.clDiv.getElementsByTagName(me.sDivTag);
+            var sItemValue = clSelectedTag.getAttribute('MasterId');
+            if (typeof(sItemValue ) != 'string')
+            {   //need to handle
+                //sItemValue=
+            }
+
+            sItemValue =
+                me.getSelectedItem() +
+                "|" +
+                me.getSelectedMaster() +
+                "|" +
+                me.getSelectedMasterCode();
+
+            return sItemValue;
+        }
+        else
+            return "";
+    };
+
+    this.getSelectedMasterName = function () {
+        //var clSelectedTag=me.txtField.getAttribute('selectedTag')
+        var clSelectedTag = objSelectedTags[me.txtField.id];
+        if (clSelectedTag)//if (me.currentRow >= 0)
+        {
+            //var oItems = me.clDiv.getElementsByTagName(me.sDivTag);
+            if(clSelectedTag.hasAttribute("name"))
+                return clSelectedTag.getAttribute("name");
+            else
+            {
+                var sItemValue = clSelectedTag.getAttribute('MasterId');// display value|name|code|id
+
+                if (typeof(sItemValue ) == 'string') {
+                    sItemValue = util.trim(sItemValue)
+                    var sindex = sItemValue.indexOf('|', sItemValue.indexOf('|') + 1);
+                    var eindex = sItemValue.indexOf('|', sindex + 1);
+                    if (sindex > 0)
+                        return sItemValue.substring(sindex + 1, eindex);
+                    else
+                        return cross.getInnerText(clSelectedTag);
+                }
+                else
+                    return cross.getInnerText(clSelectedTag);
+            }
+        }
+        return "";
+    };
+    this.getSelectedMasterCode = function () {
+        //var clSelectedTag=me.txtField.getAttribute('selectedTag')
+        var clSelectedTag = objSelectedTags[me.txtField.id];
+        if (clSelectedTag)//me.currentRow >= 0)
+        {
+            // var oItems = me.clDiv.getElementsByTagName(me.sDivTag);
+            if(clSelectedTag.hasAttribute("code"))
+                return clSelectedTag.getAttribute("code");
+            {
+                var sItemValue = clSelectedTag.getAttribute('MasterId');
+
+                if (typeof(sItemValue ) == 'string') {
+                    sItemValue = util.trim(sItemValue)
+                    var sindex = sItemValue.lastIndexOf('|');
+                    if (sindex > 0)
+                        return sItemValue.substring(sindex + 1, sItemValue.length);
+                    else
+                        return sItemValue;
+                }
+                else
+                    return sItemValue;
+            }
+        }
+        return "";
+    };
+    /**
+     returns array [0=id,[1]=type,masterid from div's attribute i,e MasterId... set at the time of filling the combobox
+     **/
+    this.getSelectedMaster = function () {  //  alert('getSelectedMaster '+me.txtField.id)
+        var iReturn;
+        //var clSelectedTag=me.txtField.getAttribute('selectedTag')
+        var clSelectedTag = objSelectedTags[me.txtField.id];
+
+        if (clSelectedTag)//me.currentRow >= 0)
+        {
+            //var oItems = me.clDiv.getElementsByTagName(me.sDivTag);
+            var sItemValue = clSelectedTag.getAttribute('MasterId');
+            iReturn = new Array();
+            if (typeof(sItemValue ) == 'string') {
+                sItemValue = util.trim(sItemValue)
+                var index = sItemValue.indexOf('|');
+                if (index > 0) {
+                    var index = sItemValue.indexOf('|');
+                    iReturn[0] = parseInt(sItemValue.substring(0, index))
+                    iReturn[1] = parseInt(sItemValue.substring(index + 1, sItemValue.indexOf('|', index + 1)))
+                }
+                else
+                    iReturn[0] = parseInt(sItemValue);
+            }
+            else
+                iReturn[0] = parseInt(sItemValue);
+
+        }
+        return iReturn;
+    };
+    this.getItemSelectedIndex = function () {
+        return me.currentRow;
+        /* var index=me.txtField.getAttribute('selectedIndex');
+         if(index)
+         return index;
+         else
+         return -1;*/
+    };
+    this.getSelectedIndex = function () {
+        var index = parseInt(me.txtField.getAttribute('selectedIndex'));
+        if (index >= 0)
+            return index;
+        else
+            return -1;
+    };
+
+    this.getSelectedHolder = function () {
+        return me.currentRow;
+    };
+    this.getAccountType = function () {
+        return parseInt(ltxtField.setAttribute('accounttype'));
+    };
+
+
+    this.setAccountType = function (iAcctType) {
+        this.iAccountType = iAcctType;
+        ltxtField.setAttribute('accounttype', iAcctType);
+    };
+
+    this.setMasterType2 = function (iMasterType,
+                                    selectby,
+                                    selecttype,
+                                    parentid,
+                                    iTargetModule,
+                                    isAlwaysFetchValues,iMasterDateType)
+    {
+
+        if(iMasterDateType==Constants.DATATYPE_STRINGLIST)
+            this.iMasterType2=Genernal_StaticValues;
+
+        this.iMasterType = iMasterType;
+        this.iSelectionBy = selectby;//ltxtField.getAttribute('selectionby');
+        this.iSelectionType = selecttype;// ltxtField.getAttribute('selectiontype');
+        this.iTargetModule = iTargetModule;
+        // this.iAccountType = ltxtField.getAttribute('accounttype');
+        this.iParentSeqId = parentid;
+        this.isAlwaysFetchValues = isAlwaysFetchValues;
+        ltxtField.setAttribute('mastertype', iMasterType);
+        ltxtField.setAttribute('selectionby', selectby);
+        ltxtField.setAttribute('selectiontype', selecttype);
+        ltxtField.setAttribute('targetmodule', iTargetModule);
+        ltxtField.setAttribute('parentseqid',parentid);
+        me.sLastValue="";
+        //  ltxtField.setAttribute('ifieldid',iFieldId);
+    };
+
+    this.setMasterType = function (iMasterType, iSelect) {
+        this.iMasterType = iMasterType;
+        ltxtField.setAttribute('mastertype', iMasterType);
+    };
+
+    this.getMasterType = function () {
+        return this.iMasterType;
+    };
+
+    this.getMasterType2 = function () {
+        return this.iMasterType2;
+    };
+
+    this.getParentId = function () {
+        return this.iParentSeqId;
+    };
+
+    /* this.getAttribute = function(sKey)
+     {
+     return this.txtField.getAttribute(sKey);
+     };
+     */
+    this.setSelectedIndex = function (selectRow)
+    {
+        //console.error("setSelectedIndex--me.currentRow="+selectRow+" "+me.sComboId)
+        me.currentRow = selectRow;
+        me.setSelectedText(me.getItemText(me.currentRow));
+
+
+
+        //if(me.currentRow>=0)
+
+
+        //me.txtField.setAttribute('selectedIndex',me.currentRow)
+        //if(me.currentRow>=0)
+
+
+    };
+    this.setParentSeqId = function (iParentSeqId)
+    {
+        me.txtField.setAttribute("parentseqid", iParentSeqId);
+        if(iParentSeqId>0)
+            me.iParentSeqId = iParentSeqId;
+        else
+            me.iParentSeqId=0;
+    };
+
+    this.setCondModuleSeqIds = function (sModuleSeqIds)
+    {
+        if(util.trim(sModuleSeqIds).length>0)
+            me.sModuleSeqIds = sModuleSeqIds;
+        else
+            me.sModuleSeqIds=null;
+    };
+
+
+
+
+
+
+
+    this.setSelectedMasterId = function (iMasterId)
+    {
+        /* var oItems = me.clDiv.getElementsByTagName(me.sDivTag);
+         var index = 0;
+         var sValue = null;
+         var clDivObject = null;
+         for (var i = 0; i < oItems.length; i++)
+         {
+         clDivObject = oItems[i];
+         sValue = clDivObject.getAttribute('MasterId')
+         if ((index = sValue.indexOf('|')) != -1)
+         sValue = sValue.substring(0, index)
+
+         if (sValue == iMasterId)
+         {
+
+         me.currentRow = i;
+         me.setSelectedText(me.getItemText(me.currentRow))
+         break;
+         }
+         }
+         */
+        var iRow = this.getRowFromSeqId(iMasterId)
+        if (iRow >= 0) {
+            me.currentRow = iRow;
+            me.setSelectedText(me.getItemText(me.currentRow))
+        }
+        return iRow>=0;
+    };
+
+    this.getRowFromSeqId = function (iMasterId) {
+        var oItems = me.getComboElements();//me.clDiv.childNodes;//getElementsByTagName(me.sDivTag);
+        var index = 0;
+        var sValue = null;
+        var clDivObject = null;
+        var i = 0;
+        var isFound = false;
+        for (; i < oItems.length; i++)
+        {
+            clDivObject = oItems[i];
+            sValue = clDivObject.getAttribute('MasterId');
+
+            if(  typeof(sValue)=='string' &&  (index = sValue.indexOf('|')) != -1)
+                sValue = sValue.substring(0, index);
+
+            if (sValue == iMasterId)
+            {
+                isFound = true;
+                break;
+
+            }
+        }
+        if (isFound)
+            return i;
+        else
+            return -1;
+
+
+    }
+    this.setSelectedHolder = function (iMasterId) {
+
+    };
+
+    this.clearSelection = function ()
+    {
+        //objSelectedTags[me.txtField.id] = null;
+        setSelectedTag(me.txtField.id,null);
+        //console.error("objSelectedTags==null")
+        me.txtField.setAttribute('selectedIndex', 0);
+
+        me.txtField.value="";
+        me.currentRow=-1;
+
+        setMasterIdToHidden(null);
+        me.setEnable(me.isEnable());
+    };
+
+    this.showPopupItems = function (iItems) {
+        me.iDisplayItems = iItems;
+    };
+
+
+    this.HidePopUp = function ()
+    {
+
+        var selectedDiv = me.getItemElement(me.currentRow);
+        // clear highlight color
+        if (selectedDiv) {
+
+            me.setStyle(selectedDiv, "aAutoComplete", true);
+        }
+
+        if (me.isPopUpVisible())
+        {
+
+            me.clDiv.style.display = "none";
+            me.clContainer.style.display = "none";
+            me.clDiv.style.height =  "0px";
+            me.clContainer.style.height = "0px";
+            me.txtField.setAttribute('isHidePopUp',"");
+
+            if(!this.bDoNotShowHeader)
+            {
+                me.clHeaderDiv.style.display = "none";
+                me.clHeaderDiv.style.height =  "0px";
+            }
+
+        }
+
+
+    };
+
+
+    this.ShowPopUp = function ()
+    {
+        //  util.writeToLog("pop="+me.txtField.getAttribute("hidepopup"))
+        if (
+            !me.isPopUpVisible()
+            &&  (  !me.txtField.getAttribute("hidepopup")
+                ||
+                me.txtField.getAttribute("hidepopup")==0
+            )
+            && !me.txtField.getAttribute("readonly")
+        )
+        {
+
+            //me.clContainer.style.visibility = "visible";
+            me.clContainer.style.display = "";
+            //me.clDiv.style.visibility = "visible";
+            me.clDiv.style.display = "";
+
+            if(!this.bDoNotShowHeader)
+            {
+                me.clHeaderDiv.style.display = "";
+                me.clHeaderDiv.style.height= ((this.iRowHeight * 1)) + "px";
+            }
+            me.clDiv.style.height = ((this.iRowHeight * (this.iDisplayItems))) + "px";
+            me.clContainer.style.height = this.iRowHeight+(this.iRowHeight * this.iDisplayItems) + 2 + "px";
+            // this.clContainer.style.background_color='red';
+
+
+
+
+//            me.clDiv.style.display = "none";
+//            me.clContainer.style.display = "none";
+
+
+            //            window.status=me.clContainer.offsetTop+","+me.clContainer.offsetLeft;
+
+            me.resizeDiv();
+
+            /*  if (objIFrameDiv != null) {
+             //var objPosition=cross.getPosition(me.clContainer);
+             objIFrameDiv.style.width = me.clContainer.style.width;
+             objIFrameDiv.style.height = me.clContainer.style.height;
+             objIFrameDiv.style.left = me.clContainer.offsetLeft;
+             objIFrameDiv.style.top = me.clContainer.offsetTop;
+             objIFrameDiv.style.display = "block";
+             }*/
+        }
+
+        // me.isShowPopUp=true;
+    };
+
+    /*this.hideComboPopUp = function()
+     {
+
+     var sValue = me.txtField.value;
+
+     if (me.iMasterType == Genernal_StaticValues)
+     {
+     //  alert('narr')
+     //if(me.currentRow=-1)
+     me.checkAndAddItem(sValue, true)
+     //else
+     //me.setSelectedText(me.getSelectedItem())
+     }
+     else
+     {   //window.status='tab='+me.currentRow
+
+     me.setSelectedText(me.getItemText(me.currentRow))
+     }
+
+     if (me.isPopUpVisible())
+     {
+     me.clDiv.style.visibility = "hidden";
+     me.clContainer.style.visibility = "hidden";
+     objIFrameDiv.style.display = "none";
+     }
+     };
+     */
+    this.isPopUpVisible = function () {  // alert(me.clDiv)
+
+        //if (me.clDiv && me.clDiv.style.visibility == "hidden")
+
+        if (me.clDiv && me.clDiv.style.display == "none")
+            return false;
+        else
+            return true;
+    };
+
+    //-----------------private methods ----------------------------------------------------------------------------------//
+
+    this.setStyle = function (clTag, sClassName,isRowElement)   // setting styles to div, span elements
+    {
+        //me.setWidth();
+        var isSelected=false;
+        clTag.className = sClassName;
+
+        switch (sClassName.charAt(0)) {
+            case "m":
+                clTag.style.fontSize = ".9rem";//"98%";
+                clTag.style.fontFamily = "Arial,Helvetica,sans-serif";
+                clTag.style.wordWrap = "break-word";
+                clTag.style.backgroundColor = "white";
+                break;
+            case "h"://header
+                clTag.style.fontSize = ".9rem";//"92%";
+                clTag.style.backgroundColor = "whitesmoke";
+                clTag.style.color = "#18191A";
+                clTag.style.display = "inline-block";
+                clTag.style.paddingLeft = "3px";
+                clTag.style.paddingRight = "3px";
+                clTag.style.height = this.iRowHeight + "px";
+                clTag.style.overflow = "hidden";
+                clTag.style.fontWeight= 600;
+                clTag.className = "comboHeader";
+                //if(me.iFirstColWidth>0)
+                //    clTag.style.width =  me.iWidth+me.iFirstColWidth+"px";
+                //else
+                clTag.style.width =  "100%";
+
+                break;
+            case "l"://hide the tag
+
+                clTag.style.display = "table";
+                clTag.style.table_layout = "fixed";
+
+                //clTag.style.display = "inline-table";
+
+
+
+                //clTag.style.tableLayoutFixed = "table";
+                //clTag.style.paddingLeft = "3";
+                //clTag.style.paddingRight = "3";
+                clTag.style.height = this.iRowHeight + "px";
+                //clTag.style.overflow = "hidden";
+
+                //  if(me.iFirstColWidth>0)
+                //     clTag.style.width =  me.iWidth+me.iFirstColWidth+"px";
+                //else
+                //      clTag.style.width =  "100%";
+
+                break;
+            case "c": // parent div of first column text div
+                clTag.style.display="table-cell";
+                //clTag.style.display="inherit";
+                clTag.style.height="100%";
+
+                //if(me.iFirstColWidth>0)
+                //    clTag.style.width =  me.iFirstColWidth+"px";
+                //else
+                //{
+                //    clTag.style.cssFloat = "left";
+                //    if (me.iFirstColWidth == 0)
+                //        clTag.style.width = "40%";
+                //    else
+                //        clTag.style.width = "100%";
+                //}
+                break;
+            case "d":
+                clTag.style.fontSize = ".9rem";//"98%";;//"90%";//80%
+                clTag.style.color = "green"
+
+                //clTag.style.oveflow="hidden";
+                //clTag.style.textOverflow="ellipsis";
+                //clTag.style.whiteSpace="nowrap";
+                //clTag.style.padding="4px";
+
+                clTag.style.height="100%";
+                //if(me.iFirstColWidth>0 )
+                clTag.style.display="table-cell";
+
+                if(me.iFirstColWidth==0)
+                    clTag.style.width =  "60%";
+                break;
+            case "s": // first column text div styles
+
+                clTag.style.overflow="hidden";
+                // clTag.style.display="inline-block";
+                clTag.style.whiteSpace="nowrap";
+                clTag.style.textOverflow="ellipsis";
+                clTag.style.fontSize = ".9rem";//"98%";
+                clTag.style.padding="4px";
+
+
+                if(me.iFirstColWidth>0)
+                    clTag.style.width =  me.iFirstColWidth+"px";
+                else
+                {
+
+                    //clTag.style.cssFloat = "left";
+                    if (me.iFirstColWidth == 0)
+                        clTag.style.maxWidth = "40%";
+                    else
+                        clTag.style.maxWidth = "100%";
+                }
+                break;
+
+            case "a":
+                clTag.style.fontSize = ".9rem";//"98%";
+                //clTag.style.color = "black";
+                //clTag.style.cssText = "color:black !important";
+
+                //clTag.style.paddingLeft="0.15em";
+                clTag.style.height = me.iRowHeight + "px";
+                clTag.lastChild.lastChild.style.color = "green";
+                //if(me.iOrgSelectionBy!=(me.iSelectionBy%Constants.COMBO_BY_USER_REQUEST))
+                //    clTag.style.backgroundColor="#FAFAFA";
+                //else
+                //    clTag.style.backgroundColor="white";
+
+                if (clTag.displaySpan)
+                    clTag.displaySpan.style.color = "green"
+                break;
+            case "b":
+                clTag.style.fontSize = ".9rem";//"98%";
+                clTag.style.height = me.iRowHeight + "px";
+                clTag.className = "comboSelRow";
+                clTag.style.width =  me.clContainer.style.width;
+                clTag.lastChild.lastChild.style.color = "white";
+                if (clTag.displaySpan)
+                    clTag.displaySpan.style.color = "white"
+                isSelected=true;
+
+                break;
+
+
+
+
+        }
+
+
+        if(isRowElement==true && me.fComboItemRenderer)
+        {
+            var sName=clTag.getAttribute("name");
+            var sCode=clTag.getAttribute("code");
+            var sMasterId=clTag.getAttribute('MasterId');
+            me.fComboItemRenderer(clTag,isSelected,sName,sCode,sMasterId);
+        }
+    };
+    this.AddStyles = function (clCompleteDiv) {
+        //me.setWidth();
+        me.setStyle(clCompleteDiv, "mAutoComplete",true)
+    };
+
+    this.isShiftPressed = function (evt) {
+
+        var nav4 = window.Event ? true : false;
+        if (nav4) {
+            if (evt)
+                return evt.modifiers & Event.SHIFT_MASK;
+        }
+        else
+            return  window.event.shiftKey;
+        return false;
+    };
+
+    this.resizeDiv = function () {      // alert(me.parentElement)
+        if (me.clDiv)
+        {
+
+
+            if (me.parentElement)
+            {
+
+                var iTxtWidth=me.paddingLeft(me.txtField);
+                var iOffSetWidth=me.getOffsetWidth();
+                var iScrollBarWidth = 0;
+
+                if(clAppBuffer.getLanguage() == Constants.ILANGUAGE_TYPE.ARABIC || clAppBuffer.getLanguage() == Constants.ILANGUAGE_TYPE.PERSIAN)//         && Browser.isChrome && (me.txtField).getAttribute("istablecolumn")=="true"
+                {
+
+                    iOffSetWidth=iOffSetWidth-17;//17 for search icon width
+                    me.clContainer.style.left =  iTxtWidth-me.parentElement.scrollLeft + "px";
+                    iScrollBarWidth=0;
+
+                }
+                else
+                {
+                    iScrollBarWidth = 20;
+                    me.clContainer.style.left = me.paddingLeft(me.txtField) - (me.parentElement.scrollLeft+(me.parentElement2!=null?me.parentElement2.scrollLeft:0)) + "px";
+                    me.clDiv.style.left = 0;
+                    if(!this.bDoNotShowHeader)
+                        me.clHeaderDiv.style.left = 0;
+                }
+
+                me.clContainer.style.top = me.paddingTop(me.txtField) - (me.parentElement.scrollTop+(me.parentElement2!=null?me.parentElement2.scrollTop:0)) + me.txtField.offsetHeight - 1 + "px";
+
+            }
+
+            me.clContainer.style.width =  (me.iWidth>iOffSetWidth?me.iWidth:iOffSetWidth) + "px"
+            me.clDiv.style.top = me.clContainer.scrollTop+ (!this.bDoNotShowHeader?this.iRowHeight:0)+"px";//+(me.iRowHeight*2);
+            me.clDiv.style.width = (me.iWidth>iOffSetWidth?me.iWidth:iOffSetWidth) - iScrollBarWidth + "px"
+
+            if(!this.bDoNotShowHeader)
+            {
+                me.clHeaderDiv.style.top = me.clContainer.scrollTop;
+                me.clHeaderDiv.style.width = (me.iWidth > iOffSetWidth ? me.iWidth : iOffSetWidth) - iScrollBarWidth + "px"
+            }
+
+        }
+    };
+
+    this.getOffsetWidth = function () {
+        if (navigator && navigator.userAgent.toLowerCase().indexOf("msie") == -1)
+            return this.txtField.offsetWidth - this.rlBorderWidth * 2 + 20
+        else
+            return this.txtField.offsetWidth + 20
+    };
+
+    /**
+     replaces "\n\r" with (" ") empty space
+     **/
+    this.replaceHtml = function (sOldInnerHtml) {
+        for (var c = 0, sNewInnerHtml = "", sReplaceString = "\n\r"; c < sOldInnerHtml.length; c++)
+            if (sReplaceString.indexOf(sOldInnerHtml.charAt(c)) == -1)
+                sNewInnerHtml += sOldInnerHtml.charAt(c);
+            else
+                sNewInnerHtml += " ";
+        return sNewInnerHtml;
+    }
+    /**
+     search all the span tags which have sClassName and replace '\n\r' in innerHTML with space
+     **/
+    this.SearchAndReplaceHtml = function (clDivTag, sClassName)
+    {
+        var clSpanTag = clDivTag.getElementsByTagName(me.sSpanTag);
+
+        if (clSpanTag) {
+            for (var c = 0; c < clSpanTag.length; ++c) {
+                if (clSpanTag[c].className == sClassName) {
+                    var sInnerHtml = clSpanTag[c].innerHTML;
+                    if (sInnerHtml == "&nbsp;")
+                        return"";
+                    else {
+                        var sNewInnerHtml = me.replaceHtml(sInnerHtml);
+                        return sNewInnerHtml;
+                    }
+                }
+            }
+        }
+        else {
+            return""
+        }
+    }
+
+    this.leftAlign = function (clDivTag) {
+        if (!clDivTag)
+            return null;
+        return me.SearchAndReplaceHtml(clDivTag, "cAutoComplete")
+    }
+    this.rightAlign = function (clDivTag) {
+        if (!clDivTag)
+            return null;
+        return me.SearchAndReplaceHtml(clDivTag, "dAutoComplete")
+    }
+    this.handleHide = function () {
+        if (!me.isAjaxSupported) {
+            me.setCookie("qu", "", 0, this.url, null, null)
+        }
+
+        me.HidePopUp();
+    }
+    /*this.encodeURI = function(Va)
+     {
+     if (encodeURIComponent)
+     return encodeURIComponent(Va);
+     if (escape)
+     return escape(Va)
+     }*/
+    /* this.trim = function(sValue)
+     {
+     if (!sValue || sValue.length == 0)
+     return "";
+     */
+    /*var sNewValue = "";
+     var iStartIndex = -1,iEndIndex;
+     for (var index = 0; index < sValue.length; index++)
+     {
+     if (iStartIndex == -1 && sValue.charAt(index) != ' ')
+     iStartIndex = index;
+     else
+     {
+     if (sValue.charAt(index) == ' ')
+     iEndIndex = index;
+     else if (sValue.charAt(index) != ' ')
+     iEndIndex = -1;
+     }
+     }
+     //alert("sVlaue  "+sVlaue)
+     if (iEndIndex != -1)
+     return sValue.substring(iStartIndex, iEndIndex);
+     else
+     return sValue.substring(iStartIndex, sValue.length);*/
+    /*
+     return sValue.replace(/^\s+|\s+$/, '');
+
+     }*/
+
+    /* this.startsWith = function(sValue, sStartString)
+     {
+     sValue = sValue.substring(0, sStartString.length)
+     if (sValue == sStartString)
+     return true;
+     else
+     return false;
+     }*/
+    this.endssWith = function (sValue, sEndString) {
+        sValue = sValue.substring(sValue.length - sEndString.length, sValue.length)
+        if (sValue == sEndString)
+            return true;
+        else
+            return false;
+    }
+
+
+    this.paddingLeft = function (s) {
+        return me.setPadding(s, "offsetLeft")
+    }
+
+    this.paddingTop = function (s) {
+        return me.setPadding(s, "offsetTop")
+    }
+    this.setPadding = function (s, na) {
+        var wb = 0;
+        while (s) {
+            wb += s[na];
+            s = s.offsetParent
+        }
+        return wb
+    }
+    this.setCookie = function (z, Y, ab, tb, qb, cc) {
+        var Vb = z + "=" + Y + (ab ? "; expires=" + ab.toGMTString() : "") + (tb ? "; path=" + tb : "") + (qb ? "; domain=" + qb : "") + (cc ? "; secure" : "");
+        document.cookie = Vb
+    }
+    this.setFldSize = function () {
+        var Ga = document.body.scrollWidth - 220;
+        Ga = 0.73 * Ga;
+        me.txtField.size = Math.floor(Ga / 6.18)
+    }
+    this.getTextRange = function (o) {
+        var M = -1;
+        if (o.createTextRange) {
+            var TxtFld = document.selection.createRange().duplicate();
+            M = TxtFld.text.length
+        }
+        else if (o.setSelectionRange) {
+            M = o.selectionEnd - o.selectionStart
+        }
+        return M
+    }
+    this.getFldLength = function (o) {
+        var w = 0;
+        if (o.createTextRange) {
+            var TxtFld = document.selection.createRange().duplicate();
+            TxtFld.moveEnd("textedit", 1);
+            w = o.value.length - TxtFld.text.length
+        }
+        else if (o.setSelectionRange) {
+            w = o.selectionStart
+        }
+        else {
+            w = -1
+        }
+        return w
+    }
+    this.removeTxtSelection = function (agrs) {
+        if (!agrs)
+            agrs = arguments;
+
+        var ltxtField = agrs[0]
+        if (ltxtField && ltxtField.createTextRange) {
+            var u = ltxtField.createTextRange();
+            u.moveStart("character", ltxtField.value.length);
+            u.select()
+        }
+        else if (ltxtField && ltxtField.setSelectionRange) {
+            ltxtField.setSelectionRange(ltxtField.value.length, ltxtField.value.length)
+        }
+    }
+
+    this.setEmptyValue= function(sEmptyValue)
+    {
+        me.sEmptyValue=sEmptyValue;
+    }
+    this.setWidth = function (iWidth) {
+        me.iWidth = iWidth;
+
+    }
+
+    /*
+     this.AddRule = function(sClass,sStyle)
+     {
+     if(me.Ua)
+     {   alert('AddRule')
+     var oStyleSheet=document.styleSheets[0];
+     if(oStyleSheet.addRule)
+     oStyleSheet.addRule(z,rb)
+     else if(oStyleSheet.insertRule)
+     oStyleSheet.insertRule(sClass+" { "+sStyle+" }",oStyleSheet.cssRules.length)
+     }
+     }*/
+
+
+    /**
+     *  it searches the value in the list of items and then sets the row ....
+     * @param sValue
+     */
+    me.setSelectedKey = function (sKey)
+    {
+
+
+        var i = -1;
+        var dvSelect=null;
+        var sValue=null;
+
+        var oItems =me.getComboElements();// me.clDiv.childNodes;//getElementsByTagName(me.sDivTag);
+
+        if (oItems.length > 0)
+        {
+            for(i=0; i < oItems.length; i++)
+            {
+
+//                 sValue = oItems.item(i).childNodes[0].childNodes[0].innerHTML;
+
+                //  sValue = cross.getInnerText(oItems.item(i).childNodes[0].childNodes[0]);/*To get Selected Text */
+                sValue = cross.getInnerText(getTextElement(oItems.item(i)));/*To get Selected Text */
+
+
+                if(sValue==sKey)
+                {
+                    me.setSelectedIndex(i);
+
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
+
+
+    /**
+     set the name from the item selected in the list to the text field and set the master id to the hidden field name+'_id'
+     @param sValue sValue is the item selected in the list
+     **/
+
+    me.setSelectedText = function (sValue)
+    {
+        me.txtField.value = html_entity_decode(sValue);
+        document.getElementById(me.sComboId).value=me.txtField.value;
+
+        setMasterIdToHidden(sValue);
+        me.setEnable(me.isEnable());
+
+
+
+
+    }
+
+    function setMasterIdToHidden (sValue)
+    {
+
+        var clHiddenTag = me.getHiddenField();
+        me.txtField.setAttribute('selectedIndex', me.currentRow)
+            //console.error("before setMasterIdToHidden="+me.currentRow+" "+me.txtField.id+" "+me.sComboId+" "+clHiddenTag.id)
+
+        //objSelectedTags[me.txtField.id] = me.getItemElement(me.currentRow);
+        setSelectedTag(me.txtField.id,me.getItemElement(me.currentRow));
+
+            //console.error("after setMasterIdToHidden="+me.currentRow+" "+me.txtField.id+" "+objSelectedTags[me.txtField.id])
+        if ( me.iMasterType2 == Genernal_StaticValues
+            || me.iMasterType == Genernal_StaticValues)// std narration
+        {
+            if(sValue==null)
+                sValue="";
+
+            clHiddenTag.setAttribute("value", sValue);
+        }
+        else
+        {
+            sValue = me.getSelectedId();
+
+            //alert(clHiddenTag.id+"===="+sValue)
+            clHiddenTag.setAttribute("value", sValue);
+            clHiddenTag.value=sValue;
+            //alert("after set "+clHiddenTag.id+"===="+clHiddenTag.value+"==========="+clHiddenTag.parentNode.innerHTML)
+        }
+    }
+
+    //-------------------------------------------- event handlers ----------------------------------------------------------------//
+    this.setItemName = function (sMasterName) {
+
+        var objComboItem = me.getItemElement(me.currentRow);
+
+        this.txtField.value = sMasterName;
+        var objSpan = objComboItem.childNodes[0].childNodes[0];
+        objSpan.innerHTML = sMasterName;
+    }
+
+
+
+    this.handleKeyUpEvent = function (evt)
+    {
+
+
+        if (!this.stopHandlingEvts)
+        {
+            var key;
+            if (evt)
+                key = evt.keyCode;
+
+            var sValue = me.txtField.value;
+
+            if (key != 0)
+            {
+                if(me.isAllowMultiSelect && (key == 46 || key ==8))// DEL
+                {
+                    //clMultiCombo.onClkDelete(me.sComboId,evt);
+                    // return false;
+                }
+                else if (evt.ctrlKey
+                    || key == 33
+                    || key == 34
+                    || key == 35
+                    || key == 36
+                    || key == 37
+                    || key == 39
+                    || key == 45
+                    || key == 127
+                    || key == 155
+                    || key == 18
+                    || key == 17
+                    || key == 16
+                    || key == 113
+                )
+
+                {
+                    return false;
+
+                }
+                else if( !me.isPopUpVisible() && key == 9)
+                {
+                    return true;
+                }
+                else if (key == 13
+                    || key == 3
+                    || ( !me.isShiftPressed(evt) && key == 9 )
+                )   // enter or tab
+                {
+                    var f = me.txtField;
+                    if (f.createTextRange)
+                    {
+                        var u = f.createTextRange();
+                        u.moveStart("character", f.value.length);
+                        u.select();
+                    }
+                    else if (f.setSelectionRange)
+                    {
+                        f.setSelectionRange(f.value.length, f.value.length);
+                    }
+                    me.handleHide();// hide Div and set value to text field........
+                    me.FieldValue = sValue;
+
+                    if (me.iMasterType == Genernal_StaticValues)// || isAllowToAddItems)
+                        me.checkAndAddItem(f.value, true);
+                    else
+                        me.setSelectedText(me.getItemText(me.currentRow));
+
+                    if (key == 13 || key == 3)
+                    {
+                        me.isEnterKey=true;
+                        if(!me.isRequestInProgress)
+                        {
+                            me.HidePopUp();
+                            if(window["moduleView"]!=undefined)// only for the module
+                                moduleView.callbackCheckInput(me.txtField,evt);
+                        }
+                    }
+                    return false;
+
+                }
+                else
+                {
+
+                    if (me.isPopUpVisible())
+                    {
+                        if (key == 40)// down arrow
+                        {
+                            //startRepeat(true)
+                            return false;
+                        }
+                        else if (key == 38) // up arrow
+                        {
+                            //startRepeat(false)
+                            return false;
+                        }
+                        else
+                        {
+                            if (me.txtField.value != sValue)
+                            {
+                                me.setSelectedText(sValue)
+                            }
+                        }
+                    }
+                    else
+                    {
+                        me.sLastValue="";
+                    }
+                    //me.txtField.title = '00000' + sValue
+                }
+            }
+            me.FieldValue = sValue;//+String.fromCharCode(evt.keyCode);
+            me.getValues();
+        }
+        else
+            this.stopHandlingEvts = false;
+    }
+
+
+    var isRepeating=false;
+    var timer=null;
+    var timer2=null;
+    const initialDelay = 300; // before repeat startsconst
+    const repeatSpeed  = 120; // repeat interval
+
+
+
+    function moveNext()
+    {
+        var iSelectRow = me.currentRow + 1;
+        me.highlightRow(iSelectRow,true);
+        me.movedown(iSelectRow);
+
+    }
+
+
+    function movePrevious()
+    {
+        var iSelectRow = me.currentRow - 1;
+        if(iSelectRow>=0)
+        {
+            me.highlightRow(iSelectRow,true);
+            me.moveup(iSelectRow);
+        }
+
+    }
+
+    function startRepeat(isMoveNext)
+    {
+        if (isRepeating) return;
+            isRepeating = true;
+
+        //console.error("------------startRepeat "+isMoveNext)
+        // first step immediately
+
+        if(isMoveNext)
+            moveNext();
+        else
+           movePrevious();
+
+
+        // then start repeat after delay
+        timer = setTimeout(function ()
+        {
+            //console.error("setTimeout "+isMoveNext)
+            if(isMoveNext)
+                moveNext();
+             else
+               movePrevious();
+
+            timer2 = setInterval(function ()
+                {
+                    //console.error("setInterval "+isMoveNext)
+                    if(isMoveNext)
+                        moveNext();
+                    else
+                        movePrevious();
+
+                  //  timer = setInterval(moveNext, repeatSpeed);
+                }, repeatSpeed);
+        }, initialDelay);
+    }
+
+
+
+    function stopRepeat()
+    {
+        isRepeating = false;
+        //console.error("------------stopRepeat "+isRepeating)
+        clearTimeout(timer);
+        clearInterval(timer2);
+        timer = null;
+
+    }
+
+    this.movedown = function (iRow)
+    {
+
+        var selectedDiv = me.getItemElement(iRow);
+        if (selectedDiv)
+        {
+            if(
+                (
+                me.iCurPos >=(me.iDisplayItems-(!me.bDoNotShowHeader?1:0))
+                )
+            )
+            {
+                me.iCurDivTop=me.iCurDivTop+me.iRowHeight;
+                me.clDiv.style.top = ((!me.bDoNotShowHeader?me.iRowHeight:0)+(-me.iCurDivTop)) + "px";
+            }
+            else
+            {
+                if(me.iCurPos<0)
+                    me.iCurPos=0;
+                me.iCurPos=me.iCurPos+1;
+            }
+
+
+            if((me.getItemCount()-1)==me.currentRow || iRow==(me.getItemCount()-1))
+            {
+                if(me.isFetchValues())
+                {
+                    me.isAppendItems = true;
+                    me.OpenConnection(false,(iRow==(me.getItemCount()-1)));
+                }
+            }
+        }
+    }
+
+    this.moveup = function (iRow)
+    {
+
+        /*var contentheight=me.clDiv.style.offsetHeight;
+         if (me.iens6&&parseInt(me.clDiv.style.top)<=0)
+         me.clDiv.style.top=parseInt(me.clDiv.style.top)+"px"
+         else if (me.ns4&&me.clDiv.top<=0)
+         me.clDiv.top+=speed
+         */
+        //moveupvar=setTimeout("moveup()",10)
+
+        var selectedDiv = me.getItemElement(iRow);
+        if (selectedDiv)
+        {
+            if(me.iCurPos<=0 && iRow>=0)
+            {
+                if(this.iCurDivTop>=0)
+                {
+                    //console.error(this.iCurDivTop + " " + me.iCurPos)
+                    var iDivTop = -(this.iCurDivTop - (this.iRowHeight));// (iDivHieght - (iRowY));
+                    this.iCurDivTop = -iDivTop;
+                    me.clDiv.style.top = (!this.bDoNotShowHeader ? this.iRowHeight : 0) + (iDivTop) + "px";
+                }
+
+            }
+            else if(me.iCurPos>0)
+            {
+
+                me.iCurPos=me.iCurPos-1;
+            }
+
+
+        }
+    };// moveup
+
+
+    this.stopEventHandling = function (isStopHandlingEvts) {
+        this.stopHandlingEvts = isStopHandlingEvts;
+    }
+
+
+    this.onKeyUpHandler = function (evt)
+    {
+        if (!evt && window.event)
+            evt = window.event;
+
+
+        if(!util.hasClass("comboOnFocus"))
+        {
+            util.addClass(me.txtField, "comboOnFocus"); // is used for combo ui syles,
+            util.addClass(me.txtField, "clzonfocus");// is used for combo behaviour ,
+        }
+
+        if (evt.keyCode == 118 || evt.keyCode == 119) // not handling F7,F8 event
+        {
+            /*me.txtField.blur();
+             cross.cancelBubble(evt);
+             return false;*/
+            return true;
+        }
+        else if (evt.keyCode == 115)
+        {
+            cross.cancelBubble(evt);
+            return false;
+        }
+
+        var bResult=false;
+        if(me.fKeyUpBeforeHandler)  // user handler before selection
+        {
+            bResult=me.fKeyUpBeforeHandler(evt);
+            if(bResult==false)
+            {    cross.cancelBubble(evt);
+                return false
+            }
+        }
+
+        var bResult=me.handleKeyUpEvent(evt);
+
+        if (evt.keyCode == 38 || evt.keyCode == 40)//38-up,     40-down,   9-tab,    (9+e.shiftKey==true) -shift+tab
+        {
+            stopRepeat();
+
+        }
+
+
+        if(me.fKeyUpAfterHandler)  // user handler after selection
+        {
+            bResult=me.fKeyUpAfterHandler(evt);
+
+        }
+
+        if(bResult==false)
+        {    cross.cancelBubble(evt);
+            return false
+        }
+
+
+
+        return true;
+    };
+
+
+    this.onKeyDownHandler = function (evt)
+    {
+        if (!evt && window.event)
+            evt = window.event;
+
+
+        //evt.keyCode==13 ||
+        if(me.isAllowMultiSelect && (evt.keyCode == 46 || evt.keyCode ==8))// DEL
+        {
+            clMultiCombo.onClkDelete(me.sComboId,evt);
+//          return false;
+        }
+
+        else  if (evt.keyCode == 113)// F2 works only for the master module
+        {
+            if((me.iMasterType>Constants.MASTER_MODULE && me.iMasterType< (Constants.MASTER_MODULE+Constants.MODULE_SLAB) )
+                || (me.iMasterType==Constants.EDU_STUDENT)
+                || (me.iMasterType==Constants.CONTRACTS)
+                || (me.iMasterType==Constants.USERS)
+                || (me.iMasterType==Constants.CUST_ASSETS)//Informed to srikanth sir. Added by raghu
+            )
+            {
+                //console.error("113=fired")
+                if(me.iSelectionBy==Constants.COMBO_BY_NAME
+                    || (me.iSelectionBy%Constants.COMBO_BY_USER_REQUEST)==(Constants.COMBO_BY_NAME))
+                {
+                    if(me.getSelectedId()>0)
+                    {
+                        var clSelElement=me.getItemElement(me.currentRow);//me.getSelectedElement(me.sComboId);
+                        me.FieldValue=clSelElement.getAttribute("code");
+                        me.setSelectedText(me.FieldValue);
+                        //console.error("113="+clSelElement.getAttribute("code"))
+                    }
+                   else
+                        me.FieldValue="";
+
+                    me.iSelectionBy=Constants.COMBO_BY_CODE+Constants.COMBO_BY_USER_REQUEST;
+
+                }
+                else
+                {
+                    if(me.getSelectedId()>0)
+                    {
+                        var clSelElement=me.getItemElement(me.currentRow);//me.getSelectedElement(me.sComboId);
+                        me.FieldValue=clSelElement.getAttribute("name");
+                        me.setSelectedText(me.FieldValue);
+                        //console.error("113="+clSelElement.getAttribute("name"))
+                    }
+                    else
+                        me.FieldValue="";
+                    me.iSelectionBy = Constants.COMBO_BY_NAME + Constants.COMBO_BY_USER_REQUEST;
+                }
+                me.getValues(true,false);
+
+                cross.cancelBubble(evt);
+                return false;
+
+            }
+        }
+        else if (evt.keyCode == 118) // 13-Enter , 116 - F5, 118 - F7
+        {
+            // disabling form submission when enter key pressed
+            if (evt.keyCode == 118) // opening advance search dialog
+            {
+                cross.cancelBubble(evt);
+                /* if (evt.preventDefault) // works for mozilla
+                 evt.preventDefault();*/
+
+                /*evt.cancelBubble = true;
+                 evt.returnValue = false;
+                 */
+                //evt.keyCode = 0;
+                //var objAdvSearch = new ComboAdvSearch();
+                //alert(me.txtField.name)
+                // var iGodownId = 0;
+                //if (typeof openAdvSearchDlg == 'function')
+                //{
+                //    openAdvSearchDlg(me); // function from transutil.js
+                //}
+            }
+
+            //me.setNodeSelected();
+            return false;
+        }
+        else if (evt.keyCode == 38 || evt.keyCode == 40)//38-up,     40-down,   9-tab,    (9+e.shiftKey==true) -shift+tab+ enter
+        {
+            if (me.isPopUpVisible())
+            {
+                if (evt.keyCode == 40)// down arrow
+                {
+                    if(!isRepeating)
+                        startRepeat(true);
+                }
+                else if (evt.keyCode == 38) // up arrow
+                {
+                    if(!isRepeating)
+                        startRepeat(false);
+
+                }
+            }
+            cross.cancelBubble(evt);
+            return false;
+        }
+        else if(evt.keyCode == 13)
+        {
+            cross.cancelBubble(evt);
+            return false;
+        }
+        //        return false;
+    };
+
+    this.onResizeHandler = function () {
+        me.resizeDiv();
+    }
+
+    this.setKeyupBeforeSelection=function(fHandler)
+    {
+
+        me.fKeyUpBeforeHandler=fHandler;
+    }
+
+    this.setKeyupAfterSelection=function(fHandler)
+    {
+
+        me.fKeyUpAfterHandler=fHandler;
+    }
+
+
+
+    this.setComboItemRenderer=function(fHandler)
+    {
+        me.fComboItemRenderer=fHandler;
+    }
+
+
+    this.setOnLostScript = function (sScript) {
+
+        if (this.onLostScript && this.onLostScript.length > 0)
+            this.onLostScript = this.onLostScript + ";" + sScript;
+        else
+            this.onLostScript = sScript;
+    };
+
+    this.getOnLostScript=function()
+    {
+        return this.onLostScript;
+    };
+
+    this.setOnFocusScript = function (sScript) {
+        if (this.onFocusScript && this.onFocusScript.length > 0)
+            this.onFocusScript = this.onFocusScript + ";" + sScript;
+        else
+            this.onFocusScript = sScript;
+    }
+
+    this.getOnFocusScript=function()
+    {
+        return this.onFocusScript;
+    };
+
+    this.onFocusHandler = function (evt)
+    {
+
+        if (!evt && window.event)
+            evt = window.event;
+
+        //util.writeToLog("focus")
+        if (!me.isMouseDown && !me.isPopUpVisible())
+        {
+            var sValue = me.txtField.value;// @@new
+            if (sValue && sValue.length > 0)            // @@new
+            {
+
+                // me.sLastValue="";
+                me.searchByKey(sValue, true)// @@new
+            }
+            else // @@new
+                me.ShowPopUp();
+        }
+
+        me.isMouseDown = false;
+
+        // alert(me.arCascadeFields)
+
+
+
+        //  me.movedown(me.currentRow);
+        // me.clDiv.style.top='40px';
+
+
+        /* if(me.onFocusScript && me.onFocusScript.length>0)
+         {    me.onLostScript=me.onLostScript.replace('this','me.txtField')
+         eval(me.onLostScript)
+         }*/
+
+        return true;
+
+    };
+
+    this.onTxtFocusHandler = function (evt)
+    {
+        if(!evt && window.event)
+            evt = window.event;
+
+        //me.txtField.style.cssText = "color:black !important;background-color:lightyellow";
+        //me.txtField.style.color = "black";
+        //me.txtField.style.backgroundColor = "lightyellow";
+
+        util.addClass(me.txtField,"comboOnFocus"); // is used for combo ui syles,
+        util.addClass(me.txtField,"clzonfocus");// is used for combo behaviour ,
+
+
+        /*if(me.arCascadeFields!=null && me.arCascadeFields[0]>0)
+         {
+         if(me.isCascadeChanged())
+         {
+         me.notifyCascadeChange();
+
+
+         /!* me.txtField.value='';
+         me.removeAllItems();
+
+         if(me.isAllowMultiSelect)
+         clMultiCombo.removeAllItems(me.sComboId);
+
+         if(me.iMasterType==0
+         ||  me.iMasterType==Genernal_Master)
+         {   // alert("focus="+me.iMasterType)
+         me.iParentSeqId=parseInt(me.txtField.id.substring(1));// YUG need to change
+         //  alert(parseInt(me.txtField.id.substring(1)))
+         me.iMasterType2=me.iMasterType;
+         me.iMasterType=Genernal_SERVER_VALUES;
+         }*!/
+         }
+         }*/
+
+        onLocalTxtFocusHandler(evt);
+
+
+        return true;
+    }
+
+    function onLocalTxtFocusHandler(evt)
+    {
+
+        if (me.onFocusScript && me.onFocusScript.length > 0) {
+            me.onFocusScript = me.onFocusScript.replace('this', 'me.txtField');
+
+            if (me.onFocusScript.indexOf('handleProductEvents') >= 0
+                || me.onFocusScript.indexOf('handleFocusEvent') >= 0)  // Note assumed event handlers  handleFocusEvent,handleProductEvents ll have first parameter as row index as well txt field name ll be like row[1][2] where [1]=row index
+            {
+                me.onFocusScript = me.onFocusScript.substring(0, me.onFocusScript.indexOf('(') + 1) + me.txtField.id.substring(me.txtField.id.indexOf('[') + 1, me.txtField.id.indexOf(']')) + me.onFocusScript.substring(me.onFocusScript.indexOf(','));
+                // alert(me.onLostScript);
+            }
+            ///   alert(me.onFocusScript)
+            eval(me.onFocusScript)
+
+
+        }
+    }
+
+    this.onBlurHandler = function (evt)
+    {
+
+
+        if (!evt && window.event)
+            evt = window.event;
+        var objSrc = evt.srcElement ? evt.srcElement : evt.target;
+
+
+
+
+        if(util.hasClass(me.txtField,"comboOnFocus"))
+            util.removeClass(me.txtField,"comboOnFocus");
+
+        if(util.hasClass(me.txtField,"clzonfocus"))
+            util.removeClass(me.txtField,"clzonfocus");
+
+        if (me.iMasterType == Genernal_Narration || me.iMasterType ==Genernal_Narration_WITH_ID )
+        {
+            me.checkAndAddItem(me.txtField.value,true,true);
+            me.setSelectedText(me.getItemText(me.currentRow));
+        }
+        else
+        {
+            if (me.isPopUpVisible())
+            {
+                me.setSelectedText(me.getItemText(me.currentRow));
+                //console.error("onBlurHandler= "+me.getItemText(me.currentRow))
+            }
+        }
+
+
+        if(me.isAllowMultiSelect)// assumed comboMultiSelect.js is included
+        {
+            clMultiCombo.addItem(me.sComboId,this.txtField.getAttribute("hiddenName"),false);
+            //.combo-multi-clear-btn
+        }
+
+
+
+        if(me.isCascadeChildDefined())
+        {
+            var sSelectedValue = me.getSelectedId();
+            me.notifyAllCascadeChilds(me.sComboId,sSelectedValue);
+        }
+
+        stopRepeat();// for long kedown and up
+
+        var sValue=null;
+        var clSelElement=me.getItemElement(me.currentRow);//me.getSelectedElement(me.sComboId);
+
+        if(clSelElement)
+        {
+            //console.error("clSelElement= "+me.getSelectedId()+" "+clSelElement.getAttribute("code")+" "+clSelElement.getAttribute("name"));
+
+            if(me.getSelectedId()>0)
+            {
+                if (me.iOrgSelectionBy == Constants.COMBO_BY_CODE && me.iSelectionBy !=me.iOrgSelectionBy) {
+                    sValue = clSelElement.getAttribute("code");
+                    me.setSelectedText(sValue);
+                }
+                else if (me.iOrgSelectionBy == Constants.COMBO_BY_NAME && me.iSelectionBy !=me.iOrgSelectionBy) {
+                    sValue = clSelElement.getAttribute("name");
+                    me.setSelectedText(sValue);
+                }
+
+            }
+            else
+                sValue='';
+            //console.error("clSelElement="+sValue)
+
+        }
+
+
+        if(sValue)
+        {
+
+            me.iSelectionBy = me.iOrgSelectionBy;
+            sValue=util.htmlEnDeCode.htmlDecode(sValue)
+            me.FieldValue=sValue;
+            //me.txtField.value =sValue;// html_entity_decode(sValue);
+            me.txtField.setAttribute("hidepopup",1);
+            //me.byResultBy=me.iOrgSelectionBy
+            me.isSelectItemText=true;
+            me.getValues(true,true);
+            me.sLastValue="";
+        }
+
+        onLocalBlurHandler(evt,objSrc);
+        me.HidePopUp();
+        me.isMouseDown=false;
+    }
+
+    function onLocalBlurHandler(evt,objSrc)
+    {
+        if (  me.onLostScript && me.onLostScript.length > 0)
+        {
+            var find = 'this';
+            var re = new RegExp(find, 'g');
+            me.onLostScript = me.onLostScript.replace(re, 'me.txtField');
+
+            var sScriptCode= me.onLostScript;//.replace(re, ","+me.isMouseDown+");");
+            const paramToAdd = "me.isMouseDown";
+
+
+
+            sScriptCode = sScriptCode.replace(/(\w+)\s*\(([^)]*)\)/g, (match, fn, args) => {
+                if (args.trim() === "") {
+                    // no params ? just add
+                    return `${fn}(${paramToAdd})`;
+                } else {
+                    // already has params ? append
+                    return `${fn}(${args}, ${paramToAdd})`;
+                }
+            });
+
+
+
+
+            if (sScriptCode.indexOf('handleProductEvents') >= 0
+                || sScriptCode.indexOf('handleFocusEvent') >= 0)  // Note assumed event handlers  handleFocusEvent,handleProductEvents ll have first parameter as row index as well txt field name ll be like row[1][2] where [1]=row index
+            {
+                sScriptCode = sScriptCode.substring(0, sScriptCode.indexOf('(') + 1) + me.txtField.id.substring(me.txtField.id.indexOf('[') + 1, me.txtField.id.indexOf(']')) + sScriptCode.substring(sScriptCode.indexOf(','));
+            }
+            eval(sScriptCode)
+
+
+        }
+    }
+
+    this.onMouseDown = function (evt) {
+        if (!evt && window.event)
+            evt = window.event;
+
+        me.currentRow = me.getIndexFromTag(this)
+        me.isMouseDown = true;
+        me.HidePopUp();
+
+        me.setSelectedText(me.getItemText(me.currentRow))
+        var agrs = new Array();
+        agrs[0] = me.txtField;
+        setTimeout(cross.createCallbackFunc(me, me.removeTxtSelection, agrs));
+
+
+
+    };
+
+    /*this.createComboObjectCallback=function(obj, fn, args)
+     {
+     return new function()
+     {
+
+     var newargs = [args];
+     for (var i = 0; i < arguments.length; i++)
+     newargs.push(arguments[i]);
+     fn.apply(obj, newargs);
+     };
+     };*/
+    this.onMouseOver = function (evt) {
+        if (!evt && window.event)
+            evt = window.event;
+        me.highlightItem(this);
+        // if (me.isPopUpVisible())
+        //    me.clDiv.focus();
+
+
+        // me.movedown(me.currentRow);
+        // me.clDiv.style.top   =me.clDiv.scrollTop;
+
+    };
+    this.onMouseOut = function (evt) {
+        if (!evt && window.event)
+            evt = window.event;
+        // alert("our-"+me.txtField.id)
+        me.setStyle(this, "aAutoComplete",true)// deselect the div from which mouse is out
+        me.txtField.focus();
+    };
+
+    this.setScope = function (iScope) {
+        if (iScope == COMBO_APP_SCOPE) {
+            me.isAppScope = true;
+            //getComboInstance(this.txtField)
+        }
+
+
+    }
+
+    this.getHiddenField = function () {
+
+        return document.getElementById(me.txtField.id + "Id");
+    };
+
+    this.setRenderMode = function (iRenderMode)
+    {
+        me.iRenderMode=iRenderMode;
+    }
+    this.getRenderMode = function ()
+    {
+        return me.iRenderMode
+    }
+
+    this.setSecondScroller=function(sScrollerId)
+    {
+        if(sScrollerId)
+            me.parentElement2=document.getElementById(sScrollerId);
+    }
+
+    //  Advance search dialog. Displayed when F5 key is presssed in combobox.
+    function ComboAdvSearch() {
+        var advSearch = this;
+        this.init = function () {
+            if (!this.clDialogBox) {
+                this.clDialogBox = new DialogBox("Advsrch", "Advance Search ", 2, 2, 830, 430);
+                var uiFactory = new UIfactory();
+
+                var objDialogDiv = this.clDialogBox.getContentPane();
+                objDialogDiv.className = "dialogContent1";
+                //objDialogDiv.onkeyup = handleComboKeyUp;
+
+                var objForm = uiFactory.createForm(document.body, null, null);
+                uiFactory.addComponent(objDialogDiv, document.createElement("BR"));
+                uiFactory.addComponent(objDialogDiv, document.createElement("BR"));
+                uiFactory.addComponent(objDialogDiv, document.createElement("BR"));
+
+                var objCenter = uiFactory.createTag("left");
+                uiFactory.addComponent(objCenter, " Search Text :   ");
+
+                var txtSearch = uiFactory.createInputTag("text", "advsrch", null, null, "50");
+                var bAdvSrch = uiFactory.createInputTag("button", "bAdvSrch", "Refresh");
+                uiFactory.addComponent(objCenter, txtSearch);
+                uiFactory.addComponent(objCenter, "         ");
+                uiFactory.addComponent(objCenter, bAdvSrch);
+
+                uiFactory.addComponent(objCenter, document.createElement("BR"));
+                uiFactory.addComponent(objCenter, document.createElement("BR"));
+                var objFieldSet = uiFactory.createTag("FIELDSET")
+                var objLegend = uiFactory.createTag("LEGEND", null, "dialogContent1", "Search Result")
+                objFieldSet.appendChild(objLegend);
+
+                uiFactory.addComponent(objCenter, document.createElement("BR"));
+                var divTag = uiFactory.createTag("div", "divSearch", "divTag")
+                objFieldSet.appendChild(divTag);
+                uiFactory.addComponent(objCenter, objFieldSet);
+
+                //uiFactory.addComponent(objCenter,objFieldSet);
+                //alert(objCenter.innerHTML);
+                uiFactory.addComponent(objDialogDiv, "         ");
+                uiFactory.addComponent(objDialogDiv, objCenter);
+
+                //        bAdvSrch.onclick=this.setNodeSelected;
+                var bOk = uiFactory.createInputTag("button", "bOk", "    Ok   ");
+                //      bOk.onclick=this.setNodeSelected;
+
+                var bCancel = uiFactory.createInputTag("button", "bCancel", "Cancel ");
+                bCancel.onclick = advSearch.clDialogBox.hide;
+
+                var objDiv = uiFactory.createTag("div", "buttonDiv");
+                objDiv.style.position = "absolute";
+                objDiv.style.bottom = "15px";
+                objDiv.style.right = "5px";
+
+                uiFactory.addComponent(objDiv, bOk);
+                uiFactory.addComponent(objDiv, bCancel);
+                uiFactory.addComponent(objDialogDiv, objDiv);
+
+                this.clDialogBox.addFormContent(objForm, objDialogDiv);
+                this.clDialogBox.setOnClose(me.handleDlgCloseEvent);
+                this.clDialogBox.show();
+            }
+            else
+                this.clDialogBox.show();
+        }
+        this.init();
+    }
+
+
+    function setSelectedTag(sComboId,cElement)
+    {
+        //console.error("setSelectedTag="+sComboId+" "+cElement)
+        objSelectedTags[sComboId]=cElement;
+    }
+
+
+    //if(!this.isEnable())
+      //  this.setEnable(this.isEnable());
+
+
+
+
+
+} /// combo class end class..............................
+
+/*function Ob() {
+ if (document.createEventObject) {
+ var Ka = document.createEventObject();
+ Ka.ctrlKey = true;
+ Ka.keyCode = 70;
+ document.fireEvent("onkeydown", Ka)
+ }
+ }
+
+
+ function getRequestObject1() {
+ if (!xmlHttpReq) {
+ try {
+ xmlHttpReq = new window.ActiveXObject("Msxml2.XMLHTTP");
+ }
+ catch (e) {
+ try {
+ xmlHttpReq = new window.ActiveXObject("Microsoft.XMLHTTP");
+ }
+ catch (sc) {
+ xmlHttpReq = null;
+ }
+ }
+ if (!xmlHttpReq && typeof window.XMLHttpRequest != "undefined")
+ xmlHttpReq = new window.XMLHttpRequest()
+ }
+ return xmlHttpReq;
+ }*/
+function html_entity_decode(str) {
+    /* var element=document.getElementById('entyconv');
+     if(!element)
+     {
+     element=document.createElement("textarea");
+     element.setAttribute("id","entyconv");
+     //  element.style.display='hidden';
+     document.body.appendChild(element);
+     //alert('4')
+     }
+     element.innerHTML=str.replace(/</g,"&lt;").replace(/>/g,"&gt;");
+     return element.value;*/
+    return str;
+}
+
+/*
+ Refer : Crossbrowser.js for the function
+ function createObjectCallback(obj, fn, arguments)
+ {
+ return function()
+ {
+
+ var newargs = [args];
+ for (var i = 0; i < arguments.length; i++)
+ newargs.push(arguments[i]);
+
+ fn.apply(obj, newargs);
+ };
+ }
+ */
+
+//added by yugandhar
+var isStopCascadeNotify=false;
+var objComboInstances = new Array(); //saving combobox instances based on combobox id
+var objComboInstanceScope = new Array(); //saving combobox instances based on combobox id
+var objSelectedTags = new Array(); //saving selected tags based on combobox id
+//var objCurrentTxtField=null;; //saving combobox instances based on combobox id
+var objIFrameDiv = null; //creating common iframe tag to overlay combo popup on select box in IE6
+//added by yugandhar
+
+
+
+UnInstallAC = function (fld)
+{
+    // alert("--")
+    if (fld.parentNode) {
+        var clHiddenTag;
+        var sHiddenName = fld.getAttribute('hiddenName');
+        if (sHiddenName)
+            clHiddenTag = document.getElementById(fld.id + "Id"); //asummption....
+        else
+            clHiddenTag = document.getElementById(fld.name + 'Id');
+        if (clHiddenTag)
+            fld.parentNode.removeChild(clHiddenTag);
+    }
+
+    fld.value = "";
+//    if(fld.instanceid)
+    cross.removeInstanceFromPool(objComboInstances, fld.id);
+
+    fld.removeAttribute("hiddenName");
+    fld.removeAttribute("mastertype");
+    fld.removeAttribute("targetmodule");
+    fld.removeAttribute("selectionby");
+    fld.removeAttribute("selectiontype");
+    fld.removeAttribute("accounttype");
+    fld.removeAttribute("appendscrollId");
+    fld.removeAttribute("parentseqid");
+    fld.removeAttribute("instanceid");
+    fld.removeAttribute("selectedindex");
+
+
+    util.removeClass(fld,"comboOnFocus");
+    util.removeClass(fld,"clzonfocus");
+
+
+
+    fld.onfocus =fld.onblur =fld.onkeydown=fld.onkeyup = null;
+    fld.autocomplete = "off";
+    objSelectedTags[fld.id]=null;
+
+}
+
+
+function setOptionControl  (iMastertype, iSelectionby, iSelectiontype, iAccounttype, clForm, clFieldElement, sHiddenName, onFocus, onLost, sscrollId, sURL)
+{
+    if (clFieldElement)
+    {
+        clFieldElement.setAttribute("mastertype", iMastertype)
+        clFieldElement.setAttribute("selectionby", iSelectionby)
+        clFieldElement.setAttribute("selectiontype", iSelectiontype)
+        clFieldElement.setAttribute("accounttype", iAccounttype)
+
+        clFieldElement.setAttribute("autocomplete", "off")
+        clFieldElement.setAttribute("appendscrollId", "false");
+        clFieldElement.setAttribute("isOtherInfo", "false");
+
+        InstallAC(clForm, clFieldElement, sHiddenName, sURL, onFocus, onLost, null, null, null, sscrollId)
+    }
+}
+
+simpleInstallAC=function (form, fld, sHiddenName,iSelectBy,iFieldId,iScrollId,iParentSeqId,sEmptyValue,iScrollId2,iCustWidths,iRenderMode)
+{
+    InstallAC(form, fld, sHiddenName,null,null,null,null,null,null,iScrollId,null,null,iParentSeqId,null,null,null,null,null,null,null,sEmptyValue,null,null,null,null,null,null,null,iFieldId,iRenderMode,null,iCustWidths,iSelectBy,null,iScrollId2  );
+}
+
+InstallAC=function (form,
+                    fld,
+                    sHiddenName,
+                    url,
+                    onFocus,
+                    onLost,
+                    sKey,
+                    sNamesAsArray, sIdsAsArray,
+                    sScrollId, sDefaultValue, iDefaultKey,
+                    iParentSeqId, sSelectValue, sRefTable,
+                    sCondition, sColAttributeNames,
+                    sAttrNames, sAttrValues, clAttributes,
+                    sEmptyValue,sCascadeFields,sCascadeMpdParents,
+                    isAllowMultiSelect,
+                    isAllowToAddItems,
+                    isErpRelated,
+                    iRModTypes,
+                    iRModSeqIds,iFieldId,iRenderMode,
+                    sCustDispArray,iCustWidths,
+                    iSelectBy,
+                    sAfterKeyUpHandler,
+                    iScrollId2,
+                    arrSrcFilterFields)
+{
+
+    if (fld)
+    {
+
+        //if(isAllowMultiSelect)
+        //  alert(arrSrcFilterFields)
+
+        if (!fld)
+            return;
+        //alert(sCustDispArray)
+        //alert(sHiddenName+" "+arrSrcFilterFields);
+
+        var oComboBox = new SComboBox(form, fld, sHiddenName, url, onFocus,
+            onLost, sKey, sNamesAsArray, sIdsAsArray, clAttributes,
+            sScrollId, null, iParentSeqId, sRefTable, sCondition,
+            sColAttributeNames, sAttrNames, sAttrValues,sEmptyValue,(sCascadeFields==null?sCascadeMpdParents:sCascadeFields),
+            (sCascadeMpdParents!=null?true:false),isAllowMultiSelect,
+            isAllowToAddItems,isErpRelated,iFieldId,sCustDispArray,
+            iCustWidths,iSelectBy,sAfterKeyUpHandler,iScrollId2,false,arrSrcFilterFields);
+
+        if(iRenderMode!=undefined && iRenderMode>0)
+            oComboBox.setRenderMode(iRenderMode);
+        if(iRModTypes && iRModSeqIds)
+        {
+            for(var i=0;i<iRModTypes.length;i++)
+                oComboBox.setRelatedMod(iRModTypes[i],iRModSeqIds[i]);
+        }
+
+        oComboBox.init();
+        // fld.setAttribute("instance", oComboBox);
+        objComboInstances[fld.id] = oComboBox;
+        //alert(sDefaultValue)
+        InstallTableAc(fld.id, fld.id, sHiddenName, sDefaultValue, iDefaultKey, iParentSeqId, sSelectValue,fld);//, sRefTable,sCondition
+
+
+        sServlet = "search";
+        oComboBox.sServlet = sServlet;
+
+
+        var Sb = "";
+        if (!oComboBox.lang || oComboBox.lang.length < 1)
+            oComboBox.lang = "en";
+        oComboBox.lang = util.encodeURI(oComboBox.lang);
+
+
+        if (objIFrameDiv == null)
+        {
+            objIFrameDiv = document.createElement("IFRAME");
+            objIFrameDiv.src = "";  // removed # as in chrome source url is getting called twice.
+            objIFrameDiv.style.position = "absolute";
+            objIFrameDiv.style.display = "none";
+            document.body.appendChild(objIFrameDiv);
+        }
+        return oComboBox;
+    }
+    else
+        return null;
+
+}
+
+
+
+// TODO transfer this to contants.js
+
+
+var Genernal_StaticValues = 56;  // dont store id and do not call servlet
+var Genernal_Narration = 57;  // dont store id and do not call servlet  but add new items
+
+
+var Genernal_Master = 58;        // store id and do not call servlet
+
+var Genernal_SCRIPTValues = 59;        // store id and do not call servlet
+// 200 to 210 are used for the internal purpose of combobox
+var Genernal_SERVER_VALUES = 200;        // connect to the server only once and get values
+var Genernal_Narration_WITH_ID = 201;  //  store id and do not call servlet  but add new items
+var LISTMASTER = 2048;
+
+var COMBO_APP_SCOPE = 1;
+
+
+/*
+ function FComboBox(lform ,ltxtField,sComboId,iMasterType,iSelectionBy,iSelectionType,iAccountType)
+ {
+ this.iMasterType=iMasterType;
+ this.iSelectionBy=iSelectionBy;
+ this.iSelectionType=iSelectionType;
+ this.iAccountType=iAccountType;
+
+
+ }
+ FComboBox.prototype = new SComboBox;
+ */
+
+
+function InstallTableAc(txtFieldId, parentTxtFieldid, sHiddenFieldName, sDefaultValue, iDefaultKey, iParentSeqId, sSelectValue,txtField) {
+
+    if(typeof (txtField)=="undefined" || txtField==null )
+        txtField = document.getElementById(txtFieldId)
+
+    if (txtField)                                                             // used in case of add
+    {
+        if(!iParentSeqId)
+            iParentSeqId=0;
+        txtField.setAttribute('hiddenName', sHiddenFieldName);
+        txtField.setAttribute('instanceid', parentTxtFieldid);
+        txtField.setAttribute('selectedIndex', -1);
+        txtField.setAttribute("parentseqid", iParentSeqId);
+        util.addClass(txtField,"clzonfocus")
+
+        txtField.onkeyup = onComboKeyUpHandler;
+        txtField.onkeydown = onComboKeyDownHandler;
+        //txtField.onblur = onComboBlurHandler;
+        txtField.onfocus = onComboTxtFocusHandler;
+        txtField.autocomplete = "off";
+
+        cross.addListener(txtField,cross.EVENT_ONBLUR,onComboBlurHandler,false,[txtField]);//,sFieldId
+
+        var comboInstance = getComboInstance(parentTxtFieldid);
+        comboInstance.createHiddenField(txtField);
+
+        if (sDefaultValue || iDefaultKey >= 0 || sSelectValue) {
+            //var comboInstance = getComboInstance(parentTxtFieldid);
+            comboInstance.initTextField(txtField, -1);
+
+
+            //alert(comboInstance.iMasterType)
+            if (comboInstance.iMasterType == Genernal_StaticValues ||  comboInstance.iMasterType==0)
+            {
+                //alert("comboInstance.getItemCount() "+comboInstance.getItemCount())
+                //alert(sDefaultValue+"==="+sSelectValue)
+                if (sSelectValue) // used in case of editing
+                {
+                    if(typeof sSelectValue=="object")
+                        addMultiComboValues(txtFieldId,sHiddenFieldName,sSelectValue);
+                    else
+                        comboInstance.checkAndAddItem(sSelectValue, true);
+
+                }
+                else if (sDefaultValue && sDefaultValue!="|")
+                {
+                    comboInstance.checkAndAddItem(sDefaultValue, true);
+                }
+                else  if (comboInstance.getItemCount() >=1)
+                {
+                    if(comboInstance.iMasterType==0 || comboInstance.iMasterType==Genernal_StaticValues)
+                        comboInstance.setSelectedIndex(0);
+                    else
+                        comboInstance.setSelectedIndex(1);
+                }
+
+                //else if(comboInstance.getItemCount() >0)
+                // comboInstance.setSelectedIndex(0);
+
+            }
+            else {
+                //   alert(sDefaultValue+"-----"+iDefaultKey+"--------"+sSelectValue+"----"+(typeof sSelectValue))
+                if (sSelectValue) // used in case of editing
+                {
+                    //<
+                    //  alert(sSelectValue)
+                    if (typeof sSelectValue == "object")
+                        addMultiComboValues(txtFieldId, sHiddenFieldName, sSelectValue);
+                    else
+                        comboInstance.checkAndAddItem(sSelectValue, true);
+                }
+                else if (sDefaultValue) // used in case of add
+                {
+
+                    ////&gt    alert(sDefaultValue)
+                    comboInstance.checkAndAddItem(sDefaultValue, true);
+                }
+                else if (iDefaultKey >= 0) // used in case of add
+                    comboInstance.setSelectedMasterId(iDefaultKey);
+            }
+
+            if(txtField.style.display!="none" ||  comboInstance.isAllowMultiSelect)
+            {
+                var arrCascadeValues=comboInstance.getCascadeValues();
+                if(arrCascadeValues)
+                {
+                    //comboInstance.arrLastCastVals=new Array();
+                    //if(arrCascadeValues[2].indexOf(',')!=-1)
+                    //  comboInstance.arrLastCastVals=arrCascadeValues[2].split(',');
+                    //else
+                    if(comboInstance.arrLastCastVals==null)
+                        comboInstance.arrLastCastVals=new Array();
+
+                    //if(comboInstance.arrLastCastVals[comboInstance.sComboId])
+                    comboInstance.arrLastCastVals[comboInstance.sComboId]=arrCascadeValues;
+
+                    //  alert(comboInstance.arrLastCastVals)
+                }
+            }
+
+        }
+        else if(objSelectedTags && objSelectedTags[txtFieldId]!=null)
+        {
+//            alert("making null  "+txtFieldId)
+            objSelectedTags[txtFieldId]=null;
+            //console.error("objSelectedTags=null-4")
+        }
+        /*  else
+         {    // alert(comboInstance.getItemCount())
+         if(comboInstance.getItemCount()>0)
+         comboInstance.setSelectedIndex(0);
+         }*/
+
+    }
+
+    function addMultiComboValues(txtFieldId,sHiddenFieldName,sMultiSelectValues)
+    {
+        var sArrIds=sMultiSelectValues[0];
+        var sArrNames=sMultiSelectValues[1];
+
+        for(var i=0;i < sArrNames.length;i++)
+        {
+            //alert("multi-- "+sMultiSelectValues[i])
+            clMultiCombo.addItem(txtFieldId,sHiddenFieldName,true,sArrIds[i],sArrNames[i]);
+        }
+    }
+}
+
+
+function onComboKeyUpHandler(evt) {
+    // alert("combo2 keyup")
+
+    evt = evt ? evt : window.event;
+    var objSrc = evt.srcElement ? evt.srcElement : evt.target;
+    var txtField = objSrc
+
+    var comboInstance = objComboInstances[txtField.getAttribute('instanceid')];//txtField.getAttribute('instance')
+
+    return  comboInstance.onKeyUpHandler(evt);
+
+
+}
+function onComboKeyDownHandler(evt) {
+
+    evt = evt ? evt : window.event;
+    var objSrc = evt.srcElement ? evt.srcElement : evt.target;
+    var txtField = objSrc
+    var comboInstance = objComboInstances[txtField.getAttribute('instanceid')];//txtField.getAttribute('instance')
+    //  comboInstance.initTextField(txtField,txtField.getAttribute('selectedIndex'));
+
+    return comboInstance.onKeyDownHandler(evt);
+
+}
+
+function onComboBlurHandler(objSrc,evt) {
+
+    evt = evt ? evt : window.event;
+    //var objSrc = evt.srcElement ? evt.srcElement : evt.target;
+
+    var txtField = objSrc;
+
+    var comboInstance = objComboInstances[txtField.getAttribute('instanceid')];//txtField.getAttribute('instance')
+    //  comboInstance.initTextField(null,-1);
+
+    return comboInstance.onBlurHandler(evt);
+
+
+}
+
+function onComboTxtFocusHandler(evt) {
+
+    evt = evt ? evt : window.event;
+    var objSrc = evt.srcElement ? evt.srcElement : evt.target;
+    var txtField = objSrc
+
+    //alert('d')
+
+    var comboInstance = objComboInstances[txtField.getAttribute('instanceid')];//txtField.getAttribute('instance')
+    // alert('---'+txtField.getAttribute('selectedIndex'))
+    comboInstance.initTextField(txtField, txtField.getAttribute('selectedIndex'));
+    return   comboInstance.onTxtFocusHandler(evt);
+
+
+
+}
+
+/* function onComboMouseDownHandler(evt)
+ {
+
+ evt = evt ? evt : window.event;
+ var objSrc = evt.srcElement ? evt.srcElement : evt.target;
+
+ var txtField=objSrc
+
+ var comboInstance=objComboInstances[txtField.getAttribute('instanceid')];//txtField.getAttribute('instance')
+ //  comboInstance.initTextField(txtField,txtField.getAttribute('selectedIndex'));
+
+ comboInstance.onBlurHandler(evt);
+
+
+
+ }*/
+
+
+function getComboInstance(sTextFieldId)
+{
+    var clElement = document.getElementById(sTextFieldId);
+    if (clElement)
+    {
+
+        if ( typeof(clElement.getAttribute('instanceid')) == 'string')
+        {
+            var objcombo = objComboInstances[clElement.getAttribute('instanceid')]
+
+            if (objcombo)
+                objcombo.initTextField(clElement, clElement.getAttribute('selectedIndex'))
+
+            return objcombo;
+        }
+        else
+            return objComboInstances[sTextFieldId]
+    }
+    else
+        return null;
+}
+
+
+function getComboInstanceForRead(sTextFieldId)
+{
+    var clElement = document.getElementById(sTextFieldId);
+    if (clElement)
+    {
+
+        if ( typeof(clElement.getAttribute('instanceid')) == 'string')
+        {
+            var objcombo = objComboInstances[clElement.getAttribute('instanceid')]
+
+            return objcombo;
+        }
+        else
+            return objComboInstances[sTextFieldId]
+    }
+    else
+        return null;
+}
+
+
+
+
+function removeAllComboInstances()
+{
+    var key;
+    var value;
+    for (key in objComboInstances)
+    {
+        removeComboInstance(key);
+        /*value=objComboInstances[key];
+         if(value && !value.isAppScope)  // in case not defined then do not delete
+         {
+         delete objComboInstances[key];
+         delete objSelectedTags[key];
+         value=null;
+         }*/
+    }
+}
+
+function removeComboInstance(key)
+{
+    var value = objComboInstances[key];
+    if (value && !value.isAppScope)  // in case not defined then do not delete
+    {
+        delete objComboInstances[key];
+
+        delete objSelectedTags[key];
+        //console.error("objSelectedTags=null-5")
+        value = null;
+    }
+
+}
+function setComboInstance(key,objComboInstance,objSelectedTag)
+{
+    objComboInstances[key]=objComboInstance;
+    objSelectedTags[key]=objSelectedTag;
+    //console.error("objSelectedTags-99="+objSelectedTag)
+}
+
+function setComboCascadeIds()
+{
+    var sInstanceKey;
+    for (sInstanceKey in objComboInstances)
+    {
+        var clCurrnetCombo=objComboInstances[sInstanceKey];
+
+        if(typeof clCurrnetCombo=='object' && clCurrnetCombo.isCascadeParentDefined() && !clCurrnetCombo.isAppScope) // added typeof clCurrnetCombo=='object'  for IE issue
+        {
+            var arCascadeParentIds=clCurrnetCombo.getCascadeParentIds();
+            var objComboInstance=null;
+            var sFieldId=null;//sInstanceKey;
+            var iRow=-1;
+            for(var i=0;i<arCascadeParentIds.length;i++)
+            {
+                sFieldId=arCascadeParentIds[i];
+                iRow=-1;
+                if(sFieldId && isNaN(sFieldId) && sFieldId.indexOf('[')>=0)
+                {
+
+                    iRow=parseInt(sFieldId.substring(sFieldId.indexOf('[')+1,sFieldId.indexOf(']')));
+                    sFieldId=sFieldId.substring(0,sFieldId.indexOf('['));
+                    //  alert(iRow)
+                }
+
+                sFieldId="F"+arCascadeParentIds[i]+(iRow>=0?('['+iRow+']'):'');
+
+                //sFieldId="F"+arCascadeParentIds[i];*/
+                objComboInstance=getComboInstance(sFieldId);
+                if(objComboInstance)
+                {
+
+                    objComboInstance.setCascadeChildId(sInstanceKey);
+                }
+                else // @ chg in angular
+                {
+                    if(sInstanceKey.indexOf('[')>=0)// chk as  body field
+                    {
+                        iRow=parseInt(sInstanceKey.substring(sInstanceKey.indexOf('[')+1,sInstanceKey.indexOf(']')));
+                        sFieldId="F"+arCascadeParentIds[i]+'['+iRow+']';
+                        objComboInstance=getComboInstance(sFieldId);
+                        if(objComboInstance)
+                            objComboInstance.setCascadeChildId(sInstanceKey);
+
+                    }
+                }
+            }
+
+            if (clCurrnetCombo.iMasterType == 0// only number list
+            // || me.iMasterType == Genernal_Master
+            )
+            {   // alert("focus="+me.iMasterType)
+                //me.iParentSeqId = parseInt(me.txtField.id.substring(1));// YUG need to change
+                //  alert(parseInt(me.txtField.id.substring(1)))
+                clCurrnetCombo.removeAllItems(true);
+                clCurrnetCombo.iMasterType2 = clCurrnetCombo.iMasterType;
+                clCurrnetCombo.iMasterType = Genernal_SERVER_VALUES;
+            }
+        }
+    }
+}
+
+
+
+function getComboHiddenFld(objFld)
+{
+    var objComboInst = getComboInstance(objFld.id);
+    if (objComboInst)
+        return objComboInst.getHiddenField();
+    return null;
+}
+
+
+
+var clComboBox=new function()
+{
+
+    this.stopCascadeNotification=function(isStop)
+    {
+        isStopCascadeNotify=isStop;
+    }
+
+    this.handleClearButton= function (clButton, sComboId)
+    {
+        var objCombo = getComboInstance(sComboId);
+        if(objCombo)
+        objCombo.handleClearButton(clButton)
+    };
+
+    this.togglePopup=function(objImg,sComboId)
+    {
+        var objCombo=getComboInstance(sComboId);
+        //alert("222")
+        objCombo.resizeDiv();
+        if(objCombo.isEnable())
+        {
+            if (!objCombo.txtField.getAttribute("isHidePopUp"))
+            {
+                //alert("111")
+                if (objCombo.isPopUpVisible()) {
+                    objCombo.HidePopUp();
+                }
+                else //if (objCombo.isEnable())
+                {
+                    if (objCombo.txtField.value.length > 0)
+                        objCombo.FieldValue = " " + objCombo.txtField.value;
+                    else
+                        objCombo.FieldValue = " ";
+
+                    objCombo.txtField.focus();
+
+
+                    if((objCombo.isCascadeParentDefined() || objCombo.isRelatedModsDefined) && (objCombo.getItemCount()==0))
+                        objCombo.getValues(true,false);
+                   else
+                        objCombo.getValues(false,false);
+
+                    objCombo.ShowPopUp();
+                    objCombo.txtField.setAttribute("isHidePopUp", "true");
+
+                    return;
+                }
+            }
+
+            objCombo.txtField.setAttribute("isHidePopUp", "");
+        }
+    };
+
+    this.getParentNode=function(objComboFld)
+    {
+        var isDropdownExists=objComboFld.getAttribute("isDropdownExists");
+        if(isDropdownExists)
+            return objComboFld.parentNode.parentNode.parentNode.parentNode.parentNode;  //td,tr,tbody,table,parent
+        else
+            return objComboFld.parentNode; //immediate parent element
+    };
+
+
+    this.show=function(objComboFld)
+    {
+        this.toggleDisplay(objComboFld,false);
+    };
+
+    this.hide=function(objComboFld)
+    {
+        this.toggleDisplay(objComboFld,true);
+    };
+
+    this.toggleDisplay=function(objComboFld,isHide)
+    {
+        var sDisplay;
+        if(isHide)
+            sDisplay="none";
+        else
+            sDisplay="";
+
+        var isDropdownExists=objComboFld.getAttribute("isDropdownExists");
+        if(isDropdownExists)
+            objComboFld.parentNode.parentNode.parentNode.parentNode.style.display=sDisplay;  //td,tr,tbody,table
+
+        objComboFld.style.display=sDisplay;
+    };
+
+
+    this.getSelectedId=function(sComboId)
+    {
+        var clComboInstance = getComboInstanceForRead(sComboId);
+        if (clComboInstance)
+        {
+            return clComboInstance.getSelectedId(sComboId)
+
+        }
+        else
+            return null;
+    }
+
+    this.getSelectedItem=function(sComboId)
+    {
+        var clComboInstance = getComboInstanceForRead(sComboId);
+        if (clComboInstance)
+        {
+           return clComboInstance.getSelectedItem(sComboId);
+        }
+        else
+            return null;
+    }
+
+    this.getSelectedMasterString = function (sComboId)
+    {
+        var clComboInstance = getComboInstanceForRead(sComboId);
+        if (clComboInstance)
+        {
+            return clComboInstance.getSelectedMasterString(sComboId);
+        }
+        else
+            return null;
+    };
+
+};
+

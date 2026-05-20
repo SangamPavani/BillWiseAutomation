@@ -1,0 +1,128 @@
+/**
+ * Created by praveen.j on 02-08-2022.
+ */
+
+var clDataMaskUtil = new function()
+{
+    var me =this;
+    this.maskTextFieldData = function(iFieldId,iControlType,sFieldValue,iStartIndex,iLastIndex,byReplaceWith)
+    {
+        var sReturn = null;
+        var sReplaceChar = me.getReplaceCharacter(byReplaceWith);
+
+        if(iStartIndex == 0 && iLastIndex == 0)
+        {
+            sReturn = sFieldValue.slice(sFieldValue.length).padStart(sFieldValue.length, sReplaceChar);
+        }else if(iStartIndex > 0 && iLastIndex == 0)
+        {
+            if(sFieldValue.length > iStartIndex)
+                sReturn = sFieldValue.substr(0, iStartIndex).padEnd(sFieldValue.length, sReplaceChar);
+            else
+                sReturn = sFieldValue.slice(sFieldValue.length).padStart(sFieldValue.length, sReplaceChar);
+
+        }else if(iStartIndex == 0 && iLastIndex > 0)
+        {
+            if(sFieldValue.length > iLastIndex)
+                sReturn = sFieldValue.slice(-iLastIndex).padStart(sFieldValue.length, sReplaceChar);
+            else
+                sReturn = sFieldValue.slice(sFieldValue.length).padStart(sFieldValue.length, sReplaceChar);
+        }else
+        {
+            if(sFieldValue.length > (iStartIndex+iLastIndex))
+            {
+                var strLeft = sFieldValue.substr(0, iStartIndex).padEnd(sFieldValue.length - iStartIndex, sReplaceChar);
+                var strRight = sFieldValue.slice(-iLastIndex);
+                sReturn = strLeft + strRight;
+            }else
+                sReturn = sFieldValue.slice(sFieldValue.length).padStart(sFieldValue.length, sReplaceChar);
+        }
+
+        /*if(iStartIndex == 0 && iLastIndex == 0)
+        {
+            sReturn = sFieldValue.slice(sFieldValue.length).padStart(sFieldValue.length, sReplaceChar);
+        }else if(iStartIndex > 0 && iLastIndex == 0)
+        {
+            if(sFieldValue.length > iStartIndex)
+                sReturn = sFieldValue.slice(iStartIndex).padStart(sFieldValue.length, sReplaceChar);
+            else
+                sReturn = sFieldValue.slice(sFieldValue.length).padStart(sFieldValue.length, sReplaceChar);
+
+        }else if(iStartIndex == 0 && iLastIndex > 0)
+        {
+            if(sFieldValue.length > iLastIndex)
+                sReturn = sFieldValue.slice(0,sFieldValue.length-iLastIndex).padEnd(sFieldValue.length, sReplaceChar);
+            else
+                sReturn = sFieldValue.slice(sFieldValue.length).padStart(sFieldValue.length, sReplaceChar);
+        }else
+        {
+            if(sFieldValue.length > (iStartIndex+iLastIndex))
+            {
+                sReturn = sFieldValue.slice(iStartIndex).padStart(sFieldValue.length, sReplaceChar);
+                sReturn = sReturn.slice(0,sReturn.length-iLastIndex).padEnd(sReturn.length, sReplaceChar);
+            }else
+                sReturn = sFieldValue.slice(sFieldValue.length).padStart(sFieldValue.length, sReplaceChar);
+        }*/
+
+        return sReturn;
+    };
+
+
+    this.maskNumberFieldData = function(iFieldId,iControlType,sFieldValue,iMinValue,iMaxValue,byReplaceWith)
+    {
+        var sReturn = null;
+        var iValue = parseInt(sFieldValue);
+        if((iMaxValue >0 && iMinValue >0) && (iValue > iMinValue && iValue < iMaxValue))
+            sReturn = me.maskTextFieldData(iFieldId,iControlType,sFieldValue,0,0,byReplaceWith);
+        else if((iMaxValue >0 && iMinValue <=0) && (iValue < iMaxValue))
+            sReturn = me.maskTextFieldData(iFieldId,iControlType,sFieldValue,0,0,byReplaceWith);
+        else if((iMinValue >0 && iMaxValue <=0) && (iValue > iMinValue))
+            sReturn = me.maskTextFieldData(iFieldId,iControlType,sFieldValue,0,0,byReplaceWith);
+        else if(iMinValue <=0 && iMaxValue <=0)
+            sReturn = me.maskTextFieldData(iFieldId,iControlType,sFieldValue,0,0,byReplaceWith);
+        else
+            sReturn = sFieldValue;
+    };
+
+    this.maskDateFieldData = function(iFieldId,iControlType,sFieldValue,iDateLessThan,iDateGreaterThan,byReplaceWith)
+    {
+        var sReturn = null;
+        var iValue = dateUtils.convertDatetoInt(sFieldValue);
+        if((iDateLessThan >0 && iDateGreaterThan >0) && (iValue > iDateGreaterThan && iValue < iDateLessThan))
+            sReturn = me.maskTextFieldData(iFieldId,iControlType,sFieldValue,0,0,byReplaceWith);
+        else if((iDateLessThan >0 && iDateGreaterThan <=0) && (iValue < iDateLessThan))
+            sReturn = me.maskTextFieldData(iFieldId,iControlType,sFieldValue,0,0,byReplaceWith);
+        else if((iDateGreaterThan >0 && iDateLessThan <=0) && (iValue > iDateGreaterThan))
+            sReturn = me.maskTextFieldData(iFieldId,iControlType,sFieldValue,0,0,byReplaceWith);
+        else if(iDateGreaterThan <=0 && iDateLessThan <=0)
+            sReturn = me.maskTextFieldData(iFieldId,iControlType,sFieldValue,0,0,byReplaceWith);
+        else
+            sReturn = sFieldValue;
+    };
+
+    this.getReplaceCharacter = function(byReplaceWith)
+    {
+        switch(byReplaceWith)
+        {
+            case Constants.IDATA_POLICY_MASK_CHAR.X:
+            {
+                return 'X';
+            }
+            case Constants.IDATA_POLICY_MASK_CHAR.HASH:
+            {
+                return '#';
+            }
+            case Constants.IDATA_POLICY_MASK_CHAR.STAR:
+            {
+                return '*';
+            }
+            case Constants.IDATA_POLICY_MASK_CHAR.RANDOM:
+            {
+                return '.';
+            }
+            /*case Constants.IDATA_POLICY_MASK_CHAR.EMPTY:
+            {
+                return ' ';
+            }*/
+        }
+    };
+};

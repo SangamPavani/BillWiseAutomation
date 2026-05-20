@@ -1,0 +1,943 @@
+
+var clModuleLinks=new function()
+{
+    app.registerInstance("clModuleLinks", clModuleLinks);
+    var me=this;
+    me.isDisableCombo=false;
+    me.hassValueFieldFocus=false;
+    me.isShowSrcModulesDlg=true;
+    me.valueFieldId = -1;
+    me.sAbbr = "";
+    me.tableId = null;
+    me.isRowEvent = false;
+    me.isShowPendingLinksDlg = true;
+    me.isDirectLinkLoading = false;
+    me.iLinkFieldId = -1;
+    me.iPreLoadFieldValue = -1;
+    me.iPreLoadFieldId = "";
+
+    me.iLinkSettings = -1;
+    this.ILINSETTING_USE_LINK_ONLY_FOR_LOADING = 3;
+
+    this.hasLinkValueFieldFocus= function ()
+    {
+        return me.hassValueFieldFocus;
+    };
+
+    this.addLinkModuleField=function(sFieldId)
+    {
+        var objComboBox = getComboInstance(sFieldId);
+        objComboBox.setOnLostScript("clModuleLinks.loadData(\"" + sFieldId + "\")");
+        //var objLinkField=document.getElementById(sFieldId);
+        //cross.addListener(objLinkField,cross.EVENT_ONBLUR,clModuleLinks.loadData,false,[sFieldId]);//,sFieldId
+
+        var objCombo=document.getElementById(sFieldId);
+        if (objCombo.disabled)
+        {
+            objCombo.removeAttribute("disabled");
+            objCombo.setAttribute("readonly",true);
+            me.isDisableCombo=true;
+        }
+    };
+
+    this.loadData=function(sFieldId)
+    {
+        var objComboBox=getComboInstance(sFieldId);
+        var iSelectedId=objComboBox.getSelectedId();
+
+        if(((sFieldId != me.iPreLoadFieldId) || (me.iPreLoadFieldValue != iSelectedId)) && iSelectedId>0)
+        {
+            var iTransId=moduleView.getTransId();
+            var sParams = "moduleId=" + document.getElementById("moduleId").value;
+            sParams += "&fieldId=" + sFieldId.substring(1);
+            var iMasterType;
+            //var elemTarget=document.getElementById(sFieldId);
+            if( objComboBox.iSqlfcMasterType>0)
+                iMasterType= objComboBox.iSqlfcMasterType;
+            else
+                iMasterType=objComboBox.getMasterType();
+
+            sParams += "&linkModuleId=" + iMasterType;
+            sParams += "&linkTransId=" + iSelectedId;
+            sParams += "&isEdit=" + (iTransId>0?1:0);
+
+            //util.toggleBackground(true);
+            con.sendPostRequest("module/m!getLinkModuleValues.do", sParams, me.loadDataCallback, null, con.RESPONSE_HTML, null, null, false,false,ACTION_LOADING,false,[sFieldId]);
+            me.iPreLoadFieldValue = iSelectedId;
+            me.iPreLoadFieldId = sFieldId;
+        }
+    };
+
+
+    this.loadDataCallback=function(sResponse,iStatusCode,sMsg,appValue,objReqCache)
+    {
+        //util.toggleBackground(false);
+        //alert("sResponse="+sResponse);
+        var isEvaluateRules=appValue=="1";
+
+        if(sResponse=='null')
+        {
+            Validation.showMessage("No data found",Validation.ERROR_MSG,null,Validation.ERROR_CUSTOM,true,"msgbox");
+            //alert('No data found');
+        }
+        else if(sResponse)
+        {
+            var sArrayFieldValues = eval(sResponse);
+            me.iLinkSettings = -1;
+            me.setLinkModuleData(sArrayFieldValues,isEvaluateRules,true,0);
+        }
+
+        if(me.isDisableCombo)
+        {
+            var objCombo=document.getElementById(objReqCache[0]);
+            objCombo.disabled=true;
+            me.isDisableCombo=false;
+        }
+    };
+
+    this.setLinkModuleData=function(sArrayFieldValues,isEvaluateRules,isDeleteExistingBodyRows,iStartRowIndex,sArrModuleNames,isOverride)
+    {
+        var clFieldValueDTO;
+        var iRuleId;
+        var sFieldId;
+        var sValue;
+        var iCtrlType;
+        var iDataType;
+
+            for(var i=0; i < sArrayFieldValues.length; i++)
+            {
+                clFieldValueDTO=sArrayFieldValues[i];
+                if(clFieldValueDTO.getType()==0)//header
+                {
+                    sFieldId="F"+clFieldValueDTO.getFieldId();
+                    sValue=clFieldValueDTO.getValue();
+                    if(sValue && sValue.indexOf("%0A")!=-1)
+                        sValue=util.replaceAll(sValue,"%0A","\n");
+                    var objField=document.getElementById(sFieldId);
+                    var sFieldValue = objField.value;
+
+                    if(isEvaluateRules)
+                        me.evaluateFieldRule(sFieldId,true);
+
+                    iDataType = objField.getAttribute("datatype");
+                    iCtrlType = objField.getAttribute("ctrltype");
+
+                    if( (iCtrlType == Constants.CONTROLTYPE_RADIOBUTTON &&  iDataType == Constants.DATATYPE_NUMBERLIST)
+                            || (iCtrlType == Constants.CONTROLTYPE_CHECKBOX && iDataType == Constants.DATATYPE_BOOLEAN)
+                            || (iCtrlType == Constants.CONTROLTYPE_COMBOBOX &&  iDataType == Constants. DATATYPE_STRINGLIST))
+                    {
+                        moduleView.setFieldValueAsString(sFieldId, sValue);
+                    }
+                    else
+                    {
+                        if(sFieldValue == null || sFieldValue.trim().length == 0)
+                            moduleView.setFieldValueAsString(sFieldId, sValue);
+                        else if(!isOverride)
+                            moduleView.setFieldValueAsString(sFieldId, sValue);
+                    }
+
+                    //me.evaluateFieldRule(sFieldId);
+
+                    /*if(isEvaluateRules)
+                    {
+                        var objField = document.getElementById(sFieldId);
+                        if (objField.getAttribute("ctrltype") == Constants.CONTROLTYPE_COMBOBOX
+                                || objField.getAttribute("ctrltype") == Constants.CONTROLTYPE_OPTIONCTRL)
+                        {
+                            formula.getServerVarValue(objField);
+                        }
+                    }*/
+
+                }
+                else if(clFieldValueDTO.getType()==1) //body
+                {
+                    var objBodyData=clFieldValueDTO.getValues();
+                    var objBodyFields=clFieldValueDTO.getFields();
+                    var arrLinkIds=clFieldValueDTO.getLinkIds();
+                    var objRowData;
+                    var isLinkOnlyForLoading = false;
+                    if(me.iLinkSettings > 0)
+                        isLinkOnlyForLoading = util.checkBit(me.iLinkSettings, me.ILINSETTING_USE_LINK_ONLY_FOR_LOADING);
+
+                var clTable=moduleBody.getTableObject("F"+objBodyFields[0].getFieldId(),true);
+                if(isOverride && !isLinkOnlyForLoading)
+                {
+                    var iTempRowCount = clTable.getRowCount(true);
+                    var iTempColCount = clTable.getColCount();
+                        for(j = 0; j < iTempRowCount; j++){
+                            var iTempLinkId1 = clTable.getValueAt(j, iTempColCount - 2);
+                            if(arrLinkIds.indexOf(iTempLinkId1) >= 0){
+                                //clTable.deleteRow(j,false,true);
+                                var sName = clTable.getElementAt(j, 3).getAttribute("name");
+                                var iBodyFieldsIndex = sName.substring(sName.indexOf('[') + 1, sName.indexOf(']'));
+                                moduleView.deleteBodyRow(clTable.getTableId(),0,j,iBodyFieldsIndex,"");
+                                if(j != 0) {
+                                    //in case of oly for loading start row index is 0 and load based on field for second time or edit startrowindex is becomes less than 0 bcoz link ids are arrlinkids are all zeros
+                                    if(iTempLinkId1 != 0 && arrLinkIds[arrLinkIds.indexOf(iTempLinkId1)] != 0)
+                                        iStartRowIndex--;
+                                    j--;
+                                    iTempRowCount--;
+                                }
+                            }
+                        }
+                }
+                var iDataLength=0;
+                if(objBodyData)
+                    iDataLength=objBodyData.length;
+
+                if(isDeleteExistingBodyRows) {
+                    var iCurrentRowCount = clTable.getRowCount(true);
+
+                    if(iCurrentRowCount>iDataLength)
+                    {
+                        while(iCurrentRowCount>iDataLength)
+                        {
+                            //clTable.deleteRow(iCurrentRowCount-1,false,true);
+                            var sName = clTable.getElementAt(iCurrentRowCount-1, 3).getAttribute("name");
+                            var iBodyFieldsIndex = sName.substring(sName.indexOf('[') + 1, sName.indexOf(']'));
+                            moduleView.deleteBodyRow(clTable.getTableId(),0,iCurrentRowCount-1,iBodyFieldsIndex,"");
+                            iCurrentRowCount--;
+                        }
+                    }
+                    else if(iCurrentRowCount!=iDataLength)
+                        clTable.ensureCapacity(iDataLength);
+                }
+
+
+                var iCtrlTypes=[];
+                var iDataTypes=[];
+                var iColIndexes=[];
+                var objField;
+                var sFieldId2;
+
+                var iColCount=clTable.getColCount();
+
+                var iRowCount = clTable.getRowCount(true);
+                if(parseInt(iStartRowIndex)+parseInt(iDataLength) > iRowCount)
+                    clTable.ensureCapacity(parseInt(iStartRowIndex)+parseInt(iDataLength));
+                var arrEvaluateIndexes = [];
+                for(var j=0; j < iDataLength; iStartRowIndex++,j++)
+                {
+                    var iSetRowIndex = iStartRowIndex;
+                    if(isOverride && j == 0 && !isLinkOnlyForLoading){
+                        var iTempLinkId2 = clTable.getValueAt(0, iColCount - 2);
+                        if(iTempLinkId2.trim().length == 0 || iTempLinkId2 <= 0)
+                        {
+                            iSetRowIndex = 0;
+                            if(iStartRowIndex > 0)
+                                iStartRowIndex--;
+                        }
+                    }
+                    objRowData=objBodyData[j];
+
+                        clTable.setValueAt(iSetRowIndex,iColCount-2,arrLinkIds[j],null,false); //linkid index=3
+
+                        for(var k=0; k < objRowData.length; k++)
+                        {
+                            clFieldValueDTO=objBodyFields[k];
+
+                            if(j==0)
+                            {
+                                objField=document.getElementById("F"+clFieldValueDTO.getFieldId()+"[0]");
+                                iCtrlTypes[k] = objField.getAttribute("ctrltype");
+                                iDataTypes[k] = objField.getAttribute("datatype");
+                                if(objField.getAttribute("ctrltype")==Constants.CONTROLTYPE_CHECKBOX)
+                                iColIndexes[k] = objField.parentNode.parentNode.cellIndex;
+                                else
+                                iColIndexes[k] = objField.parentNode.cellIndex;
+                            }
+
+                            sFieldId="F"+clFieldValueDTO.getFieldId();
+                            sValue=objRowData[k];
+                            if(sValue && sValue.indexOf("%0A")!=-1)
+                                sValue=util.replaceAll(sValue,"%0A","\n");
+                            if(iDataTypes[k] == Constants.DATATYPE_NUMBER || iDataTypes[k] == Constants.DATATYPE_FRACTION || iDataTypes[k] ==Constants.DATATYPE_BIGNUMBER)
+                                sValue = util.parseNumberValue(sValue);
+
+                            if(me.valueFieldId != clFieldValueDTO.getFieldId() || !me.isRowEvent || moduleBody.getColValue(sFieldId,iSetRowIndex).trim().length == 0)
+                            {
+                                var sDocumentURL=null;
+                                var sDisplayName = null;
+                                if(sValue && (iDataTypes[k] == Constants.DATATYPE_PICTURE
+                                    || iDataTypes[k] == Constants.DATATYPE_DOCVIEWER || iCtrlTypes[k]==Constants.CONTROLTYPE_SIGNATURE))
+                                {
+                                    if (sValue.indexOf("|") != -1)
+                                    {
+                                        sDocumentURL = sValue.substring(0, sValue.indexOf("|"));
+                                        sValue = sValue.substring(sValue.indexOf("|") + 1);
+
+                                        var sArrValues = sValue.split("|");
+                                        sDisplayName = sArrValues[3];
+
+
+                                        /*sDocumentURL = sValue.substring(0, sValue.indexOf("|"));
+                                        sDisplayName = sValue.substring(sValue.lastIndexOf("|") + 1);
+                                        sValue = sValue.substring(sValue.indexOf("|") + 1);*/
+                                    }
+                                    else
+                                        sDocumentURL = sValue;
+                                }
+                                var iColType = clTable.getColType(k,0);
+                                if (iColType == TYPE_COMBOBOX2)
+                                    me.handleCascade(clTable,iSetRowIndex,k);
+                                moduleBody.setColValue(sFieldId, iSetRowIndex, sValue, clTable,null,sDocumentURL,sDisplayName,false,true);
+                            }
+
+
+                           /* if(iCtrlTypes[k]==Constants.CONTROLTYPE_COMBOBOX || iCtrlTypes[k]==Constants.CONTROLTYPE_OPTIONCTRL)
+                            {
+                                objField=clTable.getElementAt(j,iColIndexes[k],0);//+3
+                                formula.getServerVarValue(objField);
+
+                                sFieldId2=objField.id;
+                                formula.iBodyRowIndex=j;
+                                formula.iBodyFieldIndex=sFieldId2.substring(sFieldId2.indexOf("[")+1,sFieldId2.indexOf("]"));
+                            }
+
+                            me.evaluateFieldRule(sFieldId);*/
+
+                        }
+                        if((sArrModuleNames != null && sArrModuleNames.length > 0) || !me.isShowPendingLinksDlg)
+                        {
+                            var iFieldIndex = moduleBody.getCellIndex("F"+me.valueFieldId);
+                            if(arrLinkIds[j] > 0)
+                            {
+                                var linkButton = clTable.getElementAt(iSetRowIndex,iFieldIndex+1);
+                                if(me.isShowPendingLinksDlg && sArrModuleNames[j] != undefined)
+                                    linkButton.innerHTML = me.sAbbr+"-"+sArrModuleNames[j];
+                                else
+                                    linkButton.innerHTML = me.sAbbr;
+                                if(linkButton.getAttribute("sourcemoduleid")==0)
+                                    linkButton.setAttribute("sourcemoduleid",me.iBaseModuleId);
+                            }
+                            if(me.isRowEvent)
+                                clTable.getElementAt(iSetRowIndex,iFieldIndex).focus();
+                        }
+                        arrEvaluateIndexes.push(iSetRowIndex);
+                    }
+                    iStartRowIndex = 0;
+
+
+                    if(isEvaluateRules)
+                    {
+                        window.event = null;
+
+                        for (var j = 0; j < iDataLength; j++)
+                        {
+                            objRowData = objBodyData[j];
+
+                            for (var k = 0; k < objRowData.length; k++)
+                            {
+                                clFieldValueDTO = objBodyFields[k];
+
+                                objField = clTable.getElementAt(arrEvaluateIndexes[j], iColIndexes[k], 0);//+3
+                                sFieldId2 = objField.id;
+                                sFieldId = "F" + clFieldValueDTO.getFieldId();
+
+                                formula.iBodyRowIndex = arrEvaluateIndexes[j];
+                                formula.iBodyFieldIndex = sFieldId2.substring(sFieldId2.indexOf("[") + 1, sFieldId2.indexOf("]"));
+
+                                if (iCtrlTypes[k] == Constants.CONTROLTYPE_COMBOBOX || iCtrlTypes[k] == Constants.CONTROLTYPE_OPTIONCTRL)
+                                {
+                                    formula.getServerVarValue(objField);
+                                    //formula.evaluateTargetExpr([sFieldId],true,1);
+                                }
+                                else
+                                    formula.evaluateTargetExpr([sFieldId],true,1);
+
+                                formula.iBodyRowIndex = arrEvaluateIndexes[j];
+                                formula.iBodyFieldIndex = sFieldId2.substring(sFieldId2.indexOf("[") + 1, sFieldId2.indexOf("]"));
+
+                                me.evaluateFieldRule(sFieldId,false);
+
+                            }
+                        }
+
+
+                        formula.iBodyRowIndex = null;
+                        formula.iBodyFieldIndex = null;
+                    }
+
+            }
+        }
+    };
+
+    this.handleCascade = function(clTable,iRowIndex,iColIndex)
+    {
+        var iComboId = clTable.getElementAt(iRowIndex,iColIndex).id;
+        var arrCascadeValues= getComboInstance(iComboId).getCascadeValues();
+        if(arrCascadeValues != null && arrCascadeValues[1] != null &&  (typeof arrCascadeValues[1] === 'string') )
+        {
+
+            var arrParentIds = arrCascadeValues[1].split(",");
+            var arrValues = [];
+            for(var i=0; i<arrParentIds.length; i++)
+            {
+                var clElement = document.getElementById("F"+arrParentIds[i]+'['+iRowIndex+']');
+                if(!clElement) //checking in header if field not present in body
+                    clElement=document.getElementById("F"+arrParentIds[i]);
+
+                var clComboInstance = getComboInstance(clElement.id);
+                arrValues[arrValues.length] = clComboInstance.getSelectedId();
+            }
+            getComboInstance(iComboId).setRecentCascadeValues(arrValues);
+        }
+    };
+
+    this.evaluateFieldRule=function(sFieldId,isEvaluateOnEnterOnly)
+    {
+        var iRuleId=moduleRules.getRuleDefinedOnField(sFieldId,Constants.APPLYON_ONENTER);
+        if(iRuleId > 0)
+            moduleRules.evaluateRule(iRuleId);
+        if(!isEvaluateOnEnterOnly)
+        {
+            iRuleId = moduleRules.getRuleDefinedOnField(sFieldId, Constants.APPLYON_ONLEAVE);
+            if (iRuleId > 0)
+                moduleRules.evaluateRule(iRuleId);
+        }
+    };
+
+    this.addPendingLinkModuleField = function(sFieldId)
+    {
+
+        var objComboField=document.getElementById(sFieldId);
+        if (objComboField.disabled)
+        {
+            me.isShowPendingLinksDlg=false;
+            me.isDirectLinkLoading = true;
+            clModuleLinks.onBlurLinkField(sFieldId);
+        }
+        else
+        {
+            var objComboBox = getComboInstance(sFieldId);
+            objComboBox.setOnLostScript("clModuleLinks.onBlurLinkField(\""+sFieldId+"\")");
+            //objComboBox.setOnFocusScript("clModuleLinks.onFocusLinkField(\""+sFieldId+"\")");
+        }
+
+    };
+
+    this.onFocusLinkField = function(sFieldId)
+    {
+        var objComboBox = getComboInstance(sFieldId);
+        me.iLinkFieldId = objComboBox.getSelectedId();
+    };
+
+    this.onBlurLinkField = function(sFieldId)
+    {
+        if(moduleView.isComboEditByKeyEvent)
+        {
+            moduleView.isComboEditByKeyEvent = false;
+            return;
+        }
+        var objComboBox = getComboInstance(sFieldId);
+        var iLinkFieldId = objComboBox.getSelectedId();
+        if(me.iLinkFieldId != iLinkFieldId && iLinkFieldId > 0)
+            clModuleLinks.onClkShowPendingLinksDlg(null,false,objComboBox.getMasterType(),null);
+        me.iLinkFieldId = iLinkFieldId;
+    };
+
+    /*adds on blur listener to the value field on page load*/
+    this.addValueFieldListener=function(sTableId,sFieldId)
+    {
+        var objField;
+        var clTable=sTable.getInstance(sTableId);
+        var iRowCount=clTable.getRowCount(true);
+        for(var i=0; i < iRowCount;i++)
+        {
+            objField = document.getElementById(sFieldId+"["+i+"]");
+            if(objField)
+            {
+                cross.addListener(objField, cross.EVENT_ONBLUR, clModuleLinks.onBlurValueField, true, [sTableId]);
+                cross.addListener(objField, cross.EVENT_ONFOCUS, clModuleLinks.onFocusValueField, true, [sTableId]);
+            }
+        }
+
+    };
+
+    this.addMasterFieldListener=function(clTable,sFieldId)
+    {
+        var objField;
+        var iRowCount=clTable.getRowCount(true);
+        for(var i=0; i < iRowCount;i++)
+        {
+            objField = document.getElementById(sFieldId+"["+i+"]");
+            if(objField)
+            {
+                cross.addListener(objField, cross.EVENT_ONBLUR,getComboInstance(sFieldId+"["+i+"]").setOnChangeScript("clModuleLinks.onChangeMasterKeyField"), true, null);
+            }
+        }
+
+    };
+
+    this.onChangeMasterKeyField = function(objCombo,prevValue,presValue)
+    {
+        alert(objCombo);
+        alert(prevValue);
+        alert(presValue);
+    };
+
+    this.onFocusValueField=function(sTableId,e)
+    {
+        var txtObj=  cross.getSrcElement(e);
+        me.fPrevValue = txtObj.value;
+        me.hassValueFieldFocus=true;
+    };
+
+    this.onBlurValueField = function(sTableId,e)
+    {
+        var txtObj=  cross.getSrcElement(e);
+        var iColIndex = txtObj.parentNode.cellIndex;
+        var iRowIndex = txtObj.parentNode.parentNode.rowIndex - 1;
+        var clTable = new sTable(sTableId);
+        var iSourceModuleTypeId = clTable.getElementAt(iRowIndex, iColIndex + 1).getAttribute("sourcemoduleid");
+        if(me.isValidQuantity(iRowIndex,iColIndex+1,clTable,false))
+            me.onClkShowPendingLinksDlg(sTableId, true, iSourceModuleTypeId, null);
+        else
+            me.hassValueFieldFocus=false;
+
+    };
+
+    this.isValidQuantity = function(iRowIndex,iColIndex,clTable,isFromButton)
+    {
+        var bReturn = true;
+        var fValue = parseFloat(clTable.getValueAt(iRowIndex, iColIndex-1));
+        if(isFromButton){
+            if (fValue < 0)
+                bReturn = false;
+            return bReturn;
+        }else {
+            if (fValue <= 0 || isNaN(fValue))
+                bReturn = false;
+            if (util.parseNumberValue(me.fPrevValue) == fValue)
+                bReturn = false;
+            return bReturn;
+        }
+    };
+
+    /*to show dlg box to select base link module selection*/
+    this.onClkShowPendingLinksDlg = function(sTableId,isRowEvent,iSourceModuleTypeId,objBtn)
+    {
+        var isValidQuantity = true;
+        if(objBtn != null)
+        {
+            var iColIndex = objBtn.parentNode.cellIndex-1;
+            var iRowIndex = objBtn.parentNode.parentNode.rowIndex - 1;
+            isValidQuantity = me.isValidQuantity(iRowIndex,iColIndex+1,new sTable(sTableId),true)
+            if(iSourceModuleTypeId == 0 && objBtn.getAttribute("sourcemoduleid") > 0)
+                iSourceModuleTypeId = objBtn.getAttribute("sourcemoduleid");
+        }
+
+        if(!me.isShowSrcModulesDlg)
+            return;
+        me.isShowSrcModulesDlg=false;
+
+        if(isValidQuantity)
+        {
+            var sParams = "";
+            sParams += "targetModuleTypeId=" + document.getElementById("moduleId").value;
+            sParams += "&sourceModuleTypeId=" + iSourceModuleTypeId;
+
+            var sUrl = "module/m!getPendingLinkSourceModules.do?" + sParams;
+            var linkModuleDlg = new DialogBox("linkBaseModuleDlg", MsgHandler.getMsg(MsgConstants.SELECT_BASE_MODULE), 100, 50, 400, 250, sUrl, false, null, true, true, null, null, null, null, null, null, false, null, false, true);
+            linkModuleDlg.setCenter();
+            linkModuleDlg.onClose("clModuleLinks.onCloseDlg");
+
+            me.tableId = sTableId;
+            me.isRowEvent = isRowEvent;
+        }else{
+            me.isShowSrcModulesDlg = true;
+            me.hassValueFieldFocus=false;
+        }
+    };
+
+    this.onCloseDlg = function()
+    {
+        me.isShowSrcModulesDlg = true;
+        me.hassValueFieldFocus=false;
+    };
+
+    /*to show target module products based on key fields filter*/
+    this.showPendingLinksDlg = function(arrLinkModuleDetails)
+    {
+        var sPrefix = "links.";
+        arrLinkModuleDetails = eval(arrLinkModuleDetails);
+        var iBaseModuleId = arrLinkModuleDetails[0];
+        var sModuleAbbr = arrLinkModuleDetails[1].substring(0, 2);
+        var iLinkDefId = arrLinkModuleDetails[2];
+        var arrKeyFieldIds = arrLinkModuleDetails[3];
+        var valueFieldId = arrLinkModuleDetails[4];
+        var iLinkFldId = arrLinkModuleDetails[5];
+        me.iLinkSettings  = arrLinkModuleDetails[6];
+
+        var isLinkOnlyForLoading = false;
+        if(me.iLinkSettings > 0)
+            isLinkOnlyForLoading = util.checkBit(me.iLinkSettings, me.ILINSETTING_USE_LINK_ONLY_FOR_LOADING);
+
+        me.valueFieldId = valueFieldId;
+        me.sAbbr = sModuleAbbr;
+        me.iBaseModuleId = iBaseModuleId;
+        if(me.isShowPendingLinksDlg)
+        {
+
+            var iRowIndex = -1;
+            var clTable = moduleBody.getTableObject("F" + valueFieldId + "[0]", false);
+            var iDataType = document.getElementById("F" + valueFieldId + "[0]").getAttribute("datatype");
+
+            getDialogBox("linkBaseModuleDlg").hide();
+            var arrActions = new Array();
+            arrActions[0] = MsgHandler.getMsg(MsgConstants.OK) + "|clLinkModuleFldDlg.onClkGetSelectedRow";
+            arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL) + "|clLinkModuleFldDlg.onClkHideDlgBox";
+
+            var sUrl = "module/m!getPendingLinkModuleValues.do";
+            var sParams = "";
+            sParams += "?" + sPrefix + "targetModuleTypeId=" + document.getElementById("moduleId").value;
+            sParams += "&" + sPrefix + "sourceModuleTypeId=" + iBaseModuleId;
+            sParams += "&" + sPrefix + "linkDefId=" + iLinkDefId;
+            sParams += "&" + sPrefix + "valueFieldDataType=" + iDataType;
+            sParams += "&targetValueFldId=" + valueFieldId;
+
+            if (parseInt(iLinkFldId) > 0)/*header link field*/
+            {
+                var objLinkFldId = getComboInstance("F" + iLinkFldId);
+                if (objLinkFldId && objLinkFldId.getSelectedId() > 0)
+                {
+                    sParams += "&" + sPrefix + "linkFieldId=" + iLinkFldId;
+                    sParams += "&" + sPrefix + "linkFieldValue=" + objLinkFldId.getSelectedId();//base master value
+                }
+            }
+
+            var objField = null;
+            /*header keyfields and values*/
+            for (var i = 0; i < arrKeyFieldIds.length; i++)
+            {
+                var sFieldId = "F" + arrKeyFieldIds[i];
+                objField = document.getElementById(sFieldId);
+                if (objField)
+                {
+                    var iDataType = objField.getAttribute("datatype");
+                    var iControlType = objField.getAttribute("ctrltype");
+                    var sValue = objField.value;
+                    if (iDataType == Constants.DATATYPE_MASTER || iDataType == Constants.DATATYPE_NUMBERLIST || iDataType == Constants.DATATYPE_STRINGLIST)
+                        sValue = getComboInstance(objField.id).getSelectedId();
+                    else if (iDataType == Constants.DATATYPE_DATE)
+                        sValue = dateUtils.convertDatetoInt(sValue, clAppBuffer.getDateFormat());
+                    else if (iDataType == Constants.DATATYPE_BOOLEAN)
+                        sValue = objField.checked ? 1 : 0;
+
+
+                    if (me.isAddKeyField(objField.id, iDataType,iControlType, sValue))
+                    {
+                        sParams += "&" + sPrefix + "keyFieldIds=" + arrKeyFieldIds[i];
+                        sParams += "&" + sPrefix + "keyFieldValues=" + sValue;
+                    }
+                }
+                else if (me.isRowEvent)
+                {
+                    objField = document.getElementById(sFieldId + "[0]");
+                    iRowIndex = clTable.getCurrentRow();
+                    if (objField)
+                    {
+                        /*if(objField.getAttribute("datatype") == Constants.DATATYPE_MASTER)
+                         {
+                         me.addMasterFieldListener(clTable,sFieldId);
+                         }*/
+                        var sValue = moduleBody.getColValue(sFieldId, iRowIndex, false, 0, null, true,false,true);
+                        var iDataType = objField.getAttribute("datatype");
+                        var iControlType = objField.getAttribute("ctrltype");
+                        if (me.isAddKeyField(arrKeyFieldIds[i], iDataType,iControlType, sValue))
+                        {
+                            sParams += "&" + sPrefix + "keyFieldIds=" + arrKeyFieldIds[i];
+                            sParams += "&" + sPrefix + "keyFieldValues=" + sValue;
+                        }
+                    }
+                }
+            }
+
+            /*consume links updation*/
+            if (me.isRowEvent)
+                sParams = me.getPendingLinks(arrKeyFieldIds, valueFieldId, sParams, clTable);
+
+            if (!me.isRowEvent)
+            {
+                for (var j = 0; j < clTable.getRowCount(true); j++)
+                {
+                    //for oly loading linkid will be 0 other than oly loading linkid is > 0 and without any data default -1
+                    if (clTable.getValueAt(j, clTable.getColCount() - 2) > 0)
+                        iRowIndex = j + 1;
+                    else if (clTable.getValueAt(j, clTable.getColCount() - 2) == 0 && isLinkOnlyForLoading)
+                        iRowIndex = j + 1;
+                }
+            }
+            if (iRowIndex < 0)
+            {
+                if (me.isRowEvent)
+                    iRowIndex = clTable.getCurrentRow();
+                else
+                    iRowIndex = 0;
+            }
+            sParams += "&" + sPrefix + "rowSetIndex=" + iRowIndex;
+            /*in which row the selected data to be set*/
+            sParams += "&" + sPrefix + "isRowEvent=" + me.isRowEvent;
+
+            var iWidth = 1200;
+            var iHeight = 675;
+            var iScrnType = cross.getScreenType();
+            if(iScrnType  == cross.TYPE_SMALL)
+            {
+                iWidth = 800;
+                iHeight = 500;
+            }
+            else if(iScrnType  == cross.TYPE_MEDIUM)
+            {
+                iWidth = 1000;
+                iHeight = 580;
+            }
+            var linkModuleDlg = new DialogBox("linkModuleDlg", MsgHandler.getMsg(MsgConstants.PENDING_LINKS), 100, 50, iWidth, iHeight, sUrl + sParams, false, null, true, true, arrActions, null, null, true, null, null, false, null, false, true);
+            linkModuleDlg.setCenter();
+            //linkModuleDlg.show();
+            me.hassValueFieldFocus = false;
+            me.isShowSrcModulesDlg = true;
+        }
+        else
+        {
+            if(me.isDirectLinkLoading) {
+                me.isShowSrcModulesDlg = true;
+                me.isShowPendingLinksDlg = true;
+            }
+            var sUrl = "module/m!getTargetModuleMappingValues.do";
+            var sParams = "";
+            sParams += "?" + sPrefix + "targetModuleTypeId=" + document.getElementById("moduleId").value;
+            sParams += "&" + sPrefix + "sourceModuleTypeId=" + iBaseModuleId;
+            sParams += "&" + sPrefix + "linkDefId=" + iLinkDefId;
+            sParams += "&"+sPrefix+"isRowEvent=false";
+            if(me.isDirectLinkLoading)
+                sParams += "&isDirectLinkLoading=true";
+
+            if (parseInt(iLinkFldId) > 0)/*header link field*/
+            {
+                var objLinkFldId = getComboInstance("F" + iLinkFldId);
+                if (objLinkFldId && objLinkFldId.getSelectedId() > 0)
+                {
+                    sParams += "&" + sPrefix + "linkBaseTransId=" + objLinkFldId.getSelectedId();
+                }
+            }
+            con.sendPostRequest(sUrl+sParams,null,null,"clModuleLinks.arhHandleModuleMappingResponse",false,null,null,false,false,null,false,me.arrModuleNames);
+
+        }
+    };
+
+    this.arhHandleModuleMappingResponse = function(sResponse,iStatusCode,sMsg,appValue,objReqCache)
+    {
+        if(iStatusCode == MSG_BUSINESS_MESSAGE)
+        {
+            Validation.showMessage(sMsg,Validation.ERROR_MSG,null,Validation.ERROR_CUSTOM,true,"msgbox1");
+            return false;
+        }
+        sResponse = eval(sResponse);
+        if(iStatusCode == MSG_CANNOT_EXCEED_BASE_VALUE)
+        {
+            alert(sMsg);
+        }
+        clModuleLinks.setLinkModuleData(sResponse, appValue == "true", false, 0, objReqCache,true);
+
+    };
+
+    this.isAddKeyField=function(iFieldId,iDataType,iControlType,sValue)
+    {
+        var isAddCurrentField=false;
+        if(sValue)
+        {
+            if (iDataType == Constants.DATATYPE_NUMBER || iDataType == Constants.DATATYPE_FRACTION
+                || iDataType == Constants.DATATYPE_BIGNUMBER)
+            {
+                if (!isNaN(sValue) && parseFloat(sValue) > 0)
+                    isAddCurrentField = true;
+            }else if (iDataType == Constants.DATATYPE_MASTER || iDataType == Constants.DATATYPE_NUMBERLIST || iDataType == Constants.DATATYPE_DATE || iDataType == Constants.DATATYPE_BOOLEAN)
+            {
+                if(iControlType == Constants.CONTROLTYPE_MULTI_SELECT)
+                    isAddCurrentField = sValue != null && sValue.length > 0;
+                else
+                    isAddCurrentField = parseInt(sValue) > 0;
+            }else if (util.trim(sValue).length > 0)
+            {
+                isAddCurrentField = true;
+            }
+        }
+        return isAddCurrentField;
+    };
+
+    this.getPendingLinks = function(arrKeyFieldIds,valueFieldId,sParams,clTable)
+    {
+
+        var sPrefix = "links.";
+        var iValueFieldIndex = document.getElementById("F"+valueFieldId+"[0]").parentNode.cellIndex;
+
+        var isEditView = false;
+        var iTransId = document.getElementById("transId").value;
+        isEditView = parseInt(iTransId) > 0;
+
+        var iRowIndex = -1;
+        var iCurrentLinkId = -1;
+        if(me.isRowEvent)
+        {
+            iRowIndex = clTable.getCurrentRow();
+            iCurrentLinkId = clTable.getValueAt(iRowIndex, clTable.getColCount() - 2);
+        }
+        //else if(isEditView)
+        //    iCurrentLinkId = 0;
+        /*current linkid and edit mode to whether apply header filter i.e link field*/
+        //in edit mode header filter need not apply for alt+l and linkid>0 apply oly in new mode and edit mode linkid<0
+        sParams += "&currentLinkId=" + iCurrentLinkId;
+
+
+        var iDifference = new Array();
+        var iLinkIds = new Array();
+        var iPresValues = new Array();
+
+        var iIndex =0;
+        if(parseInt(iCurrentLinkId) > 0){
+            iDifference[0] = 0;
+            iPresValues[0] = 0;
+            iLinkIds[0] = iCurrentLinkId;
+            iIndex =1;
+        }
+        for (var j = 0; j < clTable.getRowCount(true); j++)
+        {
+            var iLinkId = clTable.getValueAt(j, clTable.getColCount() - 2);
+
+            var iPresValue = clTable.getValueAt(j, iValueFieldIndex);
+            var iPrevValue = clTable.getElementAt(j, iValueFieldIndex+1).getAttribute("oldvalue");
+            if (!iPrevValue || iPrevValue == undefined || iPrevValue == null || util.trim(iPrevValue).length == 0)
+                iPrevValue = 0;
+            if (!iPresValue || iPresValue == undefined || iPresValue == null || util.trim(iPresValue).length == 0)
+                iPresValue = 0;
+
+            if (iLinkId > 0)
+            {
+                var iInsertIndex = -1;
+                if (iLinkIds.indexOf(iLinkId) == -1)
+                {
+                    iInsertIndex = iIndex;
+                    iDifference[iInsertIndex] = 0;
+                    iPresValues[iInsertIndex] = 0;
+                    iLinkIds[iInsertIndex] = iLinkId;
+                    iIndex++;
+                }else
+                {
+                    iInsertIndex = iLinkIds.indexOf(iLinkId);
+                }
+
+                if(!isEditView)
+                {
+                    if(j != iRowIndex)
+                        iDifference[iInsertIndex] += parseFloat(iPresValue);
+                    else
+                        iDifference[iInsertIndex] += parseFloat(0);
+                    iPresValues[iInsertIndex] += parseFloat(0);
+                }
+                else
+                {
+                    iDifference[iInsertIndex] += parseFloat(iPresValue) - parseFloat(iPrevValue);
+                    if(j == iRowIndex)
+                        iPresValues[iInsertIndex] += parseFloat(iPresValue);
+                    else
+                        iPresValues[iInsertIndex] += parseFloat(0);
+                }
+            }
+        }
+
+        for(var i = 0; i < iDifference.length; i++)
+        {
+            sParams += "&" + sPrefix + "presValues=" + iPresValues[i];
+            sParams += "&" + sPrefix + "difference=" + iDifference[i];
+            sParams += "&" + sPrefix + "linkIds=" + iLinkIds[i];
+        }
+        return sParams;
+    };
+};
+
+
+function CLFieldValueDTO(iFieldId,sValue)
+{
+    this.iType=0;
+    this.iFieldId=iFieldId;
+    this.sValue=sValue;
+
+    this.getType=function()
+    {
+        return this.iType;
+    }
+
+    this.getFieldId=function()
+    {
+        return iFieldId;
+    };
+
+    this.getValue=function()
+    {
+        return sValue;
+    };
+
+}
+
+function CLTransFieldValueDTO(iFieldId,sValue,iTableId)
+{
+    this.iType=0;
+    this.iFieldId=iFieldId;
+    this.iTableId=iTableId;
+    this.sValue=sValue;
+
+    this.getType=function()
+    {
+        return this.iType;
+    }
+
+    this.getFieldId=function()
+    {
+        return iFieldId;
+    };
+
+    this.getValue=function()
+    {
+        return sValue;
+    };
+
+    this.getTableId=function()
+    {
+        return this.iTableId;
+    };
+}
+
+function CLBodyValuesDTO(iTableId,arrFields,sRowValuesStringArray,arrLinkIds)
+{
+    this.iType=1;
+    this.iTableId=iTableId;
+    this.arrFields=arrFields;
+    this.sRowValuesStringArray=sRowValuesStringArray;
+    this.arrLinkIds=arrLinkIds;
+
+    this.getType=function()
+    {
+        return this.iType;
+    };
+
+    this.getTableId=function()
+    {
+        return this.iTableId;
+    };
+
+    this.getFields=function()
+    {
+        return this.arrFields;
+    };
+
+    this.getValues=function()
+    {
+        return this.sRowValuesStringArray;
+    };
+
+    this.getLinkIds=function()
+    {
+        return this.arrLinkIds;
+    };
+}

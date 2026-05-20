@@ -1,0 +1,206 @@
+//let mediaRecorder;
+//    let recordedChunks = [];
+//    let isRecording = false;
+//    let combinedStream;
+//    let screenStream;
+//    let micStream;
+//
+//    const recordLink = document.getElementById('screenRecordLink');
+//    const instruction = document.getElementById('recordingInstruction');
+//
+//    async function getCombinedStream() {
+//      screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+//      micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+//
+//      const audioContext = new AudioContext();
+//      const destination = audioContext.createMediaStreamDestination();
+//
+//      // Mix audio from screen and microphone
+//      const screenAudio = screenStream.getAudioTracks();
+//      const micAudio = micStream.getAudioTracks();
+//
+//      if (screenAudio.length > 0) {
+//        const screenSource = audioContext.createMediaStreamSource(new MediaStream(screenAudio));
+//        screenSource.connect(destination);
+//      }
+//
+//      if (micAudio.length > 0) {
+//        const micSource = audioContext.createMediaStreamSource(new MediaStream(micAudio));
+//        micSource.connect(destination);
+//      }
+//
+//      // Combine video + mixed audio
+//      const tracks = [
+//        ...screenStream.getVideoTracks(),
+//        ...destination.stream.getAudioTracks()
+//      ];
+//
+//      return new MediaStream(tracks);
+//    }
+//
+//    function downloadRecording() {
+//      const blob = new Blob(recordedChunks, { type: 'video/webm' });
+//      const url = URL.createObjectURL(blob);
+//      const a = document.createElement('a');
+//      a.style.display = 'none';
+//      a.href = url;
+//      a.download = 'screen-mic-recording_'+new Date().getTime()+'.webm';
+//      document.body.appendChild(a);
+//      a.click();
+//      setTimeout(() => {
+//        document.body.removeChild(a);
+//        URL.revokeObjectURL(url);
+//      }, 100);
+//    }
+//
+//    recordLink.onclick = async (e) => {
+//      e.preventDefault();
+//
+//      if (!isRecording) {
+//        try {
+//          combinedStream = await getCombinedStream();
+//          recordedChunks = [];
+//
+//          mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm' });
+//
+//          mediaRecorder.ondataavailable = event => {
+//            if (event.data.size > 0) {
+//              recordedChunks.push(event.data);
+//            }
+//          };
+//
+//          mediaRecorder.onstop = () => {
+//            downloadRecording();
+//            recordLink.textContent = "Start Recording";
+//            instruction.style.display = "none";
+//            isRecording = false;
+//          };
+//
+//          // Automatically stop recording when screen sharing ends
+//          screenStream.getVideoTracks()[0].onended = () => {
+//            if (mediaRecorder && mediaRecorder.state === "recording") {
+//              mediaRecorder.stop();
+//            }
+//            screenStream.getTracks().forEach(track => track.stop());
+//            micStream.getTracks().forEach(track => track.stop());
+//          };
+//
+//          mediaRecorder.start();
+//          isRecording = true;
+//          recordLink.textContent = "Recording...";
+//          instruction.style.display = "block";
+//        } catch (err) {
+//          console.error(err);
+//          alert('Error starting recording: ' + err.message);
+//        }
+//      }
+//    };
+
+var clScreenRecord = new function()
+{
+  var me = this;
+
+  var mediaRecorder;
+  var recordedChunks = [];
+  var isRecording = false;
+  var combinedStream;
+  var screenStream;
+  var micStream;
+
+  this.onClkRecord = async function(e)
+  {
+    e.preventDefault();
+    if (!isRecording)
+    {
+      try
+      {
+        combinedStream = await me.getCombinedStream();
+        recordedChunks = [];
+
+        mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm' });
+
+        mediaRecorder.ondataavailable = event => {
+          if (event.data.size > 0) {
+            recordedChunks.push(event.data);
+          }
+        };
+
+        mediaRecorder.onstop = () => {
+          me.downloadRecording();
+          document.getElementById('screenRecordLink').textContent = "Start Recording";
+          document.getElementById('recordingInstruction').style.display = "none";
+          clBotChat.toggleChat();
+          isRecording = false;
+        };
+
+        // Automatically stop recording when screen sharing ends
+        screenStream.getVideoTracks()[0].onended = () => {
+          if (mediaRecorder && mediaRecorder.state === "recording") {
+            mediaRecorder.stop();
+          }
+          screenStream.getTracks().forEach(track => track.stop());
+          micStream.getTracks().forEach(track => track.stop());
+        };
+        clBotChat.toggleChat();
+        mediaRecorder.start();
+        isRecording = true;
+        document.getElementById('screenRecordLink').textContent = "Recording...";
+        document.getElementById('recordingInstruction').style.display = "block";
+      } catch (err)
+      {
+        console.error(err);
+        alert('Error starting recording: ' + err.message);
+      }
+    }
+  }
+
+  this.downloadRecording = function ()
+  {
+    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = 'screen-mic-recording_'+new Date().getTime()+'.webm';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 100);
+  }
+
+  this.getCombinedStream = async function ()
+  {
+    screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    const audioContext = new AudioContext();
+    const destination = audioContext.createMediaStreamDestination();
+
+    // Mix audio from screen and microphone
+    const screenAudio = screenStream.getAudioTracks();
+    const micAudio = micStream.getAudioTracks();
+
+    if (screenAudio.length > 0)
+    {
+      const screenSource = audioContext.createMediaStreamSource(new MediaStream(screenAudio));
+      screenSource.connect(destination);
+    }
+
+    if (micAudio.length > 0)
+    {
+      const micSource = audioContext.createMediaStreamSource(new MediaStream(micAudio));
+      micSource.connect(destination);
+    }
+
+    // Combine video + mixed audio
+    const tracks = [
+            ...screenStream.getVideoTracks(),
+        ...destination.stream.getAudioTracks()
+    ];
+
+    return new MediaStream(tracks);
+  }
+
+};

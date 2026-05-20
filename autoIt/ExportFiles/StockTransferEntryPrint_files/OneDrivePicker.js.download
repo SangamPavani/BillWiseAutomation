@@ -1,0 +1,254 @@
+/**
+ * Created by samresh on 04-04-2018.
+ */
+
+
+var clOneDrivePicker = new function () {
+   // app.registerInstance("OneDrivePicker",this);
+    var odPickerOptions = null;
+
+    var me = this;
+    me.iDriveSettings = 0;
+    me.iDriveSharedLink = null;
+
+    this.UPLOAD_TYPE_FILE = 1;
+    this.UPLOAD_TYPE_IMAGE = 2;
+    this.UPLOAD_TYPE_PREVIEW = 3;
+    this.UPLOAD_TYPE_SIGNATURE = 4;
+    // common variables
+    var iBytesUploaded = 0;
+    var iBytesTotal = 0;
+    var iPreviousBytesLoaded = 0;
+    var oTimer = 0;
+
+    this.launchOneDrivePicker = function (elemImg, sId) {
+        me.elemPicker = elemImg;
+        odPickerOptions =
+        {
+            clientId: "cbd06e97-bc7e-4866-9c23-2a05837fdee3",
+            action: "share",
+            multiSelect: false,
+            openInNewWindow: false,
+            advanced: {
+                redirectUri: clAppBuffer.getRequestIp() + "/social/oneDriveAuth.do",
+                authPrompt: true
+            },
+            success: function (files) {
+
+                var sAccesstoken =null;
+                if(files.accessToken)
+                    sAccesstoken = files.accessToken;
+                var sFileId = files.value[0].id;
+                me.getOAuthSettings(sAccesstoken,sFileId);
+                me.timer = setTimeout(function () {
+                    me.getFileName(files)
+                }, 1500);
+
+            },
+            cancel: function () {
+                //alert("cancel");
+            },
+            error: function (e) {
+                //alert("error "+ e);
+            }
+        };
+        OneDrive.open(odPickerOptions);
+
+    }
+    this.getFileName = function (data) {
+        var file = data.value[0],
+            id = data.value[0].id, sSrc = null;
+        //size = data.value[0].id,
+        //size = file[google.picker.Document.fileSize],
+        //    request = gapi.client.drive.files.get({fileId: id});
+        var sFileId = me.elemPicker.id, sLink = file.name;
+        sFileId = sFileId.substring(sFileId.indexOf("_") + 1);
+        sSrc = file.name;
+        if (document.getElementById("preview_" + sFileId) != null) {
+
+            if (!sSrc.match(/.(jpg|jpeg|png|gif)$/i)) {
+                msg.showMessage(0, "Invalid image file");
+                return false;
+            }
+        }
+        sSrc = me.iDriveSharedLink+"?download=1";
+        if(document.getElementById("uploadFileName_" + sFileId).value!=null || document.getElementById("uploadFileName_" + sFileId).value.trim.length < 0)
+        {
+            document.getElementById("lblUpload_" + sFileId).parentNode.parentNode.style.display = "none";
+            document.getElementById("uploadFileName_" + sFileId).parentNode.parentNode.style.display = "";
+            //document.getElementById("uploadFileName_" + sFileId).value = "onedrive:" + data.value[0].permissions[0].link.webUrl+"&"+id+ "|" + file.name;
+            document.getElementById("uploadFileName_" + sFileId).value = "onedrive:" + util.encodeURI(sSrc)+"&"+id+ "|" + file.name;
+        }
+        var sUploadId= file.name;
+
+        //sSrc = "https://onedrive.live.com/download?resid=" + id;
+
+        if (me.iDriveSettings == 1)
+        {
+
+            //document.getElementById("fileName_"+sFileId).innerText="https://onedrive.live.com/download?resid="+id;
+            var objAch = null, objFile = document.getElementById("fileName_" + sFileId);
+            if (cross.getChildren(objFile).length == 0) {
+                objAch = document.createElement("a");
+                objFile.appendChild(objAch);
+                objAch.className = "txtOverflow";
+            }
+            else
+                objAch = cross.getFirstElement(objFile.childNodes);
+            objAch.setAttribute("href", sSrc);
+            cross.setInnerText(objAch, sUploadId);
+            objAch.setAttribute("title", sUploadId);
+
+
+            //document.getElementById("user_"+sFileId).value=sLink;/*file.webUrl;*/
+            //sUploadId = sSrc+"&"+file.name; /*"resid="+id+":"+file.name;
+            //sUploadId = "onedrive:"+data.value[0].permissions[0].link.webUrl+"&"+id+"|"+file.name; /*"resid="+id+":"+file.name;       *//*todo*/
+        }
+        else
+            document.getElementById("fileName_" + sFileId).innerHTML = file.name;
+        if(document.getElementById("preview_" + sFileId) != null)   /*todo:change*/
+            document.getElementById("preview_"+sFileId).src = sSrc;
+
+        //sUploadId = "onedrive:"+data.value[0].permissions[0].link.webUrl+"&"+id+"|"+file.name; /*"resid="+id+":"+file.name;       *//*todo*/
+        sUploadId = "onedrive:"+sSrc+"&"+id+"|"+file.name; /*"resid="+id+":"+file.name;       *//*todo*/
+        var arrData = [];
+        arrData[0] = sFileId;
+        arrData[1] = file.name;
+        arrData[2] = id;
+        arrData[3] = file.size;
+        arrData[4] = sUploadId;
+        //arrData[5]=data.accessToken;
+
+        //arrData[4] = gapi.auth.getToken().access_token;
+        me.oneDrivePickerCallBack(arrData);
+        clearTimeout(me.timer);
+
+
+    };
+
+    this.getOAuthSettings = function (sAccestoken,sFileId) {
+        var sUrl = "social/googleAuth!getDriveSyncSettings.do?appType=" + Constants.IGOOGLE_APPTYPES.ONEDRIVE +
+            "&isAjax=true&fileId="+sFileId+"&accessToken="+sAccestoken;
+        con.sendPostRequest(sUrl, null, null, "clOneDrivePicker.arhDriveSettings");
+    }
+    this.arhDriveSettings = function (sRes) {
+        if (sRes) {
+            var arrRes = eval(sRes);
+            sRes = arrRes[0];
+            me.iDriveSharedLink = arrRes[1];
+            me.iDriveSettings = parseInt(sRes==0?1:0);
+        }
+
+    }
+    //var arrProperties=null;
+    this.oneDrivePickerCallBack = function(arrResponse)
+    {
+        //var arrResponse = clOneDrivePicker.getFileName(data);//respinse:0 : filedid
+        if(arrResponse!=null)
+        {
+            //var sFileIdName = arrResponse[4]+"_drive:"+arrResponse[2]+":"+arrResponse[1];
+            var sFileIdName = "onedrive:"+arrResponse[2]+"|"+arrResponse[1];
+            clHTML5Upload.sUploadFieldId = arrResponse[0];
+            me.drivePickerResp(arrResponse,sFileIdName)
+
+        }
+
+    }
+    this.drivePickerResp=function(arrResponse,sFileIdName)
+    {
+       var arrProperties=clHTML5Upload.getPropertiesArray(arrResponse[0]);
+        if( arrProperties == null || arrProperties == undefined )
+            arrProperties = clHTML5Upload.getPropertiesArray(clHTML5Upload.getBaseId(arrResponse[0]));
+        var sUrl=arrProperties.sUrl;
+        var  vFD = new FormData();
+        sUrl+="&uploadFileName="+sFileIdName;//+"&linkUrl="+arrResponse[4];
+        // create XMLHttpRequest object, adding few event listeners, and POSTing our data
+        var oXHR = new XMLHttpRequest();
+        //oXHR.upload.addEventListener('progress', uploadProgress, false);
+        //oXHR.addEventListener('load', uploadFinish, false);
+        oXHR.addEventListener('error', uploadError, false);
+        oXHR.addEventListener('abort', uploadAbort, false);
+        oXHR.onreadystatechange = function (e)
+        {
+            if (oXHR.readyState == 4)
+            {
+                if(oXHR.status == 200)
+                    uploadFinish(oXHR.responseText);
+                else
+                    alert("Error loading page\n");
+            }
+        };
+
+        oXHR.open('POST', sUrl);
+        oXHR.send(vFD);
+
+        //fieldid
+        var sHiddenFldName = clUpload.getHiddenName(arrResponse[0],arrProperties.sHiddenName),sImgSrc=null;
+
+        if(arrProperties.iType==me.UPLOAD_TYPE_IMAGE || arrProperties.iType==me.UPLOAD_TYPE_PREVIEW ){
+            sImgSrc= me.iDriveSharedLink
+        }//todo
+        //sImgSrc=arrResponse[4];//https://graph.microsoft.com/v1.0/$metadata#drives('5DE8D16A9005355B')/items/$entity
+        //    sImgSrc="https://onedrive.live.com/download?resid="+arrResponse[2]+"&"+arrResponse[1];//https://graph.microsoft.com/v1.0/$metadata#drives('5DE8D16A9005355B')/items/$entity
+
+
+        sFileIdName = arrResponse[1];
+        //alert(sHiddenFldName)
+        if(arrProperties.isAllowMultiUploads) {
+            clHTML5Upload.driveMultiAttachRespHandler(arrResponse[1],arrResponse[0]);
+        }
+        else
+        {
+            document.getElementById(sHiddenFldName).value = arrResponse[4];//fileid
+            clUpload.invokeCallback(arrProperties.sOnUploadDone, sFileIdName, sImgSrc, arrResponse[0], null, sFileIdName, arrResponse[3]);
+        }
+    }
+    function uploadFinish(sResponse)
+    {
+        // upload successfully finished
+
+        var oUploadResponse = document.getElementById('upload_response');
+        if(oUploadResponse)
+        {
+            oUploadResponse.innerHTML = 'Done';
+            if (document.getElementById('speed'))
+                document.getElementById('speed').innerHTML = "&nbsp;";
+
+//        document.getElementById('elapsed').innerHTML = "&nbsp;";
+//        document.getElementById('remaining').innerHTML="&nbsp;";
+
+            clHTML5Upload.iElapsedTime = 0;
+            clearInterval(oTimer);
+
+            var objTR = document.getElementById(arrp).parentNode.parentNode;
+            objTR.style.display = "none";
+            objTR.previousSibling.style.display = "";
+            clUpload.onUploadDone(clHTML5Upload.sNewUploadFldId ? clHTML5Upload.sNewUploadFldId : clHTML5Upload.sUploadFieldId, clHTML5Upload.sUploadFieldId, sResponse);
+
+
+            setTimeout(function () {
+                var dvProgress = document.getElementById("progress_info");
+                dvProgress.style.display = "none";
+                document.body.appendChild(dvProgress.parentNode.removeChild(dvProgress));
+                if (clHTML5Upload.sUploadFieldId) {
+                    //document.getElementById("lblUpload_"+sUploadFieldId).style.display="none";
+                    clHTML5Upload.sUploadFieldId = null;
+                    clHTML5Upload.sFileName = null;
+                }
+
+            }, 10);
+        }
+    }
+    function uploadError(e)
+    { // upload error
+        document.getElementById('error2').style.display = 'block';
+        clearInterval(oTimer);
+    }
+
+    function uploadAbort(e)
+    { // upload abort
+        document.getElementById('abort').style.display = 'block';
+        clearInterval(oTimer);
+    }
+
+}

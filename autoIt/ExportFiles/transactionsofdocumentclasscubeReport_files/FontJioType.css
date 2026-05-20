@@ -1,0 +1,14 @@
+
+@font-face {
+    font-family: 'JioType';
+    src:
+    /*url('../../../fonts/jio-type/JioType-Light.ttf?v=2.5.4') format('truetype'),*/
+    /*url('../../../fonts/jio-type/JioType-Black.ttf?v=2.5.4') format('truetype'),*/
+    url('../../../fonts/jio-type/JioType-Medium.ttf?v=2.5.4') format('truetype'),
+    /*url('../../../fonts/jio-type/JioType-Light.woff?v=2.5.4') format('woff'),*/
+    /*url('../../../fonts/jio-type/JioType-Black.woff?v=2.5.4') format('woff'),*/
+    url('../../../fonts/jio-type/JioType-Medium.woff?v=2.5.4') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+

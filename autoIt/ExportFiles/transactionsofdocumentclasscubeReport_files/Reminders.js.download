@@ -1,0 +1,456 @@
+/**
+ * Created by Rajitha on 09-01-2019.
+ */
+
+var clReminders = new function()
+{
+    app.registerInstance("clReminders", this);
+    var me= this;
+
+
+    /**
+     * This method is used to dismiss selected reminder
+     * @param arrReminders array of selected reminders
+     * @param iStatus status code of YES or NO
+     */
+    this.onDismissRem = function (arrReminders, iStatus)
+    {
+        if (iStatus == Constants.YES)
+        {
+            var sSubmitData, sUrl, sParams;
+            sParams = "&dismiss=" + true;
+            sUrl = "common/activities!updateSnoozeReminder.do?transIds=" + arrReminders + sParams;
+            con.sendPostRequest(sUrl, sSubmitData, null, "clReminders.arhSelectedSnooze", null, "dvAllReminders", null);
+        }
+    }
+    /**
+     * This method is called on click of dismiss dropdown and used to dismiss all selected reminders
+     * @param iLength length of reminders
+     * @param sItemId selected reminder id
+     * @param sItemText selected reminder text
+     * @param iItemValue selected reminder value 1-dismiss,2-dismiss all
+     * @param e event
+     */
+    this.onClkDismissdropdown = function(iLength,sItemId,sItemText,iItemValue,e)
+    {
+        if(iItemValue == 2)
+            clReminders.onClkDismissAll(iLength);
+        else if(iItemValue == 1)
+        {
+            Validation.reset();
+            Validation.clearMessage(null,true,"dvmsgbox");
+            var iIndex,elements    = document.querySelectorAll(".crm-tick-styled");
+            var arrReminders = [];
+            for (var i = 0; i < elements.length; i++) {
+
+                if (elements[i].style.display != "none") {
+                    iIndex = (elements[i].parentNode).getAttribute("iIndex");
+                    arrReminders[i] = document.getElementById("dvMainReminders_" + iIndex).getAttribute("reminderId") + "_" + document.getElementById("dvMainReminders_" + iIndex).getAttribute("moduleId");
+                }
+            }
+            if(arrReminders.length>0)
+                msg.showConfirm(MsgHandler.getMsg(MsgConstants.WANT_TO_DISMISS, 0, 0), "Message", "clReminders.onDismissRem", [arrReminders], 0, MsgHandler.getMsg(MsgConstants.YES), MsgHandler.getMsg(MsgConstants.NO));
+            else
+                Validation.showMessage("Select atleast one record",Validation.ERROR_MSG,null,Validation.ERROR_CUSTOM,true,"dvmsgbox")
+
+        }
+    }
+    /**
+     * This method is used to show confirm message for dismiss all reminders
+     * @param iLength length of selected reminders
+     */
+    this.onClkDismissAll = function (iLength)
+    {
+        if (iLength > 0)
+            msg.showConfirm(MsgHandler.getMsg(MsgConstants.WANT_TO_DISMISS_ALL, 0, 0), "Message", "clReminders.onDismissAllRem", [iLength], 0, MsgHandler.getMsg(MsgConstants.YES), MsgHandler.getMsg(MsgConstants.NO));
+
+    }
+    /**
+     * Used to dismiss all reminders
+     * @param iLength length of remiders
+     * @param iStatus status of confirmation
+     */
+    this.onDismissAllRem = function (iLength, iStatus)
+    {
+        if (iStatus == Constants.YES) {
+
+            var sSubmitData, sUrl = "common/activities!updateAllReminder.do?snooze=" + false;
+            con.sendPostRequest(sUrl, sSubmitData, null, "clReminders.arhDismissAll", null, "dvAllReminders", null);
+
+        }
+    }
+
+    /**
+     * Used to handle response after dismiss all reminders and refresh reminders list
+     * @param iStatus
+     */
+    this.arhDismissAll = function(iStatus)
+    {
+        if(iStatus>0)
+        {
+            msg.showToastMsg("reminder has been updated");
+            clReminders.onClkGetReminders();
+        }
+    }
+
+    /**
+     * Used to open reschedule dialog to reschedule selected reminder
+     */
+    this.onClkGetReminderReschedule = function ()
+    {
+        //parent.getDialogBox("reminderDlg").hide();
+        Validation.reset();
+        Validation.clearMessage(null,true,"dvmsgbox");
+        var sUrl,iIndex,iFieldId= 0,iTransId,iModuleId,iCount= 0,elements    = document.querySelectorAll(".crm-tick-styled");
+        for (var i = 0; i < elements.length; i++) {
+
+            if (elements[i].style.display != "none") {
+                iIndex = (elements[i].parentNode).getAttribute("iIndex");
+                iTransId = document.getElementById("dvMainReminders_" + iIndex).getAttribute("reminderId");
+                iModuleId = document.getElementById("dvMainReminders_" + iIndex).getAttribute("moduleId");
+                /*iFieldId = document.getElementById("dvMainReminders_" + iIndex).getAttribute("fieldId");
+                if(iFieldId>0)
+                {
+                    iModuleId = document.getElementById("dvMainReminders_" + iIndex).getAttribute("relatedType");
+                    iTransId = document.getElementById("dvMainReminders_" + iIndex).getAttribute("relatedTo");
+
+                }*/
+                iCount+=1;
+            }
+        }
+        if(iCount==1 && (iModuleId == Constants.TASKS || iModuleId == Constants.APPOINTMENTS))
+        {
+            //parent.getDialogBox("reminderDlg").hide();
+            //parent.home.onclkShowRescheduleOverlay();
+            sUrl = "common/activities!getRescheduleDlg.do?transId=" + iTransId + "&actionType=2&moduleId="+iModuleId+"&isFromDlg=true";
+            var arrActions=new Array();
+
+            arrActions[0] = MsgHandler.getMsg(MsgConstants.OK) + "|clReminders.onClkSaveReminderReschedule("+iTransId+","+iModuleId+")";
+            //arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL) + "|";
+
+            var clRescheduleDlg = new DialogBox("rescheduleDlg", "Reschedule", 100, 50, 400, 240, sUrl, false, null, false, true, arrActions, null, null, true, null, null, null, null, true);
+            clRescheduleDlg.setCenter();
+            clRescheduleDlg.show();
+        }
+        else if(iModuleId >=0)           //for general reminders
+            Validation.showMessage("Selected records cannot be rescheduled",Validation.ERROR_MSG,null,Validation.ERROR_CUSTOM,true,"dvmsgbox");
+
+        else                            //if more than one record selected
+            Validation.showMessage("Select Task/Appointment to be rescheduled",Validation.ERROR_MSG,null,Validation.ERROR_CUSTOM,true,"dvmsgbox");
+
+
+    };
+
+
+    /*not in use*/
+    this.arhGetReminderReschedule = function (sResponse) {
+        var objDiv = document.getElementById("dvReminderReschedule");
+        objDiv.innerHTML = sResponse;
+        if (typeof window["initAllCombos"] == "function")
+            initAllCombos = null;
+        loadResources(objDiv, util.onScriptsLoad);
+    };
+
+
+    /**
+     * Used to save reminder reschedule details
+     * @param iTransId
+     * @param iModuleId
+     */
+    this.onClkSaveReminderReschedule = function (iTransId,iModuleId) {
+        var sUrl, sParam = "", sRescheduleDateTime,iDuration= 0,isValid=false,iDurationType=0;
+
+        sRescheduleDateTime = document.getElementById("rescheduleDate");
+        iDuration = document.getElementById("iDuration");
+        iDurationType = document.getElementById("iDurationType");
+
+        isValid = me.validateRescheduleDate(sRescheduleDateTime,iModuleId);
+        if (isValid)
+        {
+            sUrl = "common/activities!saveReSchedule.do";
+            sParam = "transId=" + iTransId + "&rescheduleDateTime=" + sRescheduleDateTime.value+"&duration="+iDuration.value+"&moduleId="+iModuleId+"&durationType="+iDurationType.value;
+            con.sendPostRequest(sUrl, sParam, null, "clReminders.arhSaveReschedule", null, "dvReminderReschedule", null, false);
+        }
+
+    }
+
+    /**
+     * Used to validate reschedule data and time
+     * @param sRescheduleDateTime selected data and time
+     * @param iModuleId
+     */
+    this.validateRescheduleDate = function(sRescheduleDateTime,iModuleId)
+    {
+
+        Validation.clearMessage();
+        var bReturn = false;
+        var sDataType,iCurrentDate= 0,iScheduleDate = 0;
+        var objAlertBefore = document.getElementById("iDuration");
+        var objAlertTimeType = document.getElementById("iDurationType");
+
+        Validation.clearMessage(objAlertBefore,false);
+        Validation.clearMessage(objAlertTimeType,false);
+
+        if(iModuleId == Constants.TASKS)
+        {
+            iScheduleDate =dateUtils.convertDateTimetoInt(document.getElementById("rescheduleDate").value,clAppBuffer.getDateFormat());
+            iCurrentDate =dateUtils.getCurrentDateTimeToInt(true,false,0,true);
+            sDataType = Constants.DATATYPE_DATE;
+        }
+        else
+        {
+            iScheduleDate =dateUtils.convertDateTimetoInt(document.getElementById("rescheduleDate").value,clAppBuffer.getDateFormat());
+            iCurrentDate =dateUtils.getCurrentDateTimeToInt(false,false,0,true);
+            sDataType = Constants.DATATYPE_DATETIME;
+        }
+        bReturn = Validation.checkMandatory(document.getElementById("rescheduleDate"), "Reschedule ",sDataType, true);
+
+        if(bReturn)
+        {
+            if(iCurrentDate>iScheduleDate) {
+
+                bReturn=false;
+                Validation.showMessage("date time must be greater than today's current date time", Validation.ERROR_MSG, sRescheduleDateTime);
+                sRescheduleDateTime.focus();
+            }
+
+        }
+        if(bReturn)
+        {
+
+            if(objAlertBefore.value<=0)
+            {
+                Validation.showMessage(MsgHandler.getMsg(MsgConstants.GREATER_THAN_ZERO,0,0,MsgHandler.getMsg(MsgConstants.REMINDER_DAYS)),Validation.ERROR_MSG,objAlertBefore);
+                bReturn = false;
+            }
+
+
+            if(objAlertTimeType.value<=0)
+            {
+                Validation.showMessage(MsgHandler.getMsg(MsgConstants.ALERT_TIME_TYPE),Validation.ERROR_MSG,objAlertTimeType,Validation.ERROR_MANDATORY,false);
+                bReturn =false;
+            }
+
+
+        }
+        return bReturn;
+
+    }
+
+    /**
+     * Used to close reschedule dialog after save
+     * @param iStatus
+     */
+    this.arhSaveReschedule = function (iStatus) {
+        if (iStatus > 0) {
+            msg.showToastMsg("Schedule date updated");
+            getDialogBox("rescheduleDlg").hide();
+            //clOverlay.closeOverlay(null, 2, "dvOverlayRescheduleReminders");
+            clReminders.onClkGetReminders();
+        }
+        else if(iStatus == -1)
+            Validation.showMessage("Reminder time should be less than Schedule time",Validation.ERROR_MSG,null,0,true,"msgboxId");
+    }
+
+
+    /**
+     * Used to open business card details in toast window
+     * @param obj RalaterTo span obj
+     * @param iModuleId module id
+     * @param iTransId trans id
+     */
+    this.getCardView = function(obj,iModuleId,iTransId)
+    {
+        var sUrl = "security/home!getRecentItemDetails_nrf.do?moduleId="+iModuleId+"&transId="+iTransId;
+        msg.showToastWindowFromURL(obj,sUrl,true,iModuleId,Constants.PRONG_LEFT,false,null,null,false,true,Constants.SCOPE_SCREEN,document.getElementById('dvReminders'));
+    };
+
+    /**
+     * Used to close business card toast window
+     * @param obj RalaterTo span obj
+     */
+    this.evmOutClearTimer=function(obj,sId,e)
+    {
+        setTimeout(function() {
+            msg.removeToastWindowDlg(sId);
+        },5000)
+    };
+    /*this.onClkSetReminder = function()
+    {
+        if(document.getElementById("chkRemindSnoozeMe").checked)
+        {
+            document.getElementById("cbReminderSnooze").disabled=false;
+            document.getElementById("dtRemindMe").disabled=true;
+            document.getElementById("dtRemindMe").value="";
+        }
+        else
+        {
+            document.getElementById("dtRemindMe").disabled=false;
+            document.getElementById("cbReminderSnooze").disabled=true;
+            document.getElementById("cbReminderSnooze").options[0].selected = true;
+            //getComboInstance("cbReminderSnooze").setSelectedIndex(-1);
+        }
+    }*/
+
+    /*not in use*/
+    this.onClkSetReminder = function()
+    {
+        var objSnooze = document.getElementById("cbReminderSnooze");
+        var iSnooze = objSnooze.options[objSnooze.selectedIndex].value;
+
+        if(iSnooze == 1)
+        {
+            document.getElementById("tdDtRemindMe").style.display="";
+        }
+        else
+        {
+            document.getElementById("dtRemindMe").style.display="none";
+            document.getElementById("dtRemindMe").value="";
+
+        }
+    }
+
+
+    /**
+     * this method is used to show and hide reminders
+     * @param iIndex
+     */
+    this.onClkShowHideReminders = function(iIndex)
+    {
+        if(document.getElementById("dvRemindersGroup_"+iIndex))
+        {
+            var eleShowIcon = document.getElementById("spRemShowHideIcon_"+iIndex);
+
+            if(document.getElementById("dvRemindersGroup_"+iIndex).style.display == "none")
+            {
+                document.getElementById("dvRemindersGroup_"+iIndex).style.display = "block";
+                util.removeClass(eleShowIcon,"fa-chevron-down");
+                util.addClass(eleShowIcon,"fa-chevron-up");
+            }
+            else
+            {
+                document.getElementById("dvRemindersGroup_"+iIndex).style.display = "none";
+                util.removeClass(eleShowIcon,"fa-chevron-up");
+                util.addClass(eleShowIcon,"fa-chevron-down");
+            }
+
+            //util.animateToggle(document.getElementById("dvRemindersGroup_"+iIndex),{"transition-property":"height","transition-duration":"0.4"});
+
+        }
+    }
+
+    /**
+     * Used to add style classes to selected reminder
+     * @param iIndex index of reminder
+     * @param e event
+     */
+    this.onClkselectRow = function(iIndex,e)
+    {
+        if(document.getElementById("spModuleIcon_"+iIndex).style.display != "none")
+        {
+            document.getElementById("spModuleIcon_"+iIndex).style.display = "none";
+            document.getElementById("spSelectIcon_"+iIndex).style.display = "table-cell";
+            /*document.getElementById("dvLetterIcon_"+iIndex).style.backgroundColor = "#d7d7d7";
+            document.getElementById("dvMainReminders_"+iIndex).style.backgroundColor = "#f1f1f1";*/
+            util.addClass(document.getElementById("dvLetterIcon_"+iIndex),"subPhases");
+            util.removeClass(document.getElementById("dvLetterIcon_"+iIndex),"dvRemIcon");
+            util.removeClass(document.getElementById("spModuleIcon_"+iIndex),"dvheight");
+            util.addClass(document.getElementById("dvMainReminders_"+iIndex),"sDvRemSelectedStyle");
+
+        }
+        else
+        {
+            document.getElementById("spSelectIcon_"+iIndex).style.display = "none";
+            document.getElementById("spModuleIcon_"+iIndex).style.display = "table-cell";
+            //document.getElementById("dvLetterIcon_"+iIndex).style.backgroundColor = "#f1f1f1";
+            //document.getElementById("dvMainReminders_"+iIndex).style.backgroundColor = "#fff";
+
+            if(util.hasClass(document.getElementById("dvLetterIcon_"+iIndex),"subPhases"))
+            {
+                util.removeClass(document.getElementById("dvLetterIcon_"+iIndex),"subPhases");
+                util.addClass(document.getElementById("dvLetterIcon_"+iIndex),"dvRemIcon");
+            }
+            if(util.hasClass(document.getElementById("dvMainReminders_"+iIndex),"sDvRemSelectedStyle"))
+                util.removeClass(document.getElementById("dvMainReminders_"+iIndex),"sDvRemSelectedStyle");
+
+
+        }
+    }
+
+    /**
+     * Used to update snooze time of selected reminder
+     * @param sItemId
+     * @param sItemText
+     * @param iItemValue
+     * @param e
+     * @param isDismiss
+     */
+    this.onClkSelectedSnooze = function(sItemId,sItemText,iItemValue,e,isDismiss)
+    {
+
+        Validation.reset();
+        Validation.clearMessage(null,true,"dvmsgbox");
+        var iIndex,elements    = document.querySelectorAll(".crm-tick-styled");
+        var arrReminders = [];
+        for (var i = 0; i < elements.length; i++) {
+
+            if (elements[i].style.display != "none") {
+                iIndex = (elements[i].parentNode).getAttribute("iIndex");
+                arrReminders[i] = document.getElementById("dvMainReminders_" + iIndex).getAttribute("reminderId") + "_" + document.getElementById("dvMainReminders_" + iIndex).getAttribute("moduleId");
+            }
+        }
+        if(arrReminders.length>0)
+        {
+
+            var sSubmitData, sUrl, sParams;
+            if (isDismiss)
+                sParams = "&dismiss=" + isDismiss;
+            else
+                sParams = "&dismiss=" + false + "&snoozeAt=" + iItemValue;
+            sUrl = "common/activities!updateSnoozeReminder.do?transIds=" + arrReminders + sParams;
+            con.sendPostRequest(sUrl, sSubmitData, null, "clReminders.arhSelectedSnooze", null, "dvAllReminders", null);
+        }
+        else
+            Validation.showMessage("Select atleast one record",Validation.ERROR_MSG,null,Validation.ERROR_CUSTOM,true,"dvmsgbox")
+    }
+
+    /**
+     * Used to handle response after upate snooze reminder and refresh reminders list
+     * @param iStatus
+     */
+    this.arhSelectedSnooze = function(iStatus)
+    {
+        if(iStatus>0)
+        {
+            parent.msg.showToastMsg("Reminders has been updated");
+            clReminders.onClkGetReminders();
+        }
+    }
+
+    /**
+     * Used to get all reminders
+     */
+    this.onClkGetReminders = function ()
+    {
+        var sUrl = "common/activities!getReminders.do";
+        con.sendPostRequest(sUrl, null, null, "clReminders.arhGetReminders", null, "dvinnerReminders", null);
+    };
+    /**
+     * Used to handle response after getting reminders and load scripts
+     * @param sResponse
+     */
+    this.arhGetReminders = function (sResponse) {
+        var objDiv = document.getElementById("dvinnerReminders");
+        objDiv.innerHTML = sResponse;
+        if (typeof window["initAllCombos"] == "function")
+            initAllCombos = null;
+        loadResources(objDiv, util.onScriptsLoad);util.toggleBackground(false, false);
+    };
+
+    this.onClkMakeCall = function(iRelatedType,iRelatedTo,sItemId,sItemText,iItemValue,e)
+    {
+        clEpbxHandler.makeCall(0,0,sItemText,0,e);
+    };
+
+
+}

@@ -1,0 +1,1786 @@
+//td onmouseover initialize objTd
+//table onmouseout clear objTd,save edit link in objEditLink
+
+//save
+// objActions=objTd.removechild()
+// objTd.innerHTML=input.value(based on control type)
+
+//cancel
+var detailedView  = new function()
+{
+    app.registerInstance("detailedView",this);
+
+    var me=this;
+    var sLabels=[];
+    var iViewAllActionId=4;
+    var dvContentHeight = 0;
+
+    this.iDivId = 0;
+    this.arrRelModuleSettings=null;
+    this.arrRelatedModuleIds = null;
+
+    this.iEvtModuleId = 0;
+    this.sJSModuleSaveActionDTOs = null;
+    this.sExternalJSEvtHandlers = null;
+
+    this.loadEventListners = function(iModuleId,sJSModuleSaveActionDTOs,sExternalJSEvtHandlers){
+        this.iEvtModuleId = iModuleId;
+        this.sJSModuleSaveActionDTOs = sJSModuleSaveActionDTOs;
+        this.sExternalJSEvtHandlers = sExternalJSEvtHandlers;
+
+
+        cross.registerWindowEvent('onScroll',cross.EVENT_ON_WND_SCROLL,me.onWndscroll,null,Constants.SCOPE_SCREEN);
+    };
+
+    this.loadRelatedModule = function(iBaseModuleId,iBaseTransId,iRelModuleId,iRelLayoutId,iTabIndex,iExtraId,iRelModuleSettings,isInfoPanel)
+    {
+        var sDivId="dvRelatedModule_"+iRelModuleId;
+        var objDiv=document.getElementById(sDivId);
+        var hasData = objDiv.getAttribute("hasData");
+        if(hasData)
+            return;
+        if(!me.arrRelModuleSettings)
+            me.arrRelModuleSettings={};
+
+        me.arrRelModuleSettings[iRelModuleId]=iRelModuleSettings;
+
+        var objViewAll=document.getElementById("actBar_"+iRelModuleId+"_"+iViewAllActionId+"_rm"+iRelModuleId+"_0");
+        if(objViewAll)
+            objViewAll.style.display="none";
+
+        //var sDivId="dvRelatedModule_"+iRelModuleId;
+        //var sCbResponse = "detailedView.handleResponse";
+        function handleResponse(sResponse)
+        {
+            //alert(iDivId);
+            initAllCombos=null;
+            var objDiv=document.getElementById(sDivId);
+            if(objDiv)
+            {
+                objDiv.innerHTML = sResponse;
+                objDiv.setAttribute("hasData",true);
+                objDiv.style.height = "100%";
+
+                if (objViewAll && document.getElementById("hasMoreRows_" + iRelModuleId))
+                {
+                    var hasMoreRows = document.getElementById("hasMoreRows_" + iRelModuleId).value;
+                    var noOfRows = document.getElementById("noOfRows_" + iRelModuleId).value;
+                    if (noOfRows > 0) {
+                        var sTabbedPaneId = "relatedModuleTabs";
+                        if (document.getElementById(sTabbedPaneId))
+                        {
+                            var sTabTitle = tabbedPane.getTabTitle(sTabbedPaneId, iTabIndex);
+                            sTabTitle += "<span style='float:right;font-size:12px;padding:0 0 0 2px;color:#ff120a;font-weight:bold;border-bottom:none;'>(";
+                            if (hasMoreRows == 1)
+                                sTabTitle += "5+";
+                            else
+                                sTabTitle += noOfRows;
+                            sTabTitle += ")</span>";
+                            //tabbedPane.setTabTitle(sTabbedPaneId, iTabIndex, sTabTitle);
+                        }
+                    }
+                    else if(document.getElementById("actImg1_rm"+iRelModuleId+"_")!=null)
+                        me.hideToggle(iRelModuleId,true);
+                    if (hasMoreRows == 1)
+                        objViewAll.style.display = "block";
+                }
+                document.getElementById("dvRelatedModule_" + iRelModuleId).style.height = "initial";
+                loadResources(objDiv, util.onScriptsLoad);
+                var dvContainer = document.getElementById("containerDiv_" + iRelModuleId);
+                if (dvContainer && document.getElementById("iListHeaderId")) {
+                    var iWidth = parseInt(document.getElementById("iListHeaderId").offsetWidth) - 30 ;
+                    dvContainer.style.width = iWidth;
+                    dvContainer.children[0].setAttribute("width", iWidth);
+                }
+            }
+        }
+
+        var sUrl = "module/moduleView!getRelatedModule_nrf.do";
+        sUrl+="?baseModuleId="+iBaseModuleId;
+        sUrl+="&baseTransId="+iBaseTransId;
+        sUrl+="&baseExtraIds="+iExtraId;
+        sUrl+="&relModuleId="+iRelModuleId;
+        sUrl+="&relLayoutId="+iRelLayoutId;
+        sUrl+="&layoutId="+document.getElementById("layoutId").value;
+        sUrl+="&isInfoPanel="+isInfoPanel;
+        if(util.trim(document.getElementById("isDetailedviewConvrtdLead").value).length>0)
+            sUrl+="&isDetailedviewConvrtdLead="+document.getElementById("isDetailedviewConvrtdLead").value;
+
+//        sUrl+="?layoutId="+document.getElementById("iLayoutId_"+iRelModuleId).value;
+//        alert(sUrl)
+       // setTimeout('con.sendNonUItRequest("'+sUrl+'",null, '+handleResponse+', null, con.RESPONSE_HTML,'+sDivId+')',2000);;
+       // var objDiv=document.getElementById(sDivId);
+       // var hasData = objDiv.getAttribute("hasData");
+        if(hasData == undefined || !hasData)
+            con.sendNonUItRequest(sUrl,null,handleResponse,null,con.RESPONSE_HTML,sDivId);
+    };
+
+    //isHode=true [close] else [open]
+    this.hideToggle=function(iRelModuleId,isHide)
+    {
+        var sIdImg1="actImg1_rm"+iRelModuleId+"_",sIdImg2="actImg2_rm"+iRelModuleId+"_";
+        var sActBarContentId="actBarCont_rm"+iRelModuleId+"_",sActBarActionId="actBarAct_rm"+iRelModuleId+"_";
+
+        /*if(document.getElementById(sIdImg2).style.display=="none")
+        {
+            if(isHide)
+                return;
+        }
+        else if(!isHide)
+            return;*/
+        //
+
+       // if(document.getElementById(sIdImg2).style.display=="none" && isHide)
+        {
+            if(isHide)
+                clActionBar.showActionBar(document.getElementById(sIdImg1),sIdImg2,sActBarContentId,sActBarActionId,isHide);
+            else
+                clActionBar.showActionBar(document.getElementById(sIdImg2),sIdImg1,sActBarContentId,sActBarActionId,isHide);
+        }
+    };
+
+    this.onWndscroll=function(e)
+    {
+        var iPosition = cross.getBodyScrollTop();
+        var objListHeader = document.getElementById("iListHeaderId");
+        var objActionbarHeader = document.getElementById("tblActBarAct_abr");
+
+        if(iPosition>200)
+        {
+            objListHeader.style.position="fixed";
+            objListHeader.style.top="2px";
+            //objActionbarHeader.style.width="85%";
+            objListHeader.style.width=document.getElementById("navContentAreaDv").style.width;
+            objListHeader.style.zIndex="2";
+            objListHeader.style.backgroundColor="#FFFFFF";
+
+            if(objActionbarHeader!=null)
+            {
+                objActionbarHeader.style.position="fixed";
+                objActionbarHeader.style.top="47px";
+                objActionbarHeader.style.width=document.getElementById("navContentAreaDv").style.width;
+                //objActionbarHeader.style.width="85%";
+                objActionbarHeader.style.zIndex="2";
+                objActionbarHeader.style.backgroundColor="#F5F5F5";
+            }
+        }
+        else
+        {
+            objListHeader.style.position="inherit";
+            objListHeader.style.top="0";
+            objListHeader.style.width="inherit";
+            objListHeader.style.zIndex="1";
+
+            if(objActionbarHeader!=null)
+            {
+                objActionbarHeader.style.position = "inherit";
+                objActionbarHeader.style.top = "0";
+                objActionbarHeader.style.width = "revert-layer";
+                objActionbarHeader.style.zIndex = "1";
+            }
+        }
+
+    };
+
+    this.loadRelatedModuleToArray = function(iRelModuleId)
+    {
+        if(!me.arrRelatedModuleIds)
+            me.arrRelatedModuleIds= new Array();
+        me.arrRelatedModuleIds[me.arrRelatedModuleIds.length] = iRelModuleId;
+    };
+
+    this.onToggleNavMenu = function (bShow, iWidth) {
+        var dvContainer, iWindowType;
+        iWindowType = clAppBuffer.getWindowType();
+
+        if (iWidth > 0
+            && iWindowType != Constants.IMODULE_WINDOW.SPLIT_PANE
+            && iWindowType != Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE) {
+            for (var i = 0; i < me.arrRelatedModuleIds.length; i++) {
+                dvContainer = document.getElementById("containerDiv_" + me.arrRelatedModuleIds[i]);
+                if (dvContainer) {
+                    dvContainer.style.width = iWidth - 30;
+                    dvContainer.children[0].setAttribute("width", iWidth - 30);
+                }
+            }
+        }
+    };
+
+    this.loadRelatedModuleCount = function(iBaseModuleId,iBaseTransId,iRelModuleId,iRelLayoutId,iTabIndex,iExtraId)
+    {
+
+        function handleResponse(sResponse)
+        {
+
+            sResponse = eval(sResponse);
+            var iNoOfRows = parseInt(sResponse);
+            var sTabbedPaneId = "relatedModuleTabs";
+            if (document.getElementById(sTabbedPaneId)&& sResponse != 0)
+            {
+                var sTabTitle = tabbedPane.getTabTitle(sTabbedPaneId, iTabIndex);
+                sTabTitle += "<span style='float:right;font-size:12px;padding:0 0 0 2px;color:#ff120a;font-weight:bold;border-bottom:none;'>(";
+                if (iNoOfRows > 5)
+                    sTabTitle += "5+";
+                else
+                    sTabTitle += iNoOfRows;
+                sTabTitle += ")</span>";
+                tabbedPane.setTabTitle(sTabbedPaneId, iTabIndex, sTabTitle);
+            }
+        }
+
+        var sUrl = "module/moduleView!getRelatedModuleRecordCount.do";
+        sUrl+="?baseModuleId="+iBaseModuleId;
+        if(iBaseModuleId == Constants.LEADS)
+            sUrl+="&baseTransId="+iExtraId;
+        else
+            sUrl+="&baseTransId="+iBaseTransId;
+        sUrl+="&relModuleId="+iRelModuleId;
+        sUrl+="&relLayoutId="+iRelLayoutId;
+        con.sendNonUItRequest(sUrl,null,handleResponse,null,con.RESPONSE_HTML);
+    };
+
+
+    this.setLabels=function(labels)
+    {
+        sLabels=labels;
+    };
+
+    this.isShowRelModuleInCenterScreen=function(iRelModuleId)
+    {
+        if(me.arrRelModuleSettings && me.arrRelModuleSettings[iRelModuleId]==1)
+            return true;
+
+       return false;
+    };
+
+    this.onMOverShowGroup=function(sGroupId,e)
+    {
+        if(sGroupId)
+        {
+            var elemDiv=document.getElementById("divGroupClone");
+            elemDiv.innerHTML=document.getElementById(sGroupId).innerHTML;
+            elemDiv.style.display="block";
+            //            elemDiv.style.height="115%";
+        }
+        cross.cancelBubble(e);
+        return false;
+    };
+
+    //var iTimeout;
+    this.onMOutHideGroup=function(isHide,e)
+    {
+        e=e?e:window.event;
+        var elemNode=e.srcElement?e.srcElement:e.target;
+        //alert(elemNode.id+","+(elemNode.id=="divGroupClone"))
+        //        if(elemNode.id=="divshadow" || elemNode.id=="divcontainer")          //isHide ||
+        //        {
+        me.hideDiv();
+        //        }
+        cross.cancelBubble(e);
+        return false;
+    };
+
+    this.hideDiv=function()
+    {
+        //        alert("hide")
+        //clearTimeout(iTimeout);
+        document.getElementById("divGroupClone").style.display="none";
+    };
+
+    this.toggleDisplay=function(dvLink,sDivId,isShowBottomActions)
+    {
+        var divContent=document.getElementById(sDivId);
+        if(divContent.style.display=="none")
+        {
+            document.getElementById("spRefresh").style.display = "";
+            //document.getElementById("spPrintPage").style.display = "";
+            if(divContent.getAttribute("hasData"))
+            {
+                divContent.style.display="";
+                if(isShowBottomActions)
+                    clActionBar.setBottomVisibility(true,"abr");
+            }
+            else
+                me.getView(isShowBottomActions);
+            dvLink.innerHTML="[ "+sLabels[1]+" ]";
+        }
+        else
+        {
+            document.getElementById("spRefresh").style.display = "none";
+            //document.getElementById("spPrintPage").style.display = "none";
+            divContent.style.display="none";
+            dvLink.innerHTML="[ "+sLabels[0]+" ]";
+            if(isShowBottomActions)
+                clActionBar.setBottomVisibility(false,"abr");
+        }
+      me.resetContentFrameHeight(divContent);
+    };
+
+    this.getView=function(isShowBottomActions)
+    {
+        var iModuleId=document.getElementById("moduleId").value;
+        var iTransId=document.getElementById("transId").value;
+        var iSubTypeId=document.getElementById("subTypeId").value;
+
+        var sParams="moduleId="+iModuleId+"&transId="+iTransId+"&subTypeId="+iSubTypeId+"&isShowDetails=1";
+        var objExtraId=document.getElementById("extraIds[0]");
+        if(objExtraId)
+            sParams+="&extraIds="+objExtraId.value;
+
+        con.sendPostRequest("module/moduleView!getDetailedViewFields.do",sParams,null,"detailedView.setViewData",null,document.getElementById("statusLoadFields"),null,false,false,ACTION_LOADING,false,isShowBottomActions);
+    };
+
+    this.onClkShowPrintDialog = function()
+    {
+        var iModuleId=document.getElementById("moduleId").value;
+        var iTransId=document.getElementById("transId").value;
+        var sParams="?moduleId="+iModuleId+"&transId="+iTransId;
+
+        var arrActions = new Array();
+        arrActions[0] = MsgHandler.getMsg(MsgConstants.PRINT)+"|window.print()";
+        arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL)+"|";
+
+        var sUrl = "module/moduleView!getDetailedPrintLayout.do";
+
+        var printModuleDlg = new DialogBox("printModuleDlg","",0,0,790,780,sUrl+sParams,true,null,true,true,null, null, null, null, null, null, false, null, false, true);
+
+        printModuleDlg.setCenter();
+        printModuleDlg.show()
+
+    };
+
+    this.setViewData=function(sResponse,iStatusCode,sMsg,appValue,objReqCache)
+    {
+        var iModuleId=document.getElementById("moduleId").value;
+        var objDiv=document.getElementById("dvView"+iModuleId);
+        objDiv.style.display="";
+        objDiv.innerHTML=sResponse;
+        if(objReqCache)
+            clActionBar.setBottomVisibility(true,"abr");
+        objDiv.setAttribute("hasData",true);
+        loadResources(objDiv,util.onScriptsLoad);
+        me.resetContentFrameHeight(objDiv);
+        Focus.crm.extmodule.init(me.iEvtModuleId,me.sJSModuleSaveActionDTOs,me.sExternalJSEvtHandlers);
+    };
+    /**
+     * This is for setting iframe height in split view
+     */
+    this.resetContentFrameHeight = function (objDiv) {
+        var ifrmMultipane2 = parent.document.getElementById("ifrmMultipane2");
+        if ( ifrmMultipane2 && home.isSplitView() ) {
+            if (dvContentHeight == 0)
+                dvContentHeight = objDiv.clientHeight;
+            ifrmMultipane2.height = objDiv.style.display == "none" ? parseInt(ifrmMultipane2.contentWindow.document.body.scrollHeight - dvContentHeight) + "px" : parseInt(ifrmMultipane2.contentWindow.document.body.scrollHeight) + "px";
+        }
+   };
+
+
+
+ /*
+    * this function is used to raise sales Order and also raiseServiceOrder
+    * */
+    this.raiseSalesOrder= function(byLayoutType,byViewIn,iModuleId,iActionId)
+    {
+        var iBaseTransId;
+        //var iModuleId,iBaseTransId;
+        //iModuleId = document.getElementById("moduleId").value;
+        //iBaseTransId = document.getElementById("baseTransId").value;
+        //iBaseTransId = document.getElementById("transId").value;
+        iBaseTransId = relModuleHandler.getBaseTransId();
+        //alert(byLayoutType+","+byActionId+","+sUrl+","+isSalesOrder)
+        /*var iRelatedModId=Constants.QUOTE;
+        if(isSalesOrder)
+            iRelatedModId=Constants.SERVICE_QUOTE;*/
+        /*var iRelatedModId=Constants.QUOTE;
+        if(iActionId==Constants.RAISE_SERIVICE_QUOTE)
+            iRelatedModId=Constants.SERVICE_QUOTE;*/
+
+        iModuleId=Constants.QUOTE;
+        if(iActionId==Constants.RAISE_SERIVICE_QUOTE)
+            iModuleId=Constants.SERVICE_QUOTE;
+
+        var iTransIds = listView.getTransIds("listReportTab_"+iModuleId);
+        if(listHandler.validateRowSelection(iTransIds,false))
+        {
+            if(iTransIds.indexOf(',')>-0)
+            {
+                if(iModuleId==Constants.SERVICE_QUOTE)
+                    msg.showMessage(0,MsgHandler.getMsg(MsgConstants.SELECT_SERVICE_QUOTE_FOR_SO));
+                else
+                    msg.showMessage(0,MsgHandler.getMsg(MsgConstants.SELECT_QUOTE_FOR_SO));
+                return;
+            }
+            else
+            {
+               // alert('Into Raise Sales Order for '+iTransIds);
+                var sURL = "module/quote!saveSalesOrder.do";
+                if(iModuleId==Constants.SERVICE_QUOTE)
+                    sURL = "support/serviceQuote!saveServiceSalesOrder.do";
+                con.sendPostRequest(sURL,"quoteId="+iTransIds,null,"detailedView.handleRaiseSalesOrder",null,null,null,false,true,ACTION_SAVE);
+            }
+        }
+        /*else
+        {
+            msg.showMessage(0,MsgHandler.getMsg(MsgConstants.SELECT_QUOTE_FOR_SO));
+            //alert('Select Quote to raise the Sales Order');
+            return;
+        }*/
+
+    };
+    this.handleRaiseSalesOrder=function(sResponse)
+    {
+        if(sResponse)
+        {
+            msg.showMessage(0,sResponse);
+            if(document.getElementById("listReportTab_"+Constants.SALES_ORDER))
+            listView.refreshRelatedView(Constants.SALES_ORDER);
+            if(document.getElementById("listReportTab_"+Constants.SERVICE_ORDER))
+            listView.refreshRelatedView(Constants.SERVICE_ORDER);
+            /*if(sResponse=='1')//
+            {
+                alert('Sales Order raised Successfully');
+                listView.refreshRelatedView(Constants.SALES_ORDER);
+            }
+            else if(sResponse=='-1')//Sales Order already raised for this Quote
+                alert('Sales Order already raised for this Quote');
+            else if(sResponse=='-2')//Quote not yet Approved
+                alert('Quote not yet approved.');
+            else if(sResponse=='-3')//Quote is not active
+                alert('Quote is not active.');
+            else //Error raising Sales Order
+                alert('Error raising Sales Order');*/
+        }
+    };
+
+    /*
+       * this function is used to add Documents
+       * */
+       this.raiseServiceSalesOrder= function(byLayoutType,byActionId,sUrl)
+       {
+           var iModuleId,iBaseTransId;
+           iModuleId = document.getElementById("moduleId").value;
+           iBaseTransId = document.getElementById("transId").value;
+
+           var iTransIds = listView.getSelectedTransId("listReportTab_8912");
+           if(iTransIds)
+           {
+               if(iTransIds.indexOf(',')>-0)
+               {
+                   alert(MsgHandler.getMsg(MsgConstants.SELECT_QUOTE_FOR_SO));
+                   return;
+               }
+               else
+               {
+                  // alert('Into Raise Sales Order for '+iTransIds);
+                   var sURL = "support/serviceQuote!saveServiceSalesOrder.do";
+                   con.sendPostRequest(sURL,"quoteId="+iTransIds,null,"detailedView.handleServiceRaiseSalesOrder");
+               }
+           }
+           else
+           {
+               alert(MsgHandler.getMsg(MsgConstants.SELECT_QUOTE_FOR_SO));
+               //alert('Select Quote to raise the Sales Order');
+               return;
+           }
+
+       };
+       this.handleServiceRaiseSalesOrder=function(sResponse)
+       {
+           if(sResponse)
+           {
+               msg.showMessage(0,sResponse);
+           }
+       };
+
+
+
+
+    this.viewAllRecords = function(byLayoutType,byActionId,sUrl)
+    {
+        home.setCenterUI(sUrl);
+    };
+
+    this.backToTop=function()
+    {
+        window.scrollTo(0,0);
+    };
+
+    this.showRelModuleDetailedView = function(objRow,iModuleId,sUrl)
+    {
+        var iRowIndex=objRow.parentNode.parentNode.rowIndex-1;
+        var iExtraIds=listView.getSelectedExtraId("listReportTab_"+iModuleId,iRowIndex,null);
+
+        if(iModuleId==Constants.OPEN_ACTIVITIES)
+            sUrl+="&moduleId="+iExtraIds[0];
+
+        var iSubTypeId=iExtraIds[iExtraIds.length-2];
+        if(iSubTypeId>0)
+            sUrl+="&subTypeId="+iSubTypeId;
+        listView.actionHandler(sUrl,Constants.DETAILED_LAYOUT,objRow,"listReportTab_"+iModuleId,iModuleId);
+    };
+
+
+    this.showRelModEmailDetView= function(objRow,iModuleId,sUrl)
+    {
+        var iBaseModuleId;
+        var sTableId = "listReportTab_"+iModuleId;
+        var clTable = new sTable(sTableId);
+        var iRowIndex = objRow.parentNode.parentNode.rowIndex-1;
+        //var iColCnt = clTable.getColCount(iRowIndex) - 3;
+        var iTransId=listView.getSelectedTransId("listReportTab_"+iModuleId,iRowIndex,null);
+        var iBaseTransId=0;
+        if(document.getElementById("transId"))
+            iBaseTransId=document.getElementById("transId").value;
+        //var iTransId = clTable.getValueAt(iRowIndex, iColCnt,true,iRowIndex);
+
+        sUrl= sUrl+"?transId="+iTransId+"&baseTransId="+iBaseTransId;
+        //alert(iTransId);
+
+
+        //for template
+        if(iModuleId==Constants.TELELEADS ||iModuleId==Constants.LEADS)
+            sUrl +="&memberId="+document.getElementById("transId").value;
+
+        if(document.getElementById("baseModuleId"))
+        sUrl+="&baseModuleId="+document.getElementById("baseModuleId").value;
+        else if(document.getElementById("moduleId"))
+        sUrl+="&baseModuleId="+document.getElementById("moduleId").value;
+
+        var arrActions=new Array();
+        //        arrActions[0] = "Ok|";
+        //arrActions[0] = MsgHandler.getMsg(MsgConstants.PRINT_LABEL,0,0)+"|";
+        //               var iTransId= listHandler.getTransId();
+//        arrActions[0] = MsgHandler.getMsg(MsgConstants.OK)+"|clEmailDetailview.onClkView()";
+        arrActions[0] = MsgHandler.getMsg(MsgConstants.PRINT)+"|clViewIntranetMsg.printEMail(\""+sUrl+"\")";
+        arrActions[1] = MsgHandler.getMsg(MsgConstants.CLOSE)+"|";
+        sUrl+="&relModuleId="+iModuleId;
+        //var clEmailViewDlg = new DialogBox("EmailView","",140,160,850,600,sUrl, true, null, true,true,arrActions);
+        //alert(cross.getClientHeight());
+        var iCenterWidth=cross.getClientWidth()-510;
+        var clEmailViewDlg = new DialogBox("EmailView","",0,0,iCenterWidth,cross.getClientHeight(),sUrl, true, null, true,true,null,false,null,
+            true,false,false,false,false,false,false);
+        //clTasksDetDlg.setTitle(MsgHandler.getMsg(MsgConstants.DETAILS,0,Constants.TASKS));
+        clEmailViewDlg.setTitle(MsgHandler.getMsg(MsgConstants.EMAIL));
+        clEmailViewDlg.setCenter();
+        clEmailViewDlg.show();
+    }
+
+    this.onClkExportToPDF=function()
+    {
+        var iModuleId=document.getElementById("moduleId").value;
+        var iTransId=document.getElementById("transId").value;
+        var sQueryString="moduleId="+iModuleId+"&transId="+iTransId;
+        var objForm=document.createElement("form");
+        objForm.action="module/moduleView!printModuleToPDF.do?"+sQueryString;
+        objForm.method="post";
+        objForm.submit();
+        app.waitAndLogout(true);
+
+        //con.sendPostRequest("module/moduleView!printModuleToPDF.do",sQueryString, null,"clLayoutDesignerSave.handleSave", null, null, null, null, null, ACTION_PROCESSING);
+    };
+
+    this.onClkLoadActivityStream = function(sUrl)
+    {
+        if(document.getElementById("dialogscroller"))
+            sUrl+="&isDetailedViewInDlg=true";
+        else
+            sUrl+="&isDetailedViewInDlg=false";
+
+        if(sUrl.indexOf("transId=")==-1)
+            sUrl += "&transId="+document.getElementById("transId").value;
+        var objDivContent=clButtonPane.getContentDiv("RM");
+
+        if(objDivContent.getAttribute("hasContent")==null) {
+            objDivContent.style.height = '150px';
+            //util.toggleBackground(true);
+            function arhLoadUrl(sResponse)
+            {
+                //util.toggleBackground(false);
+                objDivContent.style.height = '';
+                objDivContent.innerHTML = sResponse;
+                objDivContent.setAttribute("hasContent", true);
+                if (clButtonPane.fnCallback != null)
+                    clButtonPane.fnCallback();
+                if (typeof window["initAllCombos"] == "function")
+                    initAllCombos = null;
+                loadResources(objDivContent, util.onScriptsLoad);
+
+            };
+            con.sendPostRequest(sUrl, null, arhLoadUrl, null, con.RESPONSE_HTML, objDivContent);
+        }
+
+    };
+
+    this.loadChatMessages = function()
+    {
+        var iModuleId = document.getElementById("moduleId").value;
+        var iTransId = document.getElementById("transId").value;
+        var sUrl = "module/notes!getChatMessages.do?moduleId=" + iModuleId + "&transId=" + iTransId;
+        detailedView.onClkChatMessages(sUrl);
+    };
+
+    this.onClkChatMessages = function(sUrl)
+    {
+        var objDivContent=clButtonPane.getContentDiv("RM");
+        //if(objDivContent.getAttribute("hasContent")==null) {
+            function arhLoadUrl(sResponse)
+            {
+                objDivContent.style.height = '600px';
+                objDivContent.innerHTML = sResponse;
+                objDivContent.setAttribute("hasContent", true);
+                if (clButtonPane.fnCallback != null)
+                    clButtonPane.fnCallback();
+                if (typeof window["initAllCombos"] == "function")
+                    initAllCombos = null;
+                loadResources(objDivContent, util.onScriptsLoad);
+
+                //reload activity stream whenever chat is loaded
+                if(document.getElementById("Activity StreamId[1]"))
+                    document.getElementById("RMcontent1").removeAttribute("hasContent");
+                else if(document.getElementById("Activity StreamId[2]"))
+                    document.getElementById("RMcontent2").removeAttribute("hasContent");
+            }
+            con.sendPostRequest(sUrl, null, arhLoadUrl, null, con.RESPONSE_HTML, objDivContent);
+        //}
+    };
+
+    this.onClkLoadTeleCalls = function(sUrl)
+    {
+        var objDivContent=clButtonPane.getContentDiv("RM");
+        if(objDivContent.getAttribute("hasContent")==null) {
+            objDivContent.style.height = '150px';
+            function arhLoadUrl(sResponse)
+            {
+                objDivContent.style.height = '';
+                objDivContent.innerHTML = sResponse;
+                objDivContent.setAttribute("hasContent", true);
+                if (clButtonPane.fnCallback != null)
+                    clButtonPane.fnCallback();
+                if (typeof window["initAllCombos"] == "function")
+                    initAllCombos = null;
+                loadResources(objDivContent, util.onScriptsLoad);
+
+            };
+            con.sendPostRequest(sUrl, null, arhLoadUrl, null, con.RESPONSE_HTML, objDivContent);
+        }
+    };
+
+    this.onClkLoadSummary = function(sUrl,sTabpaneId)
+    {
+        var objDivContent=clButtonPane.getContentDiv("RM");
+        if(objDivContent.getAttribute("hasContent")==null) {
+            objDivContent.style.height = '150px';
+            function arhLoadUrl(sResponse)
+            {
+                objDivContent.style.height = '';
+                objDivContent.innerHTML = sResponse;
+                objDivContent.setAttribute("hasContent", true);
+                if (clButtonPane.fnCallback != null)
+                    clButtonPane.fnCallback();
+                if (typeof window["initAllCombos"] == "function")
+                    initAllCombos = null;
+                loadResources(objDivContent, util.onScriptsLoad);
+
+            };
+            con.sendPostRequest(sUrl, null, arhLoadUrl, null, con.RESPONSE_HTML, objDivContent);
+        }
+    };
+
+    var mailChimplistId = null;
+
+    this.onClkMailChimpDetailedView = function(){
+
+        document.getElementById("dvResMailChimp").innerHTML = "";
+        util.addClass(document.getElementById("dvLoader"),"loadingImg");
+
+        mailChimplistId = null;
+
+        var sUrl = con.getStruts2Url("social","mailChimp","getMailChimpDetailedView");
+        var iModuleId = document.getElementById("moduleId").value;
+        var iTransId = relModuleHandler.getBaseTransId();
+
+        sUrl = sUrl + "moduleId="+iModuleId+"&type=0&transId="+iTransId;
+
+        var objDivContent=clButtonPane.getContentDiv("RM");
+
+        con.sendPostRequest(sUrl,null,null,me.resMailChimpDetailedView);
+
+    };
+    this.resMailChimpDetailedView=function(res)
+    {
+        if(res != null && res){
+            document.getElementById("dvResMailChimp").innerHTML = res;
+            if (typeof window["initAllCombos"] == "function")
+                initAllCombos = null;
+            loadResources(document.getElementById("dvResMailChimp"), util.onScriptsLoad);
+            util.removeClass(document.getElementById("dvLoader"),"loadingImg");
+        }
+
+    };
+
+    this.onBlrMailChimpList = function(){
+        var cbMailChimpList = getComboInstance("cbMailChimpList");
+        var listId = cbMailChimpList.getSelectedId();
+        //alert(listId)
+
+        if(listId != -1){
+            if(mailChimplistId != listId)
+            {
+                mailChimplistId = listId;
+                var sUrl = con.getStruts2Url("social","mailChimp","getMailChimpDetailedView");
+                var iModuleId = document.getElementById("hfModuleId").value;
+                var iTransId = document.getElementById("transId").value;
+                var sApiKey = document.getElementById("hfApiKey").value;
+
+                util.toggleBackground(true);
+
+                sUrl = sUrl + "moduleId="+iModuleId+"&type=1&listId="+listId+"&apiKey="+sApiKey+"&transId="+iTransId;
+                con.sendPostRequest(sUrl,null,null,me.resMailChimpTagList);
+            }
+
+        }
+
+    }
+
+    this.resMailChimpTagList = function(res){
+        util.toggleBackground(false);
+        document.getElementById("dvResMailChimp2").innerHTML = res;
+    }
+
+
+    this.showMailChimpCampaign = function(sCampaignId){
+
+        var sUrl = con.getStruts2Url("social","mailChimp","getCampaignWebId");
+        var sApiKey = document.getElementById("hfApiKey").value;
+        sUrl = sUrl + "apiKey="+sApiKey+"&campaignId="+sCampaignId;
+        con.sendPostRequest(sUrl,null,null,me.resShowMailChimpCampaign);
+    }
+
+    this.resShowMailChimpCampaign = function(sRes){
+        if(sRes!=null){
+            var arrRes = sRes.split("|");
+            window.open("https://"+arrRes[0]+".admin.mailchimp.com/reports/summary?id="+arrRes[1]);
+        }
+    }
+
+
+    this.onSaveMergeTicket=function()
+    {
+        getDialogBox("dlgMergeTicket").hide();
+        home.moveToBackUrl(true);
+    };
+};
+
+
+var clDetailAPI = new function()
+{
+    this.getDetailViewTransId =function()
+    {
+        var iAPITransId= moduleView.getAPITransId();
+        return clCrmApiHandler.buildApiResponse(clCrmApiHandler.STATUS_SUCCESS,iAPITransId);
+    };
+
+};
+
+
+
+
+var clInlineEdit = new function()
+{
+    var me = this;
+    var objTd = null;
+    var iCurrFldIndex = 0;
+    var objEditLink;
+    var isEditing=false;
+    var objActions;
+    var iListenerId=0;
+    //<div>save cancel </div>
+    //var objUndo;//<div>undo</div>
+
+
+    this.onMOverShowEditLink = function(objCurrTd, evt)
+    {
+        if (objCurrTd == objTd || isEditing)
+            return;
+
+        objTd = objCurrTd;
+        me.appendEditLink();
+        util.addClass(objTd, "tdShow");
+    };
+
+    this.onMOutHideEditLink = function(evt)
+    {
+
+    };
+
+    this.onClkEditLink = function( evt)
+    {
+        isEditing=true;
+        if (!objTd.getAttribute("fldExists"))
+        {
+            var sParams = "fieldId=" + objTd.getAttribute("fieldId");//+ "&tableId=" + objTd.getAttribute("tableId");
+            sParams += "&moduleId="+document.getElementById("moduleId").value;
+            sParams += "&transId="+document.getElementById("transId").value;
+            sParams += "&fieldIndex="+iCurrFldIndex;
+            //alert(sParams)
+            con.sendPostRequest("module/moduleView!editField.do", sParams, null, "clInlineEdit.showEditMode");
+        }
+        else
+            clInlineEdit.showEditMode();
+    };
+
+    this.clearEditMode=function(e)
+    {
+        var objFieldSpan=me.getFieldSpan();
+        var objField=me.getField(objFieldSpan);
+        var objEvtSrc=cross.getSrcElement(e);
+        if(objField==objEvtSrc)
+            return;
+        objActions = objTd.removeChild(objActions);
+        var objSpan=me.getFieldSpan();
+        objSpan.style.display="none";
+        objSpan=me.getTextSpan();
+        objSpan.style.display="block";
+
+        util.removeClass(objTd, "tdShow");
+        isEditing=false;
+        objTd=null;
+
+        if(iListenerId>0)
+        {
+//            alert("unreg "+iListenerId)
+            cross.unregisterEventListener(iListenerId);
+            iListenerId=0;
+        }
+
+    };
+
+    this.showEditMode = function(res)
+    {
+        //alert(res)
+        objEditLink = objTd.removeChild(objEditLink);
+        if (!objTd.getAttribute("fldExists"))
+        {
+            var sPrevText=objTd.innerHTML;
+            objTd.innerHTML = "";
+            var objTextSpan=me.getTextSpan();
+            objTextSpan.innerHTML=sPrevText;
+            objTd.appendChild(objTextSpan);
+//            alert(objTextSpan.outerHTML)
+
+            me.appendField(res);
+            objTd.setAttribute("fldExists", true);
+            //alert(111)
+            me.showField();
+            initAllCombos=null;
+            //alert("load")
+            loadResources(me.getFieldSpan(),clInlineEdit.onScriptsLoad);
+        }
+        else
+        {
+            me.showField();
+            //me.setFieldValue();
+        }
+
+//        iListenerId=cross.registerEventListener(EVENT_ONCLICK,clInlineEdit.clearEditMode);
+//        alert("iListenerId "+iListenerId)
+    };
+
+    this.showField = function()
+    {
+        var objFieldSpan=me.getFieldSpan();
+        var objTextSpan=me.getTextSpan();
+        objTextSpan.style.display="none";
+        objFieldSpan.style.display = "block";
+        me.appendActions();
+    };
+
+     this.onScriptsLoad=function()
+    {
+        //alert("onload")
+        if(typeof window["initAllCombos"]=="function")
+            initAllCombos();
+        me.setFieldValue();
+    };
+
+    this.setFieldValue=function()
+    {
+        //alert("setFieldValue")
+        var objFieldSpan=me.getFieldSpan();
+        var objField=me.getField(objFieldSpan);
+        var objTextSpan=me.getTextSpan();
+        //me.setFieldValue(objField,objTextSpan);
+
+        if(objField.getAttribute("mastertype")>0)
+        {
+            var objCombo=getComboInstance(objField.id);
+//            alert(objTd+","+objTd.getAttribute("defvalue"))
+//            if(objTd.getAttribute("defvalue"))
+//                objCombo.checkAndAddItem(objTd.getAttribute("defvalue"),true);
+            //alert(objCombo+","+objTextSpan.innerHTML);
+        }
+        else
+        {
+//            if(objField.getAttribute("defvalue")==null)
+//                objField.setAttribute("defvalue",objField.value);
+            //alert(objTextSpan.innerHTML)
+            var sText=util.trim(objTextSpan.innerHTML);
+            if(sText!="-")
+                objField.value=sText;
+        }
+
+        objField.focus();
+    };
+
+
+    this.onClkSave = function( evt)
+    {
+        var objSpan = me.getFieldSpan();
+        var sValue = me.getValue(objSpan);
+        var objTextSpan=me.getTextSpan();
+        objTextSpan.innerHTML=sValue;
+        me.clearEditMode();
+        //me.appendUndo(objTd, objTd.id + "Undo");
+    };
+
+    this.onClkCancel = function(objAnch, evt)
+    {
+        me.clearEditMode();
+    };
+
+    this.onClkUndoFieldData = function(objAnch, evt)
+    {
+        var objAnchPar = objAnch.parentNode;
+        var objSpPar = objAnch.parentNode.parentNode;
+        if (objSpPar == objTd)
+        {
+            var objSpField = document.getElementById(objTd.id + "SpField");
+            me.setFieldValue(cross.getChildren(objSpField)[0], $(objTd).attr("revertValue"));
+            objAnchPar.removeChild(objAnch);
+        }
+    };
+
+    this.appendEditLink = function()
+    {
+        if (!objEditLink)
+        {
+            objEditLink = document.createElement('span');
+//            var sImg="<img  align='right' src='"+getContextPath()+"/res/global/images/edit.png' alt='Edit' ";
+//            var sImg="<img  align='right' src='"+app.getImagePath()+"edit.png' alt='Edit' ";
+            var sImg="<span  align='right' src='"+app.getImagePath(true)+"blank.png' class='fa facrm-list-edit facrm-font-size-11' alt='Edit' ";/*  var sImg="<img  align='right' src='"+app.getImagePath(true)+"blank.png' class='sModule s-edit' alt='Edit' ";*/
+            if(cross.isIE())
+                sImg+="style='margin-top:-10px'";
+
+            sImg+="></span>";     /*  sImg+=">";*/
+            objEditLink.innerHTML = sImg;
+            objEditLink.onclick = function(e)
+            {
+                me.onClkEditLink(e);
+            };
+        }
+        objTd.appendChild(objEditLink);
+    };
+
+    this.appendActions = function()
+    {
+        if (!objActions)
+        {
+            objActions = document.createElement("span");
+            var sActions = "&nbsp;&nbsp;<img align='right' src='"+app.getImagePath()+"hide.png' onclick='clInlineEdit.onClkCancel(event)'";
+            if(cross.isIE())
+                sActions+=" style='margin-top:-30px'";
+            sActions+=">";
+            sActions += "&nbsp;&nbsp;<img align='right' src='"+app.getImagePath()+"save.png' onclick='clInlineEdit.onClkSave(event)'";
+            if(cross.isIE())
+                sActions+=" style='margin-top:-30px'";
+            sActions+=">";
+            objActions.innerHTML = sActions;
+        }
+        objTd.appendChild(objActions);
+    };
+
+    this.appendUndo = function(undoId)
+    {
+        var objUndo = document.getElementById(undoId);
+        if (!objUndo)
+        {
+            objUndo = document.createElement("span");
+            objUndo.id = undoId;
+            objUndo.innerHTML = "&nbsp;<a href='#' onclick='clViewEx.onClkUndoFieldData(this,event)'><img src='"+app.getImagePath()+"undo.PNG' alt='Undo'></a>"
+        }
+        objTd.appendChild(objUndo);
+    };
+
+    this.appendField = function(sValue)
+    {
+        var objFieldSpan = me.getFieldSpan();
+        objFieldSpan.innerHTML = sValue;
+        objTd.appendChild(objFieldSpan);
+    };
+
+    this.getFieldSpan = function()
+    {
+        var sId="Fld" + objTd.getAttribute("fieldId");
+        var objFieldSpan = document.getElementById(sId);
+        if (!objFieldSpan)
+        {
+            objFieldSpan = document.createElement("span");
+            objFieldSpan.id = sId;
+            objFieldSpan.style.display = "none";
+        }
+        return objFieldSpan;
+    };
+
+    this.getTextSpan = function()
+    {
+        var sId="Txt" + objTd.getAttribute("fieldId");
+        var objTextSpan = document.getElementById(sId);
+        if (!objTextSpan)
+        {
+            objTextSpan = document.createElement("span");
+            objTextSpan.id = sId;
+            objTextSpan.innerHTML=objTd.innerHTML;
+            objTextSpan.style.display = "none";
+            //alert("create "+objTextSpan.outerHTML);
+        }
+        return objTextSpan;
+    };
+
+    this.getField=function(objSpan)
+    {
+        return objSpan.getElementsByTagName("INPUT")[1];//TODO: need to change
+    };
+
+
+
+    this.getValue = function(objSpan)
+    {
+        var objField = me.getField(objSpan);
+        var sType = objField.type ;
+
+        if (sType == "text")
+            return objField.value;
+        else if (sType == "checkbox")
+        {
+            if (objField.checked)
+                return "<img src='"+app.getImagePath()+"checkedCheckBox.gif' alt='Checked'>";
+            else
+                return "<img src='"+app.getImagePath()+"uncheckedCheckBox.gif' alt='UnChecked'>";
+        }
+        else if (sType == "radio")
+        {
+            if (objField.checked)
+                return "<img src='"+app.getImagePath()+"checkedCheckBox.gif' alt='Checked'>";
+            else
+                return "<img src='"+app.getImagePath()+"uncheckedCheckBox.gif' alt='UnChecked'>";
+        }
+        else if (sType == "select-one")
+            return objField.options[objField.selectedIndex].innerHTML;
+
+        return "";
+    };
+
+
+    /*this.setValue = function(objField, sRevertVal)
+    {
+
+        var sType = objField.type ;
+        if (sType == "text")
+            objField.value = sRevertVal;
+        else if (sType == "checkbox" || sType == "radio")
+        {
+            if (sRevertVal)
+                objField.checked = true;
+            else
+                objField.checked = false;
+        }
+        else if (sType == "select-one")
+            {
+                if (sRevertVal >= 0)
+                    objField.selectedIndex = sRevertVal;
+
+            }
+        // else if(sType=="select-multiple")
+    };*/
+};
+
+
+var detailedHandler=new function()
+{
+    app.registerInstance("detailedHandler",this);
+    this.iModuleId=null;
+
+    this.setModuleId=function(iModuleId)
+    {
+        this.iModuleId=iModuleId;
+    };
+
+    this.getModuleId=function()
+    {
+        return this.iModuleId;
+    };
+
+    this.getSubTypeId=function()
+    {
+        var iSubTypeId=0;
+        if(document.getElementById("subTypeId"))
+            iSubTypeId=document.getElementById("subTypeId").value;
+        return iSubTypeId;
+    };
+
+    this.getTransId=function()
+    {
+        return document.getElementById("transId").value;
+    };
+
+    this.getExtraId = function () {
+        var iModuleId = document.getElementById("moduleId").value;
+        if (iModuleId == Constants.TELELEADS || iModuleId == Constants.LEADS)
+            return document.getElementById("extraIds[0]").value;
+        return 0;
+    };
+
+    this.handlePaymentRequest=function(byActionId,iModuleId,arrTransIds)
+    {
+        var sUrl = "payment/gateway!getPaymentGateway.do";
+        if (arrTransIds.length > 0) {
+            var  sTransIds = null;
+            for(var k=0;k<arrTransIds.length;k++) {
+                if(sTransIds==null)
+                    sTransIds = arrTransIds[k];
+                else
+                    sTransIds+= ","+arrTransIds[k];
+            }
+            con.sendPostRequest(sUrl + "?moduleId=" + iModuleId + "&transId=" + sTransIds + "&actionId=" + byActionId, null, null, "listHandler.arhPaymentRequest", false, null, null, false, false, ACTION_LOADING, false, [byActionId]);
+        }
+    }
+
+    this.editModule=function(sURL,iTransId,isClone,iBaseModuleId,iBaseModuleTransId,iSubTypeId,iBaseExtraIds)
+    {
+        //alert(sURL+","+iTransId+","+isClone+","+iBaseModuleId+","+iBaseModuleTransId);
+        if(!iTransId)
+            iTransId=0;
+        //alert(sURL)
+        sURL += "&transId=" + iTransId + "&fromDetailedView=1";                                                                                             //if(document.getElementById("extraIds"))
+        //  sURL+="&extraIds="+document.getElementById("extraIds").value;
+
+        if(isClone)
+            sURL+="&clone=1";
+        if(iBaseModuleId)
+            sURL+="&baseModuleId="+iBaseModuleId;
+        if(iBaseModuleTransId)
+            sURL+="&baseTransId="+iBaseModuleTransId;
+        if(iBaseExtraIds!=null && iBaseExtraIds.length > 0)
+            sURL+="&baseExtraIds="+iBaseExtraIds[0];
+
+        if(sURL.indexOf("subTypeId")==-1)
+        {
+            if (!iSubTypeId && (iBaseModuleId == 0 && sURL.indexOf("baseModuleId")==-1))
+                iSubTypeId = detailedHandler.getSubTypeId();
+
+            if (iSubTypeId > 0)
+                sURL += "&subTypeId=" + iSubTypeId;
+        }
+
+        //        alert(sURL)
+        home.setCenterUI(sURL,null,false);
+    };
+    this.editRoles=function(sURL,iTransId,isClone,iBaseModuleId,iBaseModuleTransId)
+    {
+        if(!iTransId)
+            iTransId=0;
+        //alert(sURL)
+        sURL+="&transId="+iTransId;
+        //if(document.getElementById("extraIds"))
+        //  sURL+="&extraIds="+document.getElementById("extraIds").value;
+
+        if(isClone)
+            sURL+="&clone=1";
+        if(iBaseModuleId)
+            sURL+="&baseModuleId="+iBaseModuleId;
+        if(iBaseModuleTransId)
+            sURL+="&baseTransId="+iBaseModuleTransId;
+        con.sendPostRequest(sURL,null,null,"detailedHandler.arhContactRoles");
+    };
+
+
+    this.refreshHeader=function()
+    {
+        var iModuleId=document.getElementById("moduleId").value;
+        var iTransId=document.getElementById("transId").value;
+        var iLayoutId=document.getElementById("layoutId").value;
+        var sParams="moduleId="+iModuleId+"&transId="+iTransId+"&isFetchHeaderData=1&layoutId="+iLayoutId;
+
+        function refreshHeaderCallback(sResponse)
+        {
+            document.getElementById("dvDetailedViewHeader").innerHTML=sResponse;
+            if(iModuleId==Constants.REQUEST)
+                Focus.crm.sdesk.callDetailedView.enableButtons();
+        };
+        con.sendPostRequest("module/moduleView!getDetailedViewHeader.do",sParams, refreshHeaderCallback, null,con.RESPONSE_HTML);
+    };
+
+    this.refreshApprovalStatus=function(){
+        if(parent.clAppBuffer.getWindowType() == Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+            parent.listView.getRefresh();
+        else{
+            var sUrl,iModuleId,iTransId;
+            if(document.getElementById("moduleId"))
+                iModuleId=document.getElementById("moduleId").value;
+            else iModuleId=listView.getModuleId();
+            if(document.getElementById("transId"))
+                iTransId=document.getElementById("transId").value;
+            else iTransId=listHandler.getSelectedTransIds();
+            sUrl=con.getStruts2Url("module","moduleView","getApprovalStatus",null,true);
+            sUrl+="?moduleId="+iModuleId+"&transId="+iTransId;
+            //        alert("sUrl==="+sUrl)
+            con.sendPostRequest(sUrl,null,null,"detailedHandler.setApprovalStatus");
+        }
+
+    };
+    this.setApprovalStatus=function(sResponse){
+        document.getElementById("ahApprovalStatus").innerHTML=sResponse;
+    };
+
+
+
+
+    this.approve=function(byActionId,iTransId,sUrl,sModuleName)
+    {
+        var arrActions = new Array();
+        var sTitle;
+
+        if(byActionId==Constants.REJECT)
+            sTitle=MsgHandler.getMsg(null,Constants.REJECT,0);
+        else if( byActionId==Constants.APPROVE )
+            sTitle=MsgHandler.getMsg(null,Constants.APPROVE,0);
+         else if( byActionId==Constants.APPROVAL_FORWARD )
+            sTitle=MsgHandler.getMsg(null,Constants.APPROVAL_FORWARD,0);
+        else if( byActionId==Constants.RETURN_TO_INITIATOR )
+            sTitle=MsgHandler.getMsg(null,Constants.RETURN_TO_INITIATOR,0);
+        else
+            sTitle=MsgHandler.getMsg(null,Constants.APPROVAL_RETURN,0);
+
+        //var iStatusId=dropdownlist.getSelectedVal("dlStatus");
+        arrActions[0] = sTitle+"|clApprovalRemarks.onClkSaveRemarks";
+        //         arrActions[1] = "Cancel|";
+        arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL,0,0)+"|";
+        sUrl+="&transId="+iTransId;
+        //sUrl+="&status="+iStatusId;
+        sModuleName = sModuleName.replace(/\+/g, '%20'); // '1%20%2B%201%20%3D%202'
+        sModuleName = decodeURIComponent(sModuleName);   // '1 + 1 = 2'
+        sTitle+=" "+sModuleName;
+
+
+
+        var clApprovalDlg = new DialogBox("approve",sTitle,0,0,430,270, sUrl, true, null, true,true,arrActions);
+        clApprovalDlg.setTitle(sTitle);
+        clApprovalDlg.show();
+
+        //            Validation.showMessage("Select atleast one request to assign",Validation.ERROR_MSG,null,Validation.ERROR_MANDATORY,true);
+    };
+
+
+    this.arhRefreshCallHeader=function(sResponse)
+    {
+        util.toggleBackground(false);
+        if( parseInt(sResponse)==MSG_SUCCESS)
+            detailedHandler.refreshHeader();
+    };
+};
+
+
+/*var relModuleHandler=new function()
+{
+    var me=this;
+    this.iModuleId=null;
+    app.registerInstance("relModuleHandler",this);
+
+    this.setModuleId=function(iModuleId)
+    {
+        this.iModuleId=iModuleId;
+    };
+
+    this.getModuleId=function()
+    {
+        return this.iModuleId;
+    };
+
+    this.getSelectedTransId=function(iModuleId,imgEdit)
+    {
+        return listView.getSelectedTransId("listReportTab_"+iModuleId,0,imgEdit);
+    };
+
+    this.getBaseTransId=function()
+    {
+        var iModuleId;
+        if(document.getElementById("baseModuleId"))
+            iModuleId = document.getElementById("baseModuleId").value;
+        else if(document.getElementById("moduleId"))
+            iModuleId=document.getElementById("moduleId").value;
+
+        var iTransIds=null;
+        if(iModuleId==Constants.TELELEADS ||iModuleId==Constants.LEADS )
+            iTransIds = document.getElementById("extraIds[0]").value;
+        else
+        if(document.getElementById("baseTransId"))
+            iTransIds = document.getElementById("baseTransId").value;
+        else if(document.getElementById("transId"))
+            iTransIds = document.getElementById("transId").value;
+        return iTransIds;
+    };
+
+    this.getBaseModuleId=function()
+    {
+        var iModuleId=0;
+        if(document.getElementById("baseModuleId"))
+            iModuleId = document.getElementById("baseModuleId").value;
+        else if(document.getElementById("moduleId"))
+            iModuleId=document.getElementById("moduleId").value;
+        return iModuleId;
+    };
+    this.getBaseLayoutId = function(){
+        var iLayoutId = 0;
+        if(document.getElementById("baseLayoutId"))
+            iLayoutId = document.getElementById("baseLayoutId").value;
+        else if(document.getElementById("layoutId"))
+            iLayoutId = document.getElementById("layoutId").value;
+        return iLayoutId;
+    };
+
+
+    this.getSelectedTransIds=function()
+    {
+        //var iModuleId=listView.getModuleId();
+        var iModuleId=2536;
+        var iTransIds=null;
+        if(iModuleId==Constants.TELELEADS ||iModuleId==Constants.LEADS )
+            iTransIds = listView.getExtraIds("listReportTab_"+iModuleId);
+        else
+            iTransIds = listView.getTransIds("listReportTab_"+iModuleId);
+        return iTransIds;
+    };
+
+
+    this.editRelatedModule=function(iRelModuleId,sURL,iTransId,isClone,iBaseModuleId,iBaseModuleTransId,imgEdit,isEdit)
+    {
+        if(isEdit && (!iTransId || iTransId<=0))
+            iTransId = me.getSelectedTransId(iRelModuleId,imgEdit);
+
+        detailedHandler.editModule(sURL,iTransId,isClone,iBaseModuleId,iBaseModuleTransId);
+    };
+
+    this.editContactRoles=function(iRelModuleId,sURL,iTransId,isClone,iBaseModuleId,iBaseModuleTransId,imgEdit,isEdit)
+    {
+        if(isEdit)
+            iTransId = me.getSelectedTransId(iRelModuleId,imgEdit);
+
+        if(!iTransId)
+            iTransId=0;
+        //alert(sURL)
+        sURL+="&transId="+iTransId;
+        //if(document.getElementById("extraIds"))
+        //  sURL+="&extraIds="+document.getElementById("extraIds").value;
+
+        if(isClone)
+            sURL+="&clone=1";
+        if(iBaseModuleId)
+            sURL+="&baseModuleId="+iBaseModuleId;
+        if(iBaseModuleTransId)
+            sURL+="&baseTransId="+iBaseModuleTransId;
+        //        con.sendPostRequest(sURL,null,null,"relModuleHandler.arhContactRoles");
+        home.setCenterUI(sURL,null,false,false,"relModuleHandler.arhContactRoles")
+    };
+
+    this.arhContactRoles=function(sResponse)
+    {
+        //        alert(sResponse)
+        util.toggleBackground(false);
+        if(parseInt(sResponse)==0)
+            alert("No Contacts for this Account");
+        else
+        {
+            app.setBodyContent(document.getElementById("dvCenter"), sResponse, home.onScriptsLoad);
+        }
+    };
+
+
+    this.deleteModules=function(sUrl,iModuleId,iTransIds,iExtraIds,iOpenActModuleId,byLayoutType)
+    {
+        if(window.confirm("Are you sure want to delete ?"))
+        {
+            var sParams="moduleId="+iModuleId;
+            if(byLayoutType>0)
+                sParams+="&layoutType="+byLayoutType;
+            //        me.iModuleId = iModuleId;
+            if(typeof iTransIds=="object")
+            {
+                for(var i=0; i < iTransIds.length; i++)
+                    sParams+="&transIds="+iTransIds[i];
+            }
+            else
+                sParams+="&transIds="+iTransIds;
+
+            if(iExtraIds)
+            {
+                if(typeof iTransIds=="object")
+                {
+                    for(var i=0; i < iExtraIds.length; i++)
+                        sParams+="&delRow[" + i + "].extraIds="+iExtraIds[i];
+                }
+                else
+                    sParams+="&delRow[0].extraIds="+iExtraIds;
+
+            }
+
+            var objHandle;
+            if((clAppBuffer.getWindowType() != Constants.IMODULE_WINDOW.SPLIT_PANE
+            && clAppBuffer.getWindowType() != Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+               || byLayoutType == Constants.RELATEDMODULE_LAYOUT)
+            {
+                if(iOpenActModuleId>0)
+                    objHandle=handleInfo(iOpenActModuleId,me);
+                else
+                    objHandle=handleInfo(iModuleId,me);
+            }
+
+            clAppBuffer.setActionId(Constants.DELETE);
+            con.sendPostRequest(sUrl, sParams, null,objHandle, false,null,null,false,false,ACTION_DELETE,false,{'d_actionid':Constants.DELETE,'d_windowtype':clAppBuffer.getWindowType()});
+        }
+    };
+
+
+    /!*
+     * this function is used to add Notes
+     * *!/
+    this.showNote = function(imgEdit,sUrl,sTitle,isEdit,iBaseTransId)
+    {
+        var iNoteId=0;
+        me.isEdit=isEdit;
+        sUrl +="&transId="+me.getBaseTransId();
+        //           alert(me.getBaseTransId())
+        var arrActions = new Array();
+        /!*arrActions[0] = "Ok|clNotes.onClkSaveNotes";
+         arrActions[1] = "Cancel|clNotes.onClkCloseDlg";*!/
+        arrActions[0] = MsgHandler.getMsg(MsgConstants.OK,0,0)+"|clNotes.onClkSaveNotes";
+        if(isEdit)
+        {
+            iNoteId = me.getSelectedTransId(Constants.NOTES,imgEdit);
+            sUrl +="&noteId="+iNoteId;
+            sUrl +="&isNew=1";
+            sTitle=":: "+MsgHandler.getModuleActionLabel(Constants.NOTES,Constants.EDIT,true)+" ::";
+            //               sTitle=":: Edit Note ::";
+            arrActions[1] = MsgHandler.getMsg(MsgConstants.PRINT,0,0)+"|clNotes.onClkPrintNote";
+            arrActions[2] = MsgHandler.getMsg(MsgConstants.CANCEL,0,0)+"|clNotes.onClkCloseDlg";
+        }
+        else
+        {
+            sTitle=":: "+MsgHandler.getModuleActionLabel(Constants.NOTES,Constants.NEW,true)+" ::";
+            arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL,0,0)+"|clNotes.onClkCloseDlg";
+        }
+        // sTitle=":: "+MsgHandler.getMsg(MsgConstants.ADD_MODULE,0,Constants.NOTES)+" ::";
+        //               sTitle=":: Add Note ::";
+
+
+
+        //alert(sUrl)
+        var clNotesDlg = new DialogBox("notesDetails",sTitle,40,60,640,450, sUrl, true, null, true,true,arrActions);
+        clNotesDlg.setTitle(sTitle);
+        clNotesDlg.setCenter();
+        clNotesDlg.show();
+    };
+
+
+    /!**
+     * Author: K. Sampath Kumar
+     * this method is used to open send mail dialog from send mail related module actions
+     * @param imgedit
+     * @param sUrl
+     * @param sTitle
+     * @param isEdit
+     *!/
+    this.showSendMail = function(imgedit,sUrl,sTitle,isEdit,iEmailQuote,iRelModuleId,byActionId,iModuleId)
+    {
+        var iSendMailId=0,iEmailLogId=0,bReturn = true,iTransId=0;
+        if(iModuleId==0)
+        {
+            iModuleId=document.getElementById("moduleId").value;
+            sUrl +="&transId="+me.getBaseTransId();
+
+            if(iModuleId==Constants.TELELEADS ||iModuleId==Constants.LEADS )
+                sUrl +="&memberId="+document.getElementById("transId").value;
+        }
+        else
+        {
+            iTransId = listView.getTransIds("listReportTab_1");
+            sUrl+="&bMainModule="+true;
+            iEmailQuote=iTransId;
+        }
+        if(byActionId==Constants.REPLY || byActionId==Constants.REPLY_ALL)
+        {
+            bReturn=false;
+            var arrTransIds =listView.getTransIds("listReportTab_"+Constants.EMAILS);
+            if(listHandler.validateRowSelection(arrTransIds,false))
+            {
+                sUrl +="&emailLogId="+arrTransIds[0];
+                bReturn=true;
+            }
+
+        }
+        if(bReturn)
+        {
+            if(isEdit)
+            {
+                iEmailLogId = me.getSelectedTransId(Constants.EMAILS,imgedit);
+                sUrl +="&emailLogId="+iEmailLogId;
+                sTitle=":: "+Focus.crm.Messages.getActionLabel(Constants.EDIT)+" "+MsgHandler.getMsg(MsgConstants.MAIL)+" ::";
+            }
+            else
+                sTitle=":: "+MsgHandler.getMsg(MsgConstants.SEND)+" "+MsgHandler.getMsg(MsgConstants.MAIL)+" ::";
+            if(byActionId==Constants.REPLY)
+                sTitle=":: "+MsgHandler.getMsg(MsgConstants.REPLY)+" "+MsgHandler.getMsg(MsgConstants.MAIL)+" ::";
+            else if(byActionId==Constants.REPLY_ALL)
+                sTitle=":: "+MsgHandler.getMsg(MsgConstants.REPLY_ALL)+" ::";
+            sUrl+="&quoteTransId="+iEmailQuote;
+
+            sUrl+="&relModuleId="+iRelModuleId;
+            var clSendMailDlg;
+            //alert(iRelModuleId+","+iModuleId )
+            if(iModuleId == Constants.REQUEST && (iRelModuleId>0 && iRelModuleId!=Constants.SERVICE_QUOTE))
+            {
+                var arrActions = new Array();
+                arrActions[0] = MsgHandler.getMsg(MsgConstants.SEND)+"|clNotifyEmail.sendEmailNotification";
+                arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL,0,0)+"|clNotifyEmail.onClkCloseDlg";
+                sTitle = ":: Email Notification ::";
+                clSendMailDlg = new DialogBox("emailNotification",sTitle,40,60,680,620, sUrl, true, null, true,true,arrActions);
+            }
+            else
+            {
+                clSendMailDlg = new DialogBox("sendMail",sTitle,40,60,850,660, sUrl, true, null, true,true,null);
+            }
+            clSendMailDlg.setTitle(sTitle);
+            clSendMailDlg.setCenter();
+            clSendMailDlg.show();
+        }
+    };
+
+
+
+    /!*
+     * this function is used to add Notes
+     * *!/
+    this.showCallNote = function(imgEdit,sUrl,sTitle,isEdit,iModuleId,iBaseTransId)
+    {
+        var iNoteId=0;
+        me.isEdit=isEdit;
+        if(iBaseTransId>0)
+            sUrl +="&baseTransId="+iBaseTransId;
+        else
+            sUrl +="&baseTransId="+me.getBaseTransId();
+
+        sUrl +="&actionId="+Constants.NEW;
+        sUrl +="&scrType="+iModuleId;
+        //        sUrl +="&actionId="+Constants.NEW_CALL_NOTES;
+
+        if(isEdit)
+        {
+            iNoteId = me.getSelectedTransId(Constants.CALL_NOTES,imgEdit);
+            sUrl +="&noteId="+iNoteId;
+            sTitle=":: "+MsgHandler.getModuleActionLabel(Constants.CALL_NOTES,Constants.EDIT,true)+" ::";
+        }
+        else
+            sTitle=":: "+MsgHandler.getModuleActionLabel(Constants.CALL_NOTES,Constants.NEW,true)+" ::";
+
+        var arrActions = new Array();
+        /!*arrActions[0] = "Ok|clCallNotes.onClkSaveCallNotes(false)";
+         arrActions[1] = "Cancel|";*!/
+        arrActions[0] = MsgHandler.getMsg(MsgConstants.OK,0,0)+"|clCallNotes.onClkSaveCallNotes(false)";
+        arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL,0,0)+"|";
+        //        alert(sUrl)
+        var clNotesDlg = new DialogBox("callNotesDetails",sTitle,40,60,630,390, sUrl, true, null, true,true,arrActions);
+        clNotesDlg.setTitle(sTitle);
+        clNotesDlg.setCenter();
+        clNotesDlg.show();
+    };
+
+    /!*
+     * this function is used to add note details to table
+     * *!/
+    this.setCallNoteDetails = function(sSubject,sDescription,sNoteType,sScope,iTransId)
+    {
+        if(handler.isEdit)
+            listView.setCurrentRow(Constants.CALL_NOTES,[sSubject,sDescription,sNoteType,sScope,"&nbsp;",iTransId]);
+        else
+            listView.addRow(Constants.CALL_NOTES,[sSubject,sDescription,sNoteType,sScope,"&nbsp;",iTransId]);
+    };
+
+
+    /!**!//!**
+     * Author: K. Sampath Kumar
+     * this function is used to add Documents and attachments
+     * @param imgEdit
+     * @param sUrl
+     * @param sTitle
+     * @param isEdit
+     * @param byActionId
+     *!//!*
+    //    this.addDocuments = function(imgEdit,sUrl,sTitle,isEdit,byActionId)
+    this.addDocuments = function(imgEdit,sUrl,sTitle,isEdit,byActionId,iModuleId)
+    {
+        var iTransId=0,iDocumentId=0,iHeight=300;
+        //var clDocumentDlg = getDialogBox("clAttachFile");
+        me.isEdit=isEdit;
+        if(document.getElementById("scrType")!=null && (document.getElementById("scrType").value==3 || document.getElementById("scrType").value==Constants.DOCUMENTS))// From document module
+        {
+            //me.addDocumentsForDocsModule(imgEdit,sUrl,sTitle,isEdit,byActionId,document.getElementById("scrType").value);
+            sTitle = Focus.crm.Messages.getActionLabel(Constants.NEW)+" "+MsgHandler.getMsg(MsgConstants.DOCUMENTS_TITLE);
+            if(isEdit)
+            {
+                sTitle = Focus.crm.Messages.getActionLabel(Constants.EDIT)+" "+MsgHandler.getMsg(MsgConstants.DOCUMENTS_TITLE);
+                iDocumentId = me.getSelectedTransId(1,imgEdit);
+            }
+            sUrl +="&scrType="+document.getElementById("scrType").value+"&actionId="+byActionId;
+            sUrl += "&baseTransId="+iTransId+"&documentId="+iDocumentId+"&baseModuleId="+document.getElementById("moduleId").value;
+            //alert(sUrl)
+        }
+        else
+        {
+            //me.addDocumentsForRelatedModule(imgEdit,sUrl,sTitle,isEdit,byActionId,iModuleId);
+            iTransId = me.getBaseTransId();
+            //        if(byActionId==Constants.NEW_CALL_ATTACH)
+            if(iModuleId==Constants.ATTACHMENTS)
+            {
+                sTitle = Focus.crm.Messages.getActionLabel(Constants.NEW)+" "+MsgHandler.getMsg(MsgConstants.ATTACHMENTS_TITLE);
+                iHeight = 350;
+                if(isEdit)
+                {
+                    sTitle = Focus.crm.Messages.getActionLabel(Constants.EDIT)+" "+MsgHandler.getMsg(MsgConstants.ATTACHMENTS_TITLE);
+                    iDocumentId = me.getSelectedTransId(Constants.ATTACHMENTS,imgEdit);
+                }
+                sUrl +="&scrType="+iModuleId+"&actionId="+byActionId;
+            }
+            else
+            {
+                sTitle = Focus.crm.Messages.getActionLabel(Constants.ADD)+" "+MsgHandler.getMsg(MsgConstants.DOCUMENTS_TITLE);
+                if(isEdit)
+                {
+                    sTitle = Focus.crm.Messages.getActionLabel(Constants.EDIT)+" "+MsgHandler.getMsg(MsgConstants.DOCUMENTS_TITLE);
+                    iDocumentId = me.getSelectedTransId(Constants.DOCUMENTS,imgEdit);
+                }
+                sUrl +="&scrType="+byActionId+"&actionId="+byActionId;
+            }
+
+            sUrl += "&baseTransId="+iTransId+"&documentId="+iDocumentId;
+        }
+        //alert(sUrl)
+        me.getDocumentDialog(sUrl,sTitle,iHeight);
+    };
+
+    *!//!* this.addDocumentsForRelatedModule = function(imgEdit,sUrl,sTitle,isEdit,byActionId,iModuleId)
+     {
+
+
+     };
+
+     this.addDocumentsForDocsModule = function(imgEdit,sUrl,sTitle,isEdit,byActionId,scrType)
+     {
+
+     };*!//!*
+
+    this.getDocumentDialog=function(sUrl,sTitle,iHeight)
+    {
+        var arrActions = new Array();
+        arrActions[0] = MsgHandler.getMsg(MsgConstants.OK,0,0)+"|clAttachFile.onClkSaveDocuments";
+        arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL,0,0)+"|clAttachFile.onClkCloseDlg";
+        var clDocumentDlg= new DialogBox("clAttachFile","::"+sTitle+"::",40,60,550,iHeight, sUrl, true, null, true,true,arrActions);
+        clDocumentDlg.callFn("clAttachFile.loadDocuments");// added to disable ok button when the document is locked
+        clDocumentDlg.setCenter();
+        clDocumentDlg.show();
+    }
+*!/
+    /!*this.setDocDetails = function()
+     {
+     listView.refreshRelatedView(Constants.DOCUMENTS);
+     };
+
+     this.setAttachDetails = function()
+     {
+     listView.refreshRelatedView(Constants.ATTACHMENTS);
+     };*!/
+
+    /!*this.setEmailDetails = function()
+     {
+     listView.refreshRelatedView(Constants.EMAILS);
+     };*!/
+
+    this.showModuleDialog = function(sUrl,iModuleId,imgEdit,iBaseTransId,isEdit,sTitle,iWidth,iHeight,isCreateDlgInHidden)
+    {
+        me.isEdit=isEdit;
+        if(isEdit)
+            sUrl +="&transId="+me.getSelectedTransId(iModuleId,imgEdit);
+
+        if(!iWidth)
+            iWidth=670;
+
+        if(!iHeight)
+            iHeight=400;
+
+        sUrl+="&viewIn="+Constants.MODULE_IN_DLG;
+        if(iBaseTransId>0)
+            sUrl+="&baseTransId="+iBaseTransId;
+
+        //alert(sUrl+","+iModuleId)
+        var clModuleDlg = new DialogBox("module"+iModuleId,sTitle,140,160,iWidth,iHeight,sUrl, true, null, false,true,null);
+        clModuleDlg.setCenter();
+        if(isCreateDlgInHidden)
+            clModuleDlg.isHide(true);
+        else
+            clModuleDlg.show();
+    };
+
+
+
+
+    this.editOpenActivity=function(sURL,iTransId,imgEdit,iBaseModuleId,iBaseModuleTransId,iListViewTableIndex)
+    {
+        iTransId=me.getSelectedTransId(iListViewTableIndex,imgEdit);
+        var iModuleId=listView.getSelectedExtraId("listReportTab_"+iListViewTableIndex,0,imgEdit);
+        //alert(iModuleId+"----"+iTransId);
+        sURL+="&moduleId="+iModuleId;
+        //alert(sURL)
+        detailedHandler.editModule(sURL,iTransId,false,iBaseModuleId,iBaseModuleTransId);
+    };
+
+    this.getCallStatusId=function()
+    {
+        return document.getElementById("callStatusId").value;
+    };
+
+    this.getCallStateId=function()
+    {
+        return document.getElementById("callStateId").value;
+    };
+
+    function handleInfo(iModuleId,objParent)
+    {
+        //       me.iModuleId=iModuleId;  // var is specific for the ajax request
+        function onResponse(sResponse) // Closure
+        {
+            listView.refreshRelatedView(iModuleId);
+            if(iModuleId == Constants.PARTS_REQUESTED)
+                listView.refreshRelatedView(Constants.ESTIMATION);
+            else if(iModuleId == Constants.PARTS_REPLACED)
+                listView.refreshRelatedView(Constants.PARTS_REQUESTED);
+        }
+        return onResponse;
+
+    }
+
+};*/
+
+
+
+
+
+
+

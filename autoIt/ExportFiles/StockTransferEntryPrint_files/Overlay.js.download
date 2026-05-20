@@ -1,0 +1,991 @@
+//namespace("Focus.crm.fbooks.common");
+var clOverlay = new function()
+{
+
+    var me=this;
+    var objOverlayWindow=null;
+    var bCreate=true;
+    this.OVERLAY_LEFT=1;
+    this.OVERLAY_RIGHT=2;
+    this.OVERLAY_TOP=3;
+    this.OVERLAY_TOPLEFT=4;
+    this.iListenerId=0;
+    this.sEvtSrc=null;
+
+    this.showoverlayfullmode=function(objThis,divContent,sId,isOverlayFromLeft)
+    {
+        //alert(divId)
+
+        me.showOverlay(sId,divContent,0);
+        document.getElementById(me.getOverlayDivId(sId)).style.height = "100%";
+        if(!isOverlayFromLeft)
+            document.getElementById(me.getOverlayDivId(sId)).style.width = "100%";
+        else{
+            document.getElementById(me.getOverlayDivId(sId)).style.width = "250px";
+        }
+
+        var iClientWidth = document.body.clientWidth;
+        var iClientHeight = document.body.clientHeight;
+        var iWidth = objThis.offsetWidth;
+        var iHeight = objThis.offsetHeight;
+        //document.getElementById(me.getOverlayDivId(sId)).style.top=objThis.parentNode.offsetHeight+100;
+        var arrPositions = cross.getPosition(objThis);
+        var iLeft=  arrPositions[0];
+        var iTop = arrPositions[1];
+        //document.getElementById(me.getOverlayDivId(sId)).style.overflowY="hidden";
+        //document.getElementById(me.getOverlayDivId(sId)).style.top=0;
+        //document.getElementById(me.getOverlayDivId(sId)).style.left=0;
+        document.body.style.backgroundColor = "rgba(0,0,0,0.4)";
+
+    };
+
+    /*this.loadOverlay=function(sId,divContent,iType,top,right,left,sTitle)
+    {
+        this.loadOverlay(sId,divContent,iType,top,right,left,sTitle,"containerDiv");
+    }*/
+    /**
+     * This method is used to create overlay div
+     * @param sId - id of overlay
+     * @param divContent  - content div id
+     * @param iType==1 Overlay From Left,2=overlayfrom right,3=overlayfromtop,4=overlayfromleft
+     * @param top
+     * @param right
+     * @param left
+     * @param sTitle - title of overlay
+     * @param parentContainerDiv - parent div
+     */
+    this.loadOverlay=function(sId,divContent,iType,top,right,left,sTitle,parentContainerDiv,isInsideOverlay,isTitleBgColor,sTitleStyleClass,sCloseIconStyleClass,isHideBodyScroll)
+    {
+        if(!sId) sId ="";
+        objOverlayWindow = me.getOverlayWindowElement(sId);
+        var divheight=null;
+        var bIsCreated=false;
+        if(!objOverlayWindow)
+        {
+            if(parentContainerDiv==undefined || parentContainerDiv==null)
+                parentContainerDiv="containerDiv";
+            var ObjContainerDiv =  document.getElementById(parentContainerDiv);
+            objOverlayWindow = document.createElement("div");
+            objOverlayWindow.id=me.getOverlayDivId(sId);
+            divheight=document.createElement("div");
+            if(isTitleBgColor==true || isTitleBgColor==undefined)
+                divheight.setAttribute("class","dvheight dvOverlayTitle");
+            else if(sTitleStyleClass != null && sTitleStyleClass.length > 0)
+                divheight.setAttribute("class","dvheight "+sTitleStyleClass);
+            else
+                divheight.setAttribute("class","dvheight");
+            if(isHideBodyScroll)
+                objOverlayWindow.setAttribute("bHideBodyScroll", isHideBodyScroll);
+            bIsCreated=true;
+            if(ObjContainerDiv)
+                ObjContainerDiv.appendChild(objOverlayWindow);
+            else
+                document.body.appendChild(objOverlayWindow);
+
+        }
+        if(iType==me.OVERLAY_LEFT)
+           objOverlayWindow.className="overlayfromLeft";
+        else if(iType==me.OVERLAY_RIGHT)
+            objOverlayWindow.className="sideNavfromRight";
+        else if(iType==me.OVERLAY_TOP)
+            objOverlayWindow.className="overlayfromtopright";
+        else
+            objOverlayWindow.className="overlayfromtopleft";
+         if(top!=undefined && top!=null)
+            objOverlayWindow.style.top=top;
+        if(right!=undefined && right!=null)
+            objOverlayWindow.style.right=right;
+        if(left!=undefined && left!=null)
+            objOverlayWindow.style.left=left;
+
+        var sDivId = objOverlayWindow.id;
+        var sClassname="overlay-content";
+        if(iType==me.OVERLAY_RIGHT||iType==me.OVERLAY_TOP)
+        {
+        sClassname="sideNavfromRightContent";
+        }
+        //var sInnerHTML = "<a href=\"javascript:void(0)\" class=\"closebtn\"  onclick=' Focus.crm.fbooks.common.clOverlay.closeOverlay(this,"+iType+")' dvId="+sId+">&times;</a>"
+        if(bIsCreated)
+        {
+            /*var objAnchorTag = document.createElement("a");
+            objAnchorTag.href = "javascript:void(0)";
+            objAnchorTag.class = "overlayClosebtn";
+            //objAnchorTag.onclick=" Focus.crm.fbooks.common.clOverlay.closeOverlay(this,"+iType+")";
+            objAnchorTag.setAttribute("onclick", "clOverlay.closeOverlay(this," + iType + ",'"+sId+"')");
+            objAnchorTag.setAttribute("class", "overlayClosebtn");
+            objAnchorTag.setAttribute("dvId", sId);
+            objAnchorTag.innerHTML = "&times;";*/
+            var objSpanClose = document.createElement("span");
+            objSpanClose.setAttribute("src", clAppBuffer.getImagePath(true)+"blank.png");
+            if(sCloseIconStyleClass != null && sCloseIconStyleClass.length > 0)
+                objSpanClose.setAttribute("class", sCloseIconStyleClass+" spCloseOverlay");
+            else
+                objSpanClose.setAttribute("class", "crm crm-list-delete spCloseOverlay");
+            objSpanClose.setAttribute("onclick", "clOverlay.closeOverlay(this," + iType + ",'"+sId+"')");
+            objSpanClose.setAttribute("dvId", sId);
+            //var sOverlayDiv="<div class=\""+sClassname+"\" id="+me.getOverlayContentDivId(sId)+"></div>";
+            var objOverlAyDiv = document.createElement("div");
+            objOverlAyDiv.setAttribute("class", sClassname);
+            objOverlAyDiv.setAttribute("id", me.getOverlayContentDivId(sId));
+            if (sTitle != undefined && sTitle != null) {
+                //var sTitleHtml = "<span class=\"toptitle\" >"+sTitle+"</span>"
+                var sTitleHtml;
+                sTitleHtml = clOverlay.getTitleHtml(isInsideOverlay,sId,sTitle,iType);
+
+
+
+                //objOverlayWindow.innerHTML="" +sTitleHtml+sInnerHTML+"<div class='overlayBorderbtm' >&nbsp;</div>"+sOverlayDiv;
+                //objOverlayWindow.appendChild(sTitleHtml);
+                //objOverlayWindow.appendChild(objAnchorTag);
+                if(iType == me.OVERLAY_RIGHT) {
+                    if(!isInsideOverlay)
+                        divheight.appendChild(objSpanClose);
+                    divheight.appendChild(sTitleHtml);
+                }else{
+                    divheight.appendChild(sTitleHtml);
+                    objSpanClose.style.right= "10px";
+                    if(!isInsideOverlay)
+                        divheight.appendChild(objSpanClose);
+                }
+                objOverlayWindow.appendChild(divheight);
+                objOverlayWindow.appendChild(objOverlAyDiv);
+                //objOverlayWindow.appendChild(sInnerHTML);
+                //objOverlayWindow.appendChild(sOverlayDiv);
+                //objOverlayWindow.innerHTML= sTitleHtml+sInnerHTML+sOverlayDiv;
+            }
+            else {
+                //objOverlayWindow.appendChild(sTitleHtml);
+                //objOverlayWindow.appendChild(objAnchorTag);
+                objOverlayWindow.appendChild(objSpanClose);
+                objOverlayWindow.appendChild(divheight);
+                objOverlayWindow.appendChild(objOverlAyDiv);
+                //objOverlayWindow.innerHTML=sInnerHTML+sOverlayDiv;
+            }
+        }
+
+        var objOverLayConentDiv = me.getOverlayContentElement(sId);
+        /*if(divContent!=null)
+            objOverLayConentDiv.innerHTML=divContent;*/
+        if(divContent!=null)
+            objOverLayConentDiv.appendChild(divContent);
+        me.setOverlayBG(parentContainerDiv,sId)
+        /*if(me.iListenerId>=0)
+            cross.unregisterEventListener(me.iListenerId);
+        me.iListenerId=cross.registerEventListener(cross.EVENT_ONCLICK,me.closeOverlay,[null,iType,sId]);*/
+    };
+
+    /**
+     * Used to get overlay header html
+     * @param isInsideOverlay - true if overlay inside other overlay
+     * @param sId - overlay id
+     * @param sTitle - title of the overlay
+     * @param iType - type 2 right,1 left,3 top,4 bottom
+     * @param isIframe true if overlay is iframe overlay otherwise false
+     * @returns {Element|*}
+     */
+    this.getTitleHtml = function(isInsideOverlay,sId,sTitle,iType,isIframe)
+    {
+        var sTitleHtml,sBackIcon,sTitleValue;
+
+        sTitleHtml = document.createElement("span");
+        sTitleHtml.setAttribute("class", "spTitleHtml");
+
+        if (isInsideOverlay)
+        {
+            sBackIcon = document.createElement("span");
+
+            sBackIcon.setAttribute("class", "crm crm-left-arrow spBackBtn");
+            if(isIframe)
+                sBackIcon.setAttribute("onclick", "clOverlay.closeOverlay(null," + iType + ",'"+sId+"',true)");
+            else
+                sBackIcon.setAttribute("onclick", "clOverlay.closeOverlay(null," + iType + ",'"+sId+"')");
+            sTitleHtml.appendChild(sBackIcon);
+
+        }
+
+        sTitleValue = document.createElement("span");
+        sTitleValue.setAttribute("id", "spTitle"+sId);
+        if(iType == me.OVERLAY_RIGHT)
+            sTitleValue.setAttribute("class", "overlayToptitleRight");
+        else {
+            if(clAppBuffer.getLanguage() == Constants.ILANGUAGE_TYPE.ARABIC
+                || clAppBuffer.getLanguage() == Constants.ILANGUAGE_TYPE.PERSIAN)
+                sTitleValue.setAttribute("class", "overlayToptitleRight");
+            else
+                sTitleValue.setAttribute("class", "overlayToptitle");
+        }
+        sTitleValue.innerHTML = sTitle;
+
+        sTitleHtml.appendChild(sTitleValue);
+
+        return sTitleHtml;
+    };
+
+    /**
+     * Used to set title to overlay
+     * @param sId id of overlay
+     * @param sTitle title
+     */
+    this.setOverLaytitleText=function(sId,sTitle)
+    {
+        if(sTitle!=null)
+            me.getOverlayTitleElement(sId).innerHTML=sTitle
+    };
+
+    /**
+     * Used to return overlay title element
+     * @param sId id of the overlay
+     * @returns {Element}
+     */
+    this.getOverlayTitleElement=function(sId)
+    {
+        return document.getElementById("spTitle"+sId);
+    };
+
+    /**
+     * Used to set actions to overlay
+     * @param sId id of overlay
+     * @param arrActions
+     */
+    this.setOverLayActions=function(sId,arrActions)
+    {
+        var objOverLayConentDiv = me.getOverlayContentElement(sId);
+        var sId = "dvActions"+me.getOverlayDivId(sId);
+        if(!document.getElementById(sId))
+        {
+            var objActionsDiv = document.createElement("div");
+            objActionsDiv.id = sId;
+            objActionsDiv.className = "overlayActionsdv";
+            for (var i = 0; i < arrActions.length; i++)
+            {
+                var objActions = arrActions[i];
+                var objAct = objActions.split('|')
+                var sTitle = objAct[0];
+                var objEvent = objAct[1];
+                var objArgs=null;
+                if(objAct[2]!=null)
+                    objArgs = eval(objAct[2]);
+                var objButton = document.createElement("button");
+                objButton.id = sId + "action_" + i;
+                objButton.className = "nPrimaryButton dvheight";
+                objButton.innerHTML = sTitle;
+                objButton.setAttribute("onclick",objEvent);
+                /*objButton.onclick = function(e)
+                {
+                    e = cross.getEvent(e);
+                    if(objEvent)
+                        cross.callFunction(window,eval(objEvent),objArgs);
+                };*/
+                objActionsDiv.appendChild(objButton);
+            }
+            objOverLayConentDiv = objOverLayConentDiv.parentNode;
+            objOverLayConentDiv.appendChild(objActionsDiv);
+        }
+
+        /*<div style="text-align:left;width: 100%;height: 50px;padding-top: 7px;padding-left: 100px;" class="rcView col-xs-12 col-sm-12 col-md-12 col-lg-12" >
+        <FocusTags:SButton value='Run Report' styleClass="btn-primary" onClick="Focus.crm.fbooks.clFbCustomize.onClkRunReport(null,false)" style="margin-left:5px;"/>
+        <FocusTags:SButton value='Cancel' onClick="clOverlay.closeOverlay(null,0,\"dvOverlayFilter1\")" style="margin-left:5px;"/>
+    </div>*/
+
+    }
+
+    /*this.showoverlaycontentdiv=function(divId,objThis)
+    {
+        document.getElementById(divId).style.height = "100%";
+        document.getElementById(divId).style.width = "100%";
+        document.getElementById(divId).style.top=objThis.parentNode.offsetHeight+100;
+    }*/
+
+    /*this.showoverlayxywidth=function(objThis,divContent,sId,width,height,top,left)
+    {
+        var arrPositions = cross.getPosition(objThis);
+        var iLeft=  arrPositions[0];
+        var iTop = arrPositions[1];
+        me.showOverlay(sId,divContent,1,top,left);
+        document.getElementById(me.getOverlayDivId(sId)).style.height = height+"%";
+        var element= document.getElementById(me.getOverlayDivId(sId));
+        util.removeClass(element,"overlayBorderstyle");
+        util.addClass(me.getOverlayDivId(sId),"overlayBorderstyle");
+        document.getElementById(me.getOverlayDivId(sId)).style.width = width+"%";
+        //document.body.style.backgroundColor = "rgba(0,0,0,0.2)";
+
+    };
+    this.showoverlaylefttoRight=function(objThis,divContent,sId,width,height,itop,ileft)
+    {
+        me.showOverlay(sId,divContent,1,itop);
+        document.getElementById(me.getOverlayDivId(sId)).style.height = height+"%";
+        var element= document.getElementById(me.getOverlayDivId(sId));
+        util.removeClass(element,"overlayBorderstyle");
+        util.addClass(me.getOverlayDivId(sId),"overlayBorderstyle");
+        document.getElementById(me.getOverlayDivId(sId)).style.width = width+"%";
+        document.getElementById(me.getOverlayDivId(sId)).style.left=ileft+"%";
+        //document.body.style.backgroundColor = "rgba(0,0,0,0.2)";
+
+    };*/
+
+   /* this.showOverlayLTR=function(sId,dvCreatedId,width,height,itop,ileft,iRight)
+    {
+        document.getElementById(dvCreatedId).style.display="";
+        document.getElementById(me.getOverlayDivId(sId)).style.height = height;
+        var element= document.getElementById(me.getOverlayDivId(sId));
+        util.removeClass(element,"overlayBorderstyle");
+        util.addClass(me.getOverlayDivId(sId),"overlayBorderstyle");
+        document.getElementById(me.getOverlayDivId(sId)).style.width = width;
+        if(ileft!=undefined && ileft!=null)
+            document.getElementById(me.getOverlayDivId(sId)).style.left = ileft;
+        if(iRight!=undefined && iRight!=null)
+            document.getElementById(me.getOverlayDivId(sId)).style.right = iRight;
+        //document.body.style.backgroundColor = "rgba(0,0,0,0.2)";
+    }*/
+
+    /**
+     * This method is used to display overlay
+     * @param sId - id of overlay
+     * @param dvCreatedId - reference div id
+     * @param width - width of overlay
+     * @param height - height of overlay
+     * @param iType - type 2 right,1 left,3 top,4 bottom
+     * @param left
+     * @param top
+     * @param right
+     * @param sTitle - title of overlay
+     * @param parentContainerDiv parent div object
+     * @param isInsideOverlay true if overlay inside other overlay otherwise false
+     * @param isTitleBgColor
+     * @param sTitleStyleClass
+     * @param sCloseIconStyleClass
+     * @param isHideBodyScroll
+     */
+    this.showOverlay=function(sId,dvCreatedId,width,height,iType,left,top,right,sTitle,parentContainerDiv,isInsideOverlay,isTitleBgColor,sTitleStyleClass,sCloseIconStyleClass,isHideBodyScroll)
+    {
+
+        if(!isTitleBgColor && sTitleStyleClass == null)
+            sTitleStyleClass="overlayTopTitleDefault";
+        if(isHideBodyScroll)
+            util.addClass(document.body,"rcOverFlow");
+        if(!me.getOverlayWindowElement(sId)){
+            me.loadOverlay(sId,document.getElementById(dvCreatedId),iType,top,right,left,sTitle,parentContainerDiv,isInsideOverlay,isTitleBgColor,sTitleStyleClass,sCloseIconStyleClass,isHideBodyScroll);
+        }
+        setTimeout(function(){
+
+            document.getElementById(dvCreatedId).style.display="";
+            var element= document.getElementById(me.getOverlayDivId(sId));
+            if(top!=undefined && top!=null)
+                element.style.top=top;
+            if(right!=undefined && right!=null)
+                element.style.right=right;
+            if(left!=undefined && left!=null)
+                element.style.left=left;
+            //document.getElementById(me.getOverlayDivId(sId)).style.display="";
+            //document.getElementById(me.getOverlayDivId(sId)).style.height = height;
+            element.style.height = height;
+            util.removeClass(element,"overlayBorderstyle");
+            //util.addClass(element,"overlayBorderstyle");
+            //document.getElementById(me.getOverlayDivId(sId)).style.width = width;
+            element.style.width = width;
+            //document.body.style.backgroundColor = "rgba(0,0,0,0.2)";
+            me.showOverlayBg(sId,true);
+            //alert(me.iListenerId)
+            if(me.iListenerId>0)
+                cross.unregisterEventListener(me.iListenerId);
+            if(iType!=undefined)
+            {
+                //me.sEvtSrc=document.getElementById(me.getOverlayDivId(sId));
+                me.iListenerId = cross.registerEventListener(cross.EVENT_ONCLICK, me.hideOverlay, [iType, sId,document.getElementById(me.getOverlayDivId(sId)),false]);
+            }
+
+        });
+
+    };
+
+
+
+   /* this.showoverlayRighttoLeft=function(objThis,divContent,sId,width,height,itop,right,left)
+    {
+        me.showOverlay(sId,divContent,2,itop,right,left);
+
+        document.getElementById(me.getOverlayDivId(sId)).style.height = height+"%";
+        var element= document.getElementById(me.getOverlayDivId(sId));
+        util.removeClass(element,"overlayBorderstyle");
+        util.addClass(me.getOverlayDivId(sId),"overlayBorderstyle");
+        document.getElementById(me.getOverlayDivId(sId)).style.width = width+"%";
+        //document.body.style.backgroundColor = "rgba(0,0,0,0.2)";
+
+    };*/
+
+
+    /**
+     *
+     * This method is used to get overlay window object
+     * @param sId
+     * @returns {Element}
+     */
+    this.getOverlayWindowElement=function(sId)
+    {
+        return document.getElementById(me.getOverlayDivId(sId));
+    };
+
+    /**
+     * THis method returns overlay content object
+     * @param sId
+     * @returns {Element}
+     */
+    this.getOverlayContentElement=function(sId)
+    {
+        return document.getElementById(me.getOverlayContentDivId(sId));
+    };
+
+    /**
+     * This method returns IFrame overlay content object
+     * @param sId overlay id
+     * @returns {Element}
+     */
+    this.getOverlayFrameElement=function(sId)
+    {
+        return document.getElementById(me.getOverlayContentFrameId(sId));
+    };
+
+    /**
+     * This method is used to get overlay window id
+     * @param sId
+     * @returns {string}
+     */
+    this.getOverlayDivId=function(sId)
+    {
+        return "dvOverlayWindow"+(sId?sId:"");
+    };
+    /**
+     * This method is used to get overlay content div id
+     * @param sId overlay id
+     * @returns {string}
+     */
+    this.getOverlayContentDivId=function(sId)
+    {
+        return "dvOverlayContent"+(sId?sId:"");
+    };
+
+    /**
+     * This method is used to get IFrame overlay content id
+     * @param sId overlay id
+     * @returns {string}
+     */
+    this.getOverlayContentFrameId=function(sId)
+    {
+        return "iFrameOverlayContent"+(sId?sId:"");
+    };
+
+
+    /**
+     * This method is close overlay
+     * @param objThis div object
+     * @param iType overlay type right or left or top or bottom
+     * @param sId overlay id
+     * @param isIframe
+     */
+    this.closeOverlay=function(objThis,iType,sId,isIframe)
+    {
+        var sDvId;
+        if(objThis!=null)
+            sDvId = objThis.getAttribute("dvId");
+        else
+        {
+            sDvId=sId;
+        }
+        if(iType==0 || iType==me.OVERLAY_TOP)
+        {
+            document.getElementById(me.getOverlayDivId(sDvId)).style.height = "0";
+            var element= document.getElementById(me.getOverlayDivId(sDvId));
+            util.removeClass(element,"overlayBorderstyle");
+            //document.getElementById(me.getOverlayDivId(sDvId)).style.display="none";
+            //document.getElementById(me.getOverlayDivId(sDvId)).innerHTML="";
+            /*var objContent=cross.getChildren(me.getOverlayContentElement(sId))[0];
+            objContent.innerHTML="";*/
+
+        }
+        else
+        {
+            document.getElementById(me.getOverlayDivId(sDvId)).style.width = "0";
+            //document.getElementById(me.getOverlayDivId(sDvId)).style.display="none";
+            document.body.style.backgroundColor = "transparent";
+           /* var objContent=cross.getChildren(me.getOverlayContentElement(sId))[0];
+            objContent.innerHTML="";*/
+        }
+
+        if(isIframe)
+        {
+            var objOverlayWindow = me.getOverlayWindowElement(sId);
+            if(objOverlayWindow.getAttribute('sHideCallBack'))
+                clReportCriteria.callBackCloseOverlay();
+            if(objOverlayWindow.getAttribute('bHideBodyScroll'))
+                util.removeClass(document.body,"rcOverFlow");
+
+            objOverlayWindow.removeChild(me.getOverlayFrameElement(sId))
+
+
+        }
+        else
+        {
+            var objDiv = document.getElementById(me.getOverlayDivId(sId));
+            if(objDiv.getAttribute('bHideBodyScroll'))
+                util.removeClass(document.body,"rcOverFlow");
+            var objCon=me.getOverlayContentElement(sId);
+            var objContent = cross.getChildren(objCon)[0];
+            objContent.innerHTML = "";
+        }
+        me.showOverlayBg(sId,false);
+        if(me.iListenerId>0)
+            cross.unregisterEventListener(me.iListenerId);
+    };
+
+    /**
+     * Used to hide overlay
+     * @param iType - type 2 right,1 left,3 top,4 bottom
+     * @param sId - overlay id
+     * @param objDivId - parent div id
+     * @param isIFrame - true if is iframe overlay other wise false
+     * @param event
+     */
+    this.hideOverlay=function(iType,sId,objDivId,isIFrame,event)
+    {
+        var sDvId;
+        var sEventId = util.trim(cross.getSrcElement(event).id);
+        var sOverlayBgId=util.trim(me.getOverlayBgId(sId));
+        if(sEventId==sOverlayBgId)
+        {
+            sDvId = sId;
+            if (iType == 0 || iType == me.OVERLAY_TOP)
+            {
+                document.getElementById(me.getOverlayDivId(sDvId)).style.height = "0";
+                var element = document.getElementById(me.getOverlayDivId(sDvId));
+                util.removeClass(element, "overlayBorderstyle");
+                //document.getElementById(me.getOverlayDivId(sDvId)).style.display="none";
+                //document.getElementById(me.getOverlayDivId(sDvId)).innerHTML="";
+                //var objContent = cross.getChildren(me.getOverlayContentElement(sId))[0];
+                //objContent.innerHTML = "";
+            }
+            else
+            {
+                document.getElementById(me.getOverlayDivId(sDvId)).style.width = "0";
+                //document.getElementById(me.getOverlayDivId(sDvId)).style.display="none";
+                document.body.style.backgroundColor = "transparent";
+                //var objContent = cross.getChildren(me.getOverlayContentElement(sId))[0];
+                //objContent.innerHTML = "";
+            }
+
+            if(isIFrame)
+            {
+                var objOverlayWindow = me.getOverlayWindowElement(sId);
+                if(objOverlayWindow.getAttribute('sHideCallBack'))
+                    clReportCriteria.callBackCloseOverlay();
+                if(objOverlayWindow.getAttribute('bHideBodyScroll'))
+                    util.removeClass(document.body,"rcOverFlow");
+                objOverlayWindow.removeChild(me.getOverlayFrameElement(sId));
+            }
+            else
+            {
+                var objContent = cross.getChildren(me.getOverlayContentElement(sId))[0];
+                objContent.innerHTML = "";
+            }
+
+            var objOverlay;
+            if(isIFrame)
+                objOverlay = me.getOverlayWindowElement(sId);
+            else
+                objOverlay = document.getElementById(me.getOverlayDivId(sId));
+            if(objOverlay.getAttribute('bHideBodyScroll'))
+                util.removeClass(document.body,"rcOverFlow");
+
+            me.showOverlayBg(sId, false);
+            if (me.iListenerId > 0)
+                cross.unregisterEventListener(me.iListenerId);
+        }
+    };
+
+    /**
+     * This method is used to set styles to overlay div
+     * @param sContainerId - parent div id
+     * @param sId - overlay id
+     */
+    this.setOverlayBG = function(sContainerId,sId)
+    {
+        var objContainer = document.getElementById(sContainerId);
+        if(objContainer!=null) {
+            var divBg = document.createElement("DIV");
+            divBg.setAttribute("class", "overlayBG");
+            divBg.id = sId + "_overlayBg"
+            divBg.style.display = "none";
+            objContainer.appendChild(divBg);
+        }
+    };
+    /**
+     * This method is used to show or hide overlay background (disable)
+     * @param sId overlay id
+     * @param isShow
+     */
+    this.showOverlayBg = function(sId,isShow)
+    {
+        var objBg = document.getElementById(sId+"_overlayBg");
+        if(objBg!=null)
+        {
+            if (isShow)
+                objBg.style.display = "block";
+            else
+                objBg.style.display = "none";
+            if (isShow) {
+                var clElement = document.getElementById("containerDiv")
+                if (!clElement)
+                    clElement = document.body;
+                objBg.style.width = clElement.scrollWidth;
+                objBg.style.height = clElement.scrollHeight;
+            }
+        }
+    }
+    //Returns overlay disable id
+    this.getOverlayBgId=function(sId)
+    {
+        return sId+"_overlayBg"
+    }
+    //Returns overlay disable element
+    this.getOverlayBgElement=function(sId)
+    {
+        return document.getElementById(sId+"_overlayBg");
+    }
+
+
+    /**
+     * This method is used to load(create) Iframe overlay
+     * @param sId
+     * @param iType
+     * @param top
+     * @param right
+     * @param left
+     * @param sTitle
+     * @param parentContainerDiv
+     * @param isInsideOverlay
+     * @param arrActions
+     * @param isTitleBgColor
+     * @param sTitleStyleClass
+     * @param sCloseIconStyleClass
+     * @param sUserCallback
+     * @param isHideBodyScroll
+     */
+    this.loadIFrameOverlay=function(sId,iType,top,right,left,sTitle,parentContainerDiv,isInsideOverlay,arrActions,isTitleBgColor,sTitleStyleClass,sCloseIconStyleClass,sUserCallback,isHideBodyScroll)
+    {
+
+        if(!sId) sId ="";
+        objOverlayWindow = me.getOverlayWindowElement(sId);
+        var divheight=null;
+        var bIsCreated=false;
+        if(!objOverlayWindow)
+        {
+            if(parentContainerDiv==undefined || parentContainerDiv==null)
+                parentContainerDiv="containerDiv";
+            var ObjContainerDiv =  document.getElementById(parentContainerDiv);
+            objOverlayWindow = document.createElement("div");
+            objOverlayWindow.id=me.getOverlayDivId(sId);
+            if(sUserCallback)
+                objOverlayWindow.setAttribute("sHideCallBack", sUserCallback);
+            if(isHideBodyScroll)
+                objOverlayWindow.setAttribute("bHideBodyScroll", isHideBodyScroll);
+
+            divheight=document.createElement("div");
+            if(isTitleBgColor==true || isTitleBgColor==undefined)
+                divheight.setAttribute("class","dvheight dvOverlayTitle");
+            else if(sTitleStyleClass != null && sTitleStyleClass.length > 0)
+                divheight.setAttribute("class","dvheight "+sTitleStyleClass);
+            else
+                divheight.setAttribute("class","dvheight");
+            bIsCreated=true;
+            if(ObjContainerDiv)
+                ObjContainerDiv.appendChild(objOverlayWindow);
+            else
+                document.body.appendChild(objOverlayWindow);
+        }
+        if(iType==me.OVERLAY_LEFT)
+            objOverlayWindow.className="overlayfromLeft";
+        else if(iType==me.OVERLAY_RIGHT)
+            objOverlayWindow.className="sideNavfromRight";
+        else if(iType==me.OVERLAY_TOP)
+            objOverlayWindow.className="overlayfromtopright";
+        else
+            objOverlayWindow.className="overlayfromtopleft";
+        if(top!=undefined && top!=null)
+            objOverlayWindow.style.top=top;
+        if(right!=undefined && right!=null)
+            objOverlayWindow.style.right=right;
+        if(left!=undefined && left!=null)
+            objOverlayWindow.style.left=left;
+
+        var sDivId = objOverlayWindow.id;
+        /*var sClassname="overlay-content";
+        if(iType==me.OVERLAY_RIGHT||iType==me.OVERLAY_TOP)
+        {
+            sClassname="sideNavfromRightContent";
+        }*/
+        //var sInnerHTML = "<a href=\"javascript:void(0)\" class=\"closebtn\"  onclick=' Focus.crm.fbooks.common.clOverlay.closeOverlay(this,"+iType+")' dvId="+sId+">&times;</a>"
+        if(bIsCreated)
+        {
+            /*var objAnchorTag = document.createElement("a");
+            objAnchorTag.href = "javascript:void(0)";
+            objAnchorTag.class = "overlayClosebtn";
+            //objAnchorTag.onclick=" Focus.crm.fbooks.common.clOverlay.closeOverlay(this,"+iType+")";
+            objAnchorTag.setAttribute("onclick", "clOverlay.closeOverlay(this," + iType + ",'"+sId+"',true)");
+            objAnchorTag.setAttribute("class", "overlayClosebtn");
+            objAnchorTag.setAttribute("dvId", sId);
+            objAnchorTag.innerHTML = "&times;";*/
+            var objSpanClose = document.createElement("span");
+            objSpanClose.setAttribute("src", clAppBuffer.getImagePath(true)+"blank.png");
+            if(sCloseIconStyleClass != null && sCloseIconStyleClass.length > 0)
+                objSpanClose.setAttribute("class", sCloseIconStyleClass+" spCloseOverlay");
+            else
+                objSpanClose.setAttribute("class", "crm crm-list-delete spCloseOverlay");
+            objSpanClose.setAttribute("onclick", "clOverlay.closeOverlay(this," + iType + ",'"+sId+"',true)");
+            objSpanClose.setAttribute("dvId", sId);
+            //var sOverlayDiv="<div class=\""+sClassname+"\" id="+me.getOverlayContentDivId(sId)+"></div>";
+
+            if (sTitle != undefined && sTitle != null) {
+                //var sTitleHtml = "<span class=\"toptitle\" >"+sTitle+"</span>"
+                var sTitleHtml;
+                sTitleHtml = clOverlay.getTitleHtml(isInsideOverlay,sId,sTitle,iType,true);
+
+
+
+                //objOverlayWindow.innerHTML="" +sTitleHtml+sInnerHTML+"<div class='overlayBorderbtm' >&nbsp;</div>"+sOverlayDiv;
+                if(iType == me.OVERLAY_RIGHT) {
+                    if(!isInsideOverlay)
+                        divheight.appendChild(objSpanClose);
+                    divheight.appendChild(sTitleHtml);
+                }else{
+                    divheight.appendChild(sTitleHtml);
+                    objSpanClose.style.right= "10px";
+                    if(!isInsideOverlay)
+                        divheight.appendChild(objSpanClose);
+                }
+                //objOverlayWindow.appendChild(sTitleHtml);
+                //if(!bShowTitleInsideOverlay) {
+                    //objOverlayWindow.appendChild(objAnchorTag);
+                    objOverlayWindow.appendChild(divheight);
+               // }
+                //objOverlayWindow.appendChild(objOverlayIFrame);
+                //objOverlayWindow.appendChild(sInnerHTML);
+                //objOverlayWindow.appendChild(sOverlayDiv);
+                //objOverlayWindow.innerHTML= sTitleHtml+sInnerHTML+sOverlayDiv;
+            }
+            else {
+                //objOverlayWindow.appendChild(sTitleHtml);
+                //if(!bShowTitleInsideOverlay) {
+                    //objOverlayWindow.appendChild(objAnchorTag);
+                    objOverlayWindow.appendChild(divheight);
+                //}
+                //objOverlayWindow.appendChild(objOverlayIFrame);
+                //objOverlayWindow.innerHTML=sInnerHTML+sOverlayDiv;
+            }
+            //objOverlayIFrame.contentWindow.document.body.appendChild(objBtn);
+
+        }
+
+        var objOverLayConentDiv = me.getOverlayContentElement(sId);
+        me.setOverlayBG(parentContainerDiv,sId);
+        /*if(me.iListenerId>=0)
+         cross.unregisterEventListener(me.iListenerId);
+         me.iListenerId=cross.registerEventListener(cross.EVENT_ONCLICK,me.closeOverlay,[null,iType,sId]);*/
+
+        if(arrActions)
+        {
+
+            var objDvAction = document.createElement("div");
+            objDvAction.setAttribute("class","overlayActionDv");
+            objDvAction.style.zIndex=2;
+            objDvAction.style.height="30px";
+            //objDvAction.setAttribute("style","padding:5px;text-align:right;border-top: 1px solid #ccc");
+
+            for(var i=0;i<arrActions.length;i++)
+            {
+
+                var sAction = arrActions[i];
+                if(sAction.indexOf("|")!=-1)
+                {
+                    sAction = sAction.split("|");
+                    var btnValue = sAction[0];
+                    var btnAction = sAction[1];
+                    var objBtn = document.createElement("input");
+                    objBtn.style.height = "30px";
+                    objBtn.style.cursor = "pointer";
+                    objBtn.setAttribute("type", "button");
+                    objBtn.setAttribute("id", "btn_"+sId+"_"+i);
+                    objBtn.setAttribute("value", btnValue);
+                    objBtn.setAttribute("onclick", "window.frames['"+me.getOverlayContentFrameId(sId)+"']."+btnAction);
+                    objBtn.setAttribute("class", "nButton");
+                    objDvAction.appendChild(objBtn);
+                }
+            }
+
+            var objBtn = document.createElement("input");
+            objBtn.style.height = "30px";
+            objBtn.style.cursor = "pointer";
+            objBtn.setAttribute("type", "button");
+            objBtn.setAttribute("id", "btn_"+sId+"_cancel");
+            objBtn.setAttribute("value", MsgHandler.getMsg(MsgConstants.CANCEL,0,0));
+            objBtn.setAttribute("onclick", "clOverlay.closeOverlay(null,"+iType+",'"+sId+"',true)");
+            objBtn.setAttribute("class", "nButton");
+            objDvAction.appendChild(objBtn);
+            if(objDvAction!=null)
+                objOverlayWindow.appendChild(objDvAction);
+        }
+        var objDivSpinner = document.createElement("div");
+        objDivSpinner.setAttribute("class","overlaySpinner");
+        objDivSpinner.setAttribute("id","spinner_"+sId);
+        var objISpinner = document.createElement("i");
+        objISpinner.setAttribute("class","fa fa-spinner fa-pulse");
+
+        objDivSpinner.appendChild(objISpinner);
+
+
+        //window.frames["clAttachFilecontentFrame"].clAttachFile
+
+
+        //if(!bShowTitleInsideOverlay)
+            objOverlayWindow.appendChild(objDivSpinner);
+
+    };
+
+
+    /**
+     * This method is used to display IFrame overlay
+     * * @param sId - id of overlay
+     * @param sURL
+     * @param width - width of overlay
+     * @param height - height of overlay
+     * @param iType - type 2 right,1 left,3 top,4 bottom
+     * @param left
+     * @param top
+     * @param right
+     * @param sTitle - title of overlay
+     * @param parentContainerDiv parent div object
+     * @param isInsideOverlay true if overlay inside other overlay otherwise false
+     * @param arrActions overlay actoins
+     * @param isExclModStyles
+     * @param isTitleBgColor
+     * @param sTitleStyleClass
+     * @param sCloseIconStyleClass
+     * @param sUsercallback
+     * @param isHideBodyScroll
+     * @param bIgnoreFrameScroll
+     */
+    this.showFrameOverlay=function(sId,sURL,width,height,iType,top,right,left,sTitle,parentContainerDiv,isInsideOvelay,arrActions,isExclModStyles,isTitleBgColor,sTitleStyleClass,sCloseIconStyleClass,sUsercallback,isHideBodyScroll,bIgnoreFrameScroll)
+    {
+        if(!isTitleBgColor && sTitleStyleClass == null)
+            sTitleStyleClass="overlayTopTitleDefault";
+        if(isHideBodyScroll)
+            util.addClass(document.body,"rcOverFlow");
+        if(!me.getOverlayWindowElement(sId))
+            me.loadIFrameOverlay(sId,iType,top,right,left,sTitle,parentContainerDiv,isInsideOvelay,arrActions,isTitleBgColor,sTitleStyleClass,sCloseIconStyleClass,sUsercallback,isHideBodyScroll);
+        else //if(!bShowTitleInsideOverlay)
+        {
+            document.getElementById("spinner_"+sId).style.display="";
+            me.setOverLaytitleText(sId,sTitle);
+        }
+        if(arrActions)
+        {
+            for(var i=0;i<arrActions.length;i++){
+                document.getElementById("btn_"+sId+"_"+i).style.display="";
+            }
+        }
+
+        var sClassname="overlay-content";
+        if(iType==me.OVERLAY_RIGHT||iType==me.OVERLAY_TOP)
+        {
+            sClassname="sideNavfromRightContent";
+        }
+
+
+        var objOverlayIFrame = document.createElement("iframe");
+        if(bIgnoreFrameScroll)
+            objOverlayIFrame.setAttribute("scrolling","no");
+        //objOverlayIFrame.src=clAppBuffer.getContextPath()+"/iFrameOverlay.action";
+
+        objOverlayWindow = me.getOverlayWindowElement(sId);
+
+        //if(bShowTitleInsideOverlay)
+        //    objOverlayIFrame.style.height = "100%";
+        //else
+            objOverlayIFrame.style.height = "90%";
+        objOverlayIFrame.style.width = "100%";
+        objOverlayIFrame.style.border = "none";
+        objOverlayIFrame.setAttribute("class", sClassname);
+        objOverlayIFrame.setAttribute("id", me.getOverlayContentFrameId(sId));
+        objOverlayIFrame.setAttribute("name", me.getOverlayContentFrameId(sId));
+        objOverlayWindow.appendChild(objOverlayIFrame);
+        objOverlayIFrame.setAttribute("onload","clOverlay.loadFrame('"+sId+"')");
+
+        //document.getElementById(dvCreatedId).style.display="";
+        var sIframeUrl = clAppBuffer.getContextPath()+"/overlayTemplate.action";
+        sIframeUrl+="?url="+escape(sURL);
+        if (isExclModStyles)
+            sIframeUrl+="&excStyles="+isExclModStyles;
+        sIframeUrl += "&sId="+sId;
+
+        /*if(bShowTitleInsideOverlay)
+        {
+            if(isTitleBgColor==undefined)
+                isTitleBgColor = true;
+            sIframeUrl += "&isIframe=true&isTitleBgColor="+isTitleBgColor+"&isInsideOverlay="+isInsideOvelay;
+            sIframeUrl += "&iType="+iType+"&sId="+sId+"&sTitle="+sTitle+"";
+            sIframeUrl+="&bShowTitleInsideOverlay=true";
+            if(sTitleStyleClass != null)
+                sIframeUrl+="&sTitleStyleClass="+sTitleStyleClass;
+            if(sCloseIconStyleClass != null)
+                sIframeUrl+="&sCloseIconStyleClass="+sCloseIconStyleClass;
+        }*/
+        objOverlayIFrame.src=sIframeUrl;
+
+        //objOverlayIFrame.setAttribute("onload","clOverlay.loadFrame('"+sId+"','"+sURL+"',"+bShowTitleInsideOverlay+")");
+
+        var element= document.getElementById(me.getOverlayDivId(sId));
+        if(top!=undefined && top!=null)
+            element.style.top=top;
+        if(right!=undefined && right!=null)
+            element.style.right=right;
+        if(left!=undefined && left!=null)
+            element.style.left=left;
+        //document.getElementById(me.getOverlayDivId(sId)).style.display="";
+        //document.getElementById(me.getOverlayDivId(sId)).style.height = height;
+        element.style.height = height;
+        util.removeClass(element,"overlayBorderstyle");
+        //util.addClass(element,"overlayBorderstyle");
+        //document.getElementById(me.getOverlayDivId(sId)).style.width = width;
+        element.style.width = width;
+        //document.body.style.backgroundColor = "rgba(0,0,0,0.2)";
+        me.showOverlayBg(sId,true);
+        //alert(me.iListenerId)
+        if(me.iListenerId>0)
+            cross.unregisterEventListener(me.iListenerId);
+        if(iType!=undefined)
+        {
+            //me.sEvtSrc=document.getElementById(me.getOverlayDivId(sId));
+            me.iListenerId = cross.registerEventListener(cross.EVENT_ONCLICK, me.hideOverlay, [iType, sId,document.getElementById(me.getOverlayDivId(sId)),true]);
+        }
+    };
+
+    this.loadFrame = function(sId)
+    {
+        //if(bShowTitleInsideOverlay)
+        //    con.sendPostRequest(sUrl,null,arh,null,con.RESPONSE_HTML,null,null,false,false,ACTION_LOADING);
+
+        /*function arh(sResponse)
+        {
+            var sIFrameId = "iFrameOverlayContent"+sId;
+            var objDiv=window.frames[sIFrameId].document.getElementById("dvOverlayContent");
+
+            if(typeof window.frames[sIFrameId]["initAllCombos"]=="function")
+                window.frames[sIFrameId].initAllCombos=null;
+            objDiv.innerHTML=sResponse;
+
+            window.frames[sIFrameId].loadResources(objDiv,window.frames[sIFrameId].util.onScriptsLoad);
+        }*/
+
+        //if(!bShowTitleInsideOverlay)
+            document.getElementById("spinner_"+sId).style.display="none";
+    }
+
+};

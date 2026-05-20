@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Suite">
+  <test thread-count="5" name="Test">
+    <classes>
+    
+    
+    
+    
+      <class name="com.focus.testcases.URLBrowserTest"/>
+   
+      
+  <!--    <class name="com.focus.testcases.CreditTest"/> 
+     <class name="com.focus.testcases.BRSTest"/> -->
+      <class name="com.focus.testcases.BRSNewTest"/>
+   <!--   <class name="com.focus.testcases.ChequesTest"/>
+     <class name="com.focus.testcases.AttributeTest"/>
+       
+     <class name="com.focus.testcases.VoucherOptionsTest"/> -->
+  
+   <!--   <class name="com.focus.testcases.preferenceMiscellinousOptionTest"/> -->
+    
+  <!--   <class name="com.focus.testcases.ReportDesignerTest"/>
+    <class name="com.focus.testcases.ReportDesignerNewTest"/>  -->
+   
+     
+    </classes>
+  </test> <!-- Test -->
+</suite> <!-- Suite -->

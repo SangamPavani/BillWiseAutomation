@@ -1,0 +1,2438 @@
+if(typeof window["home"]!= 'object'){
+    var home = new function()
+    {
+        var me = this;
+        this.isDefHideLeftPanel=false; /// as per settings
+        this.isHideLeftPanel=false;
+        this.isUserHidesLeftPanel=false;
+        this.sDlgTitle=null;
+        this.sLookUpUrl=null;
+        this.sUsersUrl=null;
+        this.sReleaseRepHndlsUrl=null;
+        this.sCreateNewUrl=null;
+        this.sComboLineUrl=null;
+        this.sLandingURL=null;
+        this.iModuleId=0;
+        this.iThemeType=Constants.ITheme.DEFAULT;
+        this.isForceSingleUI = false;
+        this.sMaps_google_api_key = null;
+        this.sContainerId= null;
+        this.isFormDataUpdated = false;
+        this.sBusinessMsg = null;
+
+
+
+        /**
+         *  This function is used for Set Save Encripted URL
+         */
+        this.onWLoadSetUrl = function(sLookUpUrl,sUsersUrl,sReleaseRepHndlsUrl,sCreateNewUrl,sComboLineUrl,sLandingURL)
+        {
+            me.sLookUpUrl=sLookUpUrl;
+            me.sUsersUrl=sUsersUrl;
+            me.sReleaseRepHndlsUrl=sReleaseRepHndlsUrl;
+            me.sCreateNewUrl=sCreateNewUrl;
+            me.sComboLineUrl=sComboLineUrl;
+            me.sLandingURL=sLandingURL;
+            this.isFormDataUpdated=false;
+
+            util.checkNetConnection(home.onInternetConnectionEnabled,this.sMaps_google_api_key);
+            me.clearBackHistory();
+        };
+
+        this.setBusinessMsg=function(sBusinessMsg)
+        {
+            this.sBusinessMsg=sBusinessMsg;
+        };
+
+        this.getBusinessMsg=function()
+        {
+            return this.sBusinessMsg;
+        };
+
+        this.setContainerId=function(sContainerId)
+        {
+            this.sContainerId=sContainerId;
+        };
+
+        this.getContainerId=function()
+        {
+            if(this.sContainerId!=null)
+                return this.sContainerId;
+            return "dvCenter";
+        };
+
+        this.setIsFormDataUpdated=function(isFormDataUpdated)
+        {
+            me.isFormDataUpdated=isFormDataUpdated;
+        };
+
+        this.nullifyContainerId=function()
+        {
+            this.sContainerId=null;
+        };
+
+        this.getLookupUrl=function(iModuleId)
+        {
+            if(iModuleId==Constants.USERS)
+                return me.sUsersUrl;
+            else
+                return me.sLookUpUrl;
+        };
+
+        this.getModuleCreateUrl=function()
+        {
+            return me.sCreateNewUrl;
+        };
+        this.getComboLineUrl=function()
+        {
+            return me.sComboLineUrl;
+        };
+
+        this.setGoogleApiKey = function(sKey)
+        {
+            this.sMaps_google_api_key = sKey;
+        };
+
+        this.onInternetConnectionEnabled=function(isStatus,sKey)
+        {
+            if(isStatus)
+            {
+
+                var sArr =new Array();
+                var sCurrLocation=window.location.href;
+                var sURLPrefix="http";
+
+                if(sCurrLocation.indexOf("https")!=-1)
+                    sURLPrefix="https";
+                sArr[0]=sURLPrefix+'://maps.google.com/maps/api/js?v=3.exp&libraries=places&key='+sKey;
+                //sArr[1]='http://google-maps-utility-library-v3.googlecode.com/svn/trunk/styledmarker/src/StyledMarker.js';
+                sArr[1]=sURLPrefix+'://www.google.com/jsapi';
+                sArr[2]='https://apis.google.com/js/api:client.js';
+
+                for(var i=0;i<3;i++)
+                {
+                    var Addscript = document.createElement('script');
+                    Addscript.setAttribute('type','text/javascript');
+                    Addscript.setAttribute('src',sArr[i]);
+                    document.head.appendChild(Addscript);
+                }
+            }
+        };
+
+        this.scrollRecentItems = function(objDv,marginTop,pos)
+        {
+            if(pos >marginTop)
+                objDv.style.marginTop = "0px";
+            else if(pos < marginTop)
+            {
+                var marginTp=marginTop-pos;
+                objDv.style.marginTop = marginTp+"px";
+            }
+        };
+
+        this.onWndscroll = function (e)
+        {
+            var dvBack,iPosition = 0,navBar,iMarginTop=0;
+            iPosition = cross.getBodyScrollTop();
+            dvBack = document.getElementById("dvBack");
+            navBar = document.getElementById("navActivitiesDiv");
+            var objHeader = document.getElementById("tdTitle");
+            if(objHeader!=null)
+                iMarginTop = objHeader.offsetHeight;
+
+            if(iPosition > 20)
+                dvBack.style.display = "block";
+            else
+                dvBack.style.display = "none";
+            if(navBar!=null){
+                me.scrollRecentItems(navBar,iMarginTop,iPosition);
+            }
+            else
+            {
+                navBar = document.getElementById("tdActivities");
+                if(navBar!=null){
+                    me.scrollRecentItems(navBar,66,iPosition);
+                }
+            }
+
+            if(document.getElementById("dvServicesApplyAll"))// For ContractServices
+                clServices.changeCopyDimens(iPosition);
+            /*if(iPosition > 20)
+             {
+             dvBack.style.display = "block";
+             document.getElementById("focus_logo").style.display="none";
+             document.getElementById("headerTopRow").style.display="none";
+             document.getElementById("logo").height="30";
+             document.getElementById("dvHeader").style.position="fixed";
+             document.getElementById("main_top_row").style.position="fixed";
+             document.getElementById("main_top_row").style.top="30px";
+             }
+             else if(dvBack.style.display != "none")
+             {
+             dvBack.style.display = "none";
+             document.getElementById("dvHeader").style.position="initial";
+             document.getElementById("main_top_row").style.position="initial";
+             document.getElementById("main_top_row").style.top="0px";
+             document.getElementById("focus_logo").style.display="";
+             document.getElementById("headerTopRow").style.display="";
+             document.getElementById("logo").height="60";
+             }*/
+
+            cross.cancelBubble(e);
+            return false;
+        };
+
+        this.backToTop = function()
+        {
+            window.scrollTo(0,0);
+        };
+
+
+        /**
+         * This function is used for set the Dialog Title
+         */
+        this.onWLoadSetDlgTitle = function(sDlgTitle)
+        {
+            me.sDlgTitle=sDlgTitle;
+        };
+        /**
+         * This method purpose is to set the
+         * @param sURL   = of type URL
+         * @param objMenuItem
+         * @param sUserCallBack = this.handleResponse = function (sResponse,iStatusCode) or user defined func--call home.handleResponse with 2 paramters
+         */
+        this.setCenterUI = function (sURL,
+                                     objMenuItem,
+                                     isIgnoreURL,
+                                     isHideLeftPanel1,
+                                     sUserCallBack,
+                                     isIgnoreForHashing,
+                                     clEvent,
+                                     isForceSingleUI,
+                                     isListViewEvent,
+                                     isCenterDlg,
+                                     arrEventSrcDetails,
+                                     isCancel,iMenuId)
+        {
+            //try
+            //{
+
+            if (home.isFormDataUpdated)
+            {
+                if(!window.confirm("Are you sure you want to navigate from the screen without saving? \n You might lose any unsaved data."))
+                {
+                    return false;
+                }
+
+                home.isFormDataUpdated=false;
+            }
+            //if(window["clAISearchUtil"] != null)
+              //  clAISearchUtil.showAISearchIcon(false);
+
+//            me.isForceSingleUI = isForceSingleUI;
+            var elemNavContentAreaDv =document.getElementById("navContentAreaDv");
+            if(elemNavContentAreaDv!=null)
+            {
+                //elemNavContentAreaDv.style.overflowX='auto';
+                //elemNavContentAreaDv.style.overflowY = 'hidden';
+            }
+            cross.setVisible(document.getElementById("navActivitiesDiv"),true);
+            /////// //  @ CORONA //////
+            var sParams;
+
+            var sOnMousedown=null;
+            if(objMenuItem)
+            {
+
+                if(objMenuItem.getAttribute("onmousedown"))
+                    sOnMousedown=objMenuItem.getAttribute("onmousedown")+"";
+                else
+                    sOnMousedown=objMenuItem.getAttribute("onclick")+"";
+            }
+            else if(sURL.indexOf("?")!=-1)
+            {
+                sOnMousedown = sURL.substring(sURL.indexOf("?")+1) +"&";
+            }
+
+            var iModuleId=0;
+            var iIndex=-1;
+
+            if(sOnMousedown && (sOnMousedown.indexOf("moduleId="))>=0)
+            {
+                iIndex=sOnMousedown.indexOf("moduleId=");
+                var sFirstString=sOnMousedown.substring(0,iIndex+9);
+                var sSecondString=sOnMousedown.substring(iIndex+9,sOnMousedown.length);
+                var iModuleIndex = sSecondString.indexOf("&");
+                iModuleId=sOnMousedown.substring(iIndex+9,sFirstString.length+iModuleIndex);
+                if (sOnMousedown.indexOf("moduleId=" + Constants.REPORTS) !=-1)
+                {
+                    cross.setVisible(document.getElementById("navActivitiesDiv"),false);
+                    if(elemNavContentAreaDv!=null) {
+                        elemNavContentAreaDv.style.overflowX = 'unset';
+                        elemNavContentAreaDv.style.overflowY = 'unset';
+                    }
+                }
+            }
+            var iMenuType=0;
+            if(!me.isDefHideLeftPanel)
+            {
+                me.isHideLeftPanel = isHideLeftPanel1;
+
+                if(sOnMousedown)
+                {
+                    if(sOnMousedown.indexOf("type="+Constants.IMENU.TYPE_TOOLS)!=-1)
+                        iMenuType=Constants.IMENU.TYPE_TOOLS;
+
+                    if (sOnMousedown.indexOf("moduleId=" + Constants.REQUEST) > 0)
+                    {
+                        if(objMenuItem && objMenuItem.getAttribute("type") == 6) // in case of request create i,e type=6
+                            me.isHideLeftPanel = true;
+                    }
+                    else if (sOnMousedown.indexOf("moduleId=" + Constants.REPORTS) > 0) {
+                        me.isHideLeftPanel = true;
+                        cross.setVisible(document.getElementById("navActivitiesDiv"),false);
+                    }
+                    else if (sOnMousedown.indexOf("moduleId=" + Constants.DOCUMENTS) > 0)
+                        me.isHideLeftPanel = true;
+                    else if (sOnMousedown.indexOf("moduleId=" + Constants.CALENDAR) > 0)
+                        me.isHideLeftPanel = true;
+                    else if (sOnMousedown.indexOf("getSupportCallCalendar") > 0)
+                        me.isHideLeftPanel = true;
+                    else if (sOnMousedown.indexOf("getDesigner.do") > 0)
+                        me.isHideLeftPanel = true;
+                    else if (sParams && sParams.indexOf("configId=765&") != -1 && (sParams.indexOf("byAction=" + Constants.NEW + "&") != -1 || sParams.indexOf("byAction=" + Constants.EDIT + "&") != -1))
+                        me.isHideLeftPanel = true; //configId=765==PRINT_LAYOUT
+                    else if ((sOnMousedown.indexOf("isHideLeftPanel=true") != -1))
+                        me.isHideLeftPanel = true;
+                    else if (sOnMousedown.indexOf("typeId=" + Constants.IMENU.ITEMTYPE_ANALYSER) > 0)  //module 360
+                        me.isHideLeftPanel = true;
+                }
+
+                /* if(objMenuItem && (objMenuItem.getAttribute("onmousedown")+"").indexOf("moduleId="+Constants.REQUEST)>0 && objMenuItem.getAttribute("type")==6)// in case of request create i,e type=6
+                 me.isHideLeftPanel=true;
+                 else if(objMenuItem && (objMenuItem.getAttribute("onmousedown")+"").indexOf("moduleId="+Constants.REPORTS) > 0)
+                 me.isHideLeftPanel=true;
+                 else if(objMenuItem && (objMenuItem.getAttribute("onmousedown")+"").indexOf("moduleId="+Constants.DOCUMENTS) > 0)
+                 me.isHideLeftPanel=true;
+                 else if(objMenuItem && (objMenuItem.getAttribute("onmousedown")+"").indexOf("moduleId="+Constants.CALENDAR) > 0)
+                 me.isHideLeftPanel=true;
+                 else if(objMenuItem && (objMenuItem.getAttribute("onmousedown")+"").indexOf("getSupportCallCalendar") > 0)
+                 me.isHideLeftPanel=true;
+                 else if(objMenuItem && (objMenuItem.getAttribute("onmousedown")+"").indexOf("getDesigner.do") > 0)
+                 me.isHideLeftPanel=true;
+                 else if(sParams && sParams.indexOf("configId=765&")!=-1 && (sParams.indexOf("byAction="+Constants.NEW+"&")!=-1 || sParams.indexOf("byAction="+Constants.EDIT+"&")!=-1))
+                 me.isHideLeftPanel=true;
+                 else if((objMenuItem && (objMenuItem.getAttribute("onmousedown")+"").indexOf("isHideLeftPanel=true")!=-1))
+                 me.isHideLeftPanel=true;
+                 else
+                 me.isHideLeftPanel=isHideLeftPanel1;*/
+            }
+            else
+                me.isHideLeftPanel=true;
+            /////// // End @ CORONA //////
+
+
+
+            var iSrcViewType=0;
+            if(arrEventSrcDetails!=null)
+                iSrcViewType=arrEventSrcDetails[0];
+
+            if(sURL)
+            {
+                if(!isIgnoreURL)
+                {
+                    if(sURL.indexOf("?")!=-1)
+                        sURL+="&isSaveUrl=true";
+                    else
+                        sURL+="?isSaveUrl=true";
+                }
+
+                if(sURL.indexOf("?isCancel=1") != -1)
+                {
+                    clAppBuffer.setActionId(Constants.IActions.CANCEL);
+                    isCancel=true;
+                    home.moveToBackUrl(false);
+                    return;
+                }
+
+                if(sURL.indexOf("&byAction="+Constants.NEW) != -1)
+                    clAppBuffer.setActionId(Constants.NEW);
+
+                //console.log(sURL);
+
+                //if(sURL2.indexOf("?")!=-1)
+                //    sURL2=sURL2.substring(0,sURL2.indexOf("?"));
+
+                var sBackUrl=clAppBuffer.getBackUrl();
+                var objBackUrlResp=clAppBuffer.getBackUrlResponse();
+
+                if(sBackUrl==sURL && isCancel && objBackUrlResp!=null)
+                {
+                    var clBackUrlLoadCallback=clAppBuffer.getBackUrlLoadCallback();
+
+                    clAppBuffer.setCurrentUrl(sBackUrl);
+                    clAppBuffer.setBackUrl(null);
+                    clAppBuffer.setBackUrlResponse(null);
+                    clAppBuffer.setBackUrlLoadCallback(null);
+
+                    var objDvCenter=document.getElementById(me.getContainerId());
+                    var objDvParent=objDvCenter.parentNode;
+                    objDvParent.replaceChild(objBackUrlResp,objDvCenter);
+
+                    var objContainerDiv=document.getElementById("containerDiv_1");
+                    if(objContainerDiv)
+                        objContainerDiv.scrollTo(0,1);
+
+                    if (typeof window["clTimer"] == "object" && clTimer != null)
+                        clTimer.clearAllTimers();
+
+                    cross.unregisterAllListeners(Constants.SCOPE_SCREEN);
+                    cross.unregisterWindowEvents(Constants.SCOPE_SCREEN);
+
+
+                    if(clBackUrlLoadCallback!=null)
+                    {
+                        clBackUrlLoadCallback();
+                    }
+                    //app.clearPreviousInstances(objDvCenter);
+                    //app.setBodyContent(document.getElementById("dvCenter"), objBackUrlResp, util.onScriptsLoad);
+                    return;
+                }
+                else if(isCancel)
+                {
+                    var sUrl2=sURL;
+
+                    if(sUrl2.indexOf("?")!=-1)
+                    {
+                        sParams=sUrl2.substring(sUrl2.indexOf("?")+1);
+                        sUrl2=sUrl2.substring(0,sUrl2.indexOf("?"));
+                    }
+
+                    clAppBuffer.setCurrentUrl(sURL);
+                    clAppBuffer.setBackUrl(null);
+                    clAppBuffer.setBackUrlResponse(null);
+                    clAppBuffer.setBackUrlLoadCallback(null);
+
+                    if(!sUserCallBack)
+                        sUserCallBack="home.handleResponse";
+
+                    $('#tblNavMenu').find('.selectedMenu').each(function(){
+                        //$(this).removeClass("selectedMenu");
+                        $(this).attr( "licap", "0" );
+                    });
+                    $('#tblNavMenu').find('.defaultselectedLinkColor').each(function(){
+                        $(this).removeClass("defaultselectedLinkColor");
+                        $(this).parents("li").attr("licap", "0" );
+                    });
+
+                    showInDefaultPane(sUrl2,sParams,sUserCallBack,isIgnoreURL,isDeleteFrameLength,iSrcViewType);
+                    return;
+                }
+
+
+
+                if(iSrcViewType==Constants.LIST_LAYOUT)
+                {
+                    clAppBuffer.setBackUrl(clAppBuffer.getCurrentUrl());
+                    if(arrEventSrcDetails.length>1)
+                        clAppBuffer.setBackUrlLoadCallback(arrEventSrcDetails[1]);
+                }
+
+                clAppBuffer.setCurrentUrl(sURL);
+            }
+
+            var iActionId = clAppBuffer.getActionId() ;
+
+            /*if(isForceSingleUI){   // for force to render on center page
+             clFrame.isNtClsFirstFrame = false;
+             clFrame.DeleteFrameLength();
+             //                clFrame.DeleteFrameLength();
+             clAppBuffer.setWindowType(Constants.IMODULE_WINDOW.DEFAULT);
+             }*/
+
+
+
+
+
+            var iPrevWindowType=clAppBuffer.getWindowType();
+            var clEvent=null;
+            var fnCaller=arguments.callee.caller;
+            while(!isForceSingleUI&& fnCaller)
+            {
+                if(!fnCaller.caller)
+                {
+                    clEvent=fnCaller.arguments[fnCaller.arguments.length-1];
+                    break;
+                }
+                fnCaller=fnCaller.caller;
+            }
+
+
+//        util.toggleBackground(true);
+
+            //var sParams;
+            //if(!sUserCallBack && !isIgnoreURL && !isIgnoreForHashing)
+
+            if(!isIgnoreURL)
+            {
+                if(sURL.indexOf("?")!=-1)
+                {  //util.writeToLog(sURL)
+                    //app.setHashLocation(sURL);
+
+                }
+
+                var sCurrLocation=window.location.href;
+
+                if(sCurrLocation.indexOf("setup.do")!=-1)
+                {
+                    //history.pushState(sURL, null, "setup.do");
+                    me.pushUrlToStack(sURL, null, "setup.do");
+                }
+                else
+                {
+                    //history.pushState(sURL, null, "crmhome.do");
+                    me.pushUrlToStack(sURL, null, "crmhome.do");
+                }
+
+                //util.setCookie("crminfo",sValue,1);
+            }
+
+            //  @ CORONA
+            if(sURL.indexOf("?")!=-1)
+            {
+                sParams=sURL.substring(sURL.indexOf("?")+1) +"&";
+                //var sModuleId=sURL.substring(sURL.indexOf("?")+10);
+                sURL=sURL.substring(0,sURL.indexOf("?"));
+            }
+            else
+                sParams="";
+
+            ///  alert(objMenuItem.getAttribute("type")+"  "+objMenuItem.getAttribute("onclick"))
+            /*if(!isIgnoreURL)
+             sParams+="isSaveUrl=true";*/
+
+            if(!sUserCallBack)
+            {
+                sUserCallBack="home.handleResponse";
+
+
+
+
+            }
+            //containerBody
+            //containerDiv
+
+            /*var clElemnt=document.getElementById("containerBody");
+            if(clElemnt)
+            {
+                if(util.hasClass(clElemnt,"containerRepBody"))
+                    clElemnt.className='containerBody';
+
+                clElemnt=document.getElementById("containerDiv");
+                if(util.hasClass(clElemnt,"containerRepDiv"))
+                    clElemnt.className='containerDiv';
+            }*/
+            if(isSlateGreyTheme())//&& !isIgnoreMultipane
+            {
+                var objTrNaveMenu;
+                objTrNaveMenu = document.getElementById("tblNavMenu");
+                if(objTrNaveMenu)
+                {
+                    $('#tblNavMenu').find('.selectedLink').each(function(){
+                        $(this).removeClass("selectedLink");
+                    });
+                    $('#tblNavMenu').find('.selectedSubLink').each(function(){
+                        $(this).removeClass("selectedSubLink");
+                    });
+                    //if(objMenuItem!=null)
+                    //{
+                        $('#tblNavMenu').find('.selectedMenu').each(function(){
+                            $(this).removeClass("selectedMenu");
+                        });
+                    //}
+                    if(objMenuItem!=null)
+                    {
+                        var objIcon =objMenuItem.parentNode.children[0];
+                        var objText =objMenuItem.parentNode.children[1];
+                        var objMenu = objMenuItem.parentNode.parentNode;
+                        var objMenuParent = objMenuItem.parentNode.parentNode.parentNode;
+                        if(util.hasClass(objMenuParent,"nm-Tabhome"))
+                        {
+                            util.addClass(objIcon,"selectedLink");
+                            util.addClass(objText,"selectedLink");
+                        }
+                        else{
+                            util.addClass(objIcon,"selectedSubLink");
+                            util.addClass(objText,"selectedSubLink");
+                            util.addClass(objMenu,"selectedMenu");
+                        }
+                    }
+                    //util.addClass(objMenuItem,"selectedLink");
+                }
+
+                var byWindowType=Constants.IMODULE_WINDOW.DEFAULT;
+                var objEvtOriginWindow=clEvent?clEvent.view:null;
+                if(objEvtOriginWindow==window) //event from parent window
+                {
+                    /*   var objViewMode=document.getElementById("viewmode");
+                     if(objViewMode && objViewMode.value==Constants.LIST_LAYOUT)
+                     {*/
+                    if(isListViewEvent || isCenterDlg || iActionId == Constants.NEW)
+                        byWindowType = clAppBuffer.getWindowType();
+                    //}
+                }
+                else
+                    byWindowType = clAppBuffer.getWindowType();
+
+
+                var iClientWidth =parseInt(document.getElementById("hfClientWidth").value);
+
+
+                if(iMenuType==Constants.IMENU.TYPE_TOOLS)
+                {
+                    me.isForceSingleUI = true;
+                }
+                else
+                    me.isForceSingleUI = isForceSingleUI;
+
+
+                if(me.isForceSingleUI)
+                {
+//                clFrame.isNtClsFirstFrame = false;
+//                clFrame.removeAll();
+                    clFrame.DeleteFrameLength();
+
+                    //                clFrame.DeleteFrameLength();
+
+
+                    var isDeleteFrameLength = sParams.indexOf("isCancel=1") == -1;
+                    /*if(sParams.indexOf("isCancel=1")==-1)
+                     me.bMultipaneDisplay=false;
+                     me.ismaximize=null;
+                     me.sFrameTitle= null;*/
+                    showInDefaultPane(sURL, sParams,  sUserCallBack,isIgnoreURL,isDeleteFrameLength,iSrcViewType);
+
+
+                }
+                else if(byWindowType == Constants.IMODULE_WINDOW.REPORT_SPLITPANE)
+                {
+                    //window.frames["drilldowncontentFrame"].clRepDrilldown.setBacktrackData(sURL,sParams,clAppBuffer.getActionId());
+                    //window.frames["iFrameOverlayContentdrilldown_"+clAppBuffer.getReportTrackIndex()].clRepDrilldown.setBacktrackData(sURL,sParams,clAppBuffer.getActionId());
+                    clReportCriteria.setDrilldownBacktrackData(sURL,sParams,clAppBuffer.getActionId());
+                }
+                else if(util.checkBit(clAppBuffer.getModulewiseProperties(iModuleId),Constants.IMODULE_WINDOW.MULTI_PANE)
+                    || byWindowType == Constants.IMODULE_WINDOW.MULTI_PANE)
+                {
+                    sParams +="&windowType="+Constants.IMODULE_WINDOW.MULTI_PANE+"&saveUrlType="+Constants.ISave_Url_Type.PRIMARY;
+                    clAppBuffer.setWindowType(Constants.IMODULE_WINDOW.MULTI_PANE);
+                    var isRemoveAllFrames=true;
+                    if(iPrevWindowType!=Constants.IMODULE_WINDOW.MULTI_PANE)
+                    {
+//                    document.getElementById("dvCenter").innerHTML="";
+                        clFrame.DeleteFrameLength();
+                        isRemoveAllFrames=false;
+                    }
+
+                    clFrame.setFrame(iModuleId,sURL,objMenuItem,isIgnoreURL,sUserCallBack,isIgnoreForHashing,sParams,clEvent,false,iClientWidth,isRemoveAllFrames);
+
+                }
+                else if(util.checkBit(clAppBuffer.getModulewiseProperties(iModuleId),Constants.IMODULE_WINDOW.TABBEDT_PANE)
+                    || byWindowType == Constants.IMODULE_WINDOW.TABBEDT_PANE)
+                {
+//                clFrame.setFrame(Constants.IMODULE_WINDOW.TABBEDT_PANE,iModuleId,sURL,objMenuItem,isIgnoreURL,sUserCallBack,isIgnoreForHashing,sParams,clEvent);
+                    sParams +="&windowType="+Constants.IMODULE_WINDOW.TABBEDT_PANE+"&saveUrlType="+Constants.ISave_Url_Type.PRIMARY;
+                    clAppBuffer.setWindowType(Constants.IMODULE_WINDOW.TABBEDT_PANE);
+                    clFrame.setFrame(iModuleId,sURL,objMenuItem,isIgnoreURL,sUserCallBack,isIgnoreForHashing,sParams,clEvent,true,iClientWidth,true);
+
+                }
+                else if(byWindowType == Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE )
+                {
+                    /* if(sParams.indexOf("&byAction="+Constants.NEW) != -1)
+                     clAppBuffer.setActionId(Constants.NEW);*/
+
+
+                    /* if(sParams.indexOf("&byAction="+Constants.NEW) != -1){
+                     clAppBuffer.setSubWindowType(Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE);
+                     clAppBuffer.setActionId(Constants.NEW);
+                     clSplit.createNewRecordInModule(sURL + "?"+ sParams);
+                     }
+                     else if(clAppBuffer.getSubWindowType() == Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE){
+                     var  sParam = sURL.indexOf("isCancel=1") == -1?"&isSaveUrl=true&saveUrlType="+Constants.ISave_Url_Type.PRIMARY:"&windowType="+clAppBuffer.getWindowType();
+                     if(iActionId == Constants.IActions.CANCEL
+                     ||  iActionId == Constants.DELETE  ){
+                     if(getDialogBox("recordInModuleDlg"))
+                     getDialogBox("recordInModuleDlg").hide();
+                     }
+                     else{
+
+                     if(sURL.indexOf("?")!=-1){
+                     sParams = sURL.substring(sURL.indexOf("?")+1) +"&";
+                     sURL = sURL.substring(0,sURL.indexOf("?"));
+                     sURL = "common/modSettings!getFrameTemplate.do?url="+sURL+"&isIFrame=true&isExcludeJs=false&"+sParams+"&isHideBackUrl=true";
+                     }
+                     else
+                     sURL = "common/modSettings!getFrameTemplate.do?url="+sURL+"&isIFrame=true&isExcludeJs=false&"+sParams+"&isHideBackUrl=true";
+                     var objDlgIFrame = document.getElementById("recordInModuleDlgcontentFrame");
+                     objDlgIFrame.src = sURL;
+                     objDlgIFrame.onLoad = function(){
+                     util.toggleBackground(false);
+                     objDlgIFrame.height = objDlgIFrame.contentWindow.document.body.scrollHeight + "px";
+                     };
+                     //            con.sendPostRequest(sUrl,sParam,null,"parent.clSplit.setResponseToDlg",null,null,null,false,false,iActionType,false,{'d_actionid':iActionId,'d_windowtype':home.getWindowType()});
+                     }
+                     }
+                     else*/{
+                    /*if(iActionId == Constants.DELETD:\apache-tomcat-6.0.26\webapps\streamline\WEB-INF\classes\com\focus\erp\crm\business\dao\moduleE){
+                     clAppBuffer.setActionId(0);
+                     *//*clFrame.isNtClsFirstFrame = false;
+                     clFrame.removeAll();*//*
+                     isListViewEvent = true;
+                     }*/
+                    if((isCenterDlg || iActionId == Constants.NEW) && document.getElementById("tdMultipane1")){
+                        clAppBuffer.setSubWindowType(Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE);
+                        sParams += "&saveUrlType="+Constants.ISave_Url_Type.SECONDARY;//&isSaveUrl=true
+                        //sParams += "&viewIn="+Constants.IMODULE_WINDOW.SPLIT_PANE;
+                        clSplit.fullDialog(sURL + "?"+ sParams);
+                    }
+                    else if(clAppBuffer.getSubWindowType() == Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE){
+
+                        if(iActionId == Constants.IActions.CANCEL
+                            ||  iActionId == Constants.DELETE  ){
+                            if(getDialogBox("recordInModuleDlg"))
+                                getDialogBox("recordInModuleDlg").hide();
+                            clAppBuffer.setActionId(0);
+                        }
+                        else{
+
+                            if(sURL.indexOf("?")!=-1){
+                                sParams = sURL.substring(sURL.indexOf("?")+1) +"&";
+                                sURL = sURL.substring(0,sURL.indexOf("?"));
+                                sURL = "common/modSettings!getFrameTemplate.do?url="+sURL+"&isIFrame=true&isExcludeJs=false&"+sParams+"&isHideBackUrl=true";
+                            }
+                            else
+                                sURL = "common/modSettings!getFrameTemplate.do?url="+sURL+"&isIFrame=true&isExcludeJs=false&"+sParams+"&isHideBackUrl=true";
+                            sURL += "&windowType="+clAppBuffer.getWindowType();
+                            if(sURL.indexOf("isCancel=1") == -1)
+                                sURL += "&saveUrlType="+Constants.ISave_Url_Type.SECONDARY;//&isSaveUrl=true
+                            var objDlgIFrame = document.getElementById("recordInModuleDlgcontentFrame");
+                            objDlgIFrame.src = sURL;
+                            objDlgIFrame.onLoad = function(){
+                                util.toggleBackground(false);
+                                objDlgIFrame.height = objDlgIFrame.contentWindow.document.body.scrollHeight + "px";
+                            };
+                            //            con.sendPostRequest(sUrl,sParam,null,"parent.clSplit.setResponseToDlg",null,null,null,false,false,iActionType,false,{'d_actionid':iActionId,'d_windowtype':home.getWindowType()});
+                        }
+                    }
+                    else{
+                        sParams +="&windowType="+Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE+"&saveUrlType="+Constants.ISave_Url_Type.PRIMARY;
+                        iClientWidth = parent.util.getWindowDimensions()[0] - 50;
+
+                        clAppBuffer.setWindowType(Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE);
+                        clFrame.setFrame(iModuleId,sURL,objMenuItem,isIgnoreURL,sUserCallBack,isIgnoreForHashing,sParams,clEvent,true,parseInt(iClientWidth * 0.75),isListViewEvent);
+                    }
+                }
+                }
+                else if(byWindowType == Constants.IMODULE_WINDOW.SPLIT_PANE )
+                {
+                    if(sParams.indexOf("&byAction="+Constants.NEW) != -1){
+                        clAppBuffer.setActionId(Constants.NEW);
+                        clAppBuffer.setSubWindowType(Constants.IMODULE_WINDOW.SPLIT_PANE);
+                        sParams += "&viewIn="+Constants.IMODULE_WINDOW.SPLIT_PANE;
+                        clSplit.fullDialog(sURL + "?"+ sParams);
+                    }
+                    else{
+                        clSplit.setSrcToIFrame(sURL + "?"+ sParams,clAppBuffer.getActionId());
+                    }
+                }
+
+                else// Constants.IMODULE_WINDOW.DEFAULT
+                {
+
+                    var isDeleteFrameLength = sParams.indexOf("isCancel=1") == -1;
+                    /*if(sParams.indexOf("isCancel=1")==-1)
+                     me.bMultipaneDisplay=false;
+                     me.ismaximize=null;
+                     me.sFrameTitle= null;*/
+                    showInDefaultPane(sURL, sParams,  sUserCallBack,isIgnoreURL,isDeleteFrameLength,iSrcViewType);
+
+
+                    /*  me.setContainerType(Constants.IMODULE_WINDOW.DEFAULT)
+
+                     //if(sParams.indexOf("isCancel=1")==-1)
+                     //  me.bMultipaneDisplay=false;
+                     //me.ismaximize=null;
+                     //me.sFrameTitle= null;
+
+                     if(!isIgnoreURL)
+                     sParams+="isSaveUrl=true";
+                     util.toggleBackground(true);
+                     con.sendPostRequest(sURL, sParams,null, sUserCallBack, false, null, null, false, false, ACTION_LOADING);*/
+
+                }
+
+
+            }
+            else// default theme
+            {
+                if(clAppBuffer.getWindowType()==Constants.IMODULE_WINDOW.REPORT_SPLITPANE)
+                {
+                    //window.frames["drilldowncontentFrame"].clRepDrilldown.setBacktrackData(sURL,sParams,me.getActionId());
+                    //window.frames["iFrameOverlayContentdrilldown_"+clAppBuffer.getReportTrackIndex()].clRepDrilldown.setBacktrackData(sURL,sParams,clAppBuffer.getActionId());
+                    clReportCriteria.setDrilldownBacktrackData(sURL,sParams,clAppBuffer.getActionId());
+                }
+                else
+                    showInDefaultPane(sURL, sParams,  sUserCallBack,isIgnoreURL,true,iSrcViewType);
+
+                /*  me.setContainerType(Constants.IMODULE_WINDOW.DEFAULT)
+
+                 if(window["clNavMenu"]!=undefined)
+                 clFrame.setMultipaneDisplay(false);
+
+                 // util.toggleBackground(true);
+                 if(!isIgnoreURL)
+                 sParams+="isSaveUrl=true";
+                 con.sendPostRequest(sURL, sParams, null, sUserCallBack, false, null, null, false, false, ACTION_LOADING);*/
+
+
+            }
+
+            //}
+            /*catch(err)
+             {
+             err.message="Exception:{setCenterUI }-"+err.message
+             console.log(err.message);
+             throw err;
+             }*/
+
+        };
+
+        function showInDefaultPane(sURL,sParams,sUserCallBack,isIgnoreURL,isDeleteFrameLength,iSrcViewType)
+        {
+            /*if(isDeleteFrameLength)
+             clFrame.DeleteFrameLength();*/
+
+            //console.log("u== "+sURL+" === "+sParams);
+            clAppBuffer.setWindowType(Constants.IMODULE_WINDOW.DEFAULT);
+
+            //if(sParams.indexOf("isCancel=1")==-1)
+            //  me.bMultipaneDisplay=false;
+            //me.ismaximize=null;
+            //me.sFrameTitle= null;
+
+            //if(!isIgnoreURL)
+            //    sParams+="isSaveUrl=true";
+            util.toggleBackground(true);
+            con.sendPostRequest(sURL, sParams,null, sUserCallBack, false, null, null, false, false, ACTION_LOADING,false,[sURL+"?"+sParams,iSrcViewType]);
+        }
+
+        /**
+         * This method purpose is to call onclick function when user clicks on the Magazine menuitems
+         * @param sURL
+         * @param objMenuItem
+         * @param evt
+         */
+        this.setTabmenuCenterUI = function(sURL,
+                                           objMenuItem,
+                                           isIgnoreURL,
+                                           isHideLeftPanel1,
+                                           sUserCallBack,isIgnoreForHashing,e,iMenuId)
+        {
+            try
+            {
+                e=cross.getEvent(e);
+                if((cross.isIE() && e.button==4) ||e.button==1)
+                {
+                    util.toggleBackground(false);
+                    if (e.preventDefault)
+                        e.preventDefault();
+                    else
+                        e.returnValue= false;
+                    var iModuleId = sURL.substring(sURL.indexOf("moduleId="),sURL.length);
+                    iModuleId = iModuleId.substring(iModuleId.indexOf("moduleId=")+9,iModuleId.indexOf("&"));
+                    window.open(clAppBuffer.getContextPath()+"/crmhome.do?url="+sURL+"&isOnMouseScroll=true&tabModuleId="+iModuleId);
+                    return;
+                }
+                else
+                    home.setCenterUI(sURL,objMenuItem,isIgnoreURL,isHideLeftPanel1,sUserCallBack,isIgnoreForHashing,e,false,false,false,null,false,iMenuId);
+            }
+            catch(err)
+            {
+                err.message="Exception:{home.setTabmenuCenterUI }-"+err.message
+                console.log(err.message);
+                throw err;
+            }
+        }
+
+        /**
+         * This method purpose is to restrict the moduleconfig onclick function when user clicks on the Magazine menuitems
+         * @param sURL
+         * @param objMenuItem
+         * @param evt
+         */
+        this.menuCallBack = function (sURL,
+                                      objMenuItem,
+                                      evt,
+                                      ignoreForHashing,sUserCallBack,menuId)
+        {
+
+            try
+
+            {
+                // alert(sURL)
+                /*if(objMenuItem  && objMenuItem.getAttribute("typeid")==Constants.IMENU.ITEMTYPE_SERVICES_PRODUCT)// in case of Product service i,e typeid=13*//*&& (objMenuItem.getAttribute("onmousedown")+"").indexOf("moduleId="+Constants.SERVICES)>0*//*
+                    me.onClkProductServicesDlg();
+                *//* else if(objMenuItem &&  objMenuItem.getAttribute("typeid")==Constants.IMENU.ITEMTYPE_CALL_SLOT_DEFINITION)// in case of Product service i,e typeid=13
+                 me.onClkSlotDefinitionDlg();*/
+                if(objMenuItem &&  objMenuItem.getAttribute("typeid")==Constants.IMENU.ITEMTYPE_STAGE_UPDATION)// in case of Product service i,e typeid=13
+                    me.onClkPMSStageDlg();
+                else
+                    home.setTabmenuCenterUI(sURL, objMenuItem,false,false,sUserCallBack,false,evt,menuId);
+                /* if(!ignoreForHashing)
+                 { //  alert(ignoreForHashing)
+                 app.setHashLocation(sURL);
+                 }*/
+
+                // if(window.location.hash)
+
+
+            }
+            catch(err)
+            {
+                err.message="Exception:{home.menuCallBack }-"+err.message
+                console.log(err.message);
+                throw err;
+            }
+            //cancelBubble(evt);     todo: problem while calling document registered events.....
+        };
+
+        this.addRecentItems = function(sTitle, sURL)
+        {
+            clLeft.addRecentItems(sTitle, sURL);
+        };
+
+        this.addRecentMenus = function(sTitle, sURL)
+        {
+            clLeft.addRecentMenus(sTitle, sURL);
+        };
+
+        this.handleResponse = function (sResponse,iStatusCode,sMsg,appValue,objReqCache,isNonUI)
+        {
+
+
+            // util.writeToLog("handleResponse")
+            if(iStatusCode==MSG_SECURITY_EXCEPTION || iStatusCode==MSG_BUSINESS_MESSAGE)
+                return;
+            try
+            {
+
+                me.isFormDataUpdated=false;
+
+                function onScriptsLoad()
+                {
+                    if (typeof window["initAllCombos"] == "function")
+                        initAllCombos();
+                    // alert("onScriptsLoad222")
+
+                    if(!isNonUI)
+                    {
+                        // util.writeToLog("onScriptsLoad")
+                        util.toggleBackground(false);
+                        util.endLoadTimer();
+                    }
+                };
+
+                window.scrollTo(0,0);
+
+                if(appValue=='showdlg') //TODO
+                {
+                    sResponse=eval(sResponse);
+                    var sUrl=sResponse[0];
+                    var sDlgTitle=sResponse[1];
+                    var iWidth=sResponse[2];
+                    var iHeight=sResponse[3];
+                    var sOnClick=sResponse[4];
+                    var arrActions = new Array();
+                    arrActions[0] = MsgHandler.getMsg(MsgConstants.OK)+"|"+sOnClick;
+                    arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL)+"|parent.app.hidePopUp";
+
+                    //alert(sUrl)
+                    app.showPopUp(sUrl, sDlgTitle, iWidth, iHeight, arrActions);
+                    return;
+                }
+
+                toggleLeftFrame();
+
+                /*if(document.getElementById("dvSetup"))
+                 {
+                 if(!me.isUserHidesLeftPanel)
+                 {
+                 if(me.isHideLeftPanel)
+                 onClkHideLeftFrame();
+                 else
+                 onClkShowLeftFrame();
+                 }
+                 }*/
+                //             alert("1233333");
+
+
+                // util.toggleBackground(false);
+                if(isSlateGreyTheme() )
+                {
+                    var iActionId = 0;
+                    var l_iWindowType = 0;
+                    if(objReqCache)
+                    {
+
+                        iActionId = parseInt(objReqCache['d_actionid']);
+                        l_iWindowType = parseInt(objReqCache['d_windowtype']);
+                        clAppBuffer.setActionId(iActionId);
+                    }
+                    else
+                    {
+                        iActionId =  clAppBuffer.getActionId();
+                        l_iWindowType = clAppBuffer.getWindowType();
+                    }
+
+
+                    var objDvCenter,objTd,objTdCenter;
+                    var isMultipaneDisplay=clFrame.isMultipaneDisplay();
+                    var objDvCenter=document.getElementById(me.getContainerId());
+                    var objTd = document.getElementById("td");
+                    var objTdCenter =  document.getElementById("tdCenter");
+
+                    if(l_iWindowType==Constants.IMODULE_WINDOW.MULTI_PANE
+                        || l_iWindowType==Constants.IMODULE_WINDOW.TABBEDT_PANE)
+                    {
+                        clFrame.handleResponseHTML(sResponse);
+                    }
+
+                    else if(l_iWindowType == Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+                    {
+                        /*if(iActionId == Constants.DELETE)
+                         listView.getToggleView(false);
+                         else
+                         listView.getRefresh();*/
+                        if(clAppBuffer.getSubWindowType() == Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE){
+                            /*if(iActionId == Constants.IActions.SAVE
+                             || iActionId == Constants.IActions.SAVE_AND_NEW){
+                             clSplit.setResposeToIFrame(sResponse,iActionId);
+                             }
+                             else*/{
+                                getDialogBox("recordInModuleDlg").hide();
+                                clAppBuffer.setActionId(0);
+                                clAppBuffer.setSubWindowType(Constants.IMODULE_WINDOW.DEFAULT);
+                            }
+
+
+                        }
+                        else{
+
+                            clFrame.handleResponseHTML(sResponse,"listView.getRefresh");
+                        }
+                    }
+                    else if(l_iWindowType == Constants.IMODULE_WINDOW.REPORT_SPLITPANE)
+                    {
+                        //window.frames["drilldowncontentFrame"].clRepDrilldown.handleResponse(sResponse,iActionId);
+                        //window.frames["iFrameOverlayContentdrilldown_"+clAppBuffer.getReportTrackIndex()].clRepDrilldown.handleResponse(sResponse,iActionId);
+                        clReportCriteria.handleDrilldownResponse(sResponse,iActionId);
+                    }
+                    else
+                    {
+                        clFrame.isNtClsFirstFrame = false;
+                        if(window["clFrame"]!=undefined && clFrame.arrFrames.length>0)
+                            clFrame.DeleteFrameLength();
+
+
+                        home.setBodyContent(sResponse,objReqCache,onScriptsLoad);
+                    }
+                }
+                else
+                {
+                    var iActionId = 0;
+                    var l_iWindowType = 0;
+
+                    if(objReqCache)
+                    {
+                        iActionId = parseInt(objReqCache['d_actionid']);
+                        l_iWindowType = parseInt(objReqCache['d_windowtype']);
+                        clAppBuffer.setActionId(iActionId);
+                    }
+                    else
+                    {
+                        iActionId =  clAppBuffer.getActionId();
+                        l_iWindowType = clAppBuffer.getWindowType();
+                    }
+                    if(l_iWindowType == Constants.IMODULE_WINDOW.REPORT_SPLITPANE)
+                    {
+                        //window.frames["drilldowncontentFrame"].clRepDrilldown.handleResponse(sResponse,iActionId);
+                        //window.frames["iFrameOverlayContentdrilldown_"+clAppBuffer.getReportTrackIndex()].clRepDrilldown.handleResponse(sResponse,iActionId);
+                        clReportCriteria.handleDrilldownResponse(sResponse,iActionId);
+                    }
+                    else
+                    {
+                        home.setBodyContent(sResponse,objReqCache,onScriptsLoad);
+                        /*clAppBuffer.setBackUrlResponse(document.getElementById("dvCenter").innerHTML);
+                        app.setBodyContent(document.getElementById("dvCenter"), sResponse, onScriptsLoad);*/
+                    }
+                }
+
+            }
+            catch(err)
+            {
+                err.message="Exception:{home.handleResponse}-"+err.message;
+                console.log(err.message)
+                throw err;
+            }
+
+            util.toggleBackground(false);
+            if(getDialogBox("clMapMarker")!=undefined)
+                getDialogBox("clMapMarker").hide();
+
+
+
+        };
+
+        this.setBodyContent=function(sResponse,objReqCache,onScriptsLoad)
+        {
+            var objDvCenter=document.getElementById(me.getContainerId());
+            var isRetainPrevInstances=false;
+            if(objReqCache && objReqCache[1]==Constants.LIST_LAYOUT)
+            {
+                var objInputArray=objDvCenter.getElementsByTagName('input');
+                for(var i=0;i<objInputArray.length;i++)
+                    objInputArray[i].setAttribute('value', objInputArray[i].value);
+
+
+                var objDvParent=objDvCenter.parentNode;
+                var objDvCenterNew=document.createElement("DIV");
+                objDvCenterNew.id="dvCenter";
+                objDvCenterNew.setAttribute("isnew","true");
+
+                clAppBuffer.setBackUrlResponse(objDvParent.removeChild(objDvCenter));
+
+                objDvParent.appendChild(objDvCenterNew);
+                objDvCenter = objDvCenterNew;
+
+
+                //clAppBuffer.setBackUrlResponse(objDvCenter.cloneNode(true));
+
+                isRetainPrevInstances=true;
+            }
+
+            app.setBodyContent(objDvCenter, sResponse, onScriptsLoad,isRetainPrevInstances);
+        };
+
+
+        this.onClkProductServicesDlg = function()
+        {
+            var arrActions = new Array(),clProductDlg;
+            arrActions[0] = MsgHandler.getMsg(MsgConstants.OK)+"|clProductServiceDlg.saveProductServices();";
+            arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL)+"|";
+            //         var sUrl="/support/contract!getProductServices.do";
+            var sUrl="/support/contract!getServicesList.do";
+            clProductDlg = new DialogBox("clProductDlg",MsgHandler.getMsg(MsgConstants.PRODUCT_SERVICES),140,160,530,500,sUrl, true, null, true,true,arrActions);
+            clProductDlg.setCenter();
+            clProductDlg.show();
+
+        };
+        this.onClkPMSStageDlg = function()
+        {
+            var arrActions = new Array(),clProductDlg;
+            arrActions[0] = MsgHandler.getMsg(MsgConstants.SAVE)+"|clStageupdation.savePMSStage();";
+            arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL)+"|";
+            //         var sUrl="/support/contract!getProductServices.do";
+            var sUrl= "pms/propertyView!getPMSStage.do";
+            clProductDlg = new DialogBox("clPmsStageDlg","Stage Updation",140,110,510,400,sUrl, true, null, true,true,arrActions);
+            clProductDlg.setCenter();
+            clProductDlg.show();
+
+        };
+
+        /*this.onClkSlotDefinitionDlg = function()
+         {
+         var clDlg=getDialogBox("dlgSlot");
+         var arrActions = new Array();
+         arrActions[0]="Save|clSlotDefinition.saveSlot";
+         arrActions[1]="Cancel|";
+         var sUrl = con.getStruts2Url("support","timeSlot.do","getSlotDefinition");
+         clDlg = new DialogBox("dlgSlot","Time-Slot Definition",100,100,500,450,sUrl, true, null, true,true,arrActions);
+         clDlg.setCenter();
+         clDlg.show();
+         };*/
+        //***************** Left Page*************************
+
+        //***************** LookUp Search*************************
+        /**
+         * This is function is used for get the LookUp search dialog......
+         * @param iModuleId  : Module Id
+         * @param sFnSetCallBack : for related result
+         * @param isReturnAsId : if it is true return transid Wonly ..otherwise return key|value pair)
+         * @param args : optional(arguments for function callback)
+         */
+        /*    this.onClkGetLookUpDlg = function(iModuleId,sFnSetCallBack,isReturnAsId,args,sComboId,sQuickCreateParams)
+         {
+         this.fnCallBack = sFnSetCallBack;
+         if(args == null)
+         args = [];
+         this.args = args;
+         var sId,sUrl,lookUpDlg = null,usersDlg = null,sResult,arrActions;
+         arrActions = new Array();
+         if(iModuleId == Constants.USERS)      // get users tree
+         {
+         sId="users";
+         if(usersDlg == null)
+         usersDlg = getDialogBox(sId);
+         //sUrl = "security/users!getUserHirearchy.do";
+         sResult = "?locationId=0";
+         arrActions[0] = MsgHandler.getMsg(MsgConstants.OK)+"|clLookin.getSelectedValues";
+         arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL)+"|parent.home.closeUsersDlg";
+         sUrl = me.sUsersUrl+""+sResult;
+
+         usersDlg = new DialogBox(sId,":: "+me.sDlgTitle+" ::",250,40,500,400, sUrl, true,null, false,true,arrActions,false,null,false);
+         //usersDlg.setBounds(250,40,550,250);
+         usersDlg.callFn("clLookin.getCallBack",[parent.home.getUser],sId);
+         usersDlg.setCenter();
+         usersDlg.show();
+         }
+
+         else
+         {
+         sId="lookup";
+         if(lookUpDlg == null)
+         lookUpDlg = getDialogBox(sId);
+         sResult="?moduleId="+iModuleId+"&isReturnAsId="+isReturnAsId;
+         if(sComboId)
+         {
+         var clCombo = getComboInstance(sComboId);
+         if(clCombo.getCondition())
+         sResult+="&sCondition="+clCombo.getCondition();
+
+         var arrValues=clCombo.getCascadeValues();
+         if(arrValues)
+         {
+         me.arrLastCastVals=null;
+         me.arrLastCastVals=arrValues[2];
+         //alert(me.arrLastCastVals.join(','))
+         if(arrValues[0])sResult+="&casFieldId="+arrValues[0];
+         if(arrValues[1])sResult+="&casParentIds="+arrValues[1];
+         if(arrValues[2])sResult+="&casVals="+arrValues[2];
+         }
+
+         arrValues=clCombo.getRelModValues();
+         if(arrValues)
+         {
+         if(arrValues[0])sResult+="&relModTypes="+arrValues[0];
+         if(arrValues[1])sResult+="&relModSeqIds="+arrValues[1];
+         if(arrValues[2])sResult+="&targetModuleType="+arrValues[2];
+         }
+
+         sResult+="&parentId="+clCombo.getParentId()+"&selectionType="+clCombo.getSelectionType()+"&selectionBy="+clCombo.getSelectionBy();
+         }
+         arrActions[0] = MsgHandler.getMsg(MsgConstants.OK)+"|clLookUp.onClkSaveLookUp";
+         arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL)+"|parent.home.closeLookupDlg";
+         //sUrl = getStruts2Url(null,"module/search.do",null,sResult,true);
+         sUrl = me.sLookUpUrl+""+sResult;
+         if(sQuickCreateParams)
+         sUrl +="&quickCreateParams="+util.encodeURI(sQuickCreateParams);
+         lookUpDlg = new DialogBox(sId,":: "+me.sDlgTitle+" ::",140,160,640,540,sUrl, true, null, false,true,arrActions,false,null,false);
+         //lookUpDlg.setBounds(140,160,630,455);
+         lookUpDlg.setCenter();
+         lookUpDlg.show();
+         }
+         };*/
+        this.iModDlgId=null;
+        this.byAppntType=0;
+
+        this.showModuleDlg=function(iModuleId,fnCallBack,sUrlParams,sTitle,isEdit,imgEdit,byAppntType,iWidth,iHeight,iTransId)
+        {
+            try
+            {
+                var sUrl=me.sCreateNewUrl+"?moduleId="+iModuleId+"&byAction="+Constants.NEW+"&viewIn="+Constants.MODULE_IN_DLG;
+                me.iModDlgId=iModuleId;
+                if(byAppntType)
+                    me.byAppntType = byAppntType;
+                if(fnCallBack)
+                    sUrl+="&sFnSaveCallback=parent."+fnCallBack;
+                var iModTabId=0
+                if(isEdit)
+                {
+                    if(me.byAppntType==2)//when type= event
+                        iModTabId=Constants.NEW_EVENT;
+                    else if (me.byAppntType==3)//when type= meeting
+                        iModTabId=Constants.NEW_MEETING;
+                    else
+                        iModTabId=iModuleId;
+
+                    if(iTransId == undefined || iTransId<=0)
+                        iTransId = listView.getSelectedTransId("listReportTab_"+iModTabId,0,imgEdit);
+
+                    sUrl+="&transId="+iTransId;
+                }
+                if(sUrlParams)
+                    sUrl+=sUrlParams;
+                //alert(sUrl)
+                if(!sTitle)
+                    sTitle = MsgHandler.getMsg(MsgConstants.NEW);//"New";
+                if(iWidth==undefined || iWidth==0)
+                    iWidth=680;
+                if(iHeight==undefined || iHeight==0)
+                    iHeight=380;
+                app.showPopUp(sUrl, sTitle, iWidth, iHeight, null);
+
+            }
+            catch(err)
+            {
+                err.message="Exception:{home.handleResponse}-"+err.message;
+                console.log(ee)
+                throw err;
+            }
+        };
+
+
+        this.showModuleOverlay=function(iModuleId,iTransId,sFnCallBack,sUrlParams,sTitle)
+        {
+            var sUrl;
+            //sUrl=me.sCreateNewUrl+"?moduleId="+iModuleId+"&transId="+iTransId+"&viewIn="+Constants.MODULE_IN_OVERLAY;
+            //sUrl = "common/activities!getNewTaskOrAppointment.do?moduleId="+iItemValue+"&isBuffer=true&type="+iType+"&byLayoutType=8";
+
+            if(iModuleId==Constants.CALL_WORKLOG)
+                sUrl="module/moduleView!getCallModules.do?moduleId="+iModuleId+"&actionId="+Constants.NEW_CALL_WORKLOG
+                    +"&transId="+iTransId+"&viewIn="+Constants.MODULE_IN_OVERLAY;
+            else
+                sUrl=me.sCreateNewUrl+"?moduleId="+iModuleId+"&transId="+iTransId+"&byAction="+Constants.NEW+"&viewIn="+Constants.MODULE_IN_OVERLAY;
+
+
+            if(sUrlParams)
+                sUrl+="&"+sUrlParams;
+
+            if(sFnCallBack)
+                sUrl+="&sFnSaveCallback="+sFnCallBack;
+            else
+                sUrl+="&sFnSaveCallback=parent.home.hideModuleOverlay";
+
+            var arrActions = [];
+            var sAction="moduleView.saveModuleDetails()";
+            arrActions[0] = "Save|"+sAction;
+
+            clOverlay.showFrameOverlay("editModule",sUrl,"80%","100%",clOverlay.OVERLAY_RIGHT,0,0,null,sTitle,"containerDiv",true,arrActions,true,true,null,null,null,true);
+
+        };
+
+
+        this.hideModuleOverlay=function(sResponse)
+        {
+            //alert("sResponse==="+sResponse)
+            clOverlay.closeOverlay(null,clOverlay.OVERLAY_RIGHT,"editModule",true);
+        };
+
+
+        this.callbackModuleDlg=function(sResponse)
+        {
+            var isDashletCalendar = true,sUrl;
+            if(document.getElementById("isDashboardCalendar")!=null && me.iModDlgId==Constants.TASKS)
+                isDashletCalendar = document.getElementById("isDashboardCalendar").value;
+            sUrl="common/calendarScheduler!getCalendarEvents.do?isDashletCalendar="+isDashletCalendar+"&iModuleId="+me.iModDlgId+"&appntType="+me.byAppntType+"&isRefresh=true";
+            if(me.byAppntType==2)
+                me.iModDlgId=22;
+            else if (me.byAppntType==3)
+                me.iModDlgId=47;
+            var sReportId="";
+            if(me.iModDlgId==Constants.TASKS)
+                sReportId="dvList"+me.iModDlgId;
+            else {
+                sReportId = "reportData" + me.iModDlgId;
+                sUrl +="&isBuffer=true";
+            }
+            listView.refreshListView(sUrl,me.iModDlgId,false,sReportId);
+            app.hidePopUp();
+            //        listView.refreshListView();
+
+        };
+
+        this.callbackAppointmentDlg =function()
+        {
+            var sId = parent.document.getElementById("tblDashletCalendar").parentNode.parentNode.getAttribute("id");
+            var sUrl="common/calendarScheduler!getDashboardCalendar.do?isBuffer=true&appntType="+me.byAppntType+"&isRefresh=false&contentDivId="+sId;
+            dashboard.setDashletUI(sUrl,sId,null,null);
+            app.hidePopUp();
+        };
+
+        /* this.showModuleOnlineCreate=function(iModuleId,fnCallBack,arrCallBackArgs,sUrlParams,iBaseModuleId,isEdit,iTransId)
+         {
+         var sUrl;//,sTitle,iModuleId;
+         me.fnCallBack = fnCallBack;
+         me.iModuleId = iModuleId;
+         me.args = arrCallBackArgs;
+         sUrl=me.sCreateNewUrl+"?moduleId="+iModuleId+"&viewIn="+Constants.MODULE_IN_DLG;
+         var sTitle="";
+         if(isEdit)
+         {
+         sTitle=MsgHandler.getMsg(MsgConstants.EDIT);
+         sUrl+="&transId="+iTransId;
+         sUrl+="&sFnSaveCallback=parent.home.fnSaveCallBack";
+         }
+         else
+         {
+         sTitle=MsgHandler.getMsg(MsgConstants.NEW);
+         sUrl+="&byAction="+Constants.NEW;
+         sUrl+="&sFnSaveCallback=parent.home.getModuleComboLine";
+         }
+
+         sTitle+=" "+clAppBuffer.getModuleCaption(iModuleId,true);
+         sUrl+="&baseModuleId="+iBaseModuleId;
+
+         if(sUrlParams)
+         sUrl+=sUrlParams;
+         app.showPopUp(sUrl, sTitle, 680, 380, null);
+         };*/
+
+        /*this.getModuleComboLine = function(arrParams)
+         {
+         arrParams = eval(arrParams);
+         var sUrl = me.sComboLineUrl+"?moduleId="+me.iModuleId+"&transId="+arrParams[1];
+         con.sendPostRequest(sUrl,null, null, "home.fnSaveCallBack", false);
+         };*/
+
+        /* this.fnSaveCallBack = function(sResponse)
+         {
+         try
+         {
+         home.fnSetCallBack(Constants.OK, sResponse);
+         }
+         catch(e)
+         {
+
+         }
+         app.hidePopUp();
+         //getDialogBox("dlg").hide();
+         };*/
+
+
+
+        /**
+         * callback function for users
+         * @param arrParams
+         */
+        /* this.getUser = function(arrParams)
+         {
+         home.fnSetCallBack(Constants.OK,arrParams[1]+"|"+arrParams[0]);
+         me.closeUsersDlg();
+         };*/
+
+        /**
+         * this function is used for close lookup dialog...
+         */
+        /*    this.closeLookupDlg = function()
+         {
+         me.releaseDialogReportHandles();
+         parent.getDialogBox("lookup").hide();
+         };*/
+
+        this.closeSearchOnDlg = function()
+        {
+            parent.getDialogBox("clSearchAccounts").hide();
+        }
+        this.releaseDialogReportHandles = function()
+        {
+            con.sendPostRequest(me.sReleaseRepHndlsUrl,null, null, null, false);
+        };
+        /**
+         * this function is used for close lookup user dialog...
+         */
+        /*this.closeUsersDlg = function()
+         {
+         parent.getDialogBox("users").hide();
+         };
+         */
+        /**
+         * callBack function for lookUp search
+         * @param iStatus
+         * @param sResponse
+         */
+        this.fnSetCallBack = function(iStatus, sResponse,iTransId)
+        {
+            //alert("sResponse=="+sResponse);
+            if(me.fnCallBack != undefined || me.fnCallBack != null)
+            {
+                var newArgs = new Array();
+                if(me.args!=undefined && me.args.length>0)
+                {
+                    for (var i = 0; i < me.args.length; i++)
+                        newArgs.push(me.args[i]);
+                }
+                newArgs.push(iStatus);
+                newArgs.push(sResponse);
+                newArgs.push(iTransId);
+                cross.callFunction(window,eval(me.fnCallBack),newArgs);
+            }
+        };
+        //***************** LookUp Search*************************
+        this.handleDocKey  = function(e)
+        {
+            //e=e?e:window.event;
+            e=cross.getEvent(e);
+            var  key = e.keyCode;
+
+            if(cross.isAltPressed(e) && key==82)// ATL+r
+            {// alert(key +" -- "+isAltPressed(e));
+                home.toggleLeftPanel();
+            }
+            app.handleDocKey(e);
+        };
+
+        this.showLeftPanel = function()
+        {
+            onClkShowLeftFrame();
+        };
+        this.isHiddenLeftPanel= function()
+        {
+            return me.isHideLeftPanel ;
+        }
+        this.hideLeftPanel = function()
+        {
+
+            onClkHideLeftFrame();
+        };
+        this.toggleLeftPanel = function()
+        {     //  alert("---")
+            //  alert(document.getElementById('tdLeft').style.display);
+            var sLeftoffsetwidth= document.getElementById('tdLeft').offsetWidth;
+            if (document.getElementById('tdLeft').style.display=='none')
+            {
+                onClkShowLeftFrame();
+                cross.callFunction(window,eval(me.fnToggleCallback),sLeftoffsetwidth);
+                me.isUserHidesLeftPanel=false;
+//            me.CallBackFunc();
+                var iTableWidth=document.getElementById("containerDiv_1").getAttribute("iTableWidth");
+                document.getElementById("containerDiv_1").style.width=iTableWidth;
+            }
+            else
+            {
+                onClkHideLeftFrame();
+                cross.callFunction(window,eval(me.fnToggleCallback),sLeftoffsetwidth);
+                me.isUserHidesLeftPanel=true;
+
+//            me.CallBackFunc();
+                var iTableWidth=document.getElementById("containerDiv_1").style.width;
+                document.getElementById("containerDiv_1").setAttribute("iTableWidth",iTableWidth);
+                document.getElementById("containerDiv_1").style.width=document.getElementById("listId").offsetWidth;
+            }
+        };
+
+        this.CallBackFunc = function()
+        {
+            var objContainer=document.getElementById("listId");
+            var objTable=document.getElementById("containerDiv_1");
+            //alert(objContainer.offsetWidth);
+            objTable.style.width=objContainer.offsetWidth;
+        }
+
+        this.isSplitView = function()
+        {
+            try
+            {
+                if (parent.window["clSplit"] != undefined)
+                    return true;
+            }
+            catch(e)
+            {
+
+            }
+            return false;
+        };
+
+        this.isFrameView = function()
+        {
+            try
+            {
+                if (parent.window["clFrame"] != undefined)
+                    return true;
+            }
+            catch(e)
+            {
+
+            }
+            return false;
+        };
+
+        function isSlateGreyTheme()
+        {
+            try
+            {
+                if (parent.window["clNavMenu"] != undefined)
+                    return true;
+            }
+            catch(e)
+            {
+
+            }
+            return false;
+        }
+
+        function toggleLeftFrame()
+        {
+            if(window["clNavMenu"]!=undefined)
+            {
+                if(cross.getClientWidth()<=768)
+                {
+                    if(!util.hasClass(document.getElementById("navDv"),"nm-hide-navDv")) {
+                        if(document.getElementById("menuType")!= null && document.getElementById("menuType").value==Constants.IMenuType.HORIZONTAL_MENU)
+                            clNavMenu.toggleNavTheme2();
+                        else
+                            clNavMenu.toggleNav(false);
+
+
+                    }
+                }
+
+                clNavMenu.setCallback(null);
+            }
+
+            if(!me.isUserHidesLeftPanel)
+            {
+                if(me.isHideLeftPanel)
+                    onClkHideLeftFrame();
+                else
+                    onClkShowLeftFrame();
+            }
+
+            me.isHideLeftPanel=false;
+        }
+
+        function onClkHideLeftFrame()
+        {
+            var objElement;
+            if( (objElement=document.getElementById('tdLeft'))!=null)
+            {
+                objElement.style.display = 'none';
+                objElement.style.width = 0+'%';
+                document.getElementById('tdCenter').style.width = '97%';
+                document.getElementById('tdresize').className='expandedcursor';
+            }
+            else if(window["clNavMenu"]!=undefined)
+            {
+                var isNavOff = !(clNavMenu.isToggleNavOff()=='true');
+                if(cross.getClientWidth()>768 && isNavOff){
+                    if(document.getElementById("menuType")!= null && document.getElementById("menuType").value==Constants.IMenuType.HORIZONTAL_MENU)
+                        clNavMenu.toggleNavTheme2();
+                    else
+                        clNavMenu.toggleNav(false);
+                }
+            }
+
+        };
+
+        function onClkShowLeftFrame()
+        {
+            var objElement;
+            /*if(isSlateGreyTheme())
+             objdvCenter.style.maxWidth = objCenterWidth+"px";*/
+
+            if( (objElement=document.getElementById('tdLeft'))!=null)
+            {
+                //document.getElementById('tdLeft').style.display='inline';
+                document.getElementById('tdLeft').style.display='table-cell';
+                //document.getElementById('tdLeft').style.display='block';
+
+                //var objArrowDv = document.getElementById('arrowHide');
+                //objArrowDv.className = 'showLeft';
+                //document.getElementById("arroImg1").style.display= "block";
+                //document.getElementById("arroImg2").style.display= "none";
+                //        alert(document.getElementById("clientWidth").value)
+                if(document.body.clientWidth<1024)
+                {
+                    document.getElementById('tdLeft').style.width = '15%';
+                    document.getElementById('tdCenter').style.width = '87%';
+
+                }
+                else
+                {
+                    document.getElementById('tdLeft').style.width = '10%';
+                    document.getElementById('tdCenter').style.width = '81%';
+                }
+                if(document.getElementById('tdresize'))
+                    document.getElementById('tdresize').className='collapsecursor';
+            }
+            /* todo
+             else if(window["clNavMenu"]!=undefined){
+             if(cross.getClientWidth()>768 && clNavMenu.isNavOff())
+             clNavMenu.toggleNav(true);
+             }*/
+        };
+
+        this.toggleCallbackFn = function(fnToggleCallback)
+        {
+            this.fnToggleCallback = fnToggleCallback;
+        };
+        this.connectToFB=function(){
+            //alert(22)
+            var iNetworkType=2,sUrl,sTitle;//1-gmail,2-facebook
+            if(iNetworkType==1){
+                sTitle="Gmail Contacts";
+                //        sUrl=con.getStruts2Url("https://accounts.google.com/ServiceLogin?btmpl=authsub&continue=https%3A%2F%2Faccounts.google.com%2FAuthSubRequest%3Fnext%3Dhttp%253A%252F%252Flocalhost%253A8080%252FsampleProject%252Fdemo%252Fcontacts%2521getDetails.action%26scope%3Dhttp%253A%252F%252Fwww.google.com%252Fm8%252Ffeeds%252F%2B%26secure%3D0%26session%3D1%26hd%3Ddefault&continue2=https%3A%2F%2Fwww.google.com%2Fa%2F%7B%7Bdomain%7D%7D%2FAuthSubRequest%3Fnext%3Dhttp%253A%252F%252Flocalhost%253A8080%252FsampleProject%252Fdemo%252Fcontacts%2521getDetails.action%26scope%3Dhttp%253A%252F%252Fwww.google.com%252Fm8%252Ffeeds%252F%2B%26secure%3D0%26session%3D1&spl=true&passive=true&ul=1");
+                sUrl=con.getStruts2Url("social","networkonline","getContactService",null,true);
+            }
+            else if(iNetworkType==2){
+                sTitle="Facebook Contacts";
+                sUrl ="https://www.facebook.com/dialog/oauth?client_id=154585488036874&state=isFB=1&scope=user_likes,email,user_education_history,user_hometown,user_relationship_details,user_location,user_religion_politics,user_relationships,user_religion_politics,user_work_history,user_website,user_birthday,read_stream,offline_access,user_photos";
+                sUrl+="&redirect_uri="+util.encodeURI("http://127.0.0.1:8080/streamline/social/networkonline!saveNetworkUserInfo.do");
+                sUrl+="&state=isFromFB";
+            }
+
+            //          sUrl=con.getStruts2Url("social","networkonline","saveNetworkUserInfo",null,true);
+            //         var sUrl=con.getStruts2Url("https://accounts.google.com/ServiceLogin?btmpl=authsub&continue=https%3A%2F%2Faccounts.google.com%2FAuthSubRequest%3Fnext%3Dhttp%253A%252F%252Flocalhost%253A8080%252FsampleProject%252Fdemo%252Fcontacts%2521getDetails.action%26scope%3Dhttp%253A%252F%252Fwww.google.com%252Fm8%252Ffeeds%252F%2B%26secure%3D0%26session%3D1%26hd%3Ddefault&continue2=https%3A%2F%2Fwww.google.com%2Fa%2F%7B%7Bdomain%7D%7D%2FAuthSubRequest%3Fnext%3Dhttp%253A%252F%252Flocalhost%253A8080%252FsampleProject%252Fdemo%252Fcontacts%2521getDetails.action%26scope%3Dhttp%253A%252F%252Fwww.google.com%252Fm8%252Ffeeds%252F%2B%26secure%3D0%26session%3D1&spl=true&passive=true&ul=1");
+            //        sUrl+="&redirect_uri="+util.encodeURI("http://127.0.0.1:8080/streamline/social/network!saveNetworkUserInfo.do");
+            //        sUrl+="&redirect_uri=http://127.0.0.1:8080/streamline/social/network!saveNetworkUserInfo.do";
+            //        alert(sUrl)
+            var arrActions = new Array();
+            arrActions[0] = MsgHandler.getMsg(MsgConstants.IMPORT)+"|home.clkImport";
+            arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL)+"|";
+            //        alert(sUrl)
+            var clFBDlg = new DialogBox("import",sTitle,40,60,900,700, sUrl, true, null, true,false,arrActions);
+            clFBDlg.setCenter();
+            clFBDlg.show();
+        };
+        this.arhConnectToFB=function(){
+            var sUrl="https://www.facebook.com/dialog/oauth?client_id=154585488036874&scope=user_likes,email,user_education_history,user_hometown,user_relationship_details,user_location,user_religion_politics,user_relationships,user_religion_politics,user_work_history,user_website,user_birthday,read_stream,offline_access,user_photos";
+            //        sUrl+="&redirect_uri="+util.encodeURI("http://127.0.0.1:8080/streamline/social/network!saveNetworkUserInfo.do");
+            sUrl+="&redirect_uri="+util.encodeURI("http://127.0.0.1:8080/streamline/crmhome.do?modtype="+Constants.CONTACTS+"&url="+
+                    "social/networkonline!saveNetworkUserInfo.do?fromHomePage=true");
+            //sUrl+="&redirect_uri=http://127.0.0.1:8080/streamline/crmhome.do?modtype=2309&url=social%2Fnetwork.do%3Fmethod%3AsaveNetworkUserInfo%26fromHomePage%3Dtrue";
+            window.location.href=sUrl;
+
+        };
+
+        /*this.getReminderView = function(obj,iModuleId,iTransId,sHeaderName,evt,iFieldId)
+         {
+         //        var arrPositions = cross.getPosition(obj);
+         //        var sTableId= (obj.parentNode.parentNode.parentNode.parentNode.parentNode.id);
+         //        var sHeaderName =  cross.getInnerText(new sTable(sTableId).getHeaderElementAt(obj.parentNode.parentNode.cellIndex));
+         var arrPos = me.getXYPositions(evt,470,220);
+         var sUrl= con.getStruts2Url("module","moduleView","getTaskView");
+         sUrl += "date="+util.trim(obj.textContent);
+         sUrl+="&sFnSaveCallback=parent.home.afterSaveCallBack";
+         sUrl+="&moduleId="+iModuleId+"&baseTransId="+iTransId+"&sHeaderName="+sHeaderName+"&fieldId="+iFieldId;
+         //        con.sendPostRequest(sUrl,null,null,"clAddReminder.arhShowReminder");
+         var arrActions,clDlg,sDlg = "reminderDlg";
+         clDlg = getDialogBox(sDlg);
+         //        arrActions  =new Array();
+         //        arrActions[0]="Save|";
+         //        arrActions[1]="Cancel|parent.clAddReminder.onClkHide";
+         clDlg = new DialogBox(sDlg,MsgHandler.getMsg(MsgConstants.ADD)+" "+MsgHandler.getMsg(MsgConstants.REMINDER)+":"+'<span style="color:#526651;">'+sHeaderName+'</span>',arrPos[0],arrPos[1],490,245,sUrl,true,null,true,true,null,false,null,false,false,false,true,true,true,false);
+         //        clDlg.setCenter();
+         clDlg.show();
+
+         };
+
+         this.afterSaveCallBack =function()
+         {
+         getDialogBox("reminderDlg").hide();
+         };*/
+
+        this.getXYPositions = function(evt,iPopupWIdth,iPopupHeight)
+        {
+            var posx = 0,iScrollLeft =0,iScrollTop=0,x,y,arrMousePos ;
+            var posy = 0,iClientHeight,iClientWidth;
+
+            iClientWidth= screen.width;
+            iClientHeight = screen.height;
+
+            arrMousePos = cross.getMousePos(evt);
+            posx = arrMousePos.x;
+            posy = arrMousePos.y;
+
+            iScrollTop = document.body.scrollTop;
+            iScrollLeft =document.body.scrollLeft;
+
+            x = posx+iPopupWIdth+30+iScrollLeft;   //add 30 px for spacing;
+            y =posy+iPopupHeight+20+iScrollTop;    //add 20 px;
+
+            if(x >= iClientWidth )
+                x=((posx+10)-(iPopupWIdth+iScrollLeft));
+            else
+                x=((posx+10)-iScrollLeft);
+
+            if(y >= iClientHeight )
+                y=((posy-20)-(iPopupHeight+iScrollTop));
+            else
+                y=(posy+10)-iScrollTop;
+
+            if(y<0)
+                y=posy-iScrollTop+10 ;
+
+            return [x,y];
+        };
+        /* this.hideReminderview = function()
+         {
+         clearTimeout(cross.timer);
+         //          if(getDialogBox("reminderDlg"))
+         //          getDialogBox("reminderDlg").hide();
+         };*/
+        this.onWHideLeftPanel = function(bHideLeftPanel)
+        {
+            me.isDefHideLeftPanel=bHideLeftPanel;
+        };
+
+        /**
+         * this method is called from detailed view right panel reports block to show reports in dialog
+         * @param sUrl
+         * @param sTitle
+         */
+        this.onClkGetReports = function(sUrl,sTitle)
+        {
+            var iWidth=document.body.clientWidth-100;
+            var iHeight=document.body.clientHeight-80;
+            var arrActions = [];
+            arrActions[0] = MsgHandler.getMsg(MsgConstants.CLOSE);
+            //alert(sUrl)
+            var dlgReport = new DialogBox("clReport",sTitle, 80, 110, iWidth, iHeight, sUrl+"&isBuffer=true&isDisableCustActions=true", true, null, true, true, arrActions, false, null, true, false, false, true, true, false, true);
+            dlgReport.setCenter();
+            dlgReport.show();
+        };
+
+        this.setThemeType=function(iThemeType)
+        {
+            me.iThemeType=iThemeType;
+        };
+        this.getThemeType=function()
+        {
+            return me.iThemeType;
+        };
+
+        this.setSrcToIFrame = function(sUrl,iActionId,objIFrame,objDlgIFrame,sDialogId,isListViewRefresh){
+            util.toggleBackground(true);
+            var sParam = null;
+
+            if(clAppBuffer.getSubWindowType() == Constants.IMODULE_WINDOW.SPLIT_PANE)
+            {
+                if(sUrl.indexOf("isCancel=1") == -1)
+                    sParam = "&saveUrlType="+Constants.ISave_Url_Type.SECONDARY+"&windowType="+clAppBuffer.getWindowType();//&isSaveUrl=true
+                if(iActionId == Constants.IActions.CANCEL)
+                {
+                    if(getDialogBox(sDialogId))
+                    {
+                        getDialogBox(sDialogId).hide();
+                        clAppBuffer.setSubWindowType(Constants.IMODULE_WINDOW.DEFAULT);
+                        if(isListViewRefresh)
+                            listView.getRefresh();
+                    }
+                }
+                else{
+
+                    if(sUrl.indexOf("?")!=-1){
+                        var sParams = sUrl.substring(sUrl.indexOf("?")+1) +"&";
+                        sUrl = sUrl.substring(0,sUrl.indexOf("?"));
+                        sUrl = "common/modSettings!getFrameTemplate.do?url="+sUrl+"&isIFrame=true&isExcludeJs=false&"+sParams+"&isHideBackUrl=true";
+                    }
+                    objDlgIFrame.src =sUrl+"&"+sParam;
+                    objDlgIFrame.onLoad = function(){
+                        util.toggleBackground(false);
+                        objDlgIFrame.height = objDlgIFrame.contentWindow.document.body.scrollHeight + "px";
+                    };
+                    //            con.sendPostRequest(sUrl,sParam,null,"parent.clSplit.setResponseToDlg",null,null,null,false,false,iActionType,false,{'d_actionid':iActionId,'d_windowtype':home.getWindowType()});
+                }
+            }else
+            {
+                if(sUrl.indexOf("isCancel=1") == -1)
+                    sParam = "&saveUrlType="+Constants.ISave_Url_Type.SECONDARY;//&isSaveUrl=true
+                sParam  += "&windowType="+clAppBuffer.getWindowType()
+                objIFrame.src = "common/modSettings!getFrameTemplate.do?url="+sUrl+"&isIFrame=true&isExcludeJs=false"+sParam;
+                objIFrame.onload = function()
+                {
+                    me.afterResponseLoad(objIFrame,sUrl,false,iActionId);
+                };
+            }
+        };
+        this.afterResponseLoad = function(objFrame,sUrl,isListViewRefresh,iActionId){
+            //home.hideLeftPanel();
+            home.backToTop();
+            util.toggleBackground(false);
+            if(objFrame){
+                if(sUrl && sUrl.indexOf("NoDataFound.jsp") != -1){
+                    objFrame.height = document.body.clientHeight + "px";
+                    document.getElementById("iNodataFoundId").style.height = objFrame.height;
+                }
+                else
+                    objFrame.height = objFrame.contentWindow.document.body.scrollHeight + "px";
+            }
+
+            if(isListViewRefresh && iActionId != Constants.IActions.CANCEL){
+                if(iActionId == Constants.DELETE)
+                    listView.getToggleView(false);
+                else{
+                    listView.getRefresh();
+                }
+            }
+            else if(clAppBuffer.getWindowType() == Constants.IMODULE_WINDOW.REPORT_SPLITPANE)
+            {
+                //window.frames["drilldowncontentFrame"].clRepDrilldown.refreshReport(iActionId);
+                //window.frames["iFrameOverlayContentdrilldown_"+clAppBuffer.getReportTrackIndex()].clRepDrilldown.refreshReport(iActionId);
+                clReportCriteria.refreshDrilldownReport(iActionId);
+            }
+
+        };
+        this.setResposeToIFrame = function(sResponse,iActionId,objIFrame,objDlgIFrame,sDialogId,isListViewRefresh){
+
+            if(clAppBuffer.getSubWindowType() == Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE
+                && (iActionId == Constants.DELETE)){
+                if(getDialogBox(sDialogId)){
+                    getDialogBox(sDialogId).hide();
+                    clAppBuffer.setSubWindowType(Constants.IMODULE_WINDOW.DEFAULT);
+                    if(isListViewRefresh)
+                        listView.getRefresh();
+                }
+
+            }
+            else if(clAppBuffer.getSubWindowType() == Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+                me.setResponseToDlg(sResponse,objDlgIFrame);
+            else{
+                me.setResponse(objIFrame,sResponse);
+                me.afterResponseLoad(objIFrame,null,isListViewRefresh,iActionId);
+            }
+
+            //       objFrame.src = encodeURI(sResponse);
+            /*objFrame.onload = function()
+             {
+             me.afterResponseLoad(objFrame,null,true);
+             };*/
+        };
+        this.setResponseToDlg = function(sResponse,objIFrame){
+            me.setResponse(objIFrame,sResponse);
+        };
+        this.setResponse = function(objIFrame,sResponse){
+            if(objIFrame){
+//        util.toggleBackground(false);
+                var ifameContentDoc = objIFrame.contentDocument || objIFrame.contentWindow.document;
+                ifameContentDoc.body.innerHTML = sResponse;
+                if (typeof objIFrame.contentWindow["initAllCombos"] == "function")
+                    objIFrame.contentWindow["initAllCombos"] = null;
+                cross.callFunction(objIFrame.contentWindow, objIFrame.contentWindow["loadResources"], [ifameContentDoc.body,objIFrame.contentWindow["util"].onScriptsLoad],0);
+//        cross.setVisible(document.getElementById("disableBGImg"),true);
+//        cross.setVisible(parent.document.getElementById("disableBGImg"),true);
+                /*  util.addClass(document.getElementById("disableBGImg"),"bgOpacity");
+                 util.addClass(document.getElementById("containerBody"),"rcOverFlow");
+                 util.addClass(document.getElementById("dv_0"),"ZeroZindex");
+                 cross.setVisible(document.getElementById("dvRecentMenu"),false);*/
+
+
+
+            }
+        };
+
+        this.clearBackHistory = function()
+        {
+            /*history.pushState(null, null, null);
+             window.onpopstate = function () {
+             history.pushState(null, null, null);
+             };*/
+        };
+
+        this.moveToBackUrl=function(isAfterSave)
+        {
+            if(isAfterSave)
+            {
+                clAppBuffer.setBackUrl(null);
+                clAppBuffer.setBackUrlResponse(null);
+                clAppBuffer.setBackUrlLoadCallback(null);
+            }
+
+            window.history.back();
+
+        };
+
+        this.reloadCurrentUrl=function()
+        {
+            home.setCenterUI(clAppBuffer.getCurrentUrl(),null,true,false,null,false,null,false,false,false,0,false);
+        };
+
+        this.addBackUrl=function(sURL)
+        {
+            //history.pushState(sURL, null, "crmhome.do");
+            me.pushUrlToStack(sURL, null, "crmhome.do");
+        };
+
+
+        this.reloadPageState=function()
+        {
+            var iValue=util.readCookie("ccrmstack");
+            if(iValue!=null)
+            {
+                var objArrData = history.state;
+
+                if (objArrData)
+                {
+                    var sUrl = objArrData[1];
+
+                    var dvCenter=document.getElementById("dvCenter");
+                    util.toggleElementBackground(dvCenter,true,false);
+
+                    function onload(sResponse,iStatusCode,sMsg,appValue,objReqCache,isNonUI)
+                    {
+                        util.toggleElementBackground(dvCenter,false,false);
+                        home.handleResponse(sResponse,iStatusCode,sMsg,appValue,objReqCache,isNonUI)
+                    }
+
+                    home.setCenterUI(sUrl, null, true, false, onload, false, null, false, false, false, 0, false);
+                }
+            }
+        };
+
+
+        this.pushUrlToStack=function(objData,sTitle,sUrl)
+        {
+            //if(sUrl=="setup.do")
+            //   return;
+
+            var iValue=util.readCookie("ccrmstack");
+            var objArrData=[];
+            if(!iValue)
+                objArrData[0]=1; //adding '1' for the 1st url
+            else
+                objArrData[0]=0;
+
+            objArrData[1]=objData;
+
+            history.pushState(objArrData, sTitle, sUrl);
+
+            me.updateUrlStack(false);
+        };
+
+        this.updateUrlStack=function(isRemove)
+        {
+            if(isRemove)
+                util.expireCookie("ccrmstack");
+            else
+                util.setCookie("ccrmstack",1,0);
+
+            /*var iValue=util.readCookie("ccrmstack");
+            if(!iValue)
+            {
+                if(isDecrement)
+                    iValue=0;
+                else
+                    iValue=1;
+            }
+            else
+            {
+                if(isDecrement)
+                    iValue--;
+                else
+                    iValue++;
+            }
+
+            if(iValue>=1)
+                util.setCookie("ccrmstack",iValue,0);
+            else
+                util.expireCookie("ccrmstack");*/
+
+        };
+
+
+
+
+
+        /*Activities and Recent items Overlay start*/
+
+    this.onClkGetActivities = function()
+        {
+            //console.error("onClkGetActivities");
+            var iStatus=0,cbView,sUrl,sTaskStatus="",sUser="",iUser=0;
+            if(getComboInstance("cbStatusFilter"))
+            {
+                iStatus = getComboInstance("cbStatusFilter").getSelectedId();
+                sTaskStatus = getComboInstance("cbStatusFilter").getSelectedItem();
+            }
+            if(getComboInstance("cbUserFilter"))
+            {
+
+                iUser = getComboInstance("cbUserFilter").getSelectedId();
+                sUser = getComboInstance("cbUserFilter").getSelectedItem();
+            }
+
+            clOverlay.showOverlay("dvOverlayActivities","dvActivitiesAndReminders","32%","100%",2,null,0,null,"Activities",null,false,true);
+            sUrl = "common/activities!getActivities.do?taskStatusId="+iStatus+"&sTaskStatus="+sTaskStatus+"&userId="+iUser+"&sUserName="+sUser;
+            //console.error("URL="+sUrl);
+            con.sendPostRequest(sUrl,null,null,"home.arhGetActivities", null, "dvActivitiesAndReminders", null);
+        };
+
+   this.onClkGetRecentItems = function()
+        {
+            clOverlay.showOverlay("dvOverlayRecentItems","dvRecentItems","32%","100%",2,null,0,null,"Recent Modules",null,false,true);
+            var sUrl = "common/activities!getRecentItems.do?iRecent=0&iOverlay=1";
+            con.sendPostRequest(sUrl,null,null,"home.arhGetRecentItems", null, "dvRecentItems", null);
+        };
+        this.onClkGetShortcuts = function()
+        {
+            clOverlay.showOverlay("dvOverlayShortcuts","dvShortcuts","32%","100%",2,null,0,null,"Shortcuts",null,false,true);
+            var sUrl = "common/activities!getShortcutsList.do?iShortDlg=1&iOverlay=1";
+            con.sendPostRequest(sUrl,null,null,"home.arhGetShortcuts", null, "dvShortcuts", null);
+        };
+        this.onClkGetReminders = function () {
+            clOverlay.showOverlay("dvOverlayReminders","dvReminder","32%","100%",2,null,0,null,"Reminders",null,false,true);
+            var sUrl = "common/activities!getReminders.do";
+            con.sendPostRequest(sUrl, null, null, "home.arhGetReminders", null, "dvReminder", null);
+        };
+        this.onClkGet360Degrees = function () {
+            clOverlay.showOverlay("dvOverlay360Degree","dv360Degree","32%","100%",2,null,0,null,"Module 360&deg;",null,false,true);
+            var sUrl = "/security/home!getModuleMenus360List.do"; /*?&fromRecentMenu=1*/
+            con.sendPostRequest(sUrl, null, null, "home.arhBackUrlHandler", null, "dv360Degree", null);
+        };
+        this.onClkGetCallDetails = function () {
+            clOverlay.showOverlay("dvOverlayCallDetails","dvCallDetails","32%","100%",clOverlay.OVERLAY_RIGHT,null,0,null,"Call Details",null,false,true);
+            var sUrl = "common/epbx!getTeleCallHistory.do?callType=23&callDetHome=true"; /*?&fromRecentMenu=1*/
+            con.sendPostRequest(sUrl, null, null, "home.arhGetCallDetails", null, "dvCallDetails", null);
+        };
+        this.getDialPad = function ()
+        {
+
+            var sUrl = "common/epbx!getDialPad.do?prefix=dialpad";
+
+            clOverlay.showFrameOverlay("dvOverlayDialer",sUrl,"32%","95%",clOverlay.OVERLAY_RIGHT,50,0,null,"Dial pad","containerDiv",true,null,true,true)
+
+        };
+
+        this.onClkGetActivityTimer=function(iModuleId, iTransId, iRelModId, iRelTransId)
+        {
+            //if(clActivityTimerUtil)
+            //    clActivityTimerUtil.showActivityTimer(0);
+
+            //alert(iModuleId+","+iTransId+","+iRelModId+","+iRelTransId);
+
+            iModuleId=(iModuleId?iModuleId:0);
+            iTransId=(iTransId?iTransId:0);
+            iRelModId=(iRelModId?iRelModId:0);
+            iRelTransId=(iRelTransId?iRelTransId:0);
+
+            if(document.isActivityTimerLoaded)
+            {
+                if(iModuleId==0)
+                    clActivityTimerUtil.showActivityTimer(0,iModuleId,iTransId,iRelModId,iRelTransId);
+                else
+                {
+                    var sUrl = "common/modSettings!getActivityTimerSettings.do?forActivityTimer=true&isRefresh=0" +
+                        "&moduleId="+iModuleId+"&transId="+iTransId+"&relModId="+iRelModId+"&relTransId="+iRelTransId+"&bReturnAsJsp=false";
+
+                    con.sendPostRequest(sUrl, null, null, "home.arhGetActivityTimer2", false, 0, null, false, true,0,false,[iModuleId,iTransId,iRelModId,iRelTransId]);
+                }
+            }
+            else
+            {
+                var sUrl = "common/modSettings!getActivityTimerSettings.do?forActivityTimer=true&isRefresh=0" +
+                    "&moduleId="+iModuleId+"&transId="+iTransId+"&relModId="+iRelModId+"&relTransId="+iRelTransId;
+                con.sendPostRequest(sUrl, null, null, "home.arhGetActivityTimer", false, 0, null, false, true);
+            }
+        };
+
+        this.arhGetActivityTimer=function(sResponse)
+        {
+            var objDiv = document.getElementById("dvActivityTimer");
+            //objDiv.style.display = "";
+            objDiv.innerHTML = sResponse;
+
+            if (typeof window["initAllCombos"] == "function")
+                initAllCombos=null;
+            loadResources(objDiv, util.onScriptsLoad);
+            util.toggleBackground(false, false);
+
+            document.isActivityTimerLoaded=true;
+        };
+        this.arhGetActivityTimer2=function(sResponse, iStatusCode, sMsg, appValue, objReqCache)
+        {
+            sResponse=eval(sResponse);
+            //alert(sResponse);
+
+            var iModuleId,iTransId,iRelModId,iRelTransId;
+            iModuleId=objReqCache[0];
+            iTransId=objReqCache[1];
+            iRelModId=objReqCache[2];
+            iRelTransId=objReqCache[3];
+
+            var sModuleName,sTransName,sRelModName,sRelTransNames,iUserModuleTypeId,sUserModuleTypeViewName;
+
+            iUserModuleTypeId=(sResponse[0])[0];
+            sUserModuleTypeViewName=(sResponse[0])[1];
+            sModuleName=sResponse[1];
+            sTransName=sResponse[2];
+            sRelModName=sResponse[3];
+            sRelTransNames=sResponse[4];
+
+            clActivityTimerUtil.showPlannedActivityTimer_(0,iModuleId,iTransId,iRelModId,iRelTransId, 0,
+                                                            sModuleName,sTransName, sRelModName,sRelTransNames,iUserModuleTypeId,sUserModuleTypeViewName);
+        };
+
+        this.checkActivityTimer = function()
+        {
+            var activityTimerDetails = String(localStorage.getItem("activityTimer"));
+            var planActivityTimerDetails = String(localStorage.getItem("plannedActivityTimer"));
+
+            if ((activityTimerDetails.length > 1 && activityTimerDetails != "null" ||
+                 planActivityTimerDetails.length > 1 && planActivityTimerDetails != "null"))
+            {
+                var sUrl = "common/modSettings!getActivityTimerSettings.do"+"?forActivityTimer=true";
+                con.sendPostRequest(sUrl, null, null, "home.arhGetActivityTimer", false);
+            }
+        };
+
+        this.onClkShowUserLatestActivities = function()
+        {
+            clOverlay.showOverlay("dvOverlayUserLatestActivities","dvUserLatestActivities","32%","100%",2);
+            var sUrl = "module/moduleView!getUserLatestActivities.do";
+            con.sendPostRequest(sUrl, null, null, "home.arhUserLatestActivities", null, "dvUserLatestActivities", null);
+        };
+
+        this.onClkActivateCrmBot = function()
+        {
+            var clDvBotIconContainer = document.getElementById("dvBotIconContainer");
+            clDvBotIconContainer.style.display = "block";
+        };
+
+        /*@CORONA@*/
+        /*this.onClkOpenBotChat = function()
+        {
+            var dvBotChatContainer = document.getElementById("dvBotChatContainer");
+            var dvBotIconContainer = document.getElementById("dvBotIconContainer");
+            var isHasChatHistory = dvBotChatContainer.getAttribute("hasChat");
+            if(isHasChatHistory == "false") {
+                var sUrl = "support/supportCall!getBotChat.do";
+                con.sendPostRequest(sUrl, null, null, "home.arhBotChat");
+            }else{
+                if(dvBotChatContainer.style.display == "block") {
+                    dvBotChatContainer.style.display = "none";
+                    dvBotIconContainer.style.display = "block";
+                }
+                else {
+                    dvBotChatContainer.style.display = "block";
+                    dvBotIconContainer.style.display = "none";
+                }
+            }
+        };
+
+        this.arhBotChat = function(sResponse)
+        {
+            var dvBotChatContainer = document.getElementById("dvBotChatContainer");
+            var dvBotIconContainer = document.getElementById("dvBotIconContainer");
+            document.getElementById('dvBotChatBody').innerHTML = sResponse;
+            dvBotChatContainer.setAttribute("hasChat","true");
+            dvBotChatContainer.style.display ="block";
+            dvBotIconContainer.style.display ="none";
+            if (typeof window["initAllCombos"] == "function")
+                initAllCombos=null;
+            loadResources(dvBotChatContainer, util.onScriptsLoad);
+        };*/
+
+        this.showEzeTapPaymentDlg = function(iModuleId,iTransId,sAmount,sCompanyCode,sCallBack,sEmail,sMobile,iGatewayType,iPaymentConfigId,sRecName)
+        {
+            var iPaymentGatewayType = Constants.TYPE_EZETAP;
+            if(iGatewayType > 0)
+                iPaymentGatewayType = iGatewayType;
+
+            var arrActions = new Array();
+            arrActions[0] = MsgHandler.getMsg(MsgConstants.CANCEL) + "|clEzetapStatusDlg.onClkCancel";
+            var sParams = "moduleId="+iModuleId+"&transId="+iTransId+"&gatewayType="+iPaymentGatewayType+"&pType="+iPaymentGatewayType;
+            if(sCompanyCode != null)
+                sParams += "&ccode="+sCompanyCode;
+            if(sAmount != null)
+                sParams += "&amount="+util.parseNumberValue(sAmount);
+            if(sCallBack != null)
+                sParams += "&sCallBack="+sCallBack;
+            if(sEmail != null)
+                sParams += "&userMailId="+sEmail;
+            if(sMobile != null)
+                sParams += "&userMobile="+sMobile;
+            if(iPaymentConfigId > 0)
+                sParams += "&cId="+iPaymentConfigId;
+            if(sRecName != null)
+                sParams += "&recName="+sRecName;
+            var sUrl = "payment/gateway!doRequest.do?"+sParams;
+            if(iPaymentGatewayType == Constants.TYPE_PAYTM)
+            {
+                clPaytmApi.initiatePayment(sUrl,sParams);
+            }
+            else if(iPaymentGatewayType == Constants.TYPE_PAYTM_DQR)
+            {
+                arrActions[0] = MsgHandler.getMsg(MsgConstants.CANCEL) + "|clPaytmQRPaymentDlg.onClkCancel";
+
+                var clPaytmQRDlg = new DialogBox("eazetapStatusDlg", "", 100, 50, 750, 550, sUrl, true, null, true, true, null, null, null, true, null, null, false, true, false, true, null, false, null, true);
+                clPaytmQRDlg.setCenter();
+                clPaytmQRDlg.show();
+            }
+            else {
+                var clEazetapDlg = new DialogBox("eazetapStatusDlg", "", 100, 50, 450, 500, sUrl, true, null, true, true, arrActions, null, null, true, null, null, false, true, false, true, null, false, null, true);
+                clEazetapDlg.setCenter();
+                clEazetapDlg.show();
+            }
+        };
+
+        this.invokeEzeTapCallback = function(iStatus,sMessage,sCallback,sReference,iPayStatus,iGateWayType)
+        {
+            
+            var index=0;
+            index = sCallback.indexOf(".");
+            var sObjectName = null;
+            var sFuncName = null;
+            if (index > 0)
+            {
+                sObjectName = sCallback.substring(0, index);
+                sFuncName = sCallback.substring(index + 1);
+            }
+            else
+                sFuncName = sCallback;
+
+            if(iGateWayType == Constants.TYPE_PAYTM_DQR)
+                clPaytmMini.displayWelcomeScreen();
+
+
+            var clDialog=getDialogBox("eazetapStatusDlg");
+            if(clDialog)
+                clDialog.hide();
+
+            if ((index > 0 && typeof window[sObjectName][sFuncName] == "function"))
+                window[sObjectName][sFuncName](iStatus,sMessage,sReference,iPayStatus);
+            else if ((window[sFuncName] == "function"))
+                window[sFuncName](iStatus,sMessage,sReference,iPayStatus);
+            else if(typeof eval(sCallback) == "function")
+                eval(sCallback)(iStatus,sMessage,sReference,iPayStatus);
+
+        };
+
+        this.arhGetActivities= function(sResponse)
+        {
+            var objDiv = document.getElementById("dvActivitiesAndReminders");
+            objDiv.innerHTML = sResponse;
+            if (typeof window["initAllCombos"] == "function")
+                initAllCombos=null;
+            loadResources(objDiv, util.onScriptsLoad);
+        };
+        this.arhGetRecentItems = function(sResponse)
+        {
+            var objDiv = document.getElementById("dvRecentItems");
+            objDiv.innerHTML = sResponse;
+        };
+        this.arhGetShortcuts = function(sResponse)
+        {
+            var objDiv = document.getElementById("dvShortcuts");
+            objDiv.innerHTML = sResponse;
+        };
+        this.arhGetReminders = function (sResponse) {
+            var objDiv = document.getElementById("dvReminder");
+            objDiv.innerHTML = sResponse;
+            if (typeof window["initAllCombos"] == "function")
+                initAllCombos = null;
+            loadResources(objDiv, util.onScriptsLoad);util.toggleBackground(false, false);
+        };
+        this.arhBackUrlHandler = function(sResponse)
+        {
+            document.getElementById("dv360Degree").innerHTML = sResponse;
+            util.toggleBackground(false, false);
+        };
+        this.arhGetCallDetails = function(sResponse)
+        {
+            var objDiv = document.getElementById("dvCallDetails");
+            objDiv.innerHTML = sResponse;
+            util.toggleBackground(false, false);
+            loadResources(objDiv, util.onScriptsLoad);
+        };
+        /*this.arhGetDialPad = function (sResponse) {
+            var objDiv = document.getElementById("dvDialer");
+            objDiv.innerHTML = sResponse;
+            util.toggleBackground(false, false);
+            loadResources(objDiv, util.onScriptsLoad);
+        };*/
+        this.arhUserLatestActivities = function(sResponse,iStatusCode,sMsg,appValue)
+        {
+            var objDiv = document.getElementById("dvUserLatestActivities");
+            objDiv.innerHTML = sResponse;
+            if (typeof window["initAllCombos"] == "function")
+                initAllCombos=null;
+            loadResources(objDiv, util.onScriptsLoad);
+            util.toggleBackground(false, false);
+            //clUserLatestActivities.setRecords(appValue);
+        };
+        /*Activities and Recent items Overlay end*/
+
+
+        this.showReportTrack=function(id, sUrl, iOverlayWidth, iClientHeight, sTitle,sOverlayParentContainerId)
+        {
+            clOverlay.showFrameOverlay(id, sUrl, iOverlayWidth, iClientHeight, clOverlay.OVERLAY_RIGHT, 0, 0, null, sTitle,sOverlayParentContainerId, false, null,false,false,null,null,"clReportCriteria.onCloseCallBack()",true);
+        }
+
+    };
+
+
+    window.addEventListener('popstate', function(e) {
+        // e.state is equal to the data-attribute of the last image we clicked
+        //alert(e);
+
+        if (home.isFormDataUpdated)
+        {
+            if(!window.confirm("Are you sure you want to navigate from the screen without saving? \n You might lose any unsaved data."))
+            {
+                //history.pushState(null, document.title, location.href);
+                home.pushUrlToStack(clAppBuffer.getCurrentUrl(), document.title, location.href);
+
+                cross.cancelBubble(e);
+                return false;
+            }
+
+            home.isFormDataUpdated=false;
+        }
+
+
+
+        var sCurrLocation=window.location.href;
+
+        if(e.state!=null)
+        {
+            var sState=e.state;
+
+            var sUrl;
+
+            if(typeof sState == "string")
+                sUrl=sState;
+            else
+            {
+                var objArrData=e.state;
+                sUrl = objArrData[1];
+            }
+
+
+
+            //if(objArrData[0]==1) //if 1st url, removing cookie
+            //    home.updateUrlStack(true);
+
+
+
+            /*if(sUrl.indexOf("byAction="+Constants.NEW)!=-1 || sUrl.indexOf("byActionType="+Constants.EDIT_LAYOUT)!=-1 || sUrl.indexOf("fromDetailedView")!=-1) //skipping edit view
+             home.moveToBackUrl(false);*/
+            if(sUrl.indexOf("byAction="+Constants.NEW)!=-1 || sUrl.indexOf("byActionType="+Constants.EDIT_LAYOUT)!=-1
+                || sUrl.indexOf("byAction="+Constants.EDIT_LAYOUT)!=-1 || sUrl.indexOf("fromDetailedView")!=-1) //skipping edit view
+                home.moveToBackUrl(false);
+            else if(window["clCloudSetup"]!=undefined && ((sUrl.indexOf("settings!getCompanyDetails.do")!=-1)))
+            {
+                clCloudSetup.callBackAfterSave();
+            }
+            else if(sUrl.indexOf("login.do")==-1)
+                home.setCenterUI(sUrl,null,true,false,null,false,null,false,false,false,0,true);
+        }
+        else
+        {
+
+            home.updateUrlStack(true);
+
+            if (sCurrLocation.indexOf("crmhome.do") != -1)
+            {
+                var sURL;
+                if (home.sLandingURL != "")
+                    sURL = home.sLandingURL;
+                else
+                    sURL = "/common/dashboard!showDashboard.do";
+                home.setCenterUI(sURL, null, true, false, null, false, null, false, false, false, 0, true);
+            }
+            else if (document.getElementById("backLnk"))
+                document.getElementById("backLnk").style.display = "none";
+        }
+
+    });
+
+
+}

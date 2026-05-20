@@ -1,0 +1,256 @@
+/**
+ * Created by Praveen on 3/17/2020.
+ */
+
+var clSimpleConnection = new function()
+{
+    var meme=this;
+    this.RESPONSE_PLAIN=0;// script
+    this.RESPONSE_HTML=1; // html code
+    this.RESPONSE_XML=2;
+    var sContextPath = null;
+    var sAppUrlPrefix = null;
+
+    function getConnection()
+    {
+        return getRequestObject();
+    }
+
+    function getRequestObject()
+    {
+        try
+        {
+            if (typeof XMLHttpRequest != 'undefined')
+                return new XMLHttpRequest();
+            else
+                return new ActiveXObject("MSXML3.XMLHTTP"); //Microsoft.XMLHTTP
+        }
+        catch (e)
+        {
+            try
+            {                 //Microsoft.XMLHTTP
+                return new ActiveXObject("MSXML2.XMLHTTP.3.0");
+            }
+            catch (e)
+            {
+                try
+                {                 //Microsoft.XMLHTTP
+                    return new ActiveXObject("MSXML2.XMLHTTP.3.0");
+                }
+                catch (e)
+                {
+                    try
+                    {                 //Microsoft.XMLHTTP
+                        return new ActiveXObject("Msxml2.XMLHTTP");
+                    }
+                    catch (e)
+                    {
+                        try
+                        {
+                            return new ActiveXObject("Microsoft.XMLHTTP");
+                        }
+                        catch (E){ }
+                    }
+                }
+            }
+        }
+
+        if (window.createRequest)
+            return window.createRequest();
+
+        return null;
+    }
+
+    this.makeGetRequest=function(strURL, sSubmitData, onSuccessObject, onSuccessHandler,onErrorHandler, responseType,isSync)
+    {
+        return new makeRequest(strURL, false, sSubmitData, onSuccessObject, onSuccessHandler, responseType,onErrorHandler, isSync);
+    };
+
+    this.makePostRequest=function(strURL, sSubmitData, onSuccessObject, onSuccessHandler, onErrorHandler,responseType,  isSync,sContentType,sSessionId)
+    {
+        return new makeRequest(strURL, true, sSubmitData, onSuccessObject, onSuccessHandler, responseType, onErrorHandler,  isSync,sContentType,sSessionId);
+    };
+
+    function makeRequest(strURL,
+                         isPostMethod,
+                         sSubmitData,
+                         handlerObj,
+                         resHandler,
+                         responseType,
+                         onErrorHandler,
+                         isSync,
+                         sContentType,
+                         sSessionId
+    )
+    {
+        var me=this;
+
+        me.xmlHttpReq=null;
+        me.responseType = responseType;
+        me.handlerObject = handlerObj;
+        me.responseHandler = resHandler;
+        me.onErrorHandler=onErrorHandler;
+
+        if(!sSubmitData)
+            sSubmitData="";
+
+        var iIndex = strURL.indexOf("?");
+        if (iIndex != -1)
+        {
+            sSubmitData += "&" + strURL.substring(iIndex + 1);
+            strURL = strURL.substring(0, iIndex);
+        }
+
+        me.xmlHttpReq = getConnection();
+
+        if (isPostMethod)
+        {
+            me.xmlHttpReq.open('POST', strURL, !isSync);
+            //sSubmitData=util.trim(sSubmitData);
+        }
+        else
+        {
+            me.xmlHttpReq.open('GET', (strURL + '?' + sSubmitData), !isSync);
+            sSubmitData=null;
+        }
+
+
+        if(sContentType)
+            me.xmlHttpReq.setRequestHeader('Content-type', sContentType);
+        if(sSessionId)
+            me.xmlHttpReq.setRequestHeader('CCR_BOT_SESSIONID', sSessionId);
+
+        me.xmlHttpReq.withCredentials= true;
+        me.xmlHttpReq.crossOrigin= true;
+        me.xmlHttpReq.crossDomain= true;
+        me.xmlHttpReq.onreadystatechange = processRequest;
+        me.xmlHttpReq.send(sSubmitData);
+
+
+
+
+        //ajax callback function
+        function processRequest()
+        {
+            if (me.xmlHttpReq.readyState == 4) // 4=complete
+            {
+                var sResponse = null;
+
+
+                if (me.responseType==meme.RESPONSE_XML)
+                    sResponse = me.xmlHttpReq.responseXML;
+                else
+                    sResponse = me.xmlHttpReq.responseText;
+                //alert("sResponse  "+sResponse);
+
+                if (me.xmlHttpReq.status == 200)// 200=request complete
+                {
+                    var appValue = me.xmlHttpReq.getResponseHeader("ccr-appValue");
+                    var iStatus = me.xmlHttpReq.getResponseHeader("ccr-status");
+                    var sMessage = me.xmlHttpReq.getResponseHeader("ccr-message");
+
+                    if (me.handlerObject)
+                    {
+                        if(!me.responseType || me.responseType==meme.RESPONSE_PLAIN)
+                            me.handlerObject.apply(this, eval("new Array(" + sResponse + ");"));
+                        else
+                            me.handlerObject.apply(this, [sResponse,iStatus,sMessage,appValue]);
+
+                    }
+                    else if (me.responseHandler)
+                        eval(me.responseHandler)(sResponse,iStatus,sMessage,appValue);//MsgHeader will be the messages
+
+
+
+                }
+                else ///404= file not found,403=forbidden,405=method not found
+                {
+                    me.onErrorHandler(me.xmlHttpReq.status, me.xmlHttpReq.statusText,me.xmlHttpReq.responseText)
+
+                }
+
+                me.responseHandler = null;
+                me.readXML = null;
+                me.handlerObject = null;
+                me.onErrorHandler=null;
+
+            }
+            else
+            {
+                //if (me.xmlHttpReq.readyState == 1)
+                // writeToLog("readyState="+me.xmlHttpReq.readyState+"--"+iActiveCnt+"==="+ me.xmlHttpReq.status);
+            }
+        };
+
+
+
+
+    }
+
+    this.onScriptsLoad=function()
+    {
+        if(typeof window["initAllCombos"]=="function")
+            initAllCombos();
+    };
+
+    this.clearControls=function(docForm)
+    {
+        var formElem;
+        var sValue = null;
+
+        for (var i = 0; i < docForm.elements.length; i++)
+        {
+            formElem = docForm.elements[i];
+            if(formElem.disabled)
+                continue;
+
+            if(!sValue)
+                sValue="";
+
+            switch (formElem.type)
+            {
+                // Text fields, hidden form elements
+                case 'text':
+                case 'hidden':
+                case 'password':
+                case 'textarea':
+                    formElem.value = sValue;
+                    break;
+                case 'checkbox':
+                    formElem.checked = false;
+                    break;
+            }
+        }
+    };
+
+    this.getContextPath=function()
+    {
+        if(sContextPath==null || clBotUtilities.trim(sContextPath).length==0)
+            sContextPath = this.getAppUrlPrefix()+"/centrabot";
+        return sContextPath;
+    };
+
+    this.getAppUrlPrefix=function()
+    {
+        if(sAppUrlPrefix==null)
+        {
+            var sCurrLocation = window.location.href;
+            if (sCurrLocation.indexOf("//") != -1)
+                sCurrLocation = sCurrLocation.substring(sCurrLocation.indexOf("//") + 2);
+
+            sCurrLocation = sCurrLocation.substring(sCurrLocation.indexOf("/"));
+            if (sCurrLocation.indexOf("/in") == 0)
+                sAppUrlPrefix = "/in";
+            else if (sCurrLocation.indexOf("/us") == 0)
+                sAppUrlPrefix = "/us";
+            else
+                sAppUrlPrefix = "";
+        }
+
+        return sAppUrlPrefix;
+    };
+
+
+};
+
+

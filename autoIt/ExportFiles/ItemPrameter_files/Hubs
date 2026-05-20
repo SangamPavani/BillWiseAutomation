@@ -1,0 +1,207 @@
+/*!
+ * ASP.NET SignalR JavaScript Library 2.4.3
+ * http://signalr.net/
+ *
+ * Copyright (c) .NET Foundation. All rights reserved.
+ * Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+ *
+ */
+
+/// <reference path="..\..\SignalR.Client.JS\Scripts\jquery-1.6.4.js" />
+/// <reference path="jquery.signalR.js" />
+(function ($, window, undefined) {
+    /// <param name="$" type="jQuery" />
+    "use strict";
+
+    if (typeof ($.signalR) !== "function") {
+        throw new Error("SignalR: SignalR is not loaded. Please ensure jquery.signalR-x.js is referenced before ~/signalr/js.");
+    }
+
+    var signalR = $.signalR;
+
+    function makeProxyCallback(hub, callback) {
+        return function () {
+            // Call the client hub method
+            callback.apply(hub, $.makeArray(arguments));
+        };
+    }
+
+    function registerHubProxies(instance, shouldSubscribe) {
+        var key, hub, memberKey, memberValue, subscriptionMethod;
+
+        for (key in instance) {
+            if (instance.hasOwnProperty(key)) {
+                hub = instance[key];
+
+                if (!(hub.hubName)) {
+                    // Not a client hub
+                    continue;
+                }
+
+                if (shouldSubscribe) {
+                    // We want to subscribe to the hub events
+                    subscriptionMethod = hub.on;
+                } else {
+                    // We want to unsubscribe from the hub events
+                    subscriptionMethod = hub.off;
+                }
+
+                // Loop through all members on the hub and find client hub functions to subscribe/unsubscribe
+                for (memberKey in hub.client) {
+                    if (hub.client.hasOwnProperty(memberKey)) {
+                        memberValue = hub.client[memberKey];
+
+                        if (!$.isFunction(memberValue)) {
+                            // Not a client hub function
+                            continue;
+                        }
+
+                        // Use the actual user-provided callback as the "identity" value for the registration.
+                        subscriptionMethod.call(hub, memberKey, makeProxyCallback(hub, memberValue), memberValue);
+                    }
+                }
+            }
+        }
+    }
+
+    $.hubConnection.prototype.createHubProxies = function () {
+        var proxies = {};
+        this.starting(function () {
+            // Register the hub proxies as subscribed
+            // (instance, shouldSubscribe)
+            registerHubProxies(proxies, true);
+
+            this._registerSubscribedHubs();
+        }).disconnected(function () {
+            // Unsubscribe all hub proxies when we "disconnect".  This is to ensure that we do not re-add functional call backs.
+            // (instance, shouldSubscribe)
+            registerHubProxies(proxies, false);
+        });
+
+        proxies['hardwareAccess'] = this.createHubProxy('hardwareAccess'); 
+        proxies['hardwareAccess'].client = { };
+        proxies['hardwareAccess'].server = {
+            accessPrinter: function (sPrinterName) {
+                return proxies['hardwareAccess'].invoke.apply(proxies['hardwareAccess'], $.merge(["AccessPrinter"], $.makeArray(arguments)));
+             },
+
+            poleDisplay: function (sProductName, sProductQuantity, sProductRate) {
+                return proxies['hardwareAccess'].invoke.apply(proxies['hardwareAccess'], $.merge(["PoleDisplay"], $.makeArray(arguments)));
+             },
+
+            printLayout: function (sFileName, arrFileByte, sClientIPAddress) {
+                return proxies['hardwareAccess'].invoke.apply(proxies['hardwareAccess'], $.merge(["PrintLayout"], $.makeArray(arguments)));
+             },
+
+            registerWinConnection: function (sSessionId, sWebConnectionId, sWinConnectionId) {
+                return proxies['hardwareAccess'].invoke.apply(proxies['hardwareAccess'], $.merge(["RegisterWinConnection"], $.makeArray(arguments)));
+             }
+        };
+
+        proxies['signalRHub'] = this.createHubProxy('signalRHub'); 
+        proxies['signalRHub'].client = { };
+        proxies['signalRHub'].server = {
+            callWeighingMachine: function (arrFields) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["CallWeighingMachine"], $.makeArray(arguments)));
+             },
+
+            checkPoleDisplay: function (arrFields) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["CheckPoleDisplay"], $.makeArray(arguments)));
+             },
+
+            dUSMinuteAppPreOrderCancelled: function (arrFields) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["DUSMinuteAppPreOrderCancelled"], $.makeArray(arguments)));
+             },
+
+            dUSMinuteAppPreOrderChangeStatus: function (arrFields) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["DUSMinuteAppPreOrderChangeStatus"], $.makeArray(arguments)));
+             },
+
+            dUSMinuteAppPreOrderRaised: function (arrFields) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["DUSMinuteAppPreOrderRaised"], $.makeArray(arguments)));
+             },
+
+            enableWeighingScanner: function (arrFields) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["EnableWeighingScanner"], $.makeArray(arguments)));
+             },
+
+            enableWeighingScannerResult: function (arrFields) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["EnableWeighingScannerResult"], $.makeArray(arguments)));
+             },
+
+            executeClientMethod: function (sSessionId, sData) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["executeClientMethod"], $.makeArray(arguments)));
+             },
+
+            methodOfServerPassingObject: function (sSessionId, result) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["MethodOfServerPassingObject"], $.makeArray(arguments)));
+             },
+
+            openCashDrawer: function (arrFields) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["OpenCashDrawer"], $.makeArray(arguments)));
+             },
+
+            printDocument: function (fileName, arrFields) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["PrintDocument"], $.makeArray(arguments)));
+             },
+
+            printLayout: function (sFileName, arrFileByte, arrFields) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["PrintLayout"], $.makeArray(arguments)));
+             },
+
+            printLayoutWithClientIPAddress: function (sFileName, arrFileByte, arrClientIPAddress, arrFields) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["PrintLayoutWithClientIPAddress"], $.makeArray(arguments)));
+             },
+
+            register: function (sSessionId, sTabId) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["register"], $.makeArray(arguments)));
+             },
+
+            releaseWeighingScanner: function (arrFields) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["ReleaseWeighingScanner"], $.makeArray(arguments)));
+             },
+
+            resetWeighingScanner: function (arrFields) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["ResetWeighingScanner"], $.makeArray(arguments)));
+             },
+
+            resetWeighingScannerResult: function (arrFields) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["ResetWeighingScannerResult"], $.makeArray(arguments)));
+             },
+
+            sendAIResult: function (sSessionId, sData) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["sendAIResult"], $.makeArray(arguments)));
+             },
+
+            showPoleDisplay: function (arrFields) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["ShowPoleDisplay"], $.makeArray(arguments)));
+             },
+
+            showPoleDisplayDescription: function (arrFields) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["ShowPoleDisplayDescription"], $.makeArray(arguments)));
+             },
+
+            weighingScaleAddProductResult: function (arrFields) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["WeighingScaleAddProductResult"], $.makeArray(arguments)));
+             },
+
+            weighingScaleAfterAddProductResult: function (arrFields) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["WeighingScaleAfterAddProductResult"], $.makeArray(arguments)));
+             },
+
+            weighingScaleWhileAddProductResult: function (arrFields) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["WeighingScaleWhileAddProductResult"], $.makeArray(arguments)));
+             },
+
+            weighingScannerResult: function (arrFields) {
+                return proxies['signalRHub'].invoke.apply(proxies['signalRHub'], $.merge(["WeighingScannerResult"], $.makeArray(arguments)));
+             }
+        };
+
+        return proxies;
+    };
+
+    signalR.hub = $.hubConnection("/FocusXLR/signalr", { useDefaultPath: false });
+    $.extend(signalR, signalR.hub.createHubProxies());
+
+}(window.jQuery, window));

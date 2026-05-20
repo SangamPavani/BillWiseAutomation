@@ -1,0 +1,54 @@
+.sPref{
+    background-image: url(../../../default/images/PreferencesSprite-1.2.png) ;
+    background-repeat:no-repeat;
+}
+
+.s-Arrow{ background-position: 0 0; width: 52px; height: 26px; }
+.s-Level{ background-position: 0 -27px; width: 151px; height: 100px; }
+.s-Start{ background-position: 0 -128px; width: 76px; height: 76px; }
+.s-account{ background-position: 0 -205px; width: 16px; height: 16px; }
+.s-appointment{ background-position: 0 -222px; width: 24px; height: 24px; }
+.s-arrow{ background-position: 0 -247px; width: 6px; height: 9px; }
+.s-bullet_gr{ background-position: 0 -257px; width: 11px; height: 11px; }
+.s-calendar{ background-position: 0 -269px; width: 16px; height: 16px; }
+.s-collapse{ background-position: 0 -286px; width: 8px; height: 8px; }
+.s-contact{ background-position: 0 -295px; width: 16px; height: 16px; }
+.s-cross{ background-position: 0 -312px; width: 15px; height: 15px; } 
+.s-defaultimg{ background-position: 0 -328px; width: 64px; height: 64px; }
+.s-delete{ background-position: 0 -393px; width: 10px; height: 10px; }
+.s-delete3{ background-position: 0 -404px; width: 40px; height: 37px; }
+.s-drag{ background-position: 0 -442px; width: 11px; height: 11px; }
+.s-expand{ background-position: 0 -454px; width: 8px; height: 8px; }
+.s-fb{ background-position: 0 -463px; width: 17px; height: 17px; }
+.s-gmail{ background-position: 0 -481px; width: 16px; height: 16px; }
+.s-header_arrow_rht{ background-position: 0 -498px; width: 13px; height: 13px; }
+.s-home{ background-position: 0 -512px; width: 16px; height: 16px; }
+.s-hs{ background-position: 0 -529px; width: 181px; height: 101px; }
+.s-lock{ background-position: 0 -631px; width: 8px; height: 11px; }
+.s-logo{ background-position: 0 -643px; width: 106px; height: 44px; }
+.s-logo4{ background-position: 0 -688px; width: 118px; height: 44px; }
+.s-lookup{ background-position: 0 -733px; width: 20px; height: 20px; }
+.s-minus1{ background-position: 0 -754px; width: 12px; height: 12px; }
+.s-minus{ background-position: 0 -767px; width: 10px; height: 10px; }
+.s-ontrodden{ background-position: 0 -778px; width: 7px; height: 13px; }
+.s-ontroddenbg{ background-position: 0 -792px; width: 7px; height: 36px; }
+.s-ontroddencount{ background-position: 0 -829px; width: 17px; height: 17px; }
+.s-plus1{ background-position: 0 -847px; width: 12px; height: 12px; }
+.s-plus{ background-position: 0 -860px; width: 10px; height: 10px; }
+.s-pretrodden{ background-position: 0 -871px; width: 7px; height: 14px; }
+.s-setup_cls{ background-position: 0 -886px; width: 4px; height: 27px; }
+.s-setup_hbg{ background-position: 0 -914px; width: 3px; height: 27px; }
+.s-setup_opn{ background-position: 0 -942px; width: 5px; height: 32px; }
+.s-sync{ background-position: 0 -975px; width: 16px; height: 16px; }
+.s-sync2{ background-position: 0 -992px; width: 16px; height: 16px; }
+.s-sync3{ background-position: 0 -1009px; width: 16px; height: 16px; }
+.s-tab_le{ background-position: 0 -1026px; width: 189px; height: 22px; }
+.s-tab_ri{ background-position: 0 -1049px; width: 3px; height: 22px; }
+.s-task{ background-position: 0 -1072px; width: 32px; height: 32px; }
+.s-task2{ background-position: 0 -1105px; width: 16px; height: 16px; }
+.s-trodden{ background-position: 0 -1122px; width: 7px; height: 14px; }
+.s-troddenbg{ background-position: 0 -1137px; width: 7px; height: 36px; }
+.s-troddencount{ background-position: 0 -1174px; width: 17px; height: 17px; }
+.s-twitter{ background-position: 0 -1192px; width: 17px; height: 17px; }
+.s-unsync1{ background-position: 0 -1210px; width: 16px; height: 16px; }
+.s-uploadLogo {width:200px;height:50px;}

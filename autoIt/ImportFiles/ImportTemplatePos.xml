@@ -1,0 +1,1558 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CustExportImport xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <PosTemplate>
+    <CustTemplate>
+      <CreatedBy>1</CreatedBy>
+      <ModifiedBy>1</ModifiedBy>
+      <CreatedDate>17351939515792</CreatedDate>
+      <ModifiedDate>17351939515792</ModifiedDate>
+      <LocationId>0</LocationId>
+      <EditedFrom>false</EditedFrom>
+      <SourceId>0</SourceId>
+      <SyncReceivedDate>0</SyncReceivedDate>
+      <EditingLocation>0</EditingLocation>
+      <ID>1</ID>
+      <Name>Default Template</Name>
+      <ShiftID>0</ShiftID>
+      <IsCounterPoleDisplay>false</IsCounterPoleDisplay>
+      <ModuleType>255</ModuleType>
+      <ColumnsInTemplate>0</ColumnsInTemplate>
+      <RowsInTemplate>0</RowsInTemplate>
+      <ShowAllProducts>false</ShowAllProducts>
+      <CheckTaxCodeExist>false</CheckTaxCodeExist>
+      <CheckCanotChangeUnitExist>false</CheckCanotChangeUnitExist>
+      <DisplayName>false</DisplayName>
+      <GroupHeaderDisplayType>Name</GroupHeaderDisplayType>
+      <WeighingScaleEnabled>false</WeighingScaleEnabled>
+    </CustTemplate>
+  </PosTemplate>
+  <PosLayout>
+    <CustLayout>
+      <ID>1</ID>
+      <Name>Default Layout</Name>
+      <Type>1</Type>
+      <Columns>4</Columns>
+      <Rows>4</Rows>
+    </CustLayout>
+  </PosLayout>
+  <PosBottomPanel>
+    <CustBottomPanel>
+      <ID>1</ID>
+      <TemplateID>1</TemplateID>
+      <LayoutID>1</LayoutID>
+      <ButtonID>2</ButtonID>
+      <ButtonName>Item</ButtonName>
+      <Character> </Character>
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <ButtonTypeId>1</ButtonTypeId>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+    </CustBottomPanel>
+    <CustBottomPanel>
+      <ID>2</ID>
+      <TemplateID>1</TemplateID>
+      <LayoutID>1</LayoutID>
+      <ButtonID>3</ButtonID>
+      <ButtonName>Member</ButtonName>
+      <Character> </Character>
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <ButtonTypeId>1</ButtonTypeId>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+    </CustBottomPanel>
+    <CustBottomPanel>
+      <ID>3</ID>
+      <TemplateID>1</TemplateID>
+      <LayoutID>1</LayoutID>
+      <ButtonID>4</ButtonID>
+      <ButtonName>Transaction</ButtonName>
+      <Character> </Character>
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <ButtonTypeId>1</ButtonTypeId>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+    </CustBottomPanel>
+    <CustBottomPanel>
+      <ID>4</ID>
+      <TemplateID>1</TemplateID>
+      <LayoutID>1</LayoutID>
+      <ButtonID>5</ButtonID>
+      <ButtonName>Tasks</ButtonName>
+      <Character> </Character>
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <ButtonTypeId>1</ButtonTypeId>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+    </CustBottomPanel>
+    <CustBottomPanel>
+      <ID>5</ID>
+      <TemplateID>1</TemplateID>
+      <LayoutID>1</LayoutID>
+      <ButtonID>6</ButtonID>
+      <ButtonName>Sales Returns</ButtonName>
+      <Character> </Character>
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <ButtonTypeId>1</ButtonTypeId>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+    </CustBottomPanel>
+    <CustBottomPanel>
+      <ID>6</ID>
+      <TemplateID>1</TemplateID>
+      <LayoutID>1</LayoutID>
+      <ButtonID>7</ButtonID>
+      <ButtonName>Functions</ButtonName>
+      <Character> </Character>
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <ButtonTypeId>1</ButtonTypeId>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+    </CustBottomPanel>
+    <CustBottomPanel>
+      <ID>7</ID>
+      <TemplateID>1</TemplateID>
+      <LayoutID>1</LayoutID>
+      <ButtonID>8</ButtonID>
+      <ButtonName>PreOrder</ButtonName>
+      <Character> </Character>
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <ButtonTypeId>1</ButtonTypeId>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+    </CustBottomPanel>
+    <CustBottomPanel>
+      <ID>8</ID>
+      <TemplateID>1</TemplateID>
+      <LayoutID>1</LayoutID>
+      <ButtonID>9</ButtonID>
+      <ButtonName>Employee</ButtonName>
+      <Character> </Character>
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <ButtonTypeId>1</ButtonTypeId>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+    </CustBottomPanel>
+    <CustBottomPanel>
+      <ID>9</ID>
+      <TemplateID>1</TemplateID>
+      <LayoutID>1</LayoutID>
+      <ButtonID>10</ButtonID>
+      <ButtonName>Employee For Schemes</ButtonName>
+      <Character> </Character>
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <ButtonTypeId>1</ButtonTypeId>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+    </CustBottomPanel>
+  </PosBottomPanel>
+  <PosLeftPanel>
+    <CustLeftPanel>
+      <ID>1</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>1</BottomPanelID>
+      <SerialNumber>0</SerialNumber>
+      <ModuleFunctionID>12</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>1</Character>
+      <Caption1>Select Item by Code</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>2</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>1</BottomPanelID>
+      <SerialNumber>1</SerialNumber>
+      <ModuleFunctionID>13</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>2</Character>
+      <Caption1>Select Item by Name</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>3</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>1</BottomPanelID>
+      <SerialNumber>2</SerialNumber>
+      <ModuleFunctionID>67</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>3</Character>
+      <Caption1>Select Item by Alias</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>4</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>1</BottomPanelID>
+      <SerialNumber>3</SerialNumber>
+      <ModuleFunctionID>14</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>4</Character>
+      <Caption1>Advanced Search Item</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>5</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>1</BottomPanelID>
+      <SerialNumber>4</SerialNumber>
+      <ModuleFunctionID>15</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>5</Character>
+      <Caption1>Create Item</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>6</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>1</BottomPanelID>
+      <SerialNumber>5</SerialNumber>
+      <ModuleFunctionID>16</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>6</Character>
+      <Caption1>Quick Create Item</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>7</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>1</BottomPanelID>
+      <SerialNumber>6</SerialNumber>
+      <ModuleFunctionID>17</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>7</Character>
+      <Caption1>View Item</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>8</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>1</BottomPanelID>
+      <SerialNumber>7</SerialNumber>
+      <ModuleFunctionID>18</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>8</Character>
+      <Caption1>Edit Item</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>9</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>1</BottomPanelID>
+      <SerialNumber>8</SerialNumber>
+      <ModuleFunctionID>19</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>9</Character>
+      <Caption1>Add Item Comment – For Promotional Messages</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>10</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>1</BottomPanelID>
+      <SerialNumber>9</SerialNumber>
+      <ModuleFunctionID>20</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>A</Character>
+      <Caption1>Substitute Item</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>11</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>1</BottomPanelID>
+      <SerialNumber>10</SerialNumber>
+      <ModuleFunctionID>21</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>B</Character>
+      <Caption1>Related Item</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>12</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>1</BottomPanelID>
+      <SerialNumber>11</SerialNumber>
+      <ModuleFunctionID>22</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>C</Character>
+      <Caption1>Schemes List related to the selected Item</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>13</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>1</BottomPanelID>
+      <SerialNumber>12</SerialNumber>
+      <ModuleFunctionID>73</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>D</Character>
+      <Caption1>Star Items</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>14</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>1</BottomPanelID>
+      <SerialNumber>13</SerialNumber>
+      <ModuleFunctionID>123</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>E</Character>
+      <Caption1>Item Query</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>15</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>2</BottomPanelID>
+      <SerialNumber>0</SerialNumber>
+      <ModuleFunctionID>1</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>F</Character>
+      <Caption1>Select Member by Code</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>16</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>2</BottomPanelID>
+      <SerialNumber>1</SerialNumber>
+      <ModuleFunctionID>2</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>G</Character>
+      <Caption1>Select Member by Name</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>17</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>2</BottomPanelID>
+      <SerialNumber>2</SerialNumber>
+      <ModuleFunctionID>3</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>H</Character>
+      <Caption1>Select Member by Telephone</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>18</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>2</BottomPanelID>
+      <SerialNumber>3</SerialNumber>
+      <ModuleFunctionID>95</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>I</Character>
+      <Caption1>Select Member by Barcode/Card</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>19</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>2</BottomPanelID>
+      <SerialNumber>4</SerialNumber>
+      <ModuleFunctionID>4</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>J</Character>
+      <Caption1>Advanced Search Member</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>20</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>2</BottomPanelID>
+      <SerialNumber>5</SerialNumber>
+      <ModuleFunctionID>5</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>K</Character>
+      <Caption1>Clear Member</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>21</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>2</BottomPanelID>
+      <SerialNumber>6</SerialNumber>
+      <ModuleFunctionID>6</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>L</Character>
+      <Caption1>Create Member</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>22</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>2</BottomPanelID>
+      <SerialNumber>7</SerialNumber>
+      <ModuleFunctionID>7</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>M</Character>
+      <Caption1>Quick Create Member</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>23</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>2</BottomPanelID>
+      <SerialNumber>8</SerialNumber>
+      <ModuleFunctionID>8</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>N</Character>
+      <Caption1>View Member</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>24</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>2</BottomPanelID>
+      <SerialNumber>9</SerialNumber>
+      <ModuleFunctionID>9</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>O</Character>
+      <Caption1>Edit Member</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>25</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>3</BottomPanelID>
+      <SerialNumber>0</SerialNumber>
+      <ModuleFunctionID>26</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>1</Character>
+      <Caption1>Delete Line Item</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>26</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>3</BottomPanelID>
+      <SerialNumber>1</SerialNumber>
+      <ModuleFunctionID>27</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>2</Character>
+      <Caption1>Change Quantity</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>27</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>3</BottomPanelID>
+      <SerialNumber>2</SerialNumber>
+      <ModuleFunctionID>28</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>3</Character>
+      <Caption1>Discount Line Item</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>28</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>3</BottomPanelID>
+      <SerialNumber>3</SerialNumber>
+      <ModuleFunctionID>29</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>4</Character>
+      <Caption1>New/Cancel Transaction</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>29</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>3</BottomPanelID>
+      <SerialNumber>4</SerialNumber>
+      <ModuleFunctionID>30</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>5</Character>
+      <Caption1>Hold Transaction</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>30</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>3</BottomPanelID>
+      <SerialNumber>5</SerialNumber>
+      <ModuleFunctionID>31</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>6</Character>
+      <Caption1>Recall Transaction</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>31</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>3</BottomPanelID>
+      <SerialNumber>6</SerialNumber>
+      <ModuleFunctionID>32</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>7</Character>
+      <Caption1>Void Transaction</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>32</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>3</BottomPanelID>
+      <SerialNumber>7</SerialNumber>
+      <ModuleFunctionID>102</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>8</Character>
+      <Caption1>No Sale – Open Cash Drawer</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>33</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>3</BottomPanelID>
+      <SerialNumber>8</SerialNumber>
+      <ModuleFunctionID>34</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>9</Character>
+      <Caption1>Search Transaction by Member</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>34</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>3</BottomPanelID>
+      <SerialNumber>9</SerialNumber>
+      <ModuleFunctionID>35</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>A</Character>
+      <Caption1>Search Transaction by Date</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>35</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>3</BottomPanelID>
+      <SerialNumber>10</SerialNumber>
+      <ModuleFunctionID>36</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>B</Character>
+      <Caption1>Search Transaction by Receipt</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>36</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>3</BottomPanelID>
+      <SerialNumber>11</SerialNumber>
+      <ModuleFunctionID>37</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>C</Character>
+      <Caption1>Advanced Search Transaction</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>37</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>3</BottomPanelID>
+      <SerialNumber>12</SerialNumber>
+      <ModuleFunctionID>38</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>D</Character>
+      <Caption1>Exchange/Spoilage/Normal</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>38</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>3</BottomPanelID>
+      <SerialNumber>13</SerialNumber>
+      <ModuleFunctionID>94</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>E</Character>
+      <Caption1>Transaction Narration</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>39</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>3</BottomPanelID>
+      <SerialNumber>14</SerialNumber>
+      <ModuleFunctionID>124</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>F</Character>
+      <Caption1>Transaction Extra Fields</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>40</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>3</BottomPanelID>
+      <SerialNumber>15</SerialNumber>
+      <ModuleFunctionID>101</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>G</Character>
+      <Caption1>Complimentary</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>41</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>3</BottomPanelID>
+      <SerialNumber>16</SerialNumber>
+      <ModuleFunctionID>110</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>H</Character>
+      <Caption1>Change Price</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>42</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>3</BottomPanelID>
+      <SerialNumber>17</SerialNumber>
+      <ModuleFunctionID>107</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>I</Character>
+      <Caption1>Copy To All</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>43</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>3</BottomPanelID>
+      <SerialNumber>18</SerialNumber>
+      <ModuleFunctionID>108</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>J</Character>
+      <Caption1>Proportionate To All</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>44</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>3</BottomPanelID>
+      <SerialNumber>19</SerialNumber>
+      <ModuleFunctionID>129</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>K</Character>
+      <Caption1>Discount Proportionate except for Scheme Items</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>45</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>3</BottomPanelID>
+      <SerialNumber>20</SerialNumber>
+      <ModuleFunctionID>132</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>L</Character>
+      <Caption1>Divide With Number Of Items</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>46</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>3</BottomPanelID>
+      <SerialNumber>21</SerialNumber>
+      <ModuleFunctionID>135</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>M</Character>
+      <Caption1>Prepaid Top up</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>47</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>4</BottomPanelID>
+      <SerialNumber>0</SerialNumber>
+      <ModuleFunctionID>40</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>N</Character>
+      <Caption1>Cash In</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>48</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>4</BottomPanelID>
+      <SerialNumber>1</SerialNumber>
+      <ModuleFunctionID>41</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>O</Character>
+      <Caption1>Cash Out</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>49</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>4</BottomPanelID>
+      <SerialNumber>2</SerialNumber>
+      <ModuleFunctionID>42</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>P</Character>
+      <Caption1>Cash Collection</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>50</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>4</BottomPanelID>
+      <SerialNumber>3</SerialNumber>
+      <ModuleFunctionID>43</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>Q</Character>
+      <Caption1>Reprint Receipt/Bill</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>51</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>4</BottomPanelID>
+      <SerialNumber>4</SerialNumber>
+      <ModuleFunctionID>46</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>R</Character>
+      <Caption1>Open – Day In</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>52</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>4</BottomPanelID>
+      <SerialNumber>5</SerialNumber>
+      <ModuleFunctionID>47</ModuleFunctionID>
+      <HotKeyID>1</HotKeyID>
+      <Character>S</Character>
+      <Caption1>Close – Day End</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>53</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>4</BottomPanelID>
+      <SerialNumber>6</SerialNumber>
+      <ModuleFunctionID>127</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>T</Character>
+      <Caption1>Reprint Day End</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>54</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>4</BottomPanelID>
+      <SerialNumber>7</SerialNumber>
+      <ModuleFunctionID>105</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>U</Character>
+      <Caption1>Purchase Order</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>55</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>4</BottomPanelID>
+      <SerialNumber>8</SerialNumber>
+      <ModuleFunctionID>112</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>V</Character>
+      <Caption1>Gift Voucher Sale</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>56</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>4</BottomPanelID>
+      <SerialNumber>9</SerialNumber>
+      <ModuleFunctionID>113</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>W</Character>
+      <Caption1>Gift Voucher Transfer</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>57</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>4</BottomPanelID>
+      <SerialNumber>10</SerialNumber>
+      <ModuleFunctionID>114</ModuleFunctionID>
+      <HotKeyID>2</HotKeyID>
+      <Character>X</Character>
+      <Caption1>Discount Voucher Transfer</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>58</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>5</BottomPanelID>
+      <SerialNumber>0</SerialNumber>
+      <ModuleFunctionID>50</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>1</Character>
+      <Caption1>Sales Return by Receipt</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>59</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>5</BottomPanelID>
+      <SerialNumber>1</SerialNumber>
+      <ModuleFunctionID>51</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>2</Character>
+      <Caption1>Sales Return by Member</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>60</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>5</BottomPanelID>
+      <SerialNumber>2</SerialNumber>
+      <ModuleFunctionID>109</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>3</Character>
+      <Caption1>Reprint Sales Return</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>61</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>6</BottomPanelID>
+      <SerialNumber>0</SerialNumber>
+      <ModuleFunctionID>92</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>4</Character>
+      <Caption1>Credit Sale Adjustments</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>62</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>6</BottomPanelID>
+      <SerialNumber>1</SerialNumber>
+      <ModuleFunctionID>128</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>5</Character>
+      <Caption1>Manual Credit Note</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>63</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>6</BottomPanelID>
+      <SerialNumber>2</SerialNumber>
+      <ModuleFunctionID>10</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>6</Character>
+      <Caption1>Home Delivery</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>64</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>6</BottomPanelID>
+      <SerialNumber>3</SerialNumber>
+      <ModuleFunctionID>54</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>7</Character>
+      <Caption1>Home Delivery Picklist</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>65</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>6</BottomPanelID>
+      <SerialNumber>4</SerialNumber>
+      <ModuleFunctionID>55</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>8</Character>
+      <Caption1>Internet Link</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>66</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>6</BottomPanelID>
+      <SerialNumber>5</SerialNumber>
+      <ModuleFunctionID>56</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>9</Character>
+      <Caption1>Bill Settlement</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>67</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>6</BottomPanelID>
+      <SerialNumber>6</SerialNumber>
+      <ModuleFunctionID>57</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>A</Character>
+      <Caption1>Bill Settlement - Cash</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>68</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>6</BottomPanelID>
+      <SerialNumber>7</SerialNumber>
+      <ModuleFunctionID>58</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>B</Character>
+      <Caption1>Bill Settlement - Credit Card</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>69</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>6</BottomPanelID>
+      <SerialNumber>8</SerialNumber>
+      <ModuleFunctionID>59</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>C</Character>
+      <Caption1>Bill Settlement - Debit Card</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>70</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>6</BottomPanelID>
+      <SerialNumber>9</SerialNumber>
+      <ModuleFunctionID>60</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>D</Character>
+      <Caption1>Bill Settlement - Cheque</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>71</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>6</BottomPanelID>
+      <SerialNumber>10</SerialNumber>
+      <ModuleFunctionID>61</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>E</Character>
+      <Caption1>Bill Settlement - Gift Voucher</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>72</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>6</BottomPanelID>
+      <SerialNumber>11</SerialNumber>
+      <ModuleFunctionID>62</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>F</Character>
+      <Caption1>Bill Settlement - Credit Note</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>73</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>6</BottomPanelID>
+      <SerialNumber>12</SerialNumber>
+      <ModuleFunctionID>103</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>G</Character>
+      <Caption1>Bill Settlement - Credit Sale</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>74</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>6</BottomPanelID>
+      <SerialNumber>13</SerialNumber>
+      <ModuleFunctionID>133</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>H</Character>
+      <Caption1>Bill Settlement - EPayment</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>75</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>6</BottomPanelID>
+      <SerialNumber>14</SerialNumber>
+      <ModuleFunctionID>74</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>I</Character>
+      <Caption1>Split Bill</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>76</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>7</BottomPanelID>
+      <SerialNumber>0</SerialNumber>
+      <ModuleFunctionID>64</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>J</Character>
+      <Caption1>PreOrder Screen</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>77</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>7</BottomPanelID>
+      <SerialNumber>1</SerialNumber>
+      <ModuleFunctionID>65</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>J</Character>
+      <Caption1>PreOrder Collection</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>78</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>7</BottomPanelID>
+      <SerialNumber>2</SerialNumber>
+      <ModuleFunctionID>66</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>K</Character>
+      <Caption1>PreOrder Enquiry</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>79</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>8</BottomPanelID>
+      <SerialNumber>0</SerialNumber>
+      <ModuleFunctionID>69</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>L</Character>
+      <Caption1>Select Employee by Name</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>80</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>8</BottomPanelID>
+      <SerialNumber>1</SerialNumber>
+      <ModuleFunctionID>70</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>M</Character>
+      <Caption1>Select Employee by Code</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>81</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>8</BottomPanelID>
+      <SerialNumber>2</SerialNumber>
+      <ModuleFunctionID>71</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>N</Character>
+      <Caption1>Select Employee by Alias</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>82</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>8</BottomPanelID>
+      <SerialNumber>3</SerialNumber>
+      <ModuleFunctionID>131</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>O</Character>
+      <Caption1>Select Employee by Barcode/Card</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>83</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>8</BottomPanelID>
+      <SerialNumber>4</SerialNumber>
+      <ModuleFunctionID>72</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>P</Character>
+      <Caption1>Clear Employee</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>84</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>8</BottomPanelID>
+      <SerialNumber>5</SerialNumber>
+      <ModuleFunctionID>134</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>Q</Character>
+      <Caption1>Quick Create Employee</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>85</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>9</BottomPanelID>
+      <SerialNumber>0</SerialNumber>
+      <ModuleFunctionID>117</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>R</Character>
+      <Caption1>Select Employee by Name(for Schemes)</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>86</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>9</BottomPanelID>
+      <SerialNumber>1</SerialNumber>
+      <ModuleFunctionID>118</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>S</Character>
+      <Caption1>Select Employee by Code(for Schemes)</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>87</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>9</BottomPanelID>
+      <SerialNumber>2</SerialNumber>
+      <ModuleFunctionID>119</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>T</Character>
+      <Caption1>Select Employee by Alias(for Schemes)</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+    <CustLeftPanel>
+      <ID>88</ID>
+      <TemplateID>1</TemplateID>
+      <BottomPanelID>9</BottomPanelID>
+      <SerialNumber>3</SerialNumber>
+      <ModuleFunctionID>120</ModuleFunctionID>
+      <HotKeyID>3</HotKeyID>
+      <Character>U</Character>
+      <Caption1>Clear Employee(for Schemes)</Caption1>
+      <Caption2 />
+      <Caption3 />
+      <FontStyle>Verdana,Regular,11,Normal</FontStyle>
+      <BackgroundColorVal>-1</BackgroundColorVal>
+      <ForeColor>0</ForeColor>
+      <DonotDisplayInOrderType>-1</DonotDisplayInOrderType>
+    </CustLeftPanel>
+  </PosLeftPanel>
+</CustExportImport>

@@ -1,0 +1,125 @@
+/**
+
+ * Author           :  Nagababu
+ * Date             :  march 18, 2011
+ * Desctiption      :
+ * Assumptions      :
+
+ * */
+var clScheduledReminder = new function()
+{
+    var me = this;
+    var g_isStartUp=0;
+    app.registerInstance("ScheduledReminders",this);
+    /**
+     * This method is used to for saving reminders
+     */
+    this.onClkUpdateReminder=function(iReminderId,evt,isDialog,bRead,isSnooze){
+        if(isDialog==undefined)
+            isDialog=0;
+        var sUrl=con.getStruts2Url("module","reminder","updateScheduledReminder",null,true);
+        sUrl+="?reminderId="+iReminderId+"&snooze="+isSnooze;
+        var sMethod="parent.clScheduledReminder.getReminders";
+        if(isDialog==1){
+            sMethod="";
+            cross.setVisible(document.getElementById("dvReminder_"+iReminderId+"_1"),false);
+        }
+        if(bRead==0){
+        var dvRCount=document.getElementById("dvRCount");
+        if(!dvRCount)
+            dvRCount=parent.document.getElementById("dvRCount");
+        dvRCount.innerHTML=parseInt(dvRCount.innerHTML)-1;
+        }
+        con.sendPostRequest(sUrl,null,null,sMethod);
+        cross.cancelBubble(evt);
+    };
+
+    this.toggleReminders=function()
+    {
+        //alert("toggleReminders")
+        if(document.getElementById("dvContent").style.display=="none")
+            clScheduledReminder.getReminders();
+        else
+            clScheduledReminder.hideReminders();
+    };
+
+    this.getReminders=function(isStartUp)
+    {
+        //alert("getReminders")
+        //alert(document.getElementById("dvTitle").parentNode.innerHTML)
+        if(me.iReminderListenerId>0)
+            cross.unregisterEventListener(me.iReminderListenerId);
+
+        g_isStartUp=isStartUp;
+        var sUrl=con.getStruts2Url("module","reminder","getScheduledReminders",null,true);
+        sUrl+="?isDialog=0";
+        con.sendPostRequest(sUrl,null,null,"clScheduledReminder.arhShowReminders");
+
+    };
+    this.arhShowReminders=function(sResponse){
+        var dvContent=document.getElementById("dvContent");
+
+        initAllCombos=null;
+        unloadResources(dvContent);
+        dvContent.innerHTML=sResponse;
+        loadResources(dvContent,util.onScriptsLoad);
+        var iLength=document.getElementById("iLength").value;
+        var dvReminders=document.getElementById("dvReminders");
+        if(iLength==0){
+          cross.setVisible(dvReminders,true);
+          $("#dvReminders").animate({"width": "310"},"fast","linear");
+        cross.setVisible(dvContent,true);
+//        me.iReminderListenerId =cross.registerEventListener(cross.EVENT_ONCLICK,clScheduledReminder.hideReminders,null);
+//            clScheduledReminder.hideReminders();
+        }
+        else
+        cross.setVisible(dvReminders,false);
+    };
+    this.hideReminders=function(evt)
+    {
+        //alert("hideReminders")
+//        alert(document.getElementById("dvTitle").parentNode.innerHTML)
+        var objSrcElement=cross.getSrcElement(evt);
+        var sId;
+        //       alert(objSrcElement)
+        cross.unregisterEventListener(me.iReminderListenerId);
+
+        if(objSrcElement)
+            sId=objSrcElement.parentNode.id;
+
+        $("#dvReminders").animate({"width": "25"},"fast","linear",clScheduledReminder.hideDivs);
+
+
+    };
+    this.hideDivs=function()
+    {
+        cross.setVisible(document.getElementById("dvContent"),false);
+        document.getElementById("dvReminders").style.width="0px";
+//        var dvTitle=document.getElementById("dvTitle");
+//        dvTitle.style.border = "";
+        //dvTitle.setAttribute("onClick","clScheduledReminder.getReminders()");
+
+    };
+    this.showAllScheduledReminders=function(){
+        var arrActions = new Array();
+        arrActions[0] = MsgHandler.getMsg(MsgConstants.OK,0,0)+"|";
+        var sUrl=con.getStruts2Url("module","reminder","getScheduledReminders",null,true);
+        sUrl+="?isDialog=1";
+        var clRemindersDlg = new DialogBox("scheduledReminders",MsgHandler.getMsg(MsgConstants.SCHEDULED_REMINDERS,0,0),40,60,640,450, sUrl, true, null, true,true,arrActions);
+//        clRemindersDlg.setTitle(MsgHandler.getMsg(MsgConstants.SCHEDULED_REMINDERS,0,0));
+        clRemindersDlg.setCenter();
+        clRemindersDlg.show();
+    };
+    this.onClkSnooze=function(iReminderId,isDialog,evt){
+        var dvReminder=document.getElementById("dvReminder_"+iReminderId+"_"+isDialog);
+        cross.setVisible(dvReminder,false);
+        var dvRCount=document.getElementById("dvRCount");
+        if(!dvRCount)
+            dvRCount=parent.document.getElementById("dvRCount");
+        dvRCount.innerHTML=parseInt(dvRCount.innerHTML)-1;
+        cross.cancelBubble(evt);
+
+    };
+
+
+};

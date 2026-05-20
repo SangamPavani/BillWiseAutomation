@@ -1,0 +1,3619 @@
+﻿/// <reference path="ReportCustomize.js" />
+var REPORTCUSTOMIZE = {
+
+    g_objcusmodel: {},
+    g_arrColFont: [],
+    g_transtreedata: [],
+    currentparentNode: null,
+    selectedColumn: document.getElementById("tdTarget") ? document.getElementById("tdTarget").lastElementChild : null,
+    isTransTree: false,
+    SubReportId: 0,
+    Next2DeleteColumnId: 0,
+    m_arrFormulas: null,
+    Gselectedele: null,
+    isHeaderFooter: false,
+    iMRPPOViewId: -1,
+    getColAlignment: function () {
+        var iColumnAlignment = 0;
+        if (ColumnId.substr(0, 3).length != 0 && ColumnId.substr(0, 3).toLowerCase() != "cus") {
+            ColumnId = "Cus" + ColumnId;
+        }
+        var ColumnAlignment = $("#" + ColumnId).attr("data-colalign");
+        var decimalValue = parseInt($("#DecimalColumn").val());
+        var sign = parseInt($("#ddlSign").find("option:selected").attr('value'));
+        iColumnAlignment = (sign << 5) | (ColumnAlignment << 3) | decimalValue;
+        return (ColumnAlignment);
+    },
+
+    WidthHeaders: function () {
+        var list = new Array();
+        var HWidth = null;
+        $(".dv_Column").map(function () {
+            list.push(this.id);
+            return this.id;
+        }).get().join(",");
+        var width = 0;
+        for (var i = 0; i < list.length; i++) {
+            if (list[i] != "D700" && list[i] != "") {
+                HWidth = $("#" + list[i]).attr("data-columnwidth");
+                if (HWidth != undefined)
+                    width = width + parseFloat(HWidth);
+            }
+            else {
+                $("#totalWidth").val(width);
+            }
+        }
+        width = Math.round(width);
+        $("#totalWidth").attr("data-totalwidth", width);
+        $("#totalWidth").val(width);
+    },
+
+    updateHeaderWidth: function () {
+        //debugger
+        var totalwidth = null;
+        var headertable = null;
+        var list = [];
+        var OldTotalWidth = 0;
+        var OldColumnWidth = null;
+        var NewTotalWidth = 0;
+        var dv_columnEle = null;
+        var arrWidths = [];
+        var NewColumnWidth = null;
+        try {
+            totalwidth = document.getElementById("totalWidth");
+            headertable = document.getElementById("id_rc_columnheadertable");
+            $(".dv_Column").map(function () {
+                list.push(this.id); return this.id;
+            }).get().join(",");
+            OldTotalWidth = REPORTCUSTOMIZE.getHeaderTotalWidth();
+            NewTotalWidth = +(totalwidth.value);
+
+            for (var iCounter = 0; iCounter < list.length; iCounter++) {
+                if (list[iCounter] != "") {
+                    OldColumnWidth = $("#" + list[iCounter]).attr("data-columnwidth");
+                    NewColumnWidth = OldColumnWidth * NewTotalWidth / OldTotalWidth;
+                    $("#" + list[iCounter]).attr("data-columnwidth", NewColumnWidth);
+                    arrWidths.push(NewColumnWidth);
+                    NewColumnWidth = Math.round(NewColumnWidth);
+                    $("#" + list[iCounter]).parent().css("width", NewColumnWidth)
+                    dv_columnEle = document.getElementById(list[iCounter]);
+                }
+            }
+            $("#totalWidth").attr("data-totalwidth", NewTotalWidth);
+            if (REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns != null) {
+                var i = 0;
+                for (var item = 0; item < REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns.length; item++) {
+                    for (i = i; i < arrWidths.length; i++) {
+                        REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns[item].ColumnWidth = arrWidths[i];
+                        i = i + 1;
+                        break;
+                    }
+                }
+            }
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("updateHeaderWidth " + err.message, "Exception");
+        }
+    },
+
+    getHeaderTotalWidth: function () {
+        var width = 0;
+        var HWidth = null;
+        var list = new Array();
+        $(".dv_Column").map(function () {
+            list.push(this.id);
+            return this.id;
+        }).get().join(",");
+        for (var i = 0; i < list.length; i++) {
+            if (list[i] != "D700" && list[i] != "") {
+                HWidth = $("#" + list[i]).attr("data-columnwidth");
+                if (HWidth != undefined) {
+                    width = width + parseFloat(HWidth);
+                }
+            }
+        }
+        return (width);
+    },
+
+    ColumnWidthTotal: function (ele) {
+        var ColumnWidth = null;
+        var CustomizeModel = {};
+        var width = 0.0, roundwidth = 0.0;
+        try {
+            ColumnWidth = $("#columnwidth").val();
+            CustomizeModel = REPORTCUSTOMIZE.g_objcusmodel;
+            for (var i = 0; i < CustomizeModel.lstCustomizeColumns.length; i++) {
+                if (CustomizeModel.lstCustomizeColumns[i].ColumnId == $(ele).attr("colid")) {
+                    REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns[i].ColumnWidth = ColumnWidth;
+                    break;
+                }
+            }
+            width = $("#" + ColumnId).attr("data-columnwidth");
+            roundwidth = Math.round(width);
+            if (ColumnWidth > width) {
+                ColumnWidth = parseInt(ColumnWidth) + (parseInt(roundwidth) - parseFloat(width));
+            }
+            else {
+                ColumnWidth = parseInt(ColumnWidth) + (parseFloat(width) - parseInt(roundwidth));
+            }
+
+            if (ColumnWidth != "") {
+                $("#" + ColumnId).attr("data-columnwidth", ColumnWidth)
+                ColumnWidth = Math.round(ColumnWidth);
+                $("#" + ColumnId).parent().css("width", ColumnWidth);
+                REPORTCUSTOMIZE.WidthHeaders();
+                return;
+            }
+            else {
+                return;
+            }
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("ColumnWidthTotal" + err.message, "Exception");
+        }
+    },
+
+    ChangeColumnHeadingAlignment: function (ele) {
+        debugger
+        try {
+            let tdTarget = undefined;
+            tdTarget = document.getElementById('tdTarget');
+            REPORTCUSTOMIZE.setColHeadingAlign(tdTarget, parseInt(ele.value));
+            tdTarget = document.getElementById('tdTarget2');
+            REPORTCUSTOMIZE.setColHeadingAlign(tdTarget, parseInt(ele.value));
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("ChangeColumnHeadingAlignment" + err.message, "Exception");
+        }
+    },
+    setColHeadingAlign: function (targetTH, iColHeadingAlignVal) {
+        let iTd = 0;
+        if (FCommon.UI.isValidObject(targetTH)) {
+            var targetTHChildren = targetTH.children;
+            if (targetTHChildren != null && targetTHChildren.length > 0) {
+                for (iTd = 0; iTd < targetTHChildren.length; iTd++) {
+                    if (targetTHChildren[iTd].getAttribute('data-groupheading') == null) {
+                        targetTHChildren[iTd].style.textAlignLast = iColHeadingAlignVal == 2 ? 'left' : (iColHeadingAlignVal == 3 ? 'right' : 'center');
+                    }
+                }
+            }
+        }
+    },
+
+    GetBodyFields: function (id) {
+        //debugger
+
+        var _Column = null, ReportId = null, iLayoutId = null, iColId = null;
+        var objcusmodel = {};
+        try {
+            objcusmodel = REPORTCUSTOMIZE.GetAscyColumnHeader(id);
+            ColumnId = id.id;
+            id = id;
+            ReportId = document.getElementById("getReportId").value;
+            iLayoutId = document.getElementById("getLayoutId").value;
+            iColId = $("#" + ColumnId).attr("icolid");
+
+            if (objcusmodel.column == null) {
+                objcusmodel.column = REPORT.OBJECT.getEmptyColumnObject();
+                objcusmodel.column.AliasName = $("#" + ColumnId).attr("data-aliasname");
+                objcusmodel.column.ColumnAlignment = parseInt($("#" + ColumnId).attr("data-colalign"));
+                objcusmodel.column.DecimalInColumn = parseInt($("#" + ColumnId).attr("data-decimalincol"));
+                var iColId = document.getElementById(ColumnId).getAttribute("icolid");
+                for (var i = 0; i < REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns.length; i++) {
+                    if (parseInt(iColId) == REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns[i].ColumnId) {
+                        objcusmodel.column.ColumnFont = REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns[i].ColumnFont;//byte array
+                        objcusmodel.column.ColumnFilter = REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns[i].ColumnFilter;
+                        break;
+                    }
+                }
+                if ($("#" + ColumnId).attr("data-colfunction") != undefined) {
+                    objcusmodel.column.ColumnFunction = JSON.parse($("#" + ColumnId).attr("data-colfunction"));
+                }
+                objcusmodel.column.ColumnId = $("#" + ColumnId).attr("icolid");
+                objcusmodel.column.ColumnName = $("#" + ColumnId).attr("colname");
+                objcusmodel.column.ColumnToolTip = $("#" + ColumnId).attr("data-coltooltip");
+                objcusmodel.column.ColumnWidth = $("#" + ColumnId).attr("data-columnwidth");
+                objcusmodel.column.DataTypeId = $("#" + ColumnId).attr("data-datatypeid");
+                objcusmodel.column.FieldId = $("#" + ColumnId).attr("ifieldid");
+                objcusmodel.column.GroupName = $("#" + ColumnId).attr("data-groupheading");
+                objcusmodel.column.Miscelleneous = parseInt($("#" + ColumnId).attr("data-Miscelleneous"));
+                objcusmodel.column.ParentId = parseInt($("#" + ColumnId).data("parentid"));
+                objcusmodel.column.SubParentId = parseInt($("#" + ColumnId).data("subparentid"));//Columns function
+                objcusmodel.column.Formula = $("#" + ColumnId).attr("data-formula");
+                objcusmodel.column.Format = $("#" + ColumnId).attr("data-Format");
+            }
+            //////////////////
+            //for modifying existing column
+            if (objcusmodel.column != null) {
+                for (var iCounter = 0; iCounter < objcusmodel.lstCustomizeColumns.length; iCounter++) {
+                    if (objcusmodel.lstCustomizeColumns[iCounter].ColumnId == objcusmodel.column.ColumnId) {
+                        var index = iCounter;
+                        break;
+                    }
+                }
+            }
+            if (JSON.stringify(objcusmodel.lstCustomizeColumns[index]) != JSON.stringify(objcusmodel.column)) {
+                objcusmodel.lstCustomizeColumns.splice(index, 1, objcusmodel.column);
+            }
+            ////////////////
+            //Reset the dataselect property for rest of means non selected.
+            var tabEle = document.getElementById("id_rc_columnheadertable");
+            if (tabEle.children.length > 0) {
+                var cell_Tab = tabEle.children[0].children[0].cells;
+                for (var i = 0; i < cell_Tab.length; i++) {
+                    if (cell_Tab[i].children[0].getAttribute("data-selected") === "true") {
+                        cell_Tab[i].children[0].setAttribute("data-selected", "false");
+                    }
+                }
+            }
+            //Currrently selected Column dataset is set to true.
+            document.getElementById(ColumnId).setAttribute("data-selected", "true");
+            REPORTCUSTOMIZE.selectedColumn = document.getElementById(ColumnId).parentElement;
+            REPORTCUSTOMIZE.ChangeBorders(ColumnId);//function for border change on click.
+            ///////////////////////////
+            result = NETWORK.executeServerMethod(GLOBAL.getContextPath("GetCustomizeColumn", "RD", "RD"),
+                true, { objColumn: objcusmodel.column, arrColumns: objcusmodel.objLayout.Columns, ReportId: ReportId }
+            );
+            if (result != null) {
+                if (result.lValue < 1) {
+                    alert(result.sValue);
+                }
+                else {
+                    $("#D700").hide();
+                    var AliasName = $("#lbAliasName").text();
+                    var isFromFinalAccounts = false;
+                    var btncolumnfilter = null;
+                    if (AliasName != " ") {
+                        $("#dv_GetPartialGrid").html(result.data);
+
+                        btncolumnfilter = document.getElementById("id_rc_columnfilter_btn");
+                        btncolumnfilterhidden = document.getElementById("id_rc_columnfilter_btn_hidden");
+                        //check if the report is of Final Accounts
+                        switch (REPORTCUSTOMIZE.g_objcusmodel.objLayout.ReportId) {
+                            case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("TRIALBALANCE"):
+                            case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("PROFITANDLOSS"):
+                            case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("BALANCESHEET"):
+                            case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("TRADINGACCOUNT"):
+                            case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("TRADINGANDPROFITANDLOSS"):
+                            case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("FINALACCOUNTSCHEDULES"):
+                            case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("FUNDSFLOW"):
+                            case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("CASHFLOW"):
+                            case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("CASHFLOWANALYSIS"):
+                            case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("AdvanceCashFlow"):
+                            case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("IncomeExpenseTrend"):
+                            case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("RecieveAndPayable"):
+
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("STOCKSTATEMENT"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("STOCKMOVEMENT"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("VirtualStockAnalysis"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("StockValuation"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("ABCAnalysisAmount"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("ABCAnalysisProdcut"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("StockAnalysisbyBatch"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("StockAnalysisbyRMA"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("StockBalanceByBins"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("STOCKBALANCEBYPRODUCTBYBINS"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("ExpiredStockByBins"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("AgeingAnalysisByBatch"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("AGEINGANALYSISBYRMA"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("AGEINGSTOCKBYBINS"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("AGEINGSTOCKBYPRODUCTBYBINS"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("ReceivableAndPaybleBalance"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("SUMMARYSALESREGISTER"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("StockAgeingAnalysis"):                           
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("SummarySalesByDate"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("SummarySalesByProduct"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("SummarySalesByQuantityWise"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("SummarySalesByAmountWise"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("SummarySalesByQtyAndAmtWise"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("MonthlySales"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("TopCustomers"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("SummaryPurchaseRegister"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("CUSTOMERAGEINGSUMMARYBILLWISE"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("CUSTOMERSUMMARYAGEINGBYDUEDATE"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("CUSTOMEROVERDUESUMMARY"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("CUSTOMERBILLWISESUMMARY"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("VENDORAGEINGSUMMARYBILLWISE"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("VENDORSUMMARYAGEINGBYDUEDATE"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("VENDOROVERDUESUMMARY"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("VENDORBILLWISESUMMARY"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("LISTINGOFDOCUMENTS"):
+                                //case Focus_Common_DataStructs_FocusReport_FinalAccounts.get("CUSTOMERSTATEMENTS"):
+                                isFromFinalAccounts = true;
+                                if (COMMON.prototype.isValidObject(btncolumnfilter) && COMMON.prototype.isValidObject(btncolumnfilterhidden)) {
+                                    btncolumnfilter.style.display = "none";
+                                    btncolumnfilterhidden.style.display = "";
+                                }
+                                break;
+                        }
+                    }
+                    else {
+                        var TextValue = $("#DataTypes :selected").text();
+                        document.getElementById("dv_GetPartialGrid").innerHTML = "";
+                    }
+                    //reset selected column to null
+                    REPORTCUSTOMIZE.g_objcusmodel.column = null;
+                }
+            }
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.GetBodyFields}" + err.message, "EXCEPTION");
+        }
+    },
+
+    GetAscyColumnHeader: function (id) {
+        //if nothing changes in any Column and no click on any column tab.
+        if (id != undefined || FCommon.String.isNullOrEmpty(ColumnId) == false) {
+            return REPORTCUSTOMIZE.g_objcusmodel;
+        }
+        var CustomizeModel = {};
+        var ColId = 0;
+        var result = null, column = null;
+        var iColId = 0, iFieldId = 0;
+        try {
+            if (COMMON.prototype.isValidObject(id) == false) {
+                if (ColumnId != undefined) {
+                    ColId = ColumnId;
+                    if (ColumnId.substr(0, 3).length != 0 && ColumnId.substr(0, 3).toLowerCase() != "cus") {
+                        ColId = "Cus" + ColumnId;
+                    }
+                }
+                iColId = document.getElementById(ColId).getAttribute("icolid");
+                iFieldId = document.getElementById(ColId).getAttribute("ifieldid");
+            }
+            else {
+                ColId = id.id;
+                iColId = id.getAttribute("icolid");
+                iFieldId = id.getAttribute("ifieldid");
+            }
+            if (ColumnId != undefined && COMMON.prototype.isValidObject(document.getElementById(ColId)) == true) {
+                column = REPORT.OBJECT.getEmptyColumnObject();
+                column.AliasName = $("#" + ColId).attr("data-aliasname");
+                column.ColumnAlignment = parseInt($("#" + ColId).attr("data-colalign"));
+                column.ColumnFilter = null;
+                for (var i = 0; i < REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns.length; i++) {
+                    if (parseInt(iColId) == REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns[i].ColumnId && parseInt(iFieldId) == REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns[i].FieldId) {
+                        column.ColumnFont = REPORTCUSTOMIZE.g_arrColFont[i];
+                        column.ColumnFilter = REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns[i].ColumnFilter;
+                        break;
+                    }
+                }
+                //column.ColumnFunction.Function = $("#" + ColId).attr("data-datafunction");
+                column.ColumnFunction = JSON.parse(document.getElementById(ColId).getAttribute("data-colfunction"));
+                column.ColumnId = parseInt($("#" + ColId).attr("icolid"));
+                column.ColumnName = ($("#" + ColId).attr("colname") == "null") ? "" : $("#" + ColId).attr("colname");
+                column.ColumnToolTip = $("#" + ColId).attr("data-coltooltip") == "null" ? "" : $("#" + ColId).attr("data-coltooltip");
+                column.Format = $("#" + ColId).attr("data-Format") == "null" ? "" : $("#" + ColId).attr("data-Format");
+                column.ColumnWidth = $("#" + ColId).attr("data-columnwidth");
+                column.DataTypeId = $("#" + ColId).attr("data-datatypeid");
+                column.FieldId = $("#" + ColId).attr("ifieldid");
+                column.GroupName = $("#" + ColId).attr("data-groupheading") == "null" ? "" : $("#" + ColId).attr("data-groupheading");
+
+                if ($("#" + ColId).attr("data-formula") != undefined) {
+                    column.Formula = $("#" + ColId).attr("data-formula");
+                }
+                column.Miscelleneous = parseInt($("#" + ColId).attr("data-Miscelleneous"));
+                column.ParentId = $("#" + ColId).attr("data-parentid");
+                column.SubParentId = $("#" + ColId).attr("data-subparentid");
+            }
+            //add new column in model.
+            if (column != null && column.AliasName != undefined) {
+                //check if column already exist in g_objcusmodel or not,.add if not exist already
+                var result = null;
+                result = ($.grep(REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns, function (e) {
+                    return e.FieldId == column.FieldId;
+                }));
+            }
+            CustomizeModel = REPORTCUSTOMIZE.g_objcusmodel;
+            if (COMMON.prototype.isValidObject(column) == true) {
+                CustomizeModel.column = column;
+            }
+            //If the new col doesnt exist in array
+            if (result != null && result.length === 0) {
+                CustomizeModel.lstCustomizeColumns.push(CustomizeModel.column);
+            }
+            var index = null;
+            //for modifying existing column
+            if (CustomizeModel.column != null && CustomizeModel.lstCustomizeColumns.length > 0) {
+                for (var iCounter = 0; iCounter < CustomizeModel.lstCustomizeColumns.length; iCounter++) {
+                    if (CustomizeModel.lstCustomizeColumns[iCounter].ColumnId == CustomizeModel.column.ColumnId &&
+                        CustomizeModel.lstCustomizeColumns[iCounter].FieldId == CustomizeModel.column.FieldId) {
+                        index = iCounter;
+                        break;
+                    }
+                }
+                if (JSON.stringify(CustomizeModel.lstCustomizeColumns[index]) != JSON.stringify(CustomizeModel.column)) {
+                    CustomizeModel.lstCustomizeColumns.splice(index, 1, CustomizeModel.column);
+                }
+                CustomizeModel.objLayout.Columns = CustomizeModel.lstCustomizeColumns;
+            }
+            CustomizeModel.DateType = 1;
+            CustomizeModel.iSequenceId = parseInt($("#" + ColId).attr("isequenceid"));
+            CustomizeModel.sColSequence = $("#ColumnName").val();
+            CustomizeModel.iColPosition = parseInt($("#" + ColId).attr("isequenceid"));
+
+            return (CustomizeModel);
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.GetAscyColumnHeader}" + err.message, "Exception");
+        }
+    },
+
+    GetMiscelleneousValue: function () {
+        var MissVal = 0;
+        var HidethisColumn = $("#HidethisColumn").prop("checked");
+        var ScrollTexttonextLine = $("#ScrollTexttonextLine").prop("checked");
+        var Printunderpreviouscolumn = $("#Printunderpreviouscolumn").prop("checked");
+        var Mandatorycolumn = $("#Mandatorycolumn").prop("checked");
+        var InsertCommas = $("#InsertCommas").prop("checked");
+        var DontshowTotal = $("#DontshowTotal").prop("checked");
+        if (HidethisColumn == true)
+            MissVal += 2;
+        if (ScrollTexttonextLine == true)
+            MissVal += 32;
+        if (Printunderpreviouscolumn == true)
+            MissVal += 8;
+        if (Mandatorycolumn == true)
+            MissVal += 4;
+        if (InsertCommas == true)
+            MissVal += 64;
+        if (DontshowTotal == true)
+            MissVal += 128;
+
+        return MissVal;
+    },
+    /////////// Rearrange Formula popup
+    btnRearrangeFormula_Click: function () {
+        //debugger;
+        var pRearrangeFormula = document.getElementById("id_modal_rearrangeformula");
+        var objReportColumn = null; // _Column
+        var objRearrangeFormula = {};
+        try {
+            objRearrangeFormula.Columns = this.g_objcusmodel.objLayout.Columns.slice(0);
+            // objRearrangeFormula.ActualColumns = m_arrOriginalColumns;
+            $(pRearrangeFormula).modal('show');
+            var arrRearrangeFormula = objRearrangeFormula.Formulas; //IdNamePair[]
+            for (var i = 0; i < this.g_objcusmodel.objLayout.Columns.Count; i++) {
+                objReportColumn = this.g_objcusmodel.objLayout.Columns[i];
+                for (var j = 0; j < arrRearrangeFormula.length; j++) {
+                    if (objReportColumn.FieldId == -2 && objReportColumn.Formula == arrRearrangeFormula[j].Name) {
+                        this.g_objcusmodel.objLayout.Columns[i].Formula = arrRearrangeFormula[j].Tag.ToString();
+                        break;
+                    }
+                }
+            }
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.btnRearrangeFormula_Click}" + err.message, "EXCEPTION");
+        }
+    },
+
+    arrangeFormula: function (arrSavedColumns, arrCurrentColumns) {
+        var iCol = 0, iCurCol = 0, iDiff = 0;
+        var arrFormula = null;
+        try {
+            arrFormula = [];
+            arrCurrentColumns = this.g_objcusmodel.objLayout.Columns.slice(0);
+            if (arrSavedColumns != null && arrCurrentColumns != null) {
+                for (iCol = 0; iCol < arrSavedColumns.length; iCol++) {
+                    iDiff = 0;
+
+                    for (iCurCol = 0; iCurCol < arrCurrentColumns.length; iCurCol++) {
+                        if (arrSavedColumns[iCol].FieldId == -2 &&
+                            arrSavedColumns[iCol].Formula == arrCurrentColumns[iCurCol].Formula) {
+                            iDiff = iCurCol - iCol;
+                            //arrFormula.Add(new IdNamePair(iDiff, arrColumns[iCol].Formula, arrColumns[iCol].AliasName));
+                            arrFormula.push({
+                                ID: iDiff,
+                                Name: arrSavedColumns[iCol].Formula,
+                                Tag: arrSavedColumns[iCol].AliasName
+                            });
+                            break;
+                        }
+                    }
+                }
+            }
+            return arrFormula;
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.arrangeFormula}" + err.message, "EXCEPTION");
+        }
+    },
+
+    setArrangeFormulaGrid: function (arrFormula) {
+        var iRow = 0, j = 0, iStartIndex = 0;
+        var sFormula = null, sColFormula = null;
+        var grdFormula = document.getElementById("id_customize_rearrangeformula_grid");
+        var cell = null;
+        var totalRows = FGRIDCONTROL.getTotalRows(grdFormula);
+        try {
+            if (arrFormula != null && arrFormula.length > 0) {
+                if (totalRows < arrFormula.length) {
+                    FGRIDCONTROL.insertRows(grdFormula, totalRows, arrFormula.length - totalRows);
+                }
+                for (iRow = 0; iRow < arrFormula.length; iRow++) {
+                    cell = FGRIDCONTROL.getCellObject(grdFormula, iRow + 1, 1);
+                    cell.setCellText(arrFormula[iRow].Tag);
+                    // grdFormula.SetCellText(i, 0, Convert.ToString(arrFormula[i].Tag));
+                    cell = FGRIDCONTROL.getCellObject(grdFormula, iRow + 1, 2);
+                    cell.setCellText(arrFormula[iRow].Name);
+                    // grdFormula.SetCellText(i, 1, arrFormula[i].Name);
+                    // sFormula = arrFormula[i].Name.toString().toUpperCase();
+                    sFormula = arrFormula[iRow].Name.toString().toUpperCase()
+                    if (arrFormula[iRow].ID != 0) {
+                        iStartIndex = -1;
+                        sColFormula = "";
+                        sFormula = [...sFormula];
+                        for (j = 0; j < sFormula.length; j++) {
+                            if (iStartIndex > -1) {
+                                if (sFormula[j] >= '0' && sFormula[j] <= '9') {
+                                    sColFormula += sFormula[j];
+                                }
+                                else {
+                                    if (sColFormula) {
+                                        sFormula = sFormula.Remove(iStartIndex, j - iStartIndex);
+                                        sFormula = sFormula.Insert(iStartIndex, string.Format("{0}", Convert.ToInt32(sColFormula) + arrFormula[iRow].ID));
+
+                                    }
+                                    iStartIndex = -1;
+                                    sColFormula = "";
+                                }
+                            }
+                            if (sFormula[j] == 'C') {
+                                sColFormula = "";
+                                iStartIndex = j + 1;
+                            }
+                        }
+                        if (iStartIndex > -1 && sColFormula && DataType.isNumeric(sColFormula)) {
+                            sFormula = sFormula.Remove(iStartIndex, sFormula.length - iStartIndex);
+                            sFormula = sFormula.Insert(iStartIndex, string.Format("{0}", Convert.ToInt32(sColFormula) + arrFormula[iRow].ID));
+                        }
+                    }
+                    cell = FGRIDCONTROL.getCellObject(grdFormula, iRow + 1, 3);
+                    cell.setCellText(sFormula);
+                }
+            }
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTMIZE.setArrangeFormulaGrid}" + err.message, "EXCEPTION");
+        }
+    },
+
+    cellChange: function (cellobj, event) {
+        var element = null, t = null;
+        try {
+            element = document.getElementById(cellobj.ColumnAttribute.ctrlid);
+            if (COMMON.prototype.isValidObject(element) == true) {
+                t = cellobj.getControlValue();
+                if (FCommon.UI.isValidObject(t) == true) {
+                    cellobj.setCellText(t);
+                }
+                cellobj.setControl(element, cellobj.getCellData("value"));
+                element.value = cellobj.getCellData("value");
+            } else {
+                cellobj.processDefault(event);
+            }
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{BINS.cellChange}" + err.message, "EXCEPTION")
+        }
+    },
+
+    btnOK_Click: function () {
+        var popupArrangeFormula = document.getElementById("id_modal_rearrangeformula");
+        var grdFormula = document.getElementById("id_customize_rearrangeformula_grid");
+        var totalRows = FGRIDCONTROL.getTotalRows(grdFormula);
+        var cell = null;
+        var oldFormula = "", newFormula = "";
+        var lstFormulas = [];
+        try {
+            REPORTCUSTOMIZE.m_arrFormulas = new Array(totalRows);
+            for (var iRowIndex = 0; iRowIndex < totalRows; iRowIndex++) {
+                //REPORTCUSTOMIZE.m_arrFormulas[iRowIndex] = new IdNamePair(iRowIndex, Convert.ToString(grdFormula.GetText(iRowIndex, 1)), grdFormula.GetText(iRowIndex, 2));
+                cell = FGRIDCONTROL.getCellObject(grdFormula, iRowIndex + 1, 2);
+                oldFormula = cell.getCellText();
+                cell = FGRIDCONTROL.getCellObject(grdFormula, iRowIndex + 1, 3);
+                newFormula = cell.getCellText();
+                REPORTCUSTOMIZE.m_arrFormulas[iRowIndex] = { ID: iRowIndex, Name: oldFormula, newFormula };
+                lstFormulas.push({ Name: FGRIDCONTROL.getCellObject(grdFormula, iRowIndex + 1, 1).getCellText(), Tag: newFormula })
+            }
+            for (var i = 0; i < REPORTCUSTOMIZE.g_objcusmodel.objLayout.Columns.length; i++) {
+                for (var j = 0; j < lstFormulas.length; j++) {
+                    if (REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns[i].FieldId == -2 && REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns[i].AliasName == lstFormulas[j].Name) {
+                        REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns[i].Formula = lstFormulas[j].Tag;
+                        break;
+                    }
+                }
+            }
+
+            $(popupArrangeFormula).modal('hide');
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.btnOK_Click}" + err.message, "EXCEPTION");
+        }
+    },
+    //////////////////////////////////////
+    closeCustomizeScreen: function (iFromAI, iReportLite) {
+        try {
+            //debugger
+            let workflowpopup = WORKFLOW.getPopupElement();
+            if (workflowpopup != null) {
+                $(workflowpopup).modal('show');
+            }
+            if (REPORTCUSTOMIZE.g_objcusmodel.FromReport == true && REPORTCUSTOMIZE.g_objcusmodel.FromCrossReference == false) {
+                if (iFromAI == 1) {
+                    REPORTRENDER.showScreen('MainReportRender');
+                }
+                else {
+                    REPORTRENDER.showScreen('ReportRender');
+                }
+            }
+            else if (REPORTCUSTOMIZE.g_objcusmodel.FromCrossReference == true) {
+                REPORTRENDER.showScreen('crossReferenceDiv');
+            }
+            else if (REPORTCUSTOMIZE.g_objcusmodel.bIsFromTransactions == false && REPORTCUSTOMIZE.g_objcusmodel.sReportName == 'Links') {
+                //REPORTRENDER.hideScreens(['id_transaction_entry_container_others']);
+                EntryMainUI.resetOthersContainer(true);
+                EntryMainUI.showEntryScreen(true);
+                //REPORTRENDER.showScreen('id_transaction_entry_container');
+            }
+            else if (DashletId == "MasterReport") {
+                REPORTRENDER.showScreen('ReportRender');
+            }
+            else {
+                REPORTRENDER.showScreen('reportView');
+            }
+        }
+        catch (err) {
+            COMMON.prototype.showMessage()
+        }
+    },
+    ///////////////////////////
+    SaveReportCustomize: function (iFromAI, iReportLite) {
+        //debugger;
+        var DLayoutName = $("#OLayoutName").val();
+        var LName = $("#layoutName").val();
+        var chkIsDName = document.getElementById('chkDefault').checked;
+        var IsLandScape = document.getElementById('chkLandscape').checked;
+        var isPrintZero = document.getElementById("chkPrintZero").checked;
+        var IsDelayDataFetch = document.getElementById("chkDelayDataFetch").checked;
+        document.getElementById("chkDelayDataFetch").setAttribute("data-DelayFetch", IsDelayDataFetch);
+        var ReportId = document.getElementById("getReportId").value;
+        var ReportName = $("#ReportName").val();
+        var LayoutId = document.getElementById("getLayoutId").value;
+        var TotalWidth = $("#totalWidth").val();
+        var objcusmodel = {};
+        var headerCol = [], arrFormat = [], arrColumns = [], arrColumnFont = [], arrImageCSS = [];
+        var iCounter = 0;
+        var userRestList = document.getElementById("userRestrictionlist");
+        var userRestListItem = null;
+        var RITComboboxes = document.getElementsByName("RITCombobox_");
+        var ddlColumnHeadingAlignment = document.getElementById('ddlColumnHeadingAlignment');
+        Layoutdata = objLayoutInformation;
+        try {
+            $("#totalWidth").attr("data-totalwidth", TotalWidth);
+            if (DLayoutName.trim() != LName.trim()) {
+                LayoutId = 0;
+            }
+            if (LName.trim() == "" || LName == null) {
+                alert("Layout Name connot be Empty");
+                return;
+            }
+            objcusmodel = REPORTCUSTOMIZE.g_objcusmodel;
+            objcusmodel.objLayout.IsLandscape = IsLandScape;
+            objcusmodel.objLayout.IsPrintZeroValue = isPrintZero;
+            if (FCommon.UI.isValidObject(ddlColumnHeadingAlignment)) {
+                objcusmodel.objLayout.ColumnHeadingAlignment = ddlColumnHeadingAlignment.value;
+            }
+            if (LayoutId == 0) {
+                for (var iCounter = 0; iCounter < objcusmodel.arrLayouts.length; iCounter++) {
+                    if (LName == objcusmodel.arrLayouts[iCounter].Name) {
+                        LayoutId = objcusmodel.arrLayouts[iCounter].ID;
+                        break;
+                    }
+                }
+            }
+            headerCol.push(LName);
+            headerCol.push(chkIsDName);
+            headerCol.push(IsLandScape);
+            headerCol.push(ReportId);
+            headerCol.push(ReportName);
+            headerCol.push(LayoutId);
+
+            arrFormat = g_ReportCustomizeObject.arrFormat;
+            if (arrFormat != null && arrFormat.length > 0) {
+                for (var i = 0; i < arrFormat.length; i++) {
+                    //FontObjArr.push(arrFormat[i].Font);
+                    if (arrFormat[i].LabelImage != null && arrFormat[i].LabelImage.length > 0) {
+                        arrImageCSS.splice(i, 1, arrFormat[i].LabelImage.join());
+                    }
+                }
+            }
+            arrColumns = REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns;
+            for (var j = 0; j < arrColumns.length; j++) {
+                arrColumnFont.push(arrColumns[j].ColumnFont);
+            }
+            //////////////clears columnid value before saving
+            ColumnId = undefined;
+            if (REPORTCUSTOMIZE.g_arrColFont.length != arrColumns.length) {
+                var idifference = Math.abs(arrColumns.length - REPORTCUSTOMIZE.g_arrColFont.length);
+                if (idifference == 1) {
+                    REPORTCUSTOMIZE.g_arrColFont.pop();//removes the last element from array
+                }
+                else if (idifference > 1) {
+                    //syntax:  array.splice(start, deleteCount)
+                    REPORTCUSTOMIZE.g_arrColFont.splice(arrColumns.length - 1, idifference);
+                }
+            }
+            ////////////////////////
+            //order the elements in global object to save in that order
+            var g_arrColumns = arrColumns;
+            var arrorderedColumns = [];
+            var tdTarget = document.getElementById("tdTarget");
+            var tdTarget2 = document.getElementById("tdTarget2");
+            var ifieldid = 0; var column = null; var grpColspan = 0; var currentchild = null;
+            var grpelecounter = 0; var childcounter = 0;
+            for (iCounter = 0; iCounter < tdTarget.children.length; iCounter++) {
+                currentchild = tdTarget.children[iCounter];
+                if (currentchild.getAttribute("data-bgroup") == "false") {
+                    ifieldid = $(currentchild).children(".dv_Column").attr("ifieldid");
+                    icolid = $(currentchild).children(".dv_Column").attr("icolid")
+                    column = $.grep(g_arrColumns, function (x) {
+                        return (x.ColumnId == icolid && x.FieldId == ifieldid);
+                    })[0];
+                    arrorderedColumns.push(column);
+                }
+                else {
+                    //add colspan no of elements from tdTarget2
+                    grpColspan = parseInt(currentchild.getAttribute("colspan"));
+
+                    for (var iCounter2 = grpelecounter; iCounter2 < childcounter + grpColspan; iCounter2++) {
+                        currentchild = tdTarget2.children[iCounter2];
+                        icolid = $(currentchild).children(".dv_Column").attr("icolid")
+                        ifieldid = $(currentchild).children(".dv_Column").attr("ifieldid");
+                        column = $.grep(g_arrColumns, function (x) {
+                            return (x.ColumnId == icolid && x.FieldId == ifieldid);
+                        })[0];
+                        if (column != null) {
+                            arrorderedColumns.push(column);
+                            grpelecounter++
+                        }
+                    }
+                    childcounter = grpelecounter;
+                }
+            }
+            objcusmodel.lstCustomizeColumns = objcusmodel.objLayout.Columns = arrorderedColumns;
+            ////////////////////////
+            //save UserIds in UserOrRoleIds array of _Layout obj
+            objcusmodel.objLayout.UserOrRoleIds = [];
+            for (iCounter = 0; iCounter < userRestList.children.length; iCounter++) {
+                userRestListItem = $(userRestList.children[iCounter]).find(":input")[0];
+                if (userRestListItem.checked == true) {
+                    objcusmodel.objLayout.UserOrRoleIds.push($(userRestListItem).attr("data-userid"));
+                }
+            }
+            //////////////////
+            if (document.getElementsByName('RITCheckbox_' + DashletId).length != 0) {
+                var RITCheckbox = document.getElementsByName("RITCheckbox_" + DashletId);
+                for (var i = 0; i < RITCheckbox.length; i++) {
+                    var val = RITCheckbox[i].checked;
+                    if (RITCheckbox[i].getAttribute('data-fieldid') == 15) {
+                        if (val == true) {
+                            val = 1;
+                            SubReportId = RITCheckbox[1].getAttribute('data-fieldid');
+                            objcusmodel.objLayout.SubReportId = SubReportId;
+                        }
+                        else {
+                            val = 0;
+                            SubReportId = 0;
+                        }
+                    }
+                }
+            }
+
+            if (ReportId == 666) {
+                var RITCombobox = document.getElementsByName("RITCombobox_" + DashletId);
+                objcusmodel.objLayout.SubReportId = RITCombobox[1].dataset.subreportid;
+            }
+
+            if (FCommon.UI.isValidObject(document.getElementById("getSubReportId_" + DashletId)) && CrossReference == true) {
+                SubReportId = document.getElementById("getSubReportId_" + DashletId).value;
+                objcusmodel.objLayout.SubReportId = SubReportId;
+            }
+            objcusmodel.DefaultFont = REPORTCUSTOMIZE.g_objcusmodel.objLayout.DefaultFont;
+            result = NETWORK.executeServerMethod(
+                GLOBAL.getContextPath("SaveCustomizeData", "RD", "RD"), true,
+                {
+                    headerCol: headerCol, objcusmodel: objcusmodel, arrFormat: arrFormat,
+                    arrColumnFont: REPORTCUSTOMIZE.g_arrColFont,
+                    arrImageCSS: arrImageCSS,
+                    iMenuId: document.getElementById("MenuId").value,
+                    FromReport: REPORTCUSTOMIZE.g_objcusmodel.FromReport == true ? true : false,
+                    IsDelayDataFetch: IsDelayDataFetch
+                },
+                "",
+                true,
+                "REPORTCUSTOMIZE.saveCustomizeSuccess",
+                "GLOBAL.LoadingStart",
+                "",
+                [iFromAI, iReportLite, REPORTCUSTOMIZE.g_objcusmodel.FromReport == true ? true : false]
+            );
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.saveReportCustomize} " + err.message, "EXCEPTION");
+        }
+    },
+
+    saveCustomizeSuccess: function (bsuccess, data, tag) {
+
+        try {
+            if (bsuccess == false) {
+                COMMON.prototype.showMessage("Unable to save layout", "Internal Error");
+                return;
+            }
+            if (data.bIsFromTransactions == true) {
+                COMMON.prototype.showMessage("Data saved successfully");
+                result = NETWORK.executeServerMethod(
+                    GLOBAL.getContextPath(data.ActionMethod, data.Controller, data.Area),
+                    true,
+                    { iTypeId: data.iTypeId, iMenuId: data.iMenuId }
+                );
+                GLOBAL.LoadScreen(true, result.data);
+            }
+            else if (data.bisFromCrossReference == true) {
+                REPORTRENDER.showScreen('crossReferenceDiv');
+                REPORTRENDER.refresh(true);
+            }
+            else if (data != null) {
+                if (REPORTCUSTOMIZE.g_objcusmodel.FromReport == true || DashletId == "MasterReport") {
+                    COMMON.prototype.showMessage("Data saved successfully");
+                    if (sUniqueId != null && sUniqueId != "") {
+                        REPORTRENDERNEW.refresh(
+                            sUniqueId, REPORTCUSTOMIZE.g_objcusmodel.iMenuId, data.iLayoutid)
+                    } else {
+                        REPORT.RefreshColumns(
+                            document.getElementById("getLayoutId").value,
+                            REPORTCUSTOMIZE.g_objcusmodel.FromCrossReference == true ? true : false,
+                            true, REPORTCUSTOMIZE.g_objcusmodel.FromReport,
+                            (REPORTCUSTOMIZE.g_objcusmodel.FromReport == true ? filterValueFromReport : filterValue), DashletId, "Customize");
+                    }
+                    if (tag != undefined && (tag[0] == 1 || tag[1] == 1)) {
+                        var bCrossReference = (reportLineModel != undefined && reportLineModel != '' ? reportLineModel.CrossReference : false);
+                        //Commented by lalitha on 17th sep 2019 
+                        // REPORTRENDER.refreshLite(bCrossReference);
+                        if (bCrossReference == false) {
+                            if (tag[0] == 1) {
+                                REPORTRENDER.showScreen('MainReportRender');
+                            }
+                            //    else {
+                            //        REPORTRENDER.showScreen('ReportRender');
+                            //    }
+                        }
+                        else {
+                            REPORTRENDER.showScreen("crossReferenceDiv", 1);
+                        }
+                    }
+                    //else {
+                    //    REPORT.RefreshColumns(document.getElementById("getLayoutId").value,
+                    //    REPORTCUSTOMIZE.g_objcusmodel.FromCrossReference == true ? true : false,
+                    //    REPORTCUSTOMIZE.g_objcusmodel.FromReport, 
+                    //    (REPORTCUSTOMIZE.g_objcusmodel.FromReport == true ? filterValueFromReport : filterValue));
+                    //}
+                }
+                else if (REPORTCUSTOMIZE.g_objcusmodel.sReportName == 'Links') {
+                    COMMON.prototype.showMessage("Data saved successfully");
+                    EntryMainUI.resetOthersContainer(true);
+                    EntryMainUI.showEntryScreen(true);
+                    TRANSACTION_ENTRY.CALLBACK.workflowCustomizeResult();
+                }
+                else {
+                    COMMON.prototype.showMessage("Data saved successfully");
+                    REPORTVIEW.getLayoutsSuccess(bsuccess, data);
+                    REPORTRENDER.showScreen('reportView');
+                }
+            }
+            if (REPORTCUSTOMIZE.g_objcusmodel.FromReport == false) {
+                GLOBAL.LoadingEnd();
+            }
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{saveCustomizeSuccess}" + err.message, "EXCEPTION");
+        }
+    },
+
+    exporttoxml: function () {
+        var DLayoutName = $("#OLayoutName").val();
+        var LName = $("#layoutName").val();
+        var chkIsDName = document.getElementById('chkDefault').checked;
+        var IsLandScape = document.getElementById('chkLandscape').checked;
+        var ReportId = document.getElementById("getReportId").value;
+        var ReportName = $("#ReportName").val();
+        var LayoutId = document.getElementById("getLayoutId").value;
+        var TotalWidth = $("#totalWidth").val();
+        if (DLayoutName.trim() != LName.trim()) {
+            LayoutId = 0;
+        }
+        if (LName == "" || LName == null) {
+            alert("Layout Name connot be Empty");
+            return;
+        }
+        var headerCol = [];
+        headerCol.push(LName);
+        headerCol.push(chkIsDName);
+        headerCol.push(IsLandScape);
+        headerCol.push(ReportId);
+        headerCol.push(ReportName);
+        headerCol.push(LayoutId);
+        var FileName = ReportName + "_" + LName;
+        var result = null;
+        NETWORK.executeServerMethod(
+            GLOBAL.getContextPath("ReportExportToXML", "RD", "RD"),
+            true,
+            { headerCol: headerCol, objcusmodel: REPORTCUSTOMIZE.g_objcusmodel, FileName: FileName },
+            "",
+            true,
+            "REPORTCUSTOMIZE.exporttoxmlSuccess");
+    },
+
+    exporttoxmlSuccess: function (bSuccess, data) {
+        //debugger
+        if (data != "" && data != null) {
+            transEntryGlobal.m_bDisableClear = true;
+            window.location = GLOBAL.getContextPath("GetExportedFile", "RD", "RD") + '?fileName=' + data;
+            transEntryGlobal.m_bDisableClear = false;
+        }
+        else {
+            COMMON.prototype.showMessage("Exporting this '" + data.sValue + "' is Failed", "Error");
+        }
+    },
+
+    importxmlfile: function () {
+        debugger
+        var data = new FormData();
+        var sExtension = [".zip", ".xml"];
+        var fileExt = "";
+        var files = $("#FImport").get(0).files;
+        try {
+            if (files.length > 0) {
+                for (var i = 0; i < files.length; i++) {
+                    fileExt = (files[i].name).substring((files[i].name).lastIndexOf('.')).toLowerCase();
+                    if (sExtension.indexOf(fileExt) >= 0) {
+                        if (fileExt == ".zip") {
+                            if (sExtension.indexOf(fileExt) >= 0) {
+                                data.append("fileToUpload", files[i]);
+                            }
+                        } else if (fileExt == ".xml") {
+                            if (sExtension.indexOf(fileExt) >= 0) {
+                                data.append("fileToUpload", files[i]);
+                            }//data is sended on Controller
+                        }
+                    }
+                    else {
+                        COMMON.prototype.showMessage("Invalid file selected, valid files are of " + sExtension.toString() + " types.");
+                        return false;
+                    }
+                }
+            }
+            try {
+                obj = {};
+                obj.url = GLOBAL.getContextPath("ReportImportToXML", "RD", "RD");
+                obj.xml_FileName = files[0].name;
+
+                NETWORK.uploadFile(obj,
+                    true,
+                    files[0],
+                    "",
+                    true,
+                    "REPORTCUSTOMIZE.setImportColumn",
+                    "GLOBAL.LoadingStart",
+                    "GLOBAL.LoadingEnd"
+                );
+
+                bResult = true;
+            }
+            catch (err) {
+                COMMON.prototype.showMessage("REPORTCUSTOMIZE.importxmlfile" + err.message, "Exception");
+                bResult = false;
+            }
+
+            //$.ajax({
+            //    url: url,
+            //    type: "POST",
+            //    processData: false,
+            //    data: data,
+            //    dataType: 'json',
+            //    contentType: false,
+            //    beforeSend: function () {
+            //        GLOBAL.LoadingStart();
+            //    },
+            //    success: function (response) {
+            //        if (response != null || response != '')
+            //            REPORTCUSTOMIZE.setImportColumn(response);
+            //    },
+            //    complete: function () {
+            //        GLOBAL.LoadingEnd();
+            //    }
+            //});
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("REPORTCUSTOMIZE.importxmlfile" + err.message, "EXCEPTION");
+        }
+    },
+
+    setImportColumn: function (bResult,data) {
+        //debugger
+        try {
+            document.getElementById("chkDefault").checked = data.Layout.IsDefault;
+            document.getElementById("chkLandscape").checked = data.Layout.IsLandscape;
+            REPORTCUSTOMIZE.UpdateCustomizeColumn(data.Layout.Columns);
+            REPORTCUSTOMIZE.WidthHeaders();
+            REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns = REPORTCUSTOMIZE.g_objcusmodel.objLayout.Columns = data.Layout.Columns;
+            REPORTCUSTOMIZE.g_objcusmodel.objLayout.LayoutId = data.Layout.LayoutId;
+            REPORTCUSTOMIZE.g_objcusmodel.objLayout.LayoutName = data.Layout.LayoutName;
+            REPORTCUSTOMIZE.g_objcusmodel.objLayout.RowConditional = data.Layout.RowConditional;
+            g_ReportCustomizeObject.arrFormat = data.Layout.RowConditional;
+            document.getElementById("getLayoutId").value = data.Layout.LayoutId;
+            document.getElementById("layoutName").value = data.Layout.LayoutName;
+            document.getElementById("OLayoutName").value = data.Layout.LayoutName;
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("REPORTCUSTOMIZE.setImportColumn" + err.message, "Exception");
+        }
+    },
+
+    UpdateCustomizeColumn: function (arrColumnData, updatedColId) {
+        //debugger
+        var Table = document.getElementById("id_rc_columnheadertable");
+        var tableRow1 = document.getElementById("tdTarget");
+        var tableRow2 = document.getElementById("tdTarget2");
+        var Column = null, td = null, div = null, p = null, p2 = null;
+        var inputText = "", prevGroupName = "";
+        try {
+            if (tableRow1.children != null && tableRow1.children.length >= 0) {
+                while (tableRow1.children.length > 0) {
+                    tableRow1.deleteCell(0);//delete all column
+                }
+            }
+            if (tableRow2.children != null && tableRow2.children.length >= 0) {
+                while (tableRow2.children.length > 0) {
+                    tableRow2.deleteCell(0);//delete all column
+                }
+            }
+            for (var i = 0; i < arrColumnData.length; i++) {
+                Column = arrColumnData[i];
+                td = document.createElement("th");
+                td.setAttribute("rowspan", "2");
+                td.setAttribute("colspan", "1");
+                td.setAttribute("id", "Td" + Column.ColumnId);
+                td.setAttribute("tabindex", i);
+                td.setAttribute("draggable", "true");
+                td.setAttribute("data-bgroup", FCommon.String.isNullOrEmpty(Column.GroupName) == true ? "false" : "true");
+                td.setAttribute("ondragstart", "REPORTCUSTOMIZE.onDragStart(event)");
+                td.setAttribute("ondragover", "REPORTCUSTOMIZE.onAllowDrop(event);");
+                td.setAttribute("ondragover", "REPORTCUSTOMIZE.onAllowDrop(event);");
+                td.setAttribute("ondrop", "REPORTCUSTOMIZE.onDrop(this,event);");
+
+                td.setAttribute("style", "border-right: 1px solid white;");
+                td.style.width = Column.ColumnWidth + "px";
+
+                div = document.createElement('div');
+                div.setAttribute("id", "Cus" + Column.ColumnId);
+                div.setAttribute("colname", Column.ColumnName);
+                div.setAttribute("class", "dv_Column");
+                div.setAttribute("style", "text-align:right;font-style:normal");
+                div.setAttribute("onclick", "return REPORTCUSTOMIZE.GetBodyFields(this)");
+                /*div.setAttribute("onclick", "return GetBodyFields(this)");*/
+                div.setAttribute("draggable", "true");
+                div.setAttribute("data-parentid", Column.ParentId);
+                div.setAttribute("data-subparentid", Column.SubParentId);
+                div.setAttribute("ifieldid", Column.FieldId);
+                div.setAttribute("data-datatypeid", Column.DataTypeId);
+                div.setAttribute("icolid", Column.ColumnId);
+                div.setAttribute("data-decimalincol", Column.DecimalInColumn);
+                div.setAttribute("data-aliasname", Column.AliasName);
+                div.setAttribute("data-colalign", Column.ColumnAlignment);
+                div.setAttribute("data-groupheading", Column.GroupName == null ? "" : Column.GroupName);
+                div.setAttribute("data-formula", Column.Formula == null ? "" : Column.Formula);
+                div.setAttribute("data-coltooltip", Column.ColumnToolTip == null ? "" : Column.ColumnToolTip);
+                div.setAttribute("data-columnwidth", Column.ColumnWidth);
+                div.setAttribute("data-isequenceid", (i + 1));
+                div.setAttribute("data-Miscelleneous", Column.Miscelleneous);
+                div.setAttribute("data-datafunction", 0);//AggregateFunction.None;
+                if (Column.ColumnFunction != null) {
+                    div.setAttribute("data-colfunction", JSON.stringify(Column.ColumnFunction));
+                }
+
+                td.appendChild(div);
+
+                p = document.createElement("p");
+                p.setAttribute("class", "Par");
+                p.setAttribute("draggable", "true");
+
+                p.setAttribute("id", "fp" + Column.ColumnId);
+                inputText = document.createTextNode(Column.AliasName);
+                p.appendChild(inputText);
+
+                p2 = document.createElement("p");
+                p2.setAttribute("id", "fH" + Column.ColumnId);
+                div.appendChild(p);
+                div.appendChild(p2)
+
+                if (Column.GroupName != null && Column.GroupName != "") {
+                    if (prevGroupName == Column.GroupName) {
+                        var lastTh = tableRow1.children[tableRow1.children.length - 1];
+                        var colSpan = parseInt(lastTh.getAttribute("colspan"));
+                        lastTh.setAttribute("colspan", colSpan + 1);
+                        var width = $(lastTh).width();
+                        lastTh.setAttribute("style", "border-right: 1px solid white;border-bottom: 1px solid white;width:" + (width + 120) + "px");
+                    }
+                    else {
+                        prevGroupName = Column.GroupName;
+                        var tdH = document.createElement("th");
+                        tdH.setAttribute("id", "gH_" + Column.GroupName);
+                        tdH.setAttribute("data-columnid", Column.ColumnId);
+                        tdH.setAttribute("data-groupheading", Column.GroupName);
+                        tdH.setAttribute("draggable", "true");
+                        tdH.setAttribute("style", "border-right: 1px solid white;");
+                        tdH.style.width = Column.ColumnWidth + "px";
+                        tdH.setAttribute("rowspan", "1");
+                        tdH.setAttribute("colspan", "1");
+                        tdH.setAttribute("style", "border-right: 1px solid white;border-bottom: 1px solid white;width:120px;");
+                        tdH.setAttribute("data-bgroup", "true");
+                        div = document.createElement('div');
+                        div.setAttribute("class", "dv_Column");
+                        div.setAttribute("style", "text-align:right");
+                        tdH.appendChild(div);
+                        p = document.createElement("p");
+                        p.setAttribute("class", "Par");
+                        //p.setAttribute("draggable", "true");
+                        p.setAttribute("id", "grouppara" + Column.ColumnId);
+                        inputText = document.createTextNode(Column.GroupName);
+
+                        p.appendChild(inputText);
+                        div.appendChild(p);
+                        tableRow1.appendChild(tdH);
+                    }
+                    tableRow2.appendChild(td);
+                }
+                else {
+                    tableRow1.appendChild(td);
+                    prevGroupName = Column.GroupName;
+                }
+            }
+            if (updatedColId != null && updatedColId != undefined) {
+                $("#Cus" + updatedColId).addClass("theme-color");
+                $("#Cus" + updatedColId + " p:first-child").css("color", "#000");
+            }
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.UpdateCustomizeColumn}" + err.message, "EXCEPTION");
+        }
+    },
+
+    SuccessSaveData: function (evt) {
+        if (evt.target.status == 200) {
+            $("#ModalCustomize").modal('hide');
+            var eresult = evt.target.responseText;
+            LoadReportLayout();
+        }
+    },
+
+    ////////////////////////
+    triggerRowFormattingModal: function () {
+        try {
+            //debugger
+            $('#id_report_customize_rowformatting_popup').modal('show');
+            ROWFORMATTING.AddSetOnColumnOptions();
+            ROWFORMATTING.setRDRowFormattingData(REPORTCUSTOMIZE.g_objcusmodel.objLayout.RowConditional);
+            ROWFORMATTING.createEmptyRDFilter();
+            ROWFORMATTING.DisableFilterConditionElements();
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("triggerRowFormattingModal" + err.message, "Exception");
+        }
+    },
+    ///////////////////////
+    loadTreeDataQuotationInvoice: function () {
+        var result = null;
+        try {
+            result = NETWORK.executeServerMethod(
+                GLOBAL.getContextPath("GetHeaderGroupQuotationInvoice", "RD", "RD"),
+                true,
+                {},
+                "",
+                true,
+                "REPORTCUSTOMIZE.onHeaderFooterSuccess",
+                "GLOBAL.LoadingStart",
+                "GLOBAL.LoadingEnd"
+            );
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.triggerHeaderFooterModal}" + err.message, "EXCEPTION");
+        }
+    },
+
+    triggerHeaderFooterModal: function () {
+        var result = null;
+        var ReportParams = [];
+        try {
+
+            if (REPORTVIEW && REPORTVIEW.g_arrReportInputs) {
+                ReportParams = REPORTVIEW.g_arrReportInputs;
+            }
+            result = NETWORK.executeServerMethod(
+                GLOBAL.getContextPath("GetHeaderGroup", "RD", "RD"),
+                true,
+                { ReportParams: ReportParams, ReportName: REPORTCUSTOMIZE.g_objcusmodel.sReportName },
+                "",
+                true,
+                "REPORTCUSTOMIZE.onHeaderFooterSuccess",
+                "GLOBAL.LoadingStart",
+                "GLOBAL.LoadingEnd"
+            );
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.triggerHeaderFooterModal}" + err.message, "EXCEPTION");
+        }
+    },
+
+    onHeaderFooterSuccess: function (bsuccess, data) {
+debugger
+        var iLayoutId = 0, iVoucherType = 0; ModuleType = 0;
+        var headerGroup = null, result = null;
+        try {
+            if (bsuccess == false) {
+                return;
+            }
+            if (document.getElementById("headerfooterLayoutId")) {
+                iLayoutId = document.getElementById("headerfooterLayoutId").value;
+            }
+            if (REPORTCUSTOMIZE.g_objcusmodel && REPORTCUSTOMIZE.g_objcusmodel.objLayout && REPORTCUSTOMIZE.g_objcusmodel.objLayout.LayoutId) {
+                iVoucherType = REPORTCUSTOMIZE.g_objcusmodel.objLayout.LayoutId;
+                //ModuleType = REPORTCUSTOMIZE.g_objcusmodel.module;
+            }
+            var iMenuId = $("#MenuId").val();
+            isHeaderFooter = true;
+            if (iVoucherType == 0 && iMenuId > 0) {
+                iVoucherType = iMenuId;
+            }
+            headerGroup = data;
+            result = NETWORK.executeServerMethod(
+                GLOBAL.getContextPath("InvoiceDesign", "InvoiceDesign", "Transactions"),
+                true,
+                { LayoutId: iLayoutId, iVouchertype: iVoucherType, iHeaderId: 0, ModuleType: ModuleType, HeaderGroup: headerGroup, bfromreports: bfromreports },
+                "",
+                true,
+                "REPORTCUSTOMIZE.invoiceDesignViewSuccess",
+                "GLOBAL.LoadingStart",
+                "GLOBAL.LoadingEnd"
+            );
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.onHeaderFooterSuccess}" + err.message, "EXCEPTION");
+        }
+    },
+
+    invoiceDesignViewSuccess: function (bsuccess, html) {
+        //debugger
+        if (bsuccess == true)
+        {
+            $("#id_rc_headerfooter_modal_body").html('');
+            $("#id_rc_headerfooter_modal_body").html(html);
+            var getList = $(html).find("li");
+            for (var i = 0; i < getList.length; i++) {
+                var getattr = getList[i].getAttribute("id");
+                if (getattr == "li_InvoicePageSetup") {
+                    document.getElementById(getattr).style.display = "none";
+                }
+            }
+            var printLi = $("#menu-print"); //$("#id_InvoicePrint").next().children("li").children()[0];            
+            //printLi.style.display = "none";
+            printLi.css('display', 'none');
+
+            var previewEle = document.getElementById("li_InvoicePreview");
+            previewEle.setAttribute("onclick", "REPORTCUSTOMIZE.HeaderFooterPreview(this);");
+            //customizing header/footer html to fit in the popup
+            $("#id_rc_headerfooter_modal_body").children("panel").css("height", "480px");
+            document.getElementById("id_InvoiceDesingCancel").style.display = "none";
+            document.getElementById("Design").style.overflow = "auto";
+            document.getElementById("Design").style.height = "360px";
+            //document.getElementById("InvoiceDesignMainDiv").style.height = "450px";
+            document.getElementById("LiFieldDivList").style.padding = "5px 10px 5px 5px";
+            $("#id_rc_headerfooter_modal_body").children("panel").children("panel-body").css("padding", "5px 3px");
+            document.getElementById("InvoiceDesignMainDiv").style.overflow = "auto";
+            $("#InvoiceDesignMainDiv").removeClass("col-xs-12");
+            document.getElementById("InvoiceDesignMainDiv").style.border = "none";
+
+            document.getElementById("InvoiceDesignFields").style.height = "330px";//by rasool
+            document.getElementById("InvoiceDesignFieldProperties").style.height = "330px";//by rasool
+
+            $("#RC_ModalHeaderFooter").modal("show");
+
+            INVOICEDESIGN.SetCancelCallBack("REPORTCUSTOMIZE.CloseHeaderFooterPopup");
+            if (isHeaderFooter == true)
+                document.getElementById("id_InvoiceDesingCancel").style.display = "none";
+
+        }
+    },
+
+    CloseHeaderFooterPopup: function () {
+        if (FCommon.UI.isValidObject(svgcontainer)) {
+            svgcontainer = null;
+        }
+        $("#RC_ModalHeaderFooter").modal("hide");
+    },
+    DisableButtons: function (bFlag) {
+        debugger
+        if (document.getElementById("iNew") != undefined || document.getElementById("iNew") != null) {
+            document.getElementById("iNew").style.opacity = bFlag ? '0.5' : '1';
+            document.getElementById("iNew").style.pointerEvents = bFlag ? 'none' : 'auto';
+        }
+
+        document.getElementById("iOpen").style.opacity = bFlag ? '0.5' : '1';
+        document.getElementById("iSave").style.opacity = bFlag ? '0.5' : '1';
+        document.getElementById("iDelete").style.opacity = bFlag ? '0.5' : '1';
+        document.getElementById("iBar").style.opacity = bFlag ? '0.5' : '1';
+        document.getElementById("iAlign").style.opacity = bFlag ? '0.5' : '1';
+        document.getElementById("iSalesInvoice").style.opacity = bFlag ? '0.5' : '1';
+
+        document.getElementById("iOpen").style.pointerEvents = bFlag ? 'none' : 'auto';
+        document.getElementById("iSave").style.pointerEvents = bFlag ? 'none' : 'auto';
+        document.getElementById("iDelete").style.pointerEvents = bFlag ? 'none' : 'auto';
+        document.getElementById("iBar").style.pointerEvents = bFlag ? 'none' : 'auto';
+        document.getElementById("iAlign").style.pointerEvents = bFlag ? 'none' : 'auto';
+        document.getElementById("iSalesInvoice").style.pointerEvents = bFlag ? 'none' : 'auto';
+
+    },
+    HeaderFooterPreview: function (previewEle) {
+        debugger;
+        var iVoucherType = 0, layoutid = 0, iHeaderId = 0;
+        var successmethodCallback = previewEle.getAttribute("data-successcallback");
+        try {
+            //REPORTCUSTOMIZE.DisableButtons(true);
+            if (document.getElementById("headerfooterLayoutId")) {
+                layoutid = document.getElementById("headerfooterLayoutId").value;
+            }
+            if (REPORTCUSTOMIZE.g_objcusmodel && REPORTCUSTOMIZE.g_objcusmodel.objLayout) {
+                iVoucherType = REPORTCUSTOMIZE.g_objcusmodel.objLayout.LayoutId;
+            }
+            NETWORK.executeServerMethod(GLOBAL.getContextPath("PreviewLayout", "TransHome", "Transactions"),
+                true,
+                {
+                    iVoucherType: iVoucherType,
+                    iLayoutId: layoutid,
+                    iHeaderId: iHeaderId,
+                    fromDesigner: true,
+                    objLayoutInfoParam: objLayoutInformation
+                },
+                "html",
+                true,
+                successmethodCallback,
+                "GLOBAL.LoadingStart",
+                "GLOBAL.LoadingEnd"
+            );
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.HeaderFooterPreview}" + err.message, "EXCEPTION");
+        }
+    },
+    //////////////////////
+
+    deleteLayout: function (iFromAI, iReportLite) {
+
+        var result = null;
+        var iLayoutId = document.getElementById("getLayoutId").value;
+        var ReportId = document.getElementById("getReportId").value;
+        var ReportName = document.getElementById("ReportName").value;
+        var confirmreply = confirm("Do you want to delete the layout?");
+        var LinkId = 0;
+        var RITComboboxByMonth = null, RepRecord = null;
+        var RITComboboxes = document.getElementsByName("RITCombobox_" + DashletId);
+        var layoutname = "";
+        try {
+            if (confirmreply == true) {
+                if (document.getElementById("lblRITTable") != null) {
+                    fieldId = document.getElementById("lblRITTable").getAttribute("data-fieldid");
+                    LinkId = OPTIONCONTROL.getControlValue("RITTable_" + ReportDashletId + "_" + fieldId, "iworkflowid");
+                }
+                if (RITComboboxes != null && RITComboboxes) {
+                    RITComboboxByMonth = document.getElementById("RITCombobox_" + DashletId + "_3");// 3 for by month/tag field
+                    RITComboboxes.forEach(function (x) {
+                        if (x.getAttribute("data-subreportid") == SubReportId) {
+                            layoutname = x.getAttribute("data-subreportname");
+                        }
+                    })
+                }
+                if (FCommon.UI.isValidObject(document.getElementById("getSubReportId_" + DashletId)) && CrossReference == true) {
+                    SubReportId = document.getElementById("getSubReportId_" + DashletId).value;
+                }
+                if (!REPORTCUSTOMIZE.g_objcusmodel.FromCrossReference) {
+                    if (REPORTCUSTOMIZE.g_objcusmodel.FromReport) {
+                        RepRecord = REPORTVIEW.GetRepRecordData(true, true);
+                    }
+                    else {
+                        RepRecord = REPORTVIEW.GetRepRecordData(false, false);
+                    }
+                }
+
+                result = NETWORK.executeServerMethod(GLOBAL.getContextPath("DeleteLayout", "RD", "RD"), true,
+                    {
+                        iLayoutId: iLayoutId,
+                        ReportId: ReportId,
+                        ReportName: ReportName,
+                        FromReport: REPORTCUSTOMIZE.g_objcusmodel.FromReport == true ? true : false,
+                        iMenuId: document.getElementById("MenuId").value,
+                        FromCrossReference: REPORTCUSTOMIZE.g_objcusmodel.FromCrossReference == true ? true : false,
+                        iSubReportId: SubReportId != undefined ? SubReportId : 0,
+                        iLinkId: LinkId,
+                        layoutName: layoutname != null ? layoutname : "",
+                        objRepRec: RepRecord,
+                    },
+                    "", true, "REPORTCUSTOMIZE.DeleteLayoutSuccess", "GLOBAL.LoadingStart", "GLOBAL.LoadingEnd",
+                    [iFromAI, iReportLite, REPORTCUSTOMIZE.g_objcusmodel.FromReport == true ? true : false, RepRecord]);
+            }
+            else {
+                return;
+            }
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("deleteLayout" + err.message, "EXCEPTION");
+        }
+    },
+
+    DeleteLayoutSuccess: function (bsuccess, html, tag) {
+        var typeofhtml = typeof html;
+        var layoutid = 0;
+        try {
+            if (bsuccess == false) {
+                COMMON.prototype.showMessage("Unable to delete layout", "Internal Error");
+                return;
+            }
+            if (html != undefined) {
+                layoutid = html[0].ID;
+                document.getElementById("getLayoutId").value = layoutid;
+            }
+            ListOfReportsInDashboard = [];
+            if (REPORTCUSTOMIZE.g_objcusmodel.FromCrossReference == true) {
+                REPORT.RefreshColumns(document.getElementById("getLayoutId").value,
+                    REPORTCUSTOMIZE.g_objcusmodel.FromCrossReference == true ? true : false,
+                    true, REPORTCUSTOMIZE.g_objcusmodel.FromReport,
+                    (REPORTCUSTOMIZE.g_objcusmodel.FromReport == true ? filterValueFromReport : filterValue));
+                if (tag != undefined && (tag[0] == 1 || tag[1] == 1)) {
+                    var bCrossReference = (reportLineModel != undefined && reportLineModel != '' ? reportLineModel.CrossReference : false);
+                    if (bCrossReference == false) {
+                        if (tag[0] == 1) {
+                            REPORTRENDER.showScreen('MainReportRender');
+                        }
+                        else {
+                            REPORTRENDER.showScreen('ReportRender');
+                        }
+                    }
+                    else {
+                        REPORTRENDER.showScreen("crossReferenceDiv", 1);
+                    }
+                }
+                else {
+                    REPORT.RefreshColumns(document.getElementById("getLayoutId").value,
+                        REPORTCUSTOMIZE.g_objcusmodel.FromCrossReference == true ? true : false,
+                        REPORTCUSTOMIZE.g_objcusmodel.FromReport, (REPORTCUSTOMIZE.g_objcusmodel.FromReport == true ? filterValueFromReport : filterValue));
+                }
+            }
+            else if (REPORTCUSTOMIZE.g_objcusmodel.bIsFromTransactions == true) {
+                REPORTVIEW.getLayoutsSuccess(bsuccess, html);
+                result = NETWORK.executeServerMethod(
+                    GLOBAL.getContextPath("TransHomeView", "TransHome", "Transactions"),
+                    true,
+                    { iTypeId: document.getElementById("getReportId").value, iMenuId: 0 }
+                );
+                GLOBAL.LoadScreen(true, result.data);
+            }
+            else if (REPORTCUSTOMIZE.g_objcusmodel.FromReport == true) {
+                REPORTVIEW.getLayoutsSuccess(bsuccess, html);
+                REPORTCUSTOMIZE.getreportfromdeletelayout(tag[3]);
+            }
+            else if (REPORTCUSTOMIZE.g_objcusmodel.bIsFromTransactions == false && REPORTCUSTOMIZE.g_objcusmodel.sReportName == 'Links') {
+                //   REPORTVIEW.getLayoutsSuccess(bsuccess, html);
+                EntryMainUI.resetOthersContainer(true);
+                EntryMainUI.showEntryScreen(true);
+
+                if (GlobalPref.Version == eVersion.Version9) {
+                    TRANSACTION_ENTRY.WORKFLOW.updateWorkflowPanel(true);
+                }
+            }
+            else if (DashletId == "MasterReport") {
+                REPORTRENDER.showScreen('ReportRender');
+                //parameters are : (LayoutId, fromCrossReference, fromCustomizationScreen, bFromInsideReport, filtervalue, DashletId)
+                REPORT.RefreshColumns(layoutid,
+                    REPORTCUSTOMIZE.g_objcusmodel.FromCrossReference == true ? true : false,
+                    true,
+                    REPORTCUSTOMIZE.g_objcusmodel.FromReport,
+                    (REPORTCUSTOMIZE.g_objcusmodel.FromReport == true ? filterValueFromReport : filterValue), DashletId);
+            }
+            else {
+                REPORTVIEW.getLayoutsSuccess(bsuccess, html);
+                REPORTRENDER.showScreen('reportView');
+            }
+            COMMON.prototype.showMessage("Layout Deleted Successfully", "Message");
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.DeleteLayoutSuccess} " + err.message, "EXCEPTION");
+        }
+    },
+    getKeyAndMove: function (element, event) {
+        if (event.key == "Delete") {
+            //debugger;
+            REPORTCUSTOMIZE.RemoveColumn();
+            const container = document.querySelector("#id_rc_columnheadertable");
+            const SelectedEle = container.querySelectorAll("div.dv_Column");
+            var Nextindex = SelectedEle.length - 1;
+            for (var i = 0; i < SelectedEle.length; i++) {
+                if (Next2DeleteColumnId == SelectedEle[i].id.replace('Cus', ''))
+                    Nextindex = i;
+            }
+            REPORTCUSTOMIZE.GetBodyFields(SelectedEle[Nextindex]);
+            document.getElementById("dv_Columns").focus();
+        }
+    },
+    getreportfromdeletelayout: function (tag) {
+        try {
+            if (tag != undefined) {
+                RepRecord = tag;
+            }
+            var ilayoutid = document.getElementById("RITLayout_" + DashletId).value;
+            RepRecord.LayoutId = ilayoutid;
+            var RITComboboxes = document.getElementsByName("RITCombobox_" + DashletId);
+            var layoutname = "";
+            if (document.getElementById("lblRITTable") != null) {
+                fieldId = document.getElementById("lblRITTable").getAttribute("data-fieldid");
+                LinkId = OPTIONCONTROL.getControlValue("RITTable_" + ReportDashletId + "_" + fieldId, "iworkflowid");
+            }
+            if (RITComboboxes != null && RITComboboxes) {
+                RITComboboxByMonth = document.getElementById("RITCombobox_" + DashletId + "_3");// 3 for by month/tag field
+                RITComboboxes.forEach(function (x) {
+                    if (x.getAttribute("data-subreportid") == SubReportId) {
+                        layoutname = x.getAttribute("data-subreportname");
+                    }
+                })
+            }
+            if (sUniqueId != null && sUniqueId != "") {
+                REPORTRENDERNEW.refresh(
+                    sUniqueId, REPORTCUSTOMIZE.g_objcusmodel.iMenuId, document.getElementById("getLayoutId").value);
+            } else {
+                result = NETWORK.executeServerMethod(GLOBAL.getContextPath("GetReportfromDeleteLayout", "RD", "RD"), true,
+                    {
+                        FromReport: REPORTCUSTOMIZE.g_objcusmodel.FromReport == true ? true : false,
+                        iMenuId: document.getElementById("MenuId").value,
+                        FromCrossReference: REPORTCUSTOMIZE.g_objcusmodel.FromCrossReference == true ? true : false,
+                        layoutName: layoutname != null ? layoutname : "",
+                        objRepRec: RepRecord,
+                        filterData: RepRecord.FilterSource
+                    },
+                    "", true, "REPORTCUSTOMIZE.getreportfromdeletelayoutSuccess", "GLOBAL.LoadingStart", "GLOBAL.LoadingEnd");
+            }
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("getreportfromdeletelayout " + err.message, "EXCEPTION");
+        }
+    },
+
+    getreportfromdeletelayoutSuccess: function (bsuccess, html) {
+        var typeofhtml = typeof html;
+        try {
+            if (bsuccess == false) {
+                return;
+            }
+            ListOfReportsInDashboard = [];
+            if (REPORTCUSTOMIZE.g_objcusmodel.FromCrossReference == true) {
+                if (html != undefined) {
+                    if (typeofhtml == "string") {
+                        $("#MainReportRenderCrossReference").html(html);
+                    }
+                    REPORTRENDER.showScreen("crossReferenceDiv");
+                    html = undefined;
+                }
+            }
+            else if (REPORTCUSTOMIZE.g_objcusmodel.FromReport == true) {
+                REPORTRENDER.showScreen('ReportRender');
+                $("#ReportRender").html(html);
+            }
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("getreportfromdeletelayoutSuccess" + err.message, "EXCEPTION");
+        }
+    },
+
+    allowDrop: function (ev) {
+        ev.preventDefault();
+    },
+
+    drop: function (liEle, event) {
+        //debugger;
+        var row1 = document.getElementById('tdTarget');
+        var row2 = document.getElementById('tdTarget2');
+        var iSquenId = null, iSeqsNo = null, iColId = null;
+        var createTH = null, createText = null, creatediv = null, createpar = null;
+        var newcolspan = 1;
+        var targetcol = null, groupheadEle = null;
+        try {
+            if (liEle == "dv_ColumnHeader" && (REPORTCUSTOMIZE.Gselectedele == null || REPORTCUSTOMIZE.Gselectedele == undefined)) {
+                return;
+            }
+            if (liEle == "dv_ColumnHeader" && (REPORTCUSTOMIZE.Gselectedele != null || REPORTCUSTOMIZE.Gselectedele != undefined)) {
+                liEle = REPORTCUSTOMIZE.Gselectedele;
+            }
+            if (event.type == "dblclick") {
+                //adding column by double clicking tree item
+                if (REPORTCUSTOMIZE.selectedColumn)
+                    targetcol = REPORTCUSTOMIZE.selectedColumn;
+            }
+            else {
+                if (REPORTCUSTOMIZE.selectedColumn.getAttribute("data-groupheading") == liEle.getAttribute("data-groupheading")) {
+                    targetcol = REPORTCUSTOMIZE.selectedColumn;
+                    if (targetcol.nodeName.toLowerCase() == "div" && targetcol.id.includes("Cus") == true) {
+                        targetcol = targetcol.parentElement;
+                    }
+                }
+                else {
+                    targetcol = event.target;
+                    if (targetcol.nodeName.toLowerCase() == "div" && targetcol.id.includes("Cus") == true) {
+                        targetcol = targetcol.parentElement;
+                    }
+                }
+            }
+
+            event.stopImmediatePropagation();
+            if (GFieldName == null) {
+                return;
+            }
+            // finding sequence no 
+            var list = new Array();
+            list = $(".dv_Column").map(function () {
+                if (!isNaN(parseInt(this.getAttribute("icolid"))))
+                    return parseInt(this.getAttribute("icolid"));
+            }).get();
+
+            var highestColId = Math.max.apply(Math, list);
+            if (list.length == 0)
+                highestColId = 0;
+            iColId = highestColId;
+            if (!(iColId)) {
+                iColId = 700;
+                ColumnId = "Cus" + (parseInt(iColId)).toString();
+                iSquenId = ColumnId
+            }
+            else {
+                //ColumnId = (parseInt(iColId) + 1).toString();
+                ColumnId = "Cus" + (parseInt(iColId) + 1).toString();
+            }
+            //if (iSquenId == "D700") {
+            //    iSquenId = iSquenId.replace("D", "");
+            //}
+
+            createTH = document.createElement('th');
+            createTH.id = "Td" + (parseInt(iColId) + 1).toString();
+            createTH.setAttribute("rowspan", "2");
+            createTH.setAttribute("colspan", "1");
+            createTH.draggable = true;
+            createTH.style.borderRight = "1px solid white";
+            createTH.style.fontWeight = "400";
+            createTH.setAttribute("ondragstart", "REPORTCUSTOMIZE.onDragStart(event)");
+            createTH.setAttribute("ondragover", "REPORTCUSTOMIZE.onAllowDrop(event);");
+            createTH.setAttribute("ondrop", "REPORTCUSTOMIZE.onDrop(this,event);");
+
+            if (liEle != null || liEle != undefined) {
+                if (liEle.hasAttribute("data-group")) {
+                    createTH.setAttribute("data-bgroup", liEle.getAttribute("data-group"));
+                }
+                else {
+                    createTH.setAttribute("data-bgroup", "false");
+                }
+            }
+
+            createText = document.createElement('p');
+            createText.hidden = true;
+            creatediv = document.createElement('div');
+            creatediv.id = ("Cus" + (parseInt(iColId) + 1)).toString();
+            creatediv.setAttribute("data-aliasname", GFieldName);
+
+            switch (parseInt(GDatatypeid)) {
+                case MasterDataType.get("NUMBER"):
+                case MasterDataType.get("FRACTION"):
+                case MasterDataType.get("BIGNUMBER"):
+                case MasterDataType.get("SMALLNUMBER"):
+                case MasterDataType.get("TINYNUMBER"):
+                    creatediv.setAttribute("data-colalign", 2); // Right
+                    break;
+                default:
+                    creatediv.setAttribute("data-colalign", 0); // Left
+                    break;
+            }
+
+            if (GFieldName == "Programmable Field") {
+                creatediv.setAttribute("data-miscelleneous", "64")
+            }
+
+            creatediv.setAttribute("colname", GFieldName);
+            creatediv.className = "dv_Column";
+            creatediv.setAttribute("draggable", "true")
+            creatediv.setAttribute("onclick", "return REPORTCUSTOMIZE.GetBodyFields(this)");
+            //creatediv.setAttribute("onclick", "return GetBodyFields(this)");
+            creatediv.setAttribute("data-isequenceid", (parseInt(iSeqsNo) + 1).toString());
+            creatediv.setAttribute("data-parentid", GParentId);
+            creatediv.setAttribute("data-subparentid", GSubParentid);
+            creatediv.setAttribute("data-datatypeid", GDatatypeid);
+            createTH.setAttribute("data-groupheading", liEle.getAttribute("data-groupheading") == null ? "" : liEle.getAttribute("data-groupheading"));
+            creatediv.setAttribute("ifieldid", GFieldId);
+            creatediv.setAttribute("icolid", (parseInt(iColId) + 1).toString());
+
+            if (GDatatypeid == "Text" || GDatatypeid == MasterDataType.get("Text")) {
+                creatediv.setAttribute("data-columnwidth", "120");
+                createTH.style.width = "120px";
+            }
+            else {
+                creatediv.setAttribute("data-columnwidth", "60");
+                createTH.style.width = "60px";
+            }
+            if (GDatatypeid == "Fraction" || GDatatypeid == MasterDataType.get("Fraction")) {
+                creatediv.setAttribute("data-colalign", "18");
+                creatediv.setAttribute("data-miscelleneous", "64");
+            }
+            createpar = document.createElement('p');
+            if (liEle != null) {
+                if (liEle.id == "TColProg-2") {
+                    GFieldName = "Programmable Field";
+                }
+            }
+
+            createpar.id = "fp" + GFieldName.replace(/[\-.()/% ]/g, "") + (parseInt(iColId) + 1);
+            createpar.innerText = GFieldName.trim();
+            createpar.className = "Par";
+            createpar.setAttribute("draggable", "true");
+            creatediv.appendChild(createpar);
+            createTH.appendChild(createText);
+            createTH.appendChild(creatediv);
+            if (iSquenId == "Cus700") {
+                $(document.getElementById("Td700")).replaceWith(createTH);
+            }
+            else {
+                if (createTH.getAttribute("data-bgroup") == "true" || (liEle.getAttribute("data-groupheading") != null && liEle.getAttribute("data-groupheading") != "")) {
+                    createTH.setAttribute("rowspan", "1");
+
+                    //to insert at specific position in list header
+                    if (targetcol && targetcol.nextElementSibling) {
+                        //check if targetcol.next.parent id is similar to row2 id
+
+                        if (targetcol.nextElementSibling.parentElement == row2) {
+                            //if yes, then insert,
+                            row2.insertBefore(createTH, targetcol.nextElementSibling);
+                        }
+                        else {
+                            var firstchild = null;
+                            //if the nextsibling is group element =>
+                            //targetcol.next is an ele of row1,so first find a specific first child of targetcol.next in row2      
+                            if (targetcol.nextElementSibling.getAttribute("data-bgroup") == "true") {
+                                firstchild = $.grep(row2.children, function (x) {
+                                    return (x.children[0].getAttribute("data-groupheading") == targetcol.nextElementSibling.getAttribute("data-groupheading")
+                                        && x.getAttribute("data-childno") == "1");
+                                });
+                            }
+                            else {
+                                //check if previous columns are grouped 
+                                var currentcol = targetcol;
+                                while (currentcol) {
+                                    if (currentcol.getAttribute("data-bgroup") == "true") {
+                                        firstchild = $.grep(row2.children, function (x) {
+                                            return (x.getAttribute("data-groupheading") == currentcol.getAttribute("data-groupheading")
+                                            );
+                                        });
+                                    }
+                                    if (currentcol.previousElementSibling) {
+                                        currentcol = currentcol.previousElementSibling;
+                                    }
+                                    else {
+                                        currentcol = undefined
+                                    }
+                                }
+                            }
+                            //then insert before first child of targetcol.next in row2
+                            if (firstchild && firstchild[0]) {
+                                if (firstchild[0].nextElementSibling) {
+                                    row2.insertBefore(createTH, firstchild[0].nextElementSibling);
+                                }
+                                else {
+                                    row2.appendChild(createTH)
+                                }
+                            }
+                            else {
+                                createTH.setAttribute("data-childno", "1")
+                                row2.insertBefore(createTH, row2.children[0]);
+                            }
+                        }
+                    }
+                    else {
+                        row2.appendChild(createTH);
+                    }
+                    //create a group ele in row1
+                    //first check if last element is of same group or not ,
+                    //if yes , then only change colspan of that respective group head ele
+                    //else create new group head ele
+                    if ((targetcol.getAttribute("data-bgroup") != null && targetcol.getAttribute("data-bgroup") != "")) {
+                        //check if the targetcol is same group element as adding column
+                        if (targetcol.getAttribute("data-groupheading") == liEle.getAttribute("data-groupheading")) {
+                            groupheadEle = targetcol;
+                        }
+                        if (groupheadEle != undefined) {
+                            newcolspan = parseInt(groupheadEle.getAttribute("colspan")) + 1;
+                            groupheadEle.setAttribute("colspan", newcolspan);
+                            groupheadEle.style.width = parseFloat(groupheadEle.style.width.substr(0, groupheadEle.style.width.length - 2)) + 60 + "px";
+                        }
+                    }
+
+                    //if (createTH.previousElementSibling != null && (createTH.previousElementSibling.getAttribute("data-bgroup") == "true" )) {
+                    //    if (row1.lastElementChild.id == "gH_" + liEle.getAttribute("data-groupheading")) {
+                    //        groupheadEle = row1.lastElementChild;
+                    //    }
+                    //    if (groupheadEle != undefined) {
+                    //        newcolspan = parseInt(groupheadEle.getAttribute("colspan")) + 1;
+                    //        groupheadEle.setAttribute("colspan", newcolspan);
+                    //    }
+                    //}
+                    if (!groupheadEle) {
+                        var tdH = document.createElement("th");
+                        tdH.setAttribute("id", "gH_" + liEle.getAttribute("data-groupheading"));
+                        tdH.setAttribute("data-columnid", (parseInt(iColId) + 1).toString());
+                        tdH.setAttribute("data-groupheading", liEle.getAttribute("data-groupheading"));
+                        tdH.setAttribute("draggable", "true");
+                        tdH.setAttribute("style", "border-right: 1px solid white;");
+                        tdH.style.width = creatediv.getAttribute("data-columnwidth") + "px";
+                        tdH.setAttribute("rowspan", "1");
+                        tdH.setAttribute("colspan", "1");
+                        tdH.setAttribute("style", "border-right: 1px solid white;border-bottom: 1px solid white;width:120px;");
+                        tdH.setAttribute("data-bgroup", "true");
+                        div = document.createElement('div');
+                        div.setAttribute("class", "dv_Column");
+                        div.setAttribute("style", "text-align:right");
+                        tdH.appendChild(div);
+                        p = document.createElement("p");
+                        p.setAttribute("class", "Par");
+                        p.setAttribute("draggable", "true");
+                        p.setAttribute("id", "grouppara" + (parseInt(iColId) + 1).toString());
+                        inputText = document.createTextNode(liEle.getAttribute("data-groupheading"));
+
+                        p.appendChild(inputText);
+                        div.appendChild(p);
+
+                        //to insert at specific position in list header
+                        if (targetcol && targetcol.nextElementSibling) {
+                            //targetcol.next belongs to row2
+                            if (targetcol.nextElementSibling.parentElement == row1) {
+                                row1.insertBefore(tdH, targetcol.nextElementSibling);
+                            }
+                            else {
+                                //find parent of targetcol in row1 , and insert after it
+                                var groupele = $.grep(row1.children, function (x) {
+                                    return (x.getAttribute("data-groupheading") == $(targetcol).children(".dv_Column").attr("data-groupheading")
+                                        && x.getAttribute("colspan") == targetcol.getAttribute("data-childno"))
+                                });
+                                row1.insertBefore(tdH, groupele[0]);
+                            }
+                        }
+                        else {
+                            row1.appendChild(tdH);
+                        }
+                        REPORTCUSTOMIZE.selectedColumn = tdH;
+                    }
+                }
+                else if (targetcol.getAttribute("data-bgroup") == "true") { // if inserted at the end of grouped column
+                    var targetGrpEle = null;
+                    var TotalColspan = 0, targetColspan = 0;
+                    var currentGroupChild = null;
+                    var duplicateTargetGrp = null;
+                    //targetGrpEle = $.grep(row1.children, function (x) {
+                    //    return x.getAttribute("data-columnid") ==  $(targetcol).children(".dv_Column").attr("icolid");
+                    //})[0];
+                    targetGrpEle = $.grep(row1.children, function (x) {
+                        if ($(targetcol).children(".dv_Column").attr("icolid")) {
+                            return x.getAttribute("data-columnid") == $(targetcol).children(".dv_Column").attr("icolid");
+                        }
+                        else {
+                            return x.getAttribute("data-columnid") == $(targetcol).attr("data-columnid");
+                        }
+                    })[0];
+                    if (targetGrpEle == undefined || targetGrpEle == null) {
+                        if (targetcol.hasAttribute("data-groupcolid") == true) {
+                            targetGrpEle = $.grep(row1.children, function (x) {
+                                return x.getAttribute("data-columnid") == $(targetcol).attr("data-groupcolid");
+                            })[0];
+                        }
+                        if (targetGrpEle == undefined || targetGrpEle == null) {
+                            targetGrpEle = $.grep(row1.children, function (x) {
+                                return x.id == "gH_" + $(targetcol).children(".dv_Column").attr("data-groupheading");
+                            })[0];
+                        }
+                    }
+                    //TotalColspan = parseInt(targetGrpEle.getAttribute("colspan"));
+                    // targetColspan = parseInt(targetcol.getAttribute("data-childno"));
+                    TotalColspan = FConvert.toInt(FCommon.UI.getAttributeData(targetGrpEle, "colspan"));
+                    targetColspan = FConvert.toInt(FCommon.UI.getAttributeData(targetcol, "data-childno"));
+                    if (TotalColspan != targetColspan) {
+                        if (TotalColspan > targetColspan) {
+                            // divide the target col group into 2 parts and in between , insert the new col
+                            targetGrpEle.setAttribute("colspan", parseInt(targetcol.getAttribute("data-childno")));
+                            duplicateTargetGrp = targetGrpEle.cloneNode(true);
+                            duplicateTargetGrp.id = targetGrpEle.id + "_split";
+                            duplicateTargetGrp.setAttribute("data-columnid", $(targetcol).children(".dv_Column").attr("icolid"));
+                            duplicateTargetGrp.setAttribute("colspan", TotalColspan - parseInt(targetcol.getAttribute("data-childno")))
+                            row1.insertBefore(duplicateTargetGrp, targetGrpEle.nextElementSibling)
+                            // update data-childno and data-groupheading in splitted children
+                            //2 groups 
+                            var childlist = $(".dv_Column").map(function () {
+                                if (this.getAttribute("data-groupheading") == $(targetcol).children(".dv_Column").attr("data-groupheading"))
+                                    return this.parentElement;
+                            }).get();
+                            var chilCounter = 0;
+                            //update widths of 2 splitted groups 
+                            for (var iCounter = targetColspan; iCounter < childlist.length; iCounter++) {
+                                chilCounter++;
+                                childlist[iCounter].setAttribute("data-childno", chilCounter);
+                                $(childlist[iCounter]).children(".dv_Column").attr("data-groupheading", $(targetcol).children(".dv_Column").attr("data-groupheading") + "_split");
+                            }
+                        }
+                    }
+                    //then insert new col
+                    if (FCommon.UI.isValidObject(targetGrpEle) == true) {
+                        row1.insertBefore(createTH, targetGrpEle.nextElementSibling);
+                    }
+                }
+                else {
+                    //to insert at specific position in list header
+                    if (targetcol) {
+                        row1.insertBefore(createTH, targetcol.nextElementSibling);
+                    }
+                    else {
+                        row1.appendChild(createTH);
+                    }
+                    REPORTCUSTOMIZE.selectedColumn = createTH;
+                }
+                //REPORTCUSTOMIZE.selectedColumn = createTH;
+            }
+
+            creatediv.ondragend = REPORTCUSTOMIZE.OnTreeDrag(GFieldId, (parseInt(iColId) + 1).toString());
+
+            //trigger click event
+            // creatediv.click();
+
+            REPORTCUSTOMIZE.ChangeBorders((parseInt(iColId) + 1).toString());
+            REPORTCUSTOMIZE.WidthHeaders();
+            ColumnId = "Cus" + (parseInt(iColId) + 1).toString();
+            REPORTCUSTOMIZE.resetGvalues();
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.drop}" + err.message, "EXCEPTION");
+        }
+    },
+
+    ////////////////////////////
+    ///Columns moving functionality in column header
+    onDragStart: function (evt) {
+        try {
+            evt.dataTransfer.setData("text", evt.currentTarget.id);
+        }
+        catch (err) {
+            alert("Exception: {REPORTCUSTOMIZE.onDragStart} " + err.message);
+        }
+    },
+
+    onAllowDrop: function (evt) {
+        try {
+            if (evt.preventDefault) {
+                evt.preventDefault();
+            }
+            else {
+                evt.returnValue = false;
+            }
+        }
+        catch (err) {
+            alert("Exception: {REPORTCUSTOMIZE.onAllowDrop} " + err.message);
+        }
+    },
+
+    onDrop: function (ele, evt) {
+        var sSourceId = "";
+        var iSourceIndex = -1, iTargetIndex = -1;
+        var eleTarget = null, srcEle = null, eleParent = null;
+        var iCounter = 0;
+        try {
+            if (evt.preventDefault) {
+                evt.preventDefault();
+            }
+            else {
+                evt.returnValue = false;
+            }
+
+            sSourceId = evt.dataTransfer != null ? evt.dataTransfer.getData("text") : evt.target.id;
+            srcEle = document.getElementById(sSourceId);
+
+            // if the source ele is from tree , then call drop()
+            if (srcEle.nodeName.toLowerCase() == "li" && srcEle.id.includes("tree") == true) {
+                return REPORTCUSTOMIZE.drop(srcEle, evt);
+            }
+
+            evt.stopImmediatePropagation();
+            eleTarget = evt.currentTarget;
+            if (FCommon.String.isNullOrEmpty(eleTarget.id) == true) {
+                eleTarget = eleTarget.parentElement;
+            }
+            if (sSourceId == eleTarget.id) {
+                return;
+            }
+
+            eleParent = eleTargetParent = eleTarget.parentElement;
+            for (iCounter = 0; iCounter < eleTargetParent.children.length; iCounter++) {
+                if (eleTargetParent.children[iCounter].id == sSourceId) {
+                    iSourceIndex = iCounter;
+                }
+                else if (eleTargetParent.children[iCounter].id == eleTarget.id) {
+                    iTargetIndex = iCounter;
+                }
+                if (iSourceIndex != -1 && iTargetIndex != -1) {
+                    break;
+                }
+            }
+            //between different source and target
+            if (iSourceIndex == -1 || iTargetIndex == -1) {
+                //if any of the source or target index is -1 , it means ,both parents are differnt ,
+                //and one is a group element and another is non group elemnt
+                var targetGrpEle = null; srcGrpEle = null, elesrcParent = null, newGrpELe = null;
+                var GrpEleColspan = 0, oldcolspan = 0, newcolspan = 0, splitsiblingcount = 0;
+                var iGrpIndex = 0, combinecolspan = 0;
+                var currentgrpele = null; currentsibling = null;
+
+                elesrcParent = srcEle.parentElement;
+                //case 3: non-group source to  group target 
+                if (srcEle.getAttribute("data-bgroup") == "false" && eleTarget.getAttribute("data-bgroup") == "true") {// if (iSourceIndex == -1) {               
+                    targetGrpEle = $.grep(elesrcParent.children, function (x) {
+                        return x.getAttribute("data-columnid") == $(eleTarget).children(".dv_Column").attr("icolid");
+                    })[0];
+                    if (targetGrpEle == undefined || targetGrpEle == null) {
+                        if (eleTarget.hasAttribute("data-groupcolid") == true) {
+                            targetGrpEle = $.grep(elesrcParent.children, function (x) {
+                                return x.getAttribute("data-columnid") == $(eleTarget).attr("data-groupcolid");
+                            })[0];
+                        }
+                        if (targetGrpEle == undefined || targetGrpEle == null) {
+                            targetGrpEle = $.grep(elesrcParent.children, function (x) {
+                                return x.id == "gH_" + $(eleTarget).children(".dv_Column").attr("data-groupheading");
+                            })[0];
+                        }
+                    }
+                    GrpEleColspan = parseInt(targetGrpEle.getAttribute("colspan"));
+                    iGrpIndex = $(elesrcParent).children().index(targetGrpEle);
+                    iSourceIndex = $(elesrcParent).children().index(srcEle);
+                    if (iGrpIndex < iSourceIndex) {//from right to left
+                        for (iCounter = 0; iCounter < eleTargetParent.children.length - (eleTargetParent.children.length - iTargetIndex); iCounter++) {
+                            if ($(eleTargetParent.children[iCounter]).children(".dv_Column").attr("data-groupheading") == $(targetGrpEle).attr("data-groupheading")) {
+                                $(eleTargetParent.children[iCounter]).attr("data-groupcolid", $(targetGrpEle).attr("data-columnid"))
+                                splitsiblingcount++;
+                            }
+                        }
+                        if (GrpEleColspan == 1 || splitsiblingcount == 0) {
+                            //then simply insert srcEle before that targetGrp ele
+                            elesrcParent.insertBefore(srcEle, targetGrpEle);
+                        }
+                        else {
+                            newcolspan = GrpEleColspan - splitsiblingcount;
+                            oldcolspan = GrpEleColspan - newcolspan;
+                            targetGrpEle.setAttribute("colspan", oldcolspan)
+                            newGrpELe = targetGrpEle.cloneNode(true);
+                            newGrpELe.id = newGrpELe.id + "_split";
+                            newGrpELe.setAttribute("data-columnid", $(eleTarget).children(".dv_Column").attr("icolid"));
+                            newGrpELe.setAttribute("colspan", newcolspan);
+                            $(eleTarget).attr("data-groupcolid", $(newGrpELe).attr("data-columnid"));
+                            //insert before the nextElementSibling of targetGrpEle
+                            elesrcParent.insertBefore(newGrpELe, targetGrpEle.nextElementSibling);
+                            elesrcParent.insertBefore(srcEle, newGrpELe);
+                            targetGrpEle = newGrpELe;
+                        }
+                        //targetGrpEl is shifted right , so check if its nextElementSibling is same or not ,..similarly check till end
+                        // if same group element , then combine their colspan , and delete one element
+                        currentgrpele = targetGrpEle;
+                        for (iCounter = 0; iCounter < elesrcParent.children.length - iGrpIndex - 1; iCounter++) {
+                            currentsibling = currentgrpele.nextElementSibling;
+                            if (currentsibling != null) {
+                                if (currentgrpele.getAttribute("data-bgroup") == "true" && currentsibling.getAttribute("data-bgroup") == "true") {
+                                    if (currentsibling.getAttribute("data-groupheading") == currentgrpele.getAttribute("data-groupheading")) {
+                                        combinecolspan = parseInt(currentgrpele.getAttribute("colspan")) + parseInt(currentsibling.getAttribute("colspan"));
+                                        if (currentgrpele.id.includes("_split") == true) {
+                                            currentsibling.setAttribute("colspan", combinecolspan);
+                                            currentsibling.setAttribute("data-columnid", currentgrpele.getAttribute("data-columnid"));
+                                            elesrcParent.removeChild(currentgrpele);
+                                        }
+                                        else {
+                                            currentgrpele.setAttribute("colspan", combinecolspan)
+                                            elesrcParent.removeChild(currentsibling);
+                                            currentsibling = currentgrpele.nextElementSibling;
+                                        }
+                                    }
+                                    currentgrpele = currentsibling;
+                                }
+                                else {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else { // left to right 
+                        for (iCounter = eleTargetParent.children.length - 1; iCounter > iTargetIndex; iCounter--) {
+                            if ($(eleTargetParent.children[iCounter]).children(".dv_Column").attr("data-groupheading") == $(targetGrpEle).attr("data-groupheading")) {
+                                $(eleTargetParent.children[iCounter]).attr("data-groupcolid", $(targetGrpEle).attr("data-columnid"))
+                                splitsiblingcount++;
+                            }
+                        }
+                        if (GrpEleColspan == 1 || splitsiblingcount == 0) {
+                            //then simply insert srcEle before that targetGrp ele
+                            elesrcParent.insertBefore(srcEle, targetGrpEle.nextElementSibling);
+                        }
+                        else {
+                            oldcolspan = GrpEleColspan - splitsiblingcount;
+                            newcolspan = GrpEleColspan - oldcolspan;
+                            targetGrpEle.setAttribute("colspan", oldcolspan);
+                            newGrpELe = targetGrpEle.cloneNode(true);
+                            newGrpELe.id = newGrpELe.id + "_split";
+                            newGrpELe.setAttribute("data-columnid", $(eleTarget.nextElementSibling).children(".dv_Column").attr("icolid"));
+                            newGrpELe.setAttribute("colspan", newcolspan);
+                            elesrcParent.insertBefore(newGrpELe, targetGrpEle.nextElementSibling);
+                            elesrcParent.insertBefore(srcEle, newGrpELe);
+                        }
+                        //targetGrpEl is shifted left , so check if its previousElementSibling is same or not ,..similarly check its previouselement's sibling is same group or not , till start of the list
+                        // if same group element , then combine their colspan , and delete one element
+                        currentgrpele = targetGrpEle;
+                        for (var i = 0; i < iGrpIndex - 1; i++) {
+                            currentsibling = currentgrpele.previousElementSibling;
+                            if (currentsibling != null) {
+                                if (currentgrpele.getAttribute("data-bgroup") == "true" && currentsibling.getAttribute("data-bgroup") == "true") {
+                                    if (currentsibling.getAttribute("data-groupheading") == currentgrpele.getAttribute("data-groupheading")) {
+                                        combinecolspan = parseInt(currentgrpele.getAttribute("colspan")) + parseInt(currentsibling.getAttribute("colspan"));
+                                        if (currentgrpele.id.includes("_split") == true) {
+                                            currentsibling.setAttribute("colspan", combinecolspan)
+                                            elesrcParent.removeChild(currentgrpele);
+                                        }
+                                        else {
+                                            currentgrpele.setAttribute("colspan", combinecolspan)
+                                            elesrcParent.removeChild(currentsibling);
+                                        }
+                                    }
+                                    currentgrpele = currentsibling;
+                                }
+                                else {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                //case 4: group source to non group target
+                else if (srcEle.getAttribute("data-bgroup") == "true" && eleTarget.getAttribute("data-bgroup") == "false") {
+                    srcGrpEle = $.grep(eleTargetParent.children, function (x) {
+                        return x.getAttribute("data-columnid") == $(srcEle).children(".dv_Column").attr("icolid");
+                    })[0];
+                    if (srcGrpEle == undefined || srcGrpEle == null) {
+                        if (srcEle.hasAttribute("data-groupcolid") == true) {
+                            srcGrpEle = $.grep(eleTargetParent.children, function (x) {
+                                return x.getAttribute("data-columnid") == $(srcEle).attr("data-groupcolid");
+                            })[0];
+                        }
+                        if (srcGrpEle == undefined || srcGrpEle == null) {
+                            srcGrpEle = $.grep(eleTargetParent.children, function (x) {
+                                return x.id == "gH_" + $(srcEle).children(".dv_Column").attr("data-groupheading");
+                            })[0];
+                        }
+                    }
+                    GrpEleColspan = parseInt(srcGrpEle.getAttribute("colspan"));
+                    iGrpIndex = $(eleTargetParent).children().index(srcGrpEle);
+                    iSourceIndex = $(elesrcParent).children().index(srcEle);
+
+                    if (iTargetIndex < iGrpIndex) {//from right to left
+                        //split the sourcegroupele ,from srcele and its other siblings
+                        for (iCounter = iSourceIndex + 1/*leave the source ele */; iCounter < elesrcParent.children.length; iCounter++) {
+                            if ($(elesrcParent.children[iCounter]).children(".dv_Column").attr("data-groupheading") == $(srcGrpEle).attr("data-groupheading")) {
+                                $(elesrcParent.children[iCounter]).attr("data-groupcolid", "gH_" + $(srcEle.nextElementSibling).children(".dv_Column").attr("icolid"))
+                                splitsiblingcount++;
+                            }
+                        }
+                        if (GrpEleColspan == 1 || splitsiblingcount == 0) {
+                            eleTargetParent.insertBefore(eleTarget, srcGrpEle.nextElementSibling);
+                        }
+                        else {
+                            oldcolspan = GrpEleColspan - splitsiblingcount;
+                            newcolspan = GrpEleColspan - oldcolspan;
+                            srcGrpEle.setAttribute("colspan", oldcolspan)
+                            newGrpELe = srcGrpEle.cloneNode(true);
+                            newGrpELe.id = newGrpELe.id + "_split";
+                            newGrpELe.setAttribute("data-columnid", $(srcEle.nextElementSibling).children(".dv_Column").attr("icolid"));
+                            newGrpELe.setAttribute("colspan", newcolspan);
+                            $(srcEle).attr("data-groupcolid", $(newGrpELe).attr("data-columnid"));
+                            //insert before the previoussibling of srcGrpEle
+                            eleTargetParent.insertBefore(newGrpELe, srcGrpEle.nextElementSibling);
+                            eleTargetParent.insertBefore(eleTarget, newGrpELe);
+                        }
+                        //srcGrpEle is shifted right ,check its previous grp eles are same or not ,if yes then combine
+                        currentgrpele = srcGrpEle;
+                        for (var i = 0; i < eleTargetParent.children.length - iGrpIndex - 1; i++) {
+                            //currentsibling = currentgrpele.nextElementSibling;
+                            currentsibling = currentgrpele.previousElementSibling;
+                            if (currentsibling != null) {
+                                if (currentgrpele.getAttribute("data-bgroup") == "true" && currentsibling.getAttribute("data-bgroup") == "true") {
+                                    if (currentsibling.getAttribute("data-groupheading") == currentgrpele.getAttribute("data-groupheading")) {
+                                        combinecolspan = parseInt(currentgrpele.getAttribute("colspan")) + parseInt(currentsibling.getAttribute("colspan"));
+                                        if (currentgrpele.id.includes("_split") == true) {
+                                            currentsibling.setAttribute("colspan", combinecolspan);
+                                            // currentsibling.setAttribute("data-columnid", currentgrpele.getAttribute("data-columnid"));
+                                            eleTargetParent.removeChild(currentgrpele);
+                                        }
+                                        else {
+                                            currentgrpele.setAttribute("colspan", combinecolspan)
+                                            eleTargetParent.removeChild(currentsibling);
+                                            currentsibling = currentgrpele.previousElementSibling;
+                                        }
+                                    }
+                                    currentgrpele = currentsibling;
+                                }
+                                else {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else { //from left to right
+                        for (iCounter = 0; iCounter < iSourceIndex; iCounter++) { //from start to before the source element
+                            if ($(elesrcParent.children[iCounter]).children(".dv_Column").attr("data-groupheading") == $(srcGrpEle).attr("data-groupheading")) {
+                                $(elesrcParent.children[iCounter]).attr("data-groupcolid", $(srcGrpEle).attr("data-columnid"))
+                                splitsiblingcount++;
+                            }
+                        }
+                        if (GrpEleColspan == 1 || splitsiblingcount == 0) {
+                            //then simply insert eleTarget before that srcGrpele
+                            // elesrcParent.insertBefore(srcEle, targetGrpEle.nextElementSibling);
+                            eleTargetParent.insertBefore(eleTarget, srcGrpEle);
+                        }
+                        else {
+                            newcolspan = GrpEleColspan - splitsiblingcount;
+                            oldcolspan = GrpEleColspan - newcolspan;
+                            srcGrpEle.setAttribute("colspan", oldcolspan);
+                            newGrpELe = srcGrpEle.cloneNode(true);
+                            newGrpELe.id = newGrpELe.id + "_split";
+                            newGrpELe.setAttribute("data-columnid", $(eleTarget.nextElementSibling).children(".dv_Column").attr("icolid"));
+                            newGrpELe.setAttribute("colspan", newcolspan);
+                            eleTargetParent.insertBefore(newGrpELe, srcGrpEle.nextElementSibling);
+                            eleTargetParent.insertBefore(eleTarget, newGrpELe);
+                            srcGrpEle = newGrpELe;
+                        }
+                        //targetGrpEl is shifted left , so check if its previousElementSibling is same or not ,..similarly check its previouselement's sibling is same group or not , till start of the list
+                        // if same group element , then combine their colspan , and delete one element
+                        currentgrpele = srcGrpEle;
+                        iGrpIndex = $(eleTargetParent).children().index(currentgrpele);
+                        for (var i = iGrpIndex; i < eleTargetParent.children.length; i++) { //from groupele to last element 
+                            currentsibling = currentgrpele.nextElementSibling;
+                            if (currentsibling != null) {
+                                if (currentgrpele.getAttribute("data-bgroup") == "true" && currentsibling.getAttribute("data-bgroup") == "true") {
+                                    if (currentsibling.getAttribute("data-groupheading") == currentgrpele.getAttribute("data-groupheading")) {
+                                        combinecolspan = parseInt(currentgrpele.getAttribute("colspan")) + parseInt(currentsibling.getAttribute("colspan"));
+                                        if (currentgrpele.id.includes("_split") == true) {
+                                            currentsibling.setAttribute("colspan", combinecolspan)
+                                            eleTargetParent.removeChild(currentgrpele);
+                                        }
+                                        else {
+                                            currentgrpele.setAttribute("colspan", combinecolspan)
+                                            eleTargetParent.removeChild(currentsibling);
+                                        }
+                                    }
+                                    currentgrpele = currentsibling;
+                                }
+                                else {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                return;
+            }
+            //between same source and target
+            if (iTargetIndex < iSourceIndex) { // right to left
+                eleParent.insertBefore(srcEle, eleTarget);
+            }
+            else if (iTargetIndex > iSourceIndex) { //left to right
+                if (iTargetIndex == (eleParent.children.length - 1)) {
+                    eleParent.appendChild(srcEle);
+                }
+                else if (iTargetIndex < (eleParent.children.length - 1)) {
+                    eleParent.insertBefore(srcEle, eleParent.children[iTargetIndex + 1]);
+                }
+            }
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.onDrop} " + err.message, "Exception");
+        }
+    },
+    //////////////////////
+    resetGvalues: function () {
+        GFieldName = null;
+        GFieldId = 0;
+        GParentId = 0;
+        GDatatypeid = 0;
+        GSubParentid = 0;
+    },
+
+    getSelectedId: function (id, event) {
+        if (event.type == "dragstart") {
+            event.dataTransfer.setData("text", event.target.id);
+        }
+        var datafieldname = $("#" + id.id).attr("data-fieldname");
+        var sMasterName = id.parentElement.parentElement.getAttribute("data-fieldname");
+        GFieldName = REPORTCUSTOMIZE.getsName(datafieldname, sMasterName);
+        var subparentid = $("#" + id.id).attr("data-subparentid");
+        var colfullname = GFieldName;
+        var arrsplit = colfullname.split(/\.(?=[^\.]+$)/);
+        //if (arrsplit[0] == "Transaction" || arrsplit[0] == "Transaction Fields" || arrsplit[0] == "Extra Fields" || arrsplit[0] == "Fields"
+        //                || arrsplit[0].toLowerCase().includes("date") || arrsplit[0].toLowerCase().includes("time")) {
+        //    GFieldName = datafieldname;
+        //}
+        if (subparentid > 0 && id.dataset.groupheading != null) {
+            GFieldName = datafieldname;
+        }
+        else {
+            colfullname = arrsplit.join(" ");
+            GFieldName = colfullname;
+        }
+        REPORTCUSTOMIZE.Gselectedele = id;
+        GFieldId = parseInt(id.getAttribute("data-fieldid"));
+        GParentId = parseInt(id.getAttribute("data-parentid"));
+        GDatatypeid = id.getAttribute("data-datatypeid");
+        GSubParentid = id.getAttribute("data-subparentid") != null ? id.getAttribute("data-subparentid") : 0;
+        return GFieldId;
+    },
+
+    addColumnByDbClick: function (id, event) {
+        try {
+            $("#Default699").hide();
+            REPORTCUSTOMIZE.getSelectedId(id, event);
+            REPORTCUSTOMIZE.drop(id, event);
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.addColumnByDbClick}" + err.message, "EXCEPTION");
+        }
+    },
+
+    OnTreeDrag: function (iFieldId, iColId) {
+        var iLayoutId = document.getElementById("getLayoutId").value;
+        var ReportId = document.getElementById("getReportId").value;
+        var objcusmodel = {}, _Column = {};
+        var iColPosition = iColId;
+        var AliasName = GFieldName;
+        var DataTypes = GDatatypeid;
+        var GroupName = "", ColumnToolTip = "", ColumnAlignment = "", ColumnWidth = "", ColumnOrder = ""
+        var FieldId = GFieldId;
+        var ColumnName = GFieldName;
+        var ParentId = GParentId;
+        var SubParentId = GSubParentid;
+        var ColumnFilter = null;
+        try {
+            objcusmodel = REPORTCUSTOMIZE.g_objcusmodel;
+            objcusmodel.column = REPORT.OBJECT.getEmptyColumnObject();
+            objcusmodel.column.AliasName = AliasName;
+            objcusmodel.column.ColumnAlignment = 0;
+            objcusmodel.column.ColumnFilter = ColumnFilter;
+            objcusmodel.column.ColumnFont = "";
+            objcusmodel.column.ColumnFunction = "";
+            objcusmodel.column.ColumnId = iColPosition;
+            objcusmodel.column.ColumnName = ColumnName;
+            objcusmodel.column.ColumnOrder = ColumnOrder;
+            objcusmodel.column.ColumnToolTip = ColumnToolTip;
+            objcusmodel.column.DataTypeId = DataTypes;
+            if (DataTypes == 6 || DataTypes == "Fraction") {
+                objcusmodel.column.ColumnWidth = 60;//$("#Cus"+iColId).attr("data-columnwidth");
+                objcusmodel.column.Miscelleneous = 64;//64: to set insert commas true
+                objcusmodel.column.ColumnAlignment = 18;
+            }
+            else {
+                objcusmodel.column.ColumnWidth = 120;//$("#Cus"+iColId).attr("data-columnwidth");
+            }
+            objcusmodel.column.FieldId = FieldId;
+            objcusmodel.column.Formula = "";
+
+            GroupName = $("#Cus" + iColId).attr("data-groupheading");
+            if (!GroupName) {
+                GroupName = $("#Td" + iColId).attr("data-groupheading");
+            }
+            objcusmodel.column.GroupName = GroupName == "null" ? "" : GroupName;
+            objcusmodel.column.Miscelleneous = 64;
+            objcusmodel.column.ParentId = ParentId;
+            objcusmodel.column.SubParentId = SubParentId;
+            //add column in g_objcusmodel.lstCustomizeColumns if already not exist
+            if (objcusmodel.column != null && objcusmodel.column.AliasName != undefined) {
+                //check if column already exist in g_objcusmodel or not,.add if not exist already
+                var result = null;
+                result = ($.grep(REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns, function (e) {
+                    return e.FieldId == objcusmodel.column.FieldId;
+                }));
+
+                REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns.push(objcusmodel.column);
+
+                REPORTCUSTOMIZE.g_objcusmodel.objLayout.Columns = REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns;
+            }
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.onTreeDrag}" + err.message, "Exception");
+        }
+    },
+
+    SuccessDrag: function (evt) {
+        if (evt.target.status == 200) {
+            document.getElementById("dv_GetPartialGrid").innerHTML = evt.target.responseText;
+            $("#D700").hide();
+            var AliasName = $("#lbAliasName").text();
+            if (AliasName != " ") {
+                document.getElementById("dv_GetPartialGrid").innerHTML = evt.target.responseText;
+                var ColumnWidth = $("#" + ColumnId).attr("data-columnwidth");
+                ColumnWidth = Math.round(ColumnWidth);
+                if (document.getElementById(ColumnId).children[1].innerText != "") {
+                    var GroupHeading = document.getElementById(ColumnId).children[1].innerText;
+                    $("#GroupHeading").val(GroupHeading);
+                }
+                $("#columnwidth").val(ColumnWidth);
+            }
+            else {
+                document.getElementById("dv_GetPartialGrid").innerHTML = "";
+            }
+        }
+    },
+
+    //////////// Transaction tree creation methods
+
+    getMastersTree: function (arrMasterTypes) {
+        try {
+            var path = GLOBAL.getContextPath("GetBudgetReportTree", "RD", "RD");
+            //Get Complete Masters tree data
+            var result = NETWORK.executeServerMethod(path, true, { arrMasterTypes: arrMasterTypes },
+                "json", true, "REPORTCUSTOMIZE.getMastersTreeSuccess", "GLOBAL.LoadingStart", "GLOBAL.LoadingEnd", arrMasterTypes);
+
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.getMastersTree}" + err.message, "EXCEPTION");
+        }
+    },
+
+    getMastersTreeSuccess: function (bsuccess, data, Tag) {
+        var treemaster = null
+        var treedata = null;
+        var currentMasterUL = null;
+        var currentMasterLI = null;
+        var span = null;
+        var spanPlus = null;
+        if (bsuccess == true) {
+            try {
+                if (data && data.length > 0) {
+                    treemaster = data;
+                    for (var iCounter = 0; iCounter < treemaster.length; iCounter++) {
+                        //create master node
+                        currentMasterUL = document.createElement("ul");
+                        currentMasterUL.style.paddingLeft = "0px";
+                        currentMasterUL.id = "id_" + treemaster[iCounter].Name.replace(" ", "") + "_main";
+                        currentMasterUL.id = currentMasterUL.id.replace(" ", "");
+                        currentMasterUL.setAttribute("data-text", "hide");
+                        currentMasterUL.setAttribute("data-mastername", treemaster[iCounter].Name);
+                        currentMasterUL.setAttribute("data-fieldname", treemaster[iCounter].Name);                       
+                        currentMasterLI = document.createElement("li");
+                        span = document.createElement("span");
+                        spanPlus = document.createElement("span");
+
+                        spanPlus.id = "id_" + treemaster[iCounter].Name.replace(" ", "") + "_spanplus";
+                        spanPlus.id = spanPlus.id.replace(" ", "");
+                        spanPlus.setAttribute("class", "icon-new pull-left");
+
+                        span.setAttribute("onclick", "return REPORTCUSTOMIZE.toggleMaster(\"" + currentMasterUL.id + "\",\"" + spanPlus.id + "\");");
+                        span.style.cursor = "pointer";
+                        span.style.fontWeight = "bold";
+
+                        span.appendChild(spanPlus);
+
+                        currentMasterLI.appendChild(span);
+                        //  currentMasterLI.appendChild(currentMasterUL);
+                        currentMasterUL.appendChild(currentMasterLI);
+
+                        document.getElementById("CustomizeTransTree").appendChild(currentMasterUL);
+                        $(spanPlus).after('&nbsp;' + '&nbsp;' + '&nbsp;' + treemaster[iCounter].Name);
+
+                        treedata = treemaster[iCounter].Tag;
+
+                        //create tree here for each master
+                        REPORTCUSTOMIZE.createMastersTree(currentMasterUL, treedata)
+                    }
+                }
+            }
+            catch (err) {
+                COMMON.prototype.showMessage("{REPORTCUSTOMIZE.getMastersTreeSuccess}" + err.message, "EXCEPTION");
+            }
+        }
+    },
+
+    createMastersTree: function (currentParent, treedata) {
+        try {
+            //create ul as container for li children
+            var currentUL = $(currentParent).children("ul")[0];
+            if (currentUL == undefined || currentUL == null) {
+                currentUL = document.createElement('UL');
+                currentUL.id = currentParent.id.replace(" ", "") + "_children";
+                currentUL.setAttribute("data-text", "hide");
+                currentParent.appendChild(currentUL);
+            }
+            li = document.createElement('li');
+            // create li's and append to parentNode
+            for (var iCounter = 0; iCounter < treedata.length; iCounter++) {
+                child = treedata[iCounter];
+
+                li = document.createElement('li');
+                if (child.bGroup == true) { //group ele
+                    li.setAttribute("id", currentParent.id.replace(" ", "") + "_" + iCounter);
+                    li.setAttribute('data-index', iCounter);
+                    li.setAttribute("data-group", child.bGroup);
+                    li.setAttribute("data-fieldid", child.iFieldId);
+                    li.setAttribute("data-fieldname", child.sName);
+                    li.setAttribute("data-level", child.iLevel);
+                    li.setAttribute("data-parentid", child.iParentId);
+                    li.setAttribute("data-isequenceid", child.iSequenceId);
+                    if (child.iLevel == 1 && child.bGroup == false && child.iFieldId > 0) {
+                        li.setAttribute("data-subparentid", 0);
+                    }
+                    else {
+                        li.setAttribute("data-subparentid", child.iSubParentId);
+                    }
+                    li.setAttribute("data-datatypeid", child.iDataTypeId);
+                    spanele = document.createElement("span");
+                    spanele.style = "cursor:pointer;font-weight:bold";
+
+                    spanele.setAttribute("onclick", "REPORTCUSTOMIZE.createSubTree(" + "'" + li.id + "'" + "," + FConvert.toString(child) + ");");
+                    $(spanele).append("<span><i class='icon-new icon-font8' style='padding-left:0px'></i>&nbsp;" + child.sName + "</span>");
+
+
+                    li.appendChild(spanele);
+                    currentUL.appendChild(li);
+                }
+                else {
+                    $(li).text(child.sName).attr('id', currentParent.id.replace(" ", "") + "_" + iCounter).attr('data-index', iCounter)
+                        .attr("data-group", child.bGroup).attr("data-fieldid", child.iFieldId)
+                        .attr("data-fieldname", child.sName).attr("data-level", child.iLevel)
+                        .attr("data-parentid", (child.iLevel == 2 ? 0 : child.iParentId)).attr("data-datatypeid", child.iDataTypeId)
+                        .attr("data-idatatypeid", parseInt(child.iDataTypeId))
+                        .attr("ondragstart", "REPORTCUSTOMIZE.getSelectedId(this, event)");
+
+                    $(li).attr("draggable", "true").css("cursor", "pointer");
+                    li.pseudoStyle("before", "content", "'. '");
+                    li.pseudoStyle("before", "color", "#4689cf");
+                    li.pseudoStyle("before", "font-size", "x-large");
+                    li.pseudoStyle("before", "font-weight", "bolder")
+                    li.setAttribute("ondblclick", "REPORTCUSTOMIZE.addColumnByDbClick(this,event);")
+                    li.setAttribute("data-subparentid", child.iSubParentId);
+                    //to keep tooltip on all leaf elements.
+
+                    if (child.iLevel > 0) {
+                        sToolTipText = REPORTCUSTOMIZE.getsName(child.sName, currentParent.getAttribute("data-mastername"));
+                        if (sToolTipText.startsWith(".")) {
+                            sToolTipText.replace('.', '');
+                        }
+                        if (FCommon.String.isNullOrEmpty(sToolTipText) == false) {
+                            li.setAttribute("data-toggle", "tooltip");
+                            li.setAttribute("title", sToolTipText);
+                        }
+                    }
+                    currentUL.appendChild(li);
+                }
+                if (child.bGroup == true) {
+                    li.style.fontWeight = 'bold';
+                    li.className = "li_tree_group";
+                    childUL = document.createElement('UL');
+                    childUL.setAttribute("data-text", "hide")
+                    li.appendChild(childUL);
+                }
+                else {
+                    li.style.fontWeight = 'normal';
+                    li.style.listStyleType = "none";
+                }
+            }
+            $(currentUL).hide();
+
+            //////////////
+            var parent = null;
+            $(currentUL).find('li').each(function (event) {
+                try {
+                    parent = this.parentElement.parentElement;
+                    if (parseInt(this.getAttribute("data-parentid")) > 0) {
+                        this.setAttribute("data-subparentid", this.getAttribute("data-parentid"));
+                    }
+                    this.setAttribute("data-parentid", parent.getAttribute("data-subparentid"));
+                }
+                catch (err) {
+                    console.log("Exception: {RD_ENTRY.FIELDTREE.createTreeNew.each.li} " + err.message);
+                }
+            });
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.createMastersTree}" + err.message, "EXCEPTION");
+        }
+    },
+
+    createSubTree: function (parentEleId, objMaster) {
+        debugger
+        var result = null;
+        var path = null;
+        this.currentparentNode = document.getElementById(parentEleId);
+        var child = null;
+        var childUL = null;
+        try {
+            path = GLOBAL.getContextPath("GetLevelWiseTransTreeData", "RD", "RD");
+            if ($(this.currentparentNode).children('ul').attr("data-text") == "show") {//collapse
+                $(this.currentparentNode).find('.icon-minus').removeClass("icon-minus").addClass("icon-new");
+                $(this.currentparentNode).children('ul').attr("data-text", "hide");
+                $(this.currentparentNode).find('ul').hide();
+                return;
+            }
+            else {//show
+                $(this.currentparentNode).children('ul').attr("data-text", "show");
+                $(this.currentparentNode).find('.icon-new').addClass("icon-minus").removeClass("icon-new")
+                $(this.currentparentNode).find('ul').find('.icon-minus').removeClass("icon-minus").addClass("icon-new");
+                var arrMasterData = this["arr" + objMaster.sName.replace('', '_') + "_" + objMaster.iFieldId + "MasterData" + "_SeqId_" + objMaster.iSequenceId];
+                if (arrMasterData) {
+                    if ((arrMasterData != null && arrMasterData.length > 0) || $(this.currentparentNode).children("ul").children().length > 0) {
+                        $(this.currentparentNode).children("ul").show();
+                        return;
+                    }
+                }
+                else {
+                    result = NETWORK.executeServerMethod(path, true,
+                        {
+                            ReportId: REPORTCUSTOMIZE.g_objcusmodel.objLayout.ReportId,
+                            LayoutId: REPORTCUSTOMIZE.g_objcusmodel.objLayout.LayoutId,
+                            ReportName: REPORTCUSTOMIZE.g_objcusmodel.sReportName,
+                            bIsFromTransactions: REPORTCUSTOMIZE.g_objcusmodel.bIsFromTransactions, iSubReportId: REPORTCUSTOMIZE.g_objcusmodel.objLayout.SubReportId,
+                            objMaster: objMaster,
+                            iMRPPOViewId: REPORTCUSTOMIZE.iMRPPOViewId
+                        },
+                        "html",
+                        true,
+                        "REPORTCUSTOMIZE.setsubtreedata", "REPORTCUSTOMIZE.LoadingStart", "REPORTCUSTOMIZE.LoadingEnd");
+                    return
+                }
+            }
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("REPORTCUSTOMIZE.createSubTree" + err.message, "EXCEPTION");
+        }
+    },
+
+    createCusTransTree(iLevel) {
+
+        var treedata = null;
+        var objMaster = null;//RDCustomizationTreeData objMaster
+        var iZeroLevel = 0;
+        var span = document.createElement('span');
+        var spanPlus = document.createElement("span");
+        var arrUL = [];
+        var parentNameResult = null;
+        var sParentName = "";
+        try {
+            //get data from here 
+            if (REPORTCUSTOMIZE.g_transtreedata && REPORTCUSTOMIZE.g_transtreedata.length > 0) {
+                objMaster = REPORTCUSTOMIZE.g_transtreedata;
+            }
+            if (objMaster == null) {
+                if (REPORTCUSTOMIZE.g_objcusmodel && REPORTCUSTOMIZE.g_objcusmodel.TransactionTreeData && REPORTCUSTOMIZE.g_objcusmodel.TransactionTreeData.data) {
+                    objMaster = REPORTCUSTOMIZE.g_objcusmodel.TransactionTreeData.data[0];
+                }
+            }
+            if (objMaster == null) {
+                return;
+            }
+            var path = GLOBAL.getContextPath("GetLevelWiseTransTreeData", "RD", "RD");
+            var result = NETWORK.executeServerMethod(path, true,
+                {
+                    ReportId: REPORTCUSTOMIZE.g_objcusmodel.objLayout.ReportId,
+                    LayoutId: REPORTCUSTOMIZE.g_objcusmodel.objLayout.LayoutId,
+                    ReportName: REPORTCUSTOMIZE.g_objcusmodel.sReportName,
+                    bIsFromTransactions: REPORTCUSTOMIZE.g_objcusmodel.bIsFromTransactions,
+                    iSubReportId: REPORTCUSTOMIZE.g_objcusmodel.objLayout.SubReportId,
+                    objMaster: objMaster,
+                    iMRPPOViewId: REPORTCUSTOMIZE.iMRPPOViewId
+                });
+
+            if (result.lValue > 0) {
+                if (Array.isArray(result.data)) {
+                    treedata = result;
+                }
+                else if (typeof result.data == "object") {
+                    treedata = result.data;
+                }
+                REPORTCUSTOMIZE.g_transtreedata = result.data;
+            }
+            if (treedata == null) {
+                return;
+            }
+            if (treedata.lValue <= 0 || treedata.data.length == 0) {
+                return;
+            }
+
+            /////////////
+
+            iLevel = 0;
+            currentUL = document.createElement('UL');
+            $(currentUL).toggleClass("ps-0");
+            currentUL.id = "id_transactions_main";
+            currentUL.setAttribute("data-text", "hide");
+
+            span.setAttribute("onclick", "return REPORTCUSTOMIZE.openTransaction();");
+
+            span.style.cursor = "pointer";
+            span.style.fontWeight = "bold";
+
+            spanPlus.id = "id_Trans_spanPlus";
+            spanPlus.style.paddingTop = "2px";
+            spanPlus.setAttribute("class", "icon-new pull-left");
+            span.appendChild(spanPlus);
+
+            rootUL = currentUL;
+
+            for (iCounter = 0; iCounter < treedata.data.length; iCounter++) {
+                value = treedata.data[iCounter];
+                if (value.iLevel == 0) {
+                    iZeroLevel++;
+                }
+                if (iZeroLevel > 1) {
+                    break;
+                }
+                if (value.iLevel > iLevel) {
+                    iLevel = value.iLevel;
+                }
+                else if (value.iLevel <= iLevel) {
+                    iLevel = value.iLevel;
+                    if (iLevel < arrUL.length) {
+                        currentUL = arrUL[iLevel];
+                        arrUL.splice(iLevel, arrUL.length - iLevel);
+                    }
+                }
+                li = document.createElement('li');
+                if (value.bGroup == false) {
+                    $(li).text(value.sName).attr('id', "rd_customization_tree" + iCounter).attr('data-index',
+                        iCounter).attr("data-group", value.bGroup).attr("data-fieldid", value.iFieldId).attr("data-fieldname",
+                            value.sName).attr("data-level", value.iLevel).attr("data-parentid", (value.iLevel == 2 ? 0 : value.iParentId)).attr("data-datatypeid", value.iDataTypeId).attr("data-idatatypeid", parseInt(value.iDataTypeId)).attr("ondragstart", "REPORTCUSTOMIZE.getSelectedId(this, event)");
+                    $(li).attr("draggable", "true").css("cursor", "pointer");
+                    $(li).css("padding-left", "3px");
+                    li.setAttribute("ondblclick", "REPORTCUSTOMIZE.addColumnByDbClick(this,event);")
+                    //to keep tooltip on all leaf elements.
+
+                    if (value.iLevel > 0) {
+                        parentNameResult = $.grep(REPORTCUSTOMIZE.g_transtreedata, function (x) {
+                            return x.iFieldId == value.iParentId;
+                        });
+                        if (parentNameResult.length > 0) {
+                            sParentName = parentNameResult[0].sName;
+                        }
+                        sToolTipText = TREESEARCH.getTreeTooltipText(value.sName, sParentName);
+                        if (sToolTipText.startsWith(".")) {
+                            sToolTipText.replace('.', '');
+                        }
+
+                        if (FCommon.String.isNullOrEmpty(sToolTipText) == false) {
+                            li.setAttribute("data-toggle", "tooltip");
+                            li.setAttribute("title", sToolTipText);
+                        }
+                    }
+                }
+                else {
+                    li.setAttribute("id", "rd_customization_tree" + iCounter);
+                    li.setAttribute('data-index', iCounter);
+                    li.setAttribute("data-group", value.bGroup);
+                    li.setAttribute("data-fieldid", value.iFieldId);
+                    li.setAttribute("data-fieldname", value.sName);
+                    li.setAttribute("data-level", value.iLevel);
+                    li.setAttribute("data-parentid", value.iParentId);
+                    li.setAttribute("data-isequenceid", value.iSequenceId);
+                    if (value.iLevel == 1 && value.bGroup == false && value.iFieldId > 0) {
+                        li.setAttribute("data-subparentid", 0);
+                    }
+                    else {
+                        li.setAttribute("data-subparentid", value.iSubParentId);
+                    }
+
+                    li.setAttribute("data-datatypeid", value.iDataTypeId);
+                    var spanele = document.createElement("span");
+                    spanele.style = "cursor:pointer;font-weight:bold";
+                    if (REPORTCUSTOMIZE.g_objcusmodel.bIsFromTransactions == false && REPORTCUSTOMIZE.g_objcusmodel.sReportName == "Links") {
+                        spanele.setAttribute("onclick", "REPORTCUSTOMIZE.slideToggleChildren(this,event);");
+                    }
+                    else if (REPORTCUSTOMIZE.g_objcusmodel.bIsFromTransactions == false) {
+                        spanele.setAttribute("onclick", "REPORTCUSTOMIZE.createSubTree(" + "'" + li.id + "'" + "," + FConvert.toString(value) + ");");
+                        //if the tree is transaction tree tree -- level = level -1;else same
+                        if (treedata.data[0].sName == "Transaction") {
+                            REPORTCUSTOMIZE.isTransTree = true;
+                        }
+                        else {
+                            REPORTCUSTOMIZE.isTransTree = false;
+                            // value.iLevel += 1;
+                        }
+                    }
+                    else {
+                        spanele.setAttribute("onclick", "REPORTCUSTOMIZE.slideToggleChildren(this,event);");
+                    }
+                    $(spanele).append("<span><i class='icon-new icon-font8' style='padding-left:0px'></i>&nbsp;" + value.sName + "</span>");
+
+
+                    li.appendChild(spanele);
+                }
+                currentUL.appendChild(li);
+                if (value.bGroup == true) {
+                    arrUL.push(currentUL);
+                    li.style.fontWeight = 'bold';
+                    li.className = "li_tree_group";
+                    currentUL = document.createElement('UL');
+                    currentUL.setAttribute("data-text", "hide")
+                    li.appendChild(currentUL);
+                }
+                else {
+                    li.style.fontWeight = 'normal';
+                    li.style.listStyleType = "none";
+                }
+            }
+            if (rootUL.firstChild != null) {
+                rootUL.firstChild.removeChild(rootUL.firstChild.firstChild);
+            }
+
+            $('#CustomizeTransTree').empty();
+            var dummyUL = document.createElement("ul");
+            $(dummyUL).toggleClass("ps-0");
+            var dummyLI = document.createElement("li");
+            dummyLI.appendChild(span);
+            dummyLI.appendChild(rootUL);
+            dummyUL.appendChild(dummyLI);
+            document.getElementById("CustomizeTransTree").appendChild(dummyUL);
+
+            //////////////
+            $(rootUL).find('li').each(function (event) {
+                var parent = null;
+
+                try {
+                    parent = this.parentElement.parentElement;
+
+                    if (parseInt(this.getAttribute("data-parentid")) > 0) {
+                        this.setAttribute("data-subparentid", parent.getAttribute("data-fieldid"));
+                    }
+
+                    this.setAttribute("data-parentid", parent.getAttribute("data-subparentid"));
+                }
+                catch (err) {
+                    console.log("Exception: {RD_ENTRY.FIELDTREE.createTreeNew.each.li} " + err.message);
+                }
+            });
+            /////////////
+            $(rootUL).find("ul").toggle();
+
+            //assigning name to root node
+            if (treedata.data[0] == undefined) {
+                $("#id_Trans_spanPlus").after('&nbsp;' + '&nbsp;' + '&nbsp;' + "Transaction");
+            }
+            else {
+                $("#id_Trans_spanPlus").after('&nbsp;' + '&nbsp;' + '&nbsp;' + treedata.data[0].sName);
+            }
+            $("#CustomizeTransTree").children("ul").children("li:eq(1)").children("span").css("font-weight", "bold")
+            $("#CustomizeTransTree").children("ul").children("li:eq(1)").hide();
+            $("#CustomizeTransTree").children("ul").children("li:eq(2)").hide();
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("REPORTCUSTOMIZE.createCusTransTree" + err.message, "EXCEPTION");
+        }
+    },
+
+    setsubtreedata: function (bsuccess, result) {
+        debugger;
+        var child = null, childUL = null;
+        var li = null;
+        var spanele = null;
+        var spanplus = null;
+        var treedata = {};
+        var sFieldName = "", Fieldid = "";
+        var iSequenceId = 0;
+        try {
+            if (REPORTCUSTOMIZE.currentparentNode != undefined) {
+                if (REPORTCUSTOMIZE.currentparentNode.hasAttribute("data-fieldname")) {
+                    sFieldName = REPORTCUSTOMIZE.currentparentNode.getAttribute("data-fieldname");
+                    Fieldid = REPORTCUSTOMIZE.currentparentNode.getAttribute("data-fieldid");
+                    iSequenceId = REPORTCUSTOMIZE.currentparentNode.getAttribute("data-isequenceid");
+                }
+                else {
+                    sFieldName = REPORTCUSTOMIZE.currentparentNode.children[0].getAttribute("data-fieldname");
+                    Fieldid = REPORTCUSTOMIZE.currentparentNode.children[0].getAttribute("data-fieldid");
+                    iSequenceId = REPORTCUSTOMIZE.currentparentNode.children[0].getAttribute("data-isequenceid");
+                }
+            }
+            if (Array.isArray(JSON.parse(result))) {
+                treedata = JSON.parse(result);
+                REPORTCUSTOMIZE.g_transtreedata.push.apply(treedata);//for pushing multiple items 
+                if (sFieldName.indexOf('Extra Fields') > -1 && Fieldid == 0)
+                    Array.prototype.push.apply(REPORTCUSTOMIZE.g_transtreesearchdata, treedata);
+            }
+            if (treedata == null) {
+                return;
+            }
+            if (sFieldName) {
+                REPORTCUSTOMIZE["arr" + sFieldName.replace("", "_") + "_" + Fieldid + "MasterData" + "_SeqId_" + iSequenceId] = treedata;
+            }
+            //create ul as container for li children
+            var currentUL = $(REPORTCUSTOMIZE.currentparentNode).children("ul")[0];
+            if (currentUL == undefined || currentUL == null) {
+                currentUL = document.createElement('UL');
+                currentUL.id = "id_transactions_main_" + result.iFieldId + "_" + result.iLevel;
+                currentUL.setAttribute("data-text", "hide");
+                REPORTCUSTOMIZE.currentparentNode.appendChild(currentUL);
+            }
+            li = document.createElement('li');
+
+            // create li's and append to parentNode
+            for (var iCounter = 0; iCounter < treedata.length; iCounter++) {
+                child = treedata[iCounter];
+                REPORTCUSTOMIZE.g_transtreedata.push(child);
+                li = document.createElement('li');
+                if (child.bGroup == true) { //group ele
+                    li.setAttribute("id", REPORTCUSTOMIZE.currentparentNode.id + "_" + iCounter);
+                    li.setAttribute('data-index', iCounter);
+                    li.setAttribute("data-group", child.bGroup);
+                    li.setAttribute("data-fieldid", child.iFieldId);
+                    li.setAttribute("data-fieldname", child.sName);
+                    li.setAttribute("data-level", child.iLevel);
+                    li.setAttribute("data-parentid", child.iParentId);
+                    li.setAttribute("data-isequenceid", child.iSequenceId);
+                    if (child.iLevel == 1 && child.bGroup == false && child.iFieldId > 0) {
+                        li.setAttribute("data-subparentid", 0);
+                    }
+                    else {
+                        li.setAttribute("data-subparentid", child.iSubParentId);
+                    }
+                    li.setAttribute("data-datatypeid", child.iDataTypeId);
+                    spanele = document.createElement("span");
+                    spanele.style = "cursor:pointer;font-weight:bold";
+                    //if the tree is Transaction , then ilevel = ilevel -1
+                    //child.iLevel += 1;
+                    spanele.setAttribute("onclick", "REPORTCUSTOMIZE.createSubTree(" + "'" + li.id + "'" + "," + FConvert.toString(child) + ");");
+
+                    $(spanele).append("<span><i class='icon-new icon-font8' style='padding-left:0px'></i>&nbsp;" + child.sName + "</span>");
+
+                    li.appendChild(spanele);
+                    currentUL.appendChild(li);
+                }
+                else {
+                    $(li).text(child.sName).attr('id', REPORTCUSTOMIZE.currentparentNode.id + "_" + iCounter).attr('data-index', iCounter).attr("data-group", child.bGroup).attr("data-fieldid", child.iFieldId).attr("data-fieldname", child.sName).attr("data-level", child.iLevel).attr("data-parentid", child.iParentId).attr("data-datatypeid", child.iDataTypeId).attr("data-idatatypeid", parseInt(child.iDataTypeId)).attr("ondragstart", "REPORTCUSTOMIZE.getSelectedId(this, event)");
+                    $(li).attr("draggable", "true").css("cursor", "pointer");
+                    $(li).css("padding-left", "3px");
+                    li.pseudoStyle("before", "content", "'. '");
+                    li.pseudoStyle("before", "color", "#4689cf");
+                    li.pseudoStyle("before", "font-size", "x-large");
+                    li.pseudoStyle("before", "font-weight", "bolder")
+                    li.setAttribute("ondblclick", "REPORTCUSTOMIZE.addColumnByDbClick(this,event);")
+                    li.setAttribute("data-subparentid", child.iSubParentId);
+                    //to keep tooltip on all leaf elements.
+
+                    if (child.iLevel > 0) {
+                        sToolTipText = TREESEARCH.getTreeTooltipText(child.sName, sFieldName);
+                        if (sToolTipText.startsWith(".")) {
+                            sToolTipText.replace('.', '');
+                        }
+                        if (FCommon.String.isNullOrEmpty(sToolTipText) == false) {
+                            li.setAttribute("data-toggle", "tooltip");
+                            li.setAttribute("title", sToolTipText);
+                        }
+                    }
+                    currentUL.appendChild(li);
+                }
+                if (child.bGroup == true) {
+                    li.style.fontWeight = 'bold';
+                    li.className = "li_tree_group";
+                    childUL = document.createElement('UL');
+                    childUL.setAttribute("data-text", "hide")
+                    li.appendChild(childUL);
+                }
+                else {
+                    li.style.fontWeight = 'normal';
+                    li.style.listStyleType = "none";
+                }
+            }
+            $(currentUL).show();
+            //////////////
+            //if (arrMasterTypes && arrMasterTypes.length == 0) {
+            //    var parent = null;
+            //    $(currentUL).find('li').each(function (event) {
+            //        try {
+            //            parent = this.parentElement.parentElement;
+            //            if (parseInt(this.getAttribute("data-parentid")) > 0) {
+            //                this.setAttribute("data-subparentid", this.getAttribute("data-parentid"));
+            //            }
+            //            this.setAttribute("data-parentid", parent.getAttribute("data-subparentid"));
+            //        }
+            //        catch (err) {
+            //            console.log("Exception: {RD_ENTRY.FIELDTREE.createTreeNew.each.li} " + err.message);
+            //        }
+            //    });
+            //}
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.setsubtreedata}" + err.message, "EXCEPTION");
+        }
+    },
+
+    LoadingStart: function () {
+        var loadingEle = document.getElementById("loading");
+        //var treecontainer = document.getElementById("id_rc_complete_tree_container");
+        var treecontainer = document.getElementById("id_rc_complete_tree_container");
+
+        var liEle = REPORTCUSTOMIZE.currentparentNode;
+        $(liEle).children('span').children('span').children("i").removeClass('icon-new icon-minus').addClass("fa fa-spinner fa-spin");
+
+        // treecontainer.style.pointerEvents = 'none';
+    },
+
+    LoadingEnd: function () {
+        var loading = document.getElementById("loading");
+        var treecontainer = document.getElementById("CustomizeTransTree");
+
+        var liEle = REPORTCUSTOMIZE.currentparentNode;
+        $(liEle).children('span').children('span').children("i").removeClass('fa fa-spinner fa-spin icon-new').addClass("icon-minus");
+
+        treecontainer.style.pointerEvents = 'auto';
+
+    },
+
+    slideToggleChildren: function (liele, event) {
+        var iTag = $(liele).children()[0].children;
+        if (liele.nextElementSibling.style.display == "none") {
+            liele.nextElementSibling.style.display = "block";
+
+            $(iTag).removeClass("icon-new").addClass("icon-minus").addClass("theme_color-inverse");
+        }
+        else {
+            liele.nextElementSibling.style.display = "none";
+            $(iTag).addClass("icon-new").removeClass("icon-minus").removeClass("theme_color-inverse");
+        }
+    },
+
+    getTreeTooltipText: function (sValue, sMasterName) {
+        try {
+            sValue = sFieldName;
+            if (sValue == sMasterName) {
+                return (sValue);
+            }
+            if (sMasterName != null && sMasterName != "Transaction" && sMasterName != "Transaction Fields" && sMasterName != "Extra Fields"
+                && sMasterName != "Fields" && sMasterName != "Date" && sMasterName != "Time") {
+                sValue = sMasterName + "." + sValue;
+            }
+            return (sValue);
+        }
+        catch (err) {
+        }
+    },
+
+    //To get parent name + column name
+    getsName: function (sValue, sMasterName) {
+        try {
+            if (sValue == sMasterName) {
+                return (sValue);
+            }
+            if (sMasterName != null && sMasterName != "Transaction" && sMasterName != "Transaction Fields" && sMasterName != "Extra Fields"
+                && sMasterName != "Fields" && sMasterName != "Date" && sMasterName != "Time") {
+                sValue = sMasterName + "." + sValue;
+            }
+            return (sValue);
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.getsName} " + err.message, "EXCEPTION");
+        }
+    },
+
+    //////////////////////////////////
+
+    ChangeBorders: function (selectedid) {
+        var list = new Array();
+        $(".dv_Column").map(function () {
+            list.push(this.id);
+            return this.id;
+        }).get().join(",");
+        for (var i = 0; i < list.length; i++) {
+            if (selectedid == list[i]) {
+                $("#" + selectedid).addClass("theme_color");
+                $("#" + selectedid).find('p:first').css("color", "papayawhip");
+                $("#" + selectedid).find('p:first').css("font-size", "15px");
+
+            }
+            else {
+                if (list[i] != "") {
+                    $("#" + list[i]).removeClass("theme_color");
+                    $("#" + list[i]).find('p:first').css("color", "white");
+                    $("#" + list[i]).find('p:first').css("font-size", "13px");
+                }
+            }
+        }
+    },
+
+    TreeContainerToggle: function () {
+        var status = $("#id_treetoggle").attr("data-status");
+        if (status == "show") { // then hide
+            $("#customize_sideview").hide();
+            $("#id_treetoggle").attr("data-status", "hide");
+            $("#dv_ColLayoutName").removeClass("col-xs-11 col-sm-11 col-md-8 col-lg-8").addClass("col-xs-11 col-sm-11 col-md-11 col-lg-11")
+        }
+        else { //show
+            $("#customize_sideview").show();
+            $("#id_treetoggle").attr("data-status", "show");
+            $("#dv_ColLayoutName").removeClass("col-xs-11 col-sm-11 col-md-11 col-lg-11").addClass("col-xs-11 col-sm-11 col-md-8 col-lg-8")
+        }
+    },
+
+    sidemenu_onclick: function (menuEle) {
+        var fieldsContentDiv = document.getElementById("TreeView");
+        var userRestrDiv = document.getElementById("userRestrictiondiv");
+        var fieldstab = document.getElementById("fields_tab");
+        var userrestrtab = document.getElementById("userrestriction_tab");
+        try {
+            //toggle menu
+            //first check if the menuEle is Fields or User Restriction
+            // If Fields 
+            //check if Fields content div is hidden or shown
+            //if hidden , then show it , and hide User Restriction contents 
+            //else , if User Restriction
+            //check if User Restriction div is hidden or shown 
+            //if hidden, then show it , and hide Fields contents div
+
+            if (menuEle.id == "fields_tab") {
+                if (menuEle.getAttribute("data-display") == "hide") { //then show
+                    menuEle.setAttribute("data-display", "show");
+                    fieldsContentDiv.style.display = "";
+                    userRestrDiv.style.display = "none";
+                    userrestrtab.setAttribute("data-display", "hide");
+                }
+            }
+            else if (menuEle.id == "userrestriction_tab") {
+                if (menuEle.getAttribute("data-display") == "hide") { //then show
+                    menuEle.setAttribute("data-display", "show");
+                    userRestrDiv.style.display = "";
+                    fieldsContentDiv.style.display = "none";
+                    fieldstab.setAttribute("data-display", "hide")
+                }
+            }
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.sidemenu_onclick}" + err.message, "EXCEPTION");
+        }
+    },
+
+    RemoveColumn: function () {
+        var iFieldId = $("#" + ColumnId).attr("ifieldid");
+        var iColId = $("#" + ColumnId).attr("icolid");
+        var columnEle = null, groupele = null;
+        var objColumn = {};
+        var row1 = document.getElementById("tdTarget");
+        var row2 = document.getElementById("tdTarget2");
+        var createTH = null, createText = null, creatediv = null, createpar = null;
+        try {
+            if (iFieldId == undefined && iColId == undefined) {
+                return;
+            }
+            columnEle = document.getElementById(ColumnId);
+            var result = $.grep(REPORTCUSTOMIZE.g_objcusmodel.objLayout.Columns, function (x) {
+                return x.ColumnId == iColId;
+            });
+            if (result.length > 0) {
+                objColumn = result[0];
+            }
+            //check if the element has group heading , if yes then remove heading element also from the td ,
+            //if the other columns also has the same group ,then decrement the colspan by 1.
+            if (objColumn.GroupName != null && objColumn.GroupName != "") {//It has group heading
+                // do the stuff
+                //get the td from row1 , which has data-group=true attr 
+                //then that td which has id same as objColumn.GroupName
+                var result1 = $.grep(row1.children, function (x) {
+                    return x.getAttribute("data-groupheading") == objColumn.GroupName;
+                });
+                if (result1.length > 0) {
+                    var childcolid = 0, groupcolid = 0, grpcolspan = 0;
+                    if (result1.length > 1) { // more than 1 same group
+                        //find the specific group of objColumn
+                        childcolid = parseInt(objColumn.ColumnId);
+                        var result2 = $.grep(result1, function (x) {
+                            groupcolid = parseInt(x.getAttribute("data-columnid"));
+                            grpcolspan = parseInt(x.getAttribute("colspan"));
+                            return (childcolid >= groupcolid && childcolid <= groupcolid + grpcolspan);
+                        });
+                        if (result2.length > 0) {
+                            groupele = result2[0];
+                        }
+                        else {
+                            groupele = result1[0];
+                        }
+                    }
+                    else {
+                        groupele = result1[0];
+                    }
+                }
+
+                var groupcolspan = 0;
+                if (FCommon.UI.isValidObject(groupele) == true) {
+                    groupcolspan = parseInt(groupele.getAttribute("colspan"));
+                    if (groupcolspan > 1) {//decrement colspan by 1
+                        groupele.setAttribute("colspan", groupcolspan - 1)
+                    }
+                    else { // remove the column from the row1
+                        row1.removeChild(groupele);
+                    }
+                }
+                // then remove the column
+                $(document.getElementById(ColumnId).parentElement).remove();
+            }
+            else {//it doesnt have group heading
+                //check if the column is the only one column in the header 
+                //if yes, then create a default tr - td ,displaying text "Drop columns here" 
+                if (document.getElementById(ColumnId).parentElement.parentElement.children.length == 1) {
+                    createTH = document.createElement('th');
+                    createTH.id = "Td700";
+                    createTH.setAttribute("rowspan", "2");
+                    createTH.setAttribute("colspan", "1");
+                    createTH.draggable = true;
+                    createTH.style.borderRight = "1px solid white";
+                    createTH.style.fontWeight = "400";
+                    createText = document.createElement('p');
+                    createText.hidden = true;
+                    creatediv = document.createElement('div');
+                    creatediv.id = "Cus700";
+
+                    creatediv.className = "dv_Column";
+                    creatediv.setAttribute("draggable", "true")
+                    creatediv.setAttribute("data-isequenceid", "0")
+                    createpar = document.createElement('p');
+
+                    createpar.id = "fp_default";
+                    createpar.innerText = "Drop Columns here.";
+
+                    createpar.className = "Par";
+                    createpar.setAttribute("draggable", "true");
+
+                    createTH.style.width = "200px";
+                    creatediv.style.width = "200px";
+                    createpar.style.width = "200px";
+
+                    creatediv.appendChild(createpar);
+                    createTH.appendChild(createText);
+                    createTH.appendChild(creatediv);
+
+                    row1.appendChild(createTH);
+                    $(document.getElementById(ColumnId).parentElement).remove();
+                    // creatediv.ondragend = REPORTCUSTOMIZE.OnTreeDrag(GFieldId, (parseInt(iColId) + 1).toString());
+                    REPORTCUSTOMIZE.ChangeBorders((parseInt(iColId) + 1).toString());
+                    REPORTCUSTOMIZE.WidthHeaders();
+                }
+                else {
+                    // just remove the column
+                    $(document.getElementById(ColumnId).parentElement).remove();
+                }
+            }
+
+            for (var i = 0; i < REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns.length; i++) {
+                if (REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns[i].FieldId == iFieldId && REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns[i].ColumnId == iColId) {
+                    REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns.splice(i, 1);//to remove 1 element at index i
+                    if (REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns.length > i)
+                        Next2DeleteColumnId = REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns[i].ColumnId;
+                    REPORTCUSTOMIZE.g_arrColFont.splice(i, 1);
+                    REPORTCUSTOMIZE.g_objcusmodel.objLayout.Columns = REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns;
+                    //document.getElementById("dv_GetPartialGrid").style.display = "none";
+                    document.getElementById("dv_GetPartialGrid").innerHTML = "";
+                }
+            }
+            REPORTCUSTOMIZE.WidthHeaders();
+            ColumnId = undefined;
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("RemoveColumn" + err.message, "EXCEPTION");
+        }
+    },
+
+    DeleteColumnHeader: function () {
+        var iFieldId = $("#" + ColumnId).attr("ifieldid");
+        var iColId = $("#" + ColumnId).attr("icolid");
+        $("#Td" + iColId).remove();
+        var list = new Array();
+        $(".dv_Column").map(function () {
+            list.push(this.id);
+            return this.id;
+        }).get().join(",");
+        if (list.length == 1) {
+            $("#D700").show();
+        }
+        if (iFieldId == undefined && iColId == undefined) {
+            return;
+        }
+        result = NETWORK.executeServerMethod(GLOBAL.getContextPath("DeleteColum", "RD", "RD"), true, { lstCustomizeColumns: REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns, iFieldId: iFieldId, iColId: iColId });
+        if (result != null) {
+            if (result.lValue < 1) {
+                alert(result.sValue);
+            }
+            else {
+                REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns = result.data;
+                REPORTCUSTOMIZE.g_objcusmodel.objLayout.Columns = result.data;
+                document.getElementById("dv_GetPartialGrid").innerHTML = "";
+            }
+        }
+    },
+
+    SuccessDelete: function (evt) {
+        if (evt.target.status == 200) {
+            document.getElementById("dv_GetPartialGrid").innerHTML = evt.target.responseText;
+            var AliasName = $("#lbAliasName").text();
+            if (AliasName != " ") {
+                document.getElementById("dv_GetPartialGrid").innerHTML = evt.target.responseText;
+                $("#TreeView").css("height", "45em")
+                var ColumnWidth = $("#" + ColumnId).attr("data-columnwidth");
+                ColumnWidth = Math.round(ColumnWidth);
+                if (document.getElementById(ColumnId).children[1].innerText != "") {
+                    var GroupHeading = document.getElementById(ColumnId).children[1].innerText;
+                    $("#GroupHeading").val(GroupHeading);
+                }
+                $("#columnwidth").val(ColumnWidth);
+            }
+            else {
+                document.getElementById("dv_GetPartialGrid").innerHTML = "";
+            }
+        }
+    },
+
+    //function for toggling tree
+    ToggleTree: function (parentEle, spanEle) {
+        try {
+            //debugger
+            var CurrentStuts = $(parentEle).attr("data-text");
+            if (CurrentStuts == 'hide') {
+                $(parentEle).show();
+                $(parentEle).attr("data-text", "show");
+                if ($(spanEle).hasClass("icon-new")) {
+                    $(spanEle).removeClass("icon-new");
+                    $(spanEle).addClass("icon-minus").addClass("theme_color-inverse");
+                }
+            }
+            else {
+                $(parentEle).hide();
+                $(parentEle).attr("data-text", "hide");
+                if ($(spanEle).hasClass("icon-minus")) {
+                    $(spanEle).removeClass("icon-minus").removeClass("theme_color-inverse");
+                    $(spanEle).addClass("icon-new");
+                }
+            }
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.ToggleTree}" + err.message, "Exception");
+        }
+    },
+
+    toggleMaster: function (masterId, spanPlusId) {
+        try {
+            var status = document.getElementById(masterId).getAttribute("data-text");
+            if (status == 'hide') {
+                if ($("#" + masterId).children().is(':hidden') == true) {
+                    $("#" + masterId).children().show();
+                }
+                else if ($("#" + masterId).children().children("ul").is(':hidden') == true) {
+                    $("#" + masterId).children().children("ul").show();
+                }
+                document.getElementById(masterId).setAttribute("data-text", "show");
+                if ($("#" + spanPlusId).hasClass("icon-new")) {
+                    $("#" + spanPlusId).removeClass("icon-new");
+                    $("#" + spanPlusId).addClass("icon-minus").addClass("theme_color-inverse");
+                }
+            }
+            else {
+                if ($("#" + masterId).children().is(':hidden') == false) {
+                    $("#" + masterId).children("ul").hide();
+                }
+                else if ($("#" + masterId).children().children("ul").is(':hidden') == false) {
+                    $("#" + masterId).children().children("ul").hide();
+                }
+                document.getElementById(masterId).setAttribute("data-text", "hide");
+                if ($("#" + spanPlusId).hasClass("icon-minus")) {
+                    $("#" + spanPlusId).removeClass("icon-minus").removeClass("theme_color-inverse");
+                    $("#" + spanPlusId).addClass("icon-new");
+                }
+            }
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("REPORTCUSTOMIZE.toggleMaster" + err.message, "EXCEPTION");
+        }
+    },
+
+    //Function for Transaction Fields
+    openTransaction: function () {
+        try {
+            var CurrentStuts = $("#id_transactions_main").data("text");
+            if (CurrentStuts == 'hide') {
+                if ($('#id_transactions_main').children().is(':hidden') == true) {
+                    $("#id_transactions_main").children().show();
+                }
+                else if ($('#id_transactions_main').children().children("ul").is(':hidden') == true) {
+                    $('#id_transactions_main').children().children("ul").show();
+                }
+                $("#id_transactions_main").data("text", "show");
+                if ($("#id_Trans_spanPlus").hasClass("icon-new")) {
+                    $("#id_Trans_spanPlus").removeClass("icon-new");
+                    $("#id_Trans_spanPlus").addClass("icon-minus").addClass("theme_color-inverse");
+                }
+            }
+            else {
+
+                if ($('#id_transactions_main').children().is(':hidden') == false) {
+                    $("#id_transactions_main").children().hide();
+                }
+                else if ($('#id_transactions_main').children().children("ul").is(':hidden') == false) {
+                    $('#id_transactions_main').children().children("ul").hide();
+                }
+                $("#id_transactions_main").data("text", "hide");
+                if ($("#id_Trans_spanPlus").hasClass("icon-minus")) {
+                    $("#id_Trans_spanPlus").removeClass("icon-minus").removeClass("theme_color-inverse");
+                    $("#id_Trans_spanPlus").addClass("icon-new");
+                }
+            }
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("REPORTCUSTOMIZE.openTransaction" + err.message, "EXCEPTION");
+        }
+    },
+
+    resizeTableColumn: function (eleTable) {
+        $("#" + eleTable.id).find("th").resizable({
+            grid: [1, 10000],
+            handles: "e",
+            create: function (event, ui) { // This event is triggered when the resizable element is created.
+            },
+            resize: function (event, ui) { // This event is triggered when the handler of resizable element is dragged.
+            },
+            start: function (event, ui) { // This event is triggered at the start of a resize operation.
+            },
+            stop: function (event, ui) { // This event is triggered at the end of a resize operation.
+                var iWidth = 0;
+                var element = null;
+                try {
+                    if (ui.element.length > 0) {
+                        element = ui.element[0];
+                        if (element.nodeName.toLowerCase() == "th") {
+                            iWidth = parseInt(DataType.stringLeft(element.style.width, element.style.width.length - 2)); // -2 for remove px                      
+                            REPORTCUSTOMIZE.updateReportColumnWidth(element, iWidth);
+                        }
+                    }
+                }
+                catch (err) {
+                    COMMON.prototype.showMessage("{REPORTCUSTOMIZE.resizeTableColumn} " + err.message, "Exception");
+                }
+            }
+        });
+    },
+
+    updateReportColumnWidth: function (eleColumn, iWidth) {
+        var iCounter = 0;
+        var aliasname = null;
+        var fieldId = 0;
+        var oldWidth = $(eleColumn).find("div").eq(0).attr("data-columnwidth");
+        var widthToAdd = 0;
+        var widthToSubtract = 0;
+        var oldtotalWidth = $("#totalWidth").attr("data-totalwidth");
+        var newtotalWidth = null;
+        try {
+            for (iCounter = 0; iCounter < REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns.length; iCounter++) {
+                aliasname = $(eleColumn).find("div").eq(0).attr("data-aliasname");
+                fieldId = $(eleColumn).find("div").eq(0).attr("ifieldid");
+                if (REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns[iCounter].AliasName == aliasname && REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns[iCounter].FieldId == fieldId) {
+                    REPORTCUSTOMIZE.g_objcusmodel.lstCustomizeColumns[iCounter].ColumnWidth = iWidth;
+                    $(eleColumn).width(iWidth);
+                    $("#columnwidth").val(iWidth);
+                    $(eleColumn).find("div").eq(0).attr("data-columnwidth", iWidth);
+                    if (iWidth > oldWidth) {
+                        widthToAdd = iWidth - oldWidth;
+                    }
+                    else {
+                        widthToSubtract = oldWidth - iWidth;
+                    }
+                    if (widthToAdd != 0) {
+                        newtotalWidth = parseInt(oldtotalWidth) + widthToAdd;
+                    }
+                    else {
+                        newtotalWidth = parseInt(oldtotalWidth) - widthToSubtract;
+                    }
+                    newtotalWidth = Math.round(newtotalWidth);
+                    $("#totalWidth").val(newtotalWidth);
+                    $("#totalWidth").attr("data-totalwidth", newtotalWidth)
+                    break;
+                }
+            }
+        }
+        catch (err) {
+            COMMON.prototype.showMessage("{REPORTCUSTOMIZE.updateReportColumnWidth} " + err.message, "Exception");
+        }
+    }
+};
+
+var UID = {
+    _current: 0,
+    getNew: function () {
+        this._current++;
+        return this._current;
+    }
+};
+
+HTMLElement.prototype.pseudoStyle = function (element, prop, value) {
+    var _this = this;
+    var _sheetId = "pseudoStyles";
+    var _head = document.head || document.getElementsByTagName('head')[0];
+    var _sheet = document.getElementById(_sheetId) || document.createElement('style');
+    _sheet.id = _sheetId;
+    var className = "pseudoStyle" + UID.getNew();
+
+    _this.className += " " + className;
+
+    _sheet.innerHTML += " ." + className + ":" + element + "{" + prop + ":" + value + "}";
+    _head.appendChild(_sheet);
+    return this;
+};
+
+var Focus_Common_DataStructs_FocusReport_FinalAccounts = (function () {
+    var private = {
+        "TRIALBALANCE": 531,
+        "PROFITANDLOSS": 532,
+        "BALANCESHEET": 535,
+        "TRADINGACCOUNT": 533,
+        "TRADINGANDPROFITANDLOSS": 534,
+        "CUSTOMERSTATEMENTS": 560,
+        "FINALACCOUNTSCHEDULES": 592,
+        "FUNDSFLOW": 593,
+        "CASHFLOW": 594,
+        "CASHFLOWANALYSIS": 595,
+        "STOCKSTATEMENT": 557,
+        "STOCKMOVEMENT": 575,
+        "VIRTUALSTOCKANALYSIS": 577,
+        "STOCKVALUATION": 578,
+        "ABCANALYSISAMOUNT": 572,
+        "ABCANALYSISPRODCUT": 579,
+        "STOCKANALYSISBYBATCH": 580,
+        "STOCKANALYSISBYRMA": 581,
+        "STOCKBALANCEBYBINS": 588,
+        "STOCKBALANCEBYPRODUCTBYBINS": 589,
+        "EXPIREDSTOCKBYBINS": 590,
+        "STOCKAGEINGANALYSIS": 582,
+        "AGEINGSTOCKBYBINS": 591,
+        "LISTINGOFDOCUMENTS": 601,
+        "AGEINGANALYSISBYBATCH": 622,
+        "AGEINGANALYSISBYRMA": 623,
+        "AGEINGSTOCKBYPRODUCTBYBINS": 646,
+        "ADVANCECASHFLOW": 632,
+        "INCOMEEXPENSETREND": 630,
+        "RECIEVEANDPAYABLE": 558,
+        "RECEIVABLEANDPAYBLEBALANCE": 655,
+        "SUMMARYSALESREGISTER": 505,
+        "SUMMARYSALESBYDATE": 8508,
+        "SUMMARYSALESBYPRODUCT": 8509,
+        "SUMMARYSALESBYQUANTITYWISE": 8510,
+        "SUMMARYSALESBYAMOUNTWISE": 8511,
+        "SUMMARYSALESBYQTYANDAMTWISE": 8512,
+        "MONTHLYSALES": 628,
+        "TOPCUSTOMERS": 629,
+        "SUMMARYPURCHASEREGISTER": 509,
+        "CUSTOMERAGEINGSUMMARYBILLWISE": 562,
+        "CUSTOMERSUMMARYAGEINGBYDUEDATE": 565,
+        "CUSTOMEROVERDUESUMMARY": 567,
+        "CUSTOMERBILLWISESUMMARY": 539,
+        "VENDORAGEINGSUMMARYBILLWISE": 544,
+        "VENDORSUMMARYAGEINGBYDUEDATE": 547,
+        "VENDOROVERDUESUMMARY": 549,
+        "VENDORBILLWISESUMMARY": 634
+    }
+    return {
+        get: function (name) { return private[name.toUpperCase()]; }
+    };
+})();

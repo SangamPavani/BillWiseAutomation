@@ -1,0 +1,816 @@
+var clSummaryBar = new function()
+{
+
+    var me=this;
+
+    this.iScrollType_LEFT=1;
+    this.iScrollType_RIGHT=2;
+    this.iScrollType_UP=3;
+    this.iScrollType_DOWN=4;
+
+
+    var curYPos = 0,
+        curXPos = 0,
+        curDown = false,
+        startX=0,
+        endX=0;
+    this.pageNo=1;
+    this.iFilterField1Id=null;
+    this.iFilterField2Id=null;
+    this.sFilter1Name=null;
+    this.sFilter2Name=null;
+
+    this.iColumnCount=0;
+
+    this.isNewFilter=0;
+
+    var dvSummarybarMain=document.getElementById("dvSummarybarMain");
+    var dvSummarybarRows=document.getElementById("dvSummarybarRows");
+
+    dvSummarybarMain.addEventListener('mousemove',mouseMoveHomePart1);
+    dvSummarybarMain.addEventListener('mousedown', mouseDownHome);
+    dvSummarybarMain.addEventListener('mouseup', mouseUpHome);
+
+    dvSummarybarRows.addEventListener('mousemove',mouseMoveHomePart2);
+    dvSummarybarRows.addEventListener('mousedown', mouseDownHome);
+    dvSummarybarRows.addEventListener('mouseup', mouseUpHome);
+
+
+    //document.onkeydown=detectKeysScroll;
+    cross.addListener(document.body,cross.EVENT_ONKEYDOWN,detectKeysScroll,false,null,Constants.SCOPE_SCREEN);
+
+    var objScrollId=document.getElementById("scrollId");
+    var objRowsTb=document.getElementById("rowsTb");
+
+    function mouseMoveHomePart1(e)
+    {
+        if(curDown === true)
+        {
+            var iDrag=startX-endX;
+            var iScrollPosition=objScrollId.scrollLeft;
+            if(iDrag>0) {
+                objScrollId.scrollLeft=(iScrollPosition+20);
+                me.scrollRows(iScrollPosition+20);
+            }
+            else {
+                objScrollId.scrollLeft=(iScrollPosition-20);
+                me.scrollRows(iScrollPosition-20);
+            }
+        }
+    };
+
+    function mouseMoveHomePart2(e)
+    {
+        if(curDown === true)
+        {
+            var iDrag=startX-endX;
+            var iScrollPosition=objScrollId.scrollLeft;
+            if(iDrag>0) {
+                objScrollId.scrollLeft=(iScrollPosition+20);
+                //this.scrollRows(iScrollPosition+20);
+            }
+            else {
+                objScrollId.scrollLeft=(iScrollPosition-20);
+                // this.scrollRows(iScrollPosition-20);
+            }
+        }
+    };
+
+    function mouseDownHome(e)
+    {
+        e=cross.getEvent(e);
+        startX=e.pageX;
+        curDown = true; curYPos = e.pageY; curXPos = e.pageX;
+    };
+
+    function mouseUpHome(e)
+    {
+        e=cross.getEvent(e);
+        endX=e.pageX;
+        curDown = false;
+    };
+
+    this.setDragRow=function(thisObj)
+    {
+        document.getElementById("dvSummarybarRows").addEventListener('mousemove', function(e){
+            if(curDown === true)
+            {
+                var iDrag=startX-endX;
+                var iScrollPosition=thisObj.scrollLeft;
+                if(iDrag>0) {
+                    thisObj.scrollLeft=iScrollPosition+20;
+                    // this.scrollRows(iScrollPosition+20);
+                }
+                else {
+                    thisObj.scrollLeft=iScrollPosition-20;
+                    // this.scrollRows(iScrollPosition-20);
+                }
+            }
+        });
+    };
+
+    this.onWndscroll=function()
+    {
+        if(objRowsTb!=null)
+        {
+            if(objRowsTb.style.display=="block")
+            {
+                var iTopPosition=document.body.scrollTop;
+
+                var dvSummarybarMain=document.getElementById("dvSummarybarMain");
+                if(iTopPosition>220)
+                {
+                    dvSummarybarMain.style.position="fixed";
+                    dvSummarybarMain.style.top=-15;
+                }
+                else
+                {
+                    dvSummarybarMain.style.position="relative";
+                    dvSummarybarMain.style.top=2;
+                }
+            }
+        }
+        home.onWndscroll();
+    };
+
+    /*window.onscroll=function ()
+    {
+        if(objRowsTb!=null)
+        {
+           if(objRowsTb.style.display=="block")
+           {
+                var iTopPosition=document.body.scrollTop;
+
+                var dvSummarybarMain=document.getElementById("dvSummarybarMain");
+                if(iTopPosition>220)
+                {
+                    dvSummarybarMain.style.position="fixed";
+                    dvSummarybarMain.style.top=-15;
+                }
+                else
+                {
+                    dvSummarybarMain.style.position="relative";
+                    dvSummarybarMain.style.top=2;
+                }
+           }
+        }
+        home.onWndscroll();
+    };*/
+
+    this.changeDropDownImage = function()
+    {
+        var leftAreaId=document.getElementById("leftAreaId");
+        var leftAreaId2=document.getElementById("leftAreaId2");
+
+        //Expand
+        if(objRowsTb.style.display=="none")
+        {
+            objRowsTb.style.display="block";
+
+            if(objRowsTb.childNodes.length<=0){
+                this.showMoreRows(1,this.iFilterField1Id,this.iFilterField2Id,false);
+                //this.showMoreRows();
+            }
+
+            util.addClass(leftAreaId,"mscenterareaborder");
+            util.addClass(leftAreaId,"mstopareaborder");
+            util.addClass(leftAreaId2,"mscenterareaborder");
+
+            //arrow icon
+            /* $("#dashletArrows").removeClass("setExpand");
+             $("#dashletArrows").addClass("setCollapse");*/
+
+            this.resetScrollToStart();
+        }
+        else //collapse
+        {
+            objRowsTb.style.display="none";
+
+            var dvSummarybarMain=document.getElementById("dvSummarybarMain");
+            dvSummarybarMain.style.position="relative";
+            dvSummarybarMain.style.top=2;
+            document.getElementById("rightScrollTd").style.width=30;
+            document.getElementById("dvFilter").style.right = 30;
+
+            util.removeClass(leftAreaId,"mscenterareaborder");
+            util.removeClass(leftAreaId,"mstopareaborder");
+            util.removeClass(leftAreaId2,"mscenterareaborder");
+            //arrow icon
+            /*$("#dashletArrows").removeClass("setCollapse");
+            $("#dashletArrows").addClass("setExpand");*/
+        }
+    };
+
+    this.detailView= function(iTransId)
+    {
+        var sUrl=document.getElementById("viewUrlId").value+"&transId="+iTransId;
+        if(iTransId!=undefined){
+            home.setCenterUI(sUrl);
+        }
+    };
+
+    this.onAddClick=function(iSelectedValue)
+    {
+        /* var sModuleUrl=document.getElementById("moduleURL").value; //todo
+         var iFieldId=document.getElementById("fieldId").value;
+         sModuleUrl+="&fieldId="+iFieldId;
+         sModuleUrl+="&fieldValue="+iSelectedValue;
+         home.setCenterUI(sModuleUrl);*/
+    };
+
+    this.getRandomColor= function()
+    {
+        var letters = '0123456789ABCDEF'.split('');
+        var color = '#';
+        for (var i = 0; i < 6; i++ ) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+
+        return color;
+    };
+
+    this.scrollChange=function(iScrollType)
+    {
+        var iCurrenttPosition=objScrollId.scrollLeft;
+
+        var iIncrement=200;
+        if(iScrollType==me.iScrollType_LEFT) {
+            objScrollId.scrollLeft=(iCurrenttPosition-iIncrement);
+            this.scrollRows(iCurrenttPosition-iIncrement);
+        }
+        else {
+            objScrollId.scrollLeft=(iCurrenttPosition+iIncrement);
+            this.scrollRows(iCurrenttPosition+iIncrement);
+        }
+    };
+
+
+    this.showHideScroller=function(iColumnCount)
+    {
+        /*var leftScroll=document.getElementById("leftScroll");
+        var rightScroll=document.getElementById("rightScroll");
+
+        if(leftScroll.style.display=="none" && this.isScrollRequired(iColumnCount))
+        {
+            leftScroll.style.display="block";
+            rightScroll.style.display="block";
+        }
+        else
+        {
+            leftScroll.style.display="none";
+            rightScroll.style.display="none";
+        }*/
+    };
+
+    this.isScrollRequired=function(iColumnCount)
+    {
+        var leftAreaWidth=document.getElementById("leftAreaId").clientWidth;
+        var bStatus=false, iSingleColumnWidth=212;
+
+        if(leftAreaWidth<(iColumnCount*iSingleColumnWidth))
+        {
+            bStatus=true;
+        }
+
+        return bStatus;
+    };
+
+    this.showMoreRows=function(pageNo, iFilterField1, iFilterField2,bIgnoreClear)
+    {
+        var sUrl = con.getStruts2Url("/module","moduleView.do", "getModuleStatusInfo", null, true);
+        util.toggleBackground(true);
+
+        if(pageNo==null){
+            pageNo=1; //1 for First req
+        }
+
+        me.pageNo=pageNo;
+
+        var iModuleId=document.getElementById("iModuleId_1").value;
+        sUrl+="?pageNo="+pageNo+"&moduleId="+iModuleId;
+
+        if((iFilterField1!=null && iFilterField2!=null) && (iFilterField1!=-1 && iFilterField2!=-1)){
+            sUrl+="&filter="+iFilterField1+","+iFilterField2;
+            me.showFilterToolTip();
+        }
+        else
+        {
+            if(!bIgnoreClear)
+                me.clearFilterCriteria();
+        }
+
+        if(pageNo==1 && (iFilterField1!=null && iFilterField2!=null)){
+            con.sendPostRequest(sUrl,null,null,this.setRowDataAfterFilter);
+        }
+        else{
+            con.sendPostRequest(sUrl,null,null,this.setRowData);
+        }
+    };
+
+    this.setRowData=function(sResponse)
+    {
+        util.toggleBackground(false);
+        var oldHtml=objRowsTb.innerHTML;
+        objRowsTb.innerHTML=oldHtml+sResponse;
+        me.resetScrollToStart();
+        me.dragIndexing();
+
+        if (typeof window["initAllCombos"] == "function")
+            initAllCombos = null;
+        loadResources(objRowsTb, util.onScriptsLoad);
+
+    };
+
+    this.setRowDataAfterFilter=function(sResponse)
+    {
+        util.toggleBackground(false);
+        objRowsTb.innerHTML=sResponse;
+        me.resetScrollToStart();
+        me.dragIndexing();
+
+        if (typeof window["initAllCombos"] == "function")
+            initAllCombos = null;
+        loadResources(objRowsTb, util.onScriptsLoad);
+
+        getDialogBox("clHomeFilterDlg").hide();
+    };
+
+    this.scrollRows=function(iDistance)
+    {
+        var iRowsLength=document.querySelectorAll('#rowsTb > ul').length+(me.pageNo*6)+1;
+
+        for(var i=0;i<=iRowsLength;i++)
+        {
+            if((cross.getChildren(objRowsTb)[i])!=undefined && ((cross.getChildren(objRowsTb)[i]).nodeName.toLowerCase()=="ul") )
+            {
+                (cross.getChildren(objRowsTb)[i]).scrollLeft=iDistance;
+            }
+        }
+    };
+
+    this.dragIndexing=function()
+    {
+        var iRowsLength=document.querySelectorAll('#rowsTb > ul').length+(me.pageNo*6)+1;
+
+        for(var i=0;i<=iRowsLength;i++)
+        {
+            if((cross.getChildren(objRowsTb)[i])!=undefined && (cross.getChildren(objRowsTb)[i]).nodeName.toLowerCase()=="ul" ){
+                this.setDragRow((cross.getChildren(objRowsTb)[i]));
+            }
+        }
+    };
+
+
+    this.ShowMore=function(thisObj, pgNo)
+    {
+        thisObj.style.display="none";
+        this.showMoreRows(pgNo,this.iFilterField1Id,this.iFilterField2Id,false);
+    };
+
+    this.resetScrollToStart=function()
+    {
+        var headerRowScrollPos=objScrollId.scrollLeft;
+        var iRowsLength=document.querySelectorAll('#rowsTb > ul').length+(me.pageNo*6)+1;
+        for(var i=0;i<=iRowsLength;i++)
+        {
+            if((cross.getChildren(objRowsTb)[i])!=undefined && ((cross.getChildren(objRowsTb)[i]).nodeName.toLowerCase()=="ul") ){
+                (cross.getChildren(objRowsTb)[i]).scrollLeft=headerRowScrollPos;
+            }
+        }
+    };
+
+    this.filterArea=function(thisObj)
+    {
+        var pos=cross.getPosition(thisObj);
+        var btnFilterX=pos[0]-250;
+        var btnFilterY=pos[1]+20;
+
+        if(document.getElementById("dvSummarybarMain").style.position!="fixed"){
+            btnFilterY=btnFilterY-(document.body.scrollTop);
+        }
+
+        this.showFilterDialog(btnFilterX,btnFilterY);
+    };
+
+    this.showFilterDialog=function(xPosition, yPosition)
+    {
+        var arrActions = new Array(),clHomeFilterDlg, sTitle = "&nbsp;Filter";
+        var sUrl = con.getStruts2Url("/module","moduleView.do", "getModuleStatusFilter", null, true);
+        var iModuleId=document.getElementById("iModuleId_1").value;
+        sUrl+="?moduleId="+iModuleId;
+        arrActions[0] = "Apply|clSummaryBar.dialogOk";
+        arrActions[1] = "Cancel|";
+        //arrValues=encodeURIComponent(arrValues);
+        if(document.getElementById("msgbox")!=null){
+            document.getElementById("msgbox").style.display="none";
+        }
+        clHomeFilterDlg=getDialogBox("clHomeFilterDlg");
+        if(!clHomeFilterDlg || this.isNewFilter==0) {
+            clHomeFilterDlg = new DialogBox("clHomeFilterDlg", sTitle, xPosition, yPosition, 250, 160, sUrl, false, null, true, true, arrActions, null, null, null, null, true, null, true, true);
+            me.dialogStyles("clHomeFilterDlg","#ffffff");
+            this.isNewFilter=1;
+        }
+
+        var dlgId=document.getElementById("clHomeFilterDlgSWindow");
+        dlgId.style.background="#ffffff";
+        dlgId.style.position="absolute";
+        dlgId.overflow="visible";
+
+        clHomeFilterDlg.setBounds(xPosition,yPosition,250,140);
+        clHomeFilterDlg.show();
+    };
+
+    this.dialogStyles=function(sDialogName,backgroundcolor)
+    {
+        //Simple Dialogbox Styles
+        document.getElementById(sDialogName+"titlebar").style.backgroundColor = backgroundcolor;
+        document.getElementById(sDialogName+"centerData").style.backgroundColor = backgroundcolor;
+        document.getElementById(sDialogName+"centerData").style.overflowY="hidden";
+        document.getElementById(sDialogName+"STitlebar").style.color = "#4e4e4e";
+        document.getElementById(sDialogName+"frameActions").style.backgroundColor=backgroundcolor;
+    };
+
+    this.dialogOk=function()
+    {
+        var iFilterField1=document.getElementById("filterField1");
+        var iFilterField2=document.getElementById("filterField2");
+
+
+        if( (iFilterField1.value==-1 && iFilterField2.value!=-1) || (iFilterField1.value!=-1 && iFilterField2.value==-1))
+        {
+            Validation.showMessage("Both fields required", Validation.ERROR_MSG, null, 0, true);
+
+            //changing height of Dialog box
+            var dlgId=document.getElementById("clHomeFilterDlgSWindow");
+
+            if(dlgId.clientHeight<170){
+                dlgId.style.height=dlgId.clientHeight+30;
+                var dlgCenter=document.getElementById("clHomeFilterDlgcenterData");
+                dlgCenter.style.height=dlgCenter.clientHeight+30;
+            }
+        }
+        else {
+            this.iFilterField1Id=iFilterField1.value;
+            this.iFilterField2Id=iFilterField2.value;
+            this.sFilter1Name=iFilterField1.options[iFilterField1.selectedIndex].text;
+            this.sFilter2Name=iFilterField2.options[iFilterField2.selectedIndex].text;
+            this.pageNo=1;
+            this.showMoreRows(this.pageNo,iFilterField1.value,iFilterField2.value,false);
+
+            if(objRowsTb.style.display=="none") {
+                objRowsTb.style.display="block";
+            }
+        }
+    };
+
+    /*  this.setFilterField1=function(objFilterField1)
+      {
+          var iTotalFilter1Fields=document.querySelectorAll('#trFilterField1Hidden > td').length;
+          var objHiddenDataFields=document.getElementById("trFilterField1Hidden");
+          var hiddenRowData, item;
+
+          //default select
+          var objNewOption=document.createElement('option');
+          objNewOption.innerHTML="";
+           objNewOption.value =-1;
+          objFilterField1.add(objNewOption)
+
+          for(var i=0;i<(iTotalFilter1Fields*2);i++)
+          {
+               objNewOption=document.createElement('option');
+               hiddenRowData=objHiddenDataFields.childNodes[i];
+              if(hiddenRowData.nodeName.toLowerCase()=="td")
+              {
+                  item=hiddenRowData.innerHTML.split("|");
+                  objNewOption.innerHTML=item[0];
+                  objNewOption.value =item[2];
+
+                  objFilterField1.add(objNewOption);
+              }
+          }
+      };
+  */
+    /*    this.setFilterSelection=function()
+        {
+           var objFilterField1=document.getElementById("filterField1");
+           var objFilterField2=document.getElementById("filterField2");
+
+           if(this.iFilterField1Id!=null)
+           {
+                var options=objFilterField1.options;
+               for(var i=0;i<options.length;i++)
+               {
+                    if(options[i].value==this.iFilterField1Id){
+                        objFilterField1.options[i].selected="true";
+                    }
+               }
+           }
+
+            if(this.iFilterField2Id!=null)
+            {
+                 var options=objFilterField2.options;
+                for(var i=0;i<options.length;i++)
+                {
+                     if(options[i].value==this.iFilterField2Id){
+                         objFilterField2.options[i].selected="true";
+                     }
+                }
+            }
+        };*/
+
+
+
+    this.onWndLoadsetDimensions=function()
+    {
+        var iWindowType = clAppBuffer.getWindowType();
+        if ((document.getElementById("listCustom") && document.getElementById("listCustom").offsetWidth > 0)
+            && iWindowType != Constants.IMODULE_WINDOW.SPLIT_PANE
+            && iWindowType != Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+        {
+            document.getElementById("dvSummarybarMain").style.width=document.getElementById("listCustom").offsetWidth;
+            document.getElementById("scrollId").style.width=document.getElementById("listCustom").offsetWidth;
+        }
+        else if (document.getElementById("dvMultipane1"))
+        {
+            document.getElementById("dvSummarybarMain").style.width=document.getElementById("dvMultipane1").offsetWidth;
+            document.getElementById("scrollId").style.width=document.getElementById("dvMultipane1").offsetWidth;
+        }
+    };
+
+    this.setSummaryBarDimensions=function(iEffectWidth)
+    {
+        if(document.getElementById("dvSummarybarMain"))
+        {
+            document.getElementById("dvSummarybarMain").style.width = document.getElementById("dvSummarybarMain").offsetWidth + iEffectWidth;
+            document.getElementById("scrollId").style.width = document.getElementById("scrollId").offsetWidth + iEffectWidth;
+        }
+    };
+
+    this.setColumnCount=function(iColumnCount)
+    {
+        this.iColumnCount=iColumnCount;
+    };
+
+    this.showFilterToolTip=function()
+    {
+        //document.getElementById("spFilter").innerHTML=this.sFilter1Name+" | "+this.sFilter2Name; //todo
+
+        var objBtnDialog=document.getElementById("filterDialogBtnId");
+//         objBtnDialog.style.background="lightgray";
+//         objBtnDialog.style.border="1px solid darkgray";
+        objBtnDialog.style.border="1px solid lightgray";
+
+        document.getElementById("dvFilter").style.display="block";
+    };
+
+    this.hideFilterToolTip=function()
+    {
+        document.getElementById("dvFilter").style.display="none";
+    };
+
+    this.clearFilterCriteria=function()
+    {
+        this.iFilterField1Id=null;
+        this.iFilterField2Id=null;
+        this.sFilter1Name=null;
+        this.sFilter2Name=null;
+        this.pageNo=1;
+
+        this.hideFilterToolTip();
+        var objBtnDialog=document.getElementById("filterDialogBtnId");
+        objBtnDialog.style.background="#f7f7f7";
+        objBtnDialog.style.border="1px solid #f7f7f7";
+
+        this.isNewFilter=0;
+        me.showMoreRows(1,-1,-1,true);
+    };
+
+    this.setHeadingCount=function(arrHeadCounts)
+    {
+        var arrHeadCountsE=null;
+        var headings=null;
+
+        if(arrHeadCounts.length>0){
+            arrHeadCountsE=eval(arrHeadCounts);
+        }
+
+        for(var i=0;i<this.iColumnCount;i++)
+        {
+            headings=document.getElementById("headCount["+i+"]");
+            if(arrHeadCountsE!=null && arrHeadCountsE.length>0) {
+                headings.innerHTML=arrHeadCountsE[i];
+            }
+            else{
+                headings.innerHTML="0";
+            }
+        }
+    };
+
+    this.setSubHeadingAmount=function(arrHeadAmnts)
+    {
+        var arrHeadAmntsE=null;
+        var amnts=null;
+
+        if(arrHeadAmnts.length>0){
+            arrHeadAmntsE=eval(arrHeadAmnts);
+        }
+
+        for(var i=0;i<this.iColumnCount;i++)
+        {
+            amnts=document.getElementById("headAmounts["+i+"]");
+            if(arrHeadAmntsE!=null && arrHeadAmntsE.length>0) {
+                amnts.innerHTML=arrHeadAmntsE[i];
+            }
+            else{
+                amnts.innerHTML="";
+            }
+        }
+    };
+
+    this.highLightFilter=function()
+    {
+        document.getElementById("tbFilter").style.opacity=1;
+    };
+
+    this.rollbackFilterStyle=function()
+    {
+        document.getElementById("tbFilter").style.opacity=0.5;
+    };
+
+    function detectKeysScroll(e)
+    {
+        e=cross.getEvent(e);
+
+        if(objRowsTb.style.display=="block")
+        {
+            //left
+            if(e.keyCode==37){
+                me.scrollChange(1);
+            }
+            //right
+            else if(e.keyCode==39){
+                me.scrollChange(2);
+            }
+        }
+    };
+
+    this.setFilterDefaultSelection=function()
+    {
+        var objFilterField1=document.getElementById("filterField1");
+        var objFilterField2=document.getElementById("filterField2");
+
+        if(objFilterField1.options.length>0){
+            objFilterField1.options[1].selected=true;
+        }
+
+        if(objFilterField2.options.length>0){
+            objFilterField2.options[1].selected=true;
+        }
+
+    };
+
+    this.setSelectedItem=function(iTransId,isFromCSS)
+    {
+        if(iTransId>0)
+        {
+            var objItem=document.getElementById("column0");
+            var i=1;
+            while(objItem)
+            {
+                if(iTransId==parseInt(objItem.getAttribute("iTransId")))
+                {
+                    var arrPos=cross.getPosition(objItem);
+                    var arrPos1=cross.getPosition(objScrollId);
+                    if(((arrPos[0]+objItem.offsetWidth)-arrPos1[0])>objScrollId.offsetWidth)
+                        objScrollId.scrollLeft=(((arrPos[0]+objItem.offsetWidth)-arrPos1[0])-objScrollId.offsetWidth);
+
+                    me.onClkSummaryItem(objItem,null,isFromCSS);
+                    break;
+                }
+
+                objItem=document.getElementById("column"+i);
+
+                i++;
+            }
+        }
+    };
+
+    this.gradientColor = function (iSelectedTransId) {
+        var i = 0, objItemId = document.getElementById("column0");
+        while (objItemId) {
+            if(objItemId ) {
+                objItemId = document.getElementById("column" + i);
+                var sbColor = objItemId.getAttribute("sbColor");
+                var gdColor = chroma(sbColor);
+                var gradientColors = chroma.scale([gdColor, gdColor.brighten(1), gdColor.brighten(2)]).colors(2);
+                if (iSelectedTransId != objItemId.getAttribute("iTransId")) {
+                    objItemId.style.background = "linear-gradient(1.57068rad,rgba(45,21,136,0.1),rgba(45,21,136,0.3))";
+                    objItemId.style.color =sbColor;
+                }
+                //alert(objPrevSelectedItem.getAttribute("iTransId")+" =="+objItemId.getAttribute("iTransId"))
+                i++;
+            }
+        }
+    };
+
+    this.onLoadGradientColor = function (iSelectedTransId) {
+        //   alert("ddd==-"+iSelectedTransId)
+        var i = 0,objItemId = document.getElementById("column0");
+        while (objItemId) {
+            objItemId = document.getElementById("column" + i);
+            var sbColor = objItemId.getAttribute("sbColor");
+            var gdColor = chroma(sbColor);
+            if(iSelectedTransId!=objItemId.getAttribute("iTransId")) {
+                objItemId.style.background =this.getGradientColor(gdColor);
+                // objItemId.style.background ='linear-gradient(to right,' + gradientColors.join(",") + ')';
+                //this.getGradientColor(gdColor);
+                //if(sbColor!=null && sbColor.indexOf("#")!=-1)
+                //{
+                //    sbColor = sbColor.substring(1,sbColor.length);
+                //}
+                //var arrRgb=  util.getRGBColor2(sbColor);
+                //
+                //console.debug("summaryBar===============");
+                //console.debug(arrRgb);
+                //objItemId.style.background='linear-gradient(1.57068rad, rgba('+arrRgb[0]+','+arrRgb[1]+','+arrRgb[2]+', 0.1),rgba('+arrRgb[0]+','+arrRgb[1]+','+arrRgb[2]+', 0.3))';
+                objItemId.style.color = "#000"
+            }
+            i++;
+        }
+    };
+
+    this.onClkSummaryItem=function(objThis,sFnCallback,isFromCSS)
+    {
+        var objPrevSelectedItem=document.getElementById("dvSummarybarMain").selectedItem;
+        var sbColor = objThis.getAttribute("sbColor");
+
+        if(objPrevSelectedItem===objThis)
+            return false;
+
+        if(objPrevSelectedItem)
+        {
+            if(!isFromCSS) {
+                var gdPrevSelectedColor = chroma(objPrevSelectedItem.getAttribute("sbColor"));
+                var gradientColors = chroma.scale([gdPrevSelectedColor, gdPrevSelectedColor.brighten(1), gdPrevSelectedColor.brighten(2)]).colors(2);
+                //objPrevSelectedItem.style.background = 'linear-gradient(to left,' + gradientColors.join(",") + ')';
+                objPrevSelectedItem.style.borderTop = "0";
+                objPrevSelectedItem.style.color = "#000";
+                objPrevSelectedItem.style.background=this.getGradientColor(gdPrevSelectedColor);
+
+                // var sbPrevColor = objPrevSelectedItem.getAttribute("sbColor");
+                //if(sbPrevColor!=null && sbPrevColor.indexOf("#")!=-1)
+                //{
+                //    sbPrevColor = sbPrevColor.substring(1,sbPrevColor.length);
+                //}
+                //var arrRgb=  util.getRGBColor2(sbPrevColor);
+                //objPrevSelectedItem.style.background='linear-gradient(1.57068rad, rgba('+arrRgb[0]+','+arrRgb[1]+','+arrRgb[2]+', 0.1),rgba('+arrRgb[0]+','+arrRgb[1]+','+arrRgb[2]+', 0.3))';
+
+            }
+            util.removeClass(objPrevSelectedItem, "sumbar-item-select");
+        }
+
+        if(!isFromCSS) {
+            objThis.style.borderTop = "5px solid "+sbColor ;
+            objThis.style.color ="#000";
+            objThis.style.background ="#000";
+        }
+
+
+        util.addClass(objThis, "sumbar-item-select");
+        document.getElementById("dvSummarybarMain").selectedItem=objThis;
+        //objThis.style.backgroundColor="transparent";
+
+        if(sFnCallback)eval(sFnCallback);
+    };
+
+
+    this.getGradientColor=function(gdColor) {
+        var gradientColors = chroma.scale([gdColor, gdColor.brighten(1), gdColor.brighten(1.3)]).colors(4);
+        var gdSelectedColors = 'linear-gradient(to left';
+        var colors=[
+            {color:gradientColors[2] ,percentage:"60%"},
+            {color:util.getLightenColor(gradientColors[1],0.188) ,percentage:"100%"},
+            //{color:gradientColors[1] ,percentage:"100%"},
+        ];
+
+        colors.forEach(function(e)
+        {
+            gdSelectedColors += "," +e.color + " " + e.percentage;
+        });
+
+        gdSelectedColors += ')';
+
+        return gdSelectedColors
+    }
+
+
+    this.getSummaryBarListViewSettingsDlg=function()
+    {
+
+    };
+    this.getSummaryBarHomeViewSettingsDlg=function()
+    {
+
+    };
+
+};

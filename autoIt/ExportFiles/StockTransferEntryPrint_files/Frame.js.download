@@ -1,0 +1,1609 @@
+var clFrame=new function()
+{
+
+    app.registerInstance("frame", clFrame);
+    var me=this;
+    this.arrFrames=[];
+    this.isIE = false || !!document.documentMode;
+    this.iFrameCount=0;
+    this.dvZIndex =0;
+    this.iCurrentModuleId=0;
+    this.bMultipaneDisplay=false;
+    this.iFirstFrameLeft=0;
+    this.iFirstFrameTop = 0;
+    this.isResize = false;
+    this.ismaximize=null;
+    this.sFrameTitle = null;
+    this.bTabbedPane = true;
+    this.iToggleNav = 0;
+    this.iToggleLeft = 0;
+    this.isSetLeft = false;
+    this.isToggleLeft = false;
+    this.bSetTabbed = false;
+    this.bMultiPaneTab = false;
+    this.bsetCurrentFramemax = false;
+    this.sSetSelectedFrame =null;
+    this.sDvTabbedPane = null;
+    this.iMaxWidth = 0;
+    this.isRemoveAllFrame = true;
+    this.iScrollLeft = 0;
+    this.iSplitWidth =0;
+    this.bSplitPaneDvResize = true;
+    this.saveSelectedTab = null;
+
+    /**
+     * This method is used to set add Frame,
+     * show/hide 2nd step based on pmc checkbox
+     * @param sUrl :url to fetch inside frame
+     * @param iWidth: To define width for frame
+     * @param sTitle: To give title to frame
+     * @param iHeight: to define height of the frame
+     * @param fnCallback : if any call back defined
+     * @param sContainerId : Container Id
+     * @param e :mouse event
+     * @param sUserCallBack : callback defined by user
+     * @param isMultiPaneTab :boolean value to check if any its multiPane tab
+     * @param iModuleId : moduleId of current frame opened
+     */
+    this.addFrame = function(sUrl,iWidth,sTitle,iHeight,fnCallback,sContainerId,e,sUserCallBack,isMultiPaneTab,iModuleId)
+    {
+        var event;
+        if(e==undefined)
+        event=document.onclick;
+        else
+        event=cross.getEvent(e);
+
+        var objFlexContainer;
+        var sParentId=null;/*bExists=false;*/
+        objFlexContainer = document.getElementById(sContainerId);//"dvCenter");
+
+        var objCurrentFrame;
+        var objEvtOriginWindow=event.view;
+        if(objEvtOriginWindow && objEvtOriginWindow!=window )//req. from iframe
+        {
+            objCurrentFrame=document.getElementById(objEvtOriginWindow.name);//will return iframe object
+        }
+        else
+        {
+            objCurrentFrame=cross.getSrcElement(event);
+        }
+
+        while(objCurrentFrame && objCurrentFrame.parentNode!=objFlexContainer)
+        {
+            objCurrentFrame=objCurrentFrame.parentNode;
+        }
+
+        var sCurrentFrameId=null;
+        var isAnimate=false;
+        if(me.iFrameCount==0)
+        {
+            objFlexContainer.innerHTML="";
+        }
+        if(me.ismaximize!=null)
+        {
+            me.minimizeFrame();
+        }
+        /*if(isMultiPaneTab && me.sSetSelectedFrame!=null)
+        {
+            me.frameResize(me.iMaxWidth,null,false,true);
+        }*/
+        if(isMultiPaneTab && me.isToggleLeft && me.sSetSelectedFrame!=null && clAppBuffer.getWindowType() != Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE )
+        {
+            me.frameResize(me.iMaxWidth,null,false,true);
+            me.sSetSelectedFrame = null;
+        }
+        if(objCurrentFrame)
+        {
+            //            "if ObjCurrentFrame")
+            sCurrentFrameId=objCurrentFrame.id;
+            me.removeChildFrames(sCurrentFrameId,false,isAnimate);
+            sParentId=sCurrentFrameId;
+        }
+        else if(me.isRemoveAllFrame)
+        {
+          me.removeAll();
+        }
+
+
+        sCurrentFrameId=clFrame.createNewFrame(me.iFrameCount,sUrl,iWidth,iHeight,sContainerId,e,sUserCallBack,isMultiPaneTab,iModuleId);
+        me.arrFrames[me.arrFrames.length]={"frameId":sCurrentFrameId,"parentId":sParentId,"callback":fnCallback,"frameIndex":me.iFrameCount};
+        me.iFrameCount++;
+        /* if(fnCallback)
+
+         fnCallback(me.FRAME_CREATED,sFrameId);*/
+
+
+    };
+
+    /**
+     *  this method is used to remove all frames opened
+      */
+    this.removeAll=function()
+    {
+        var isAnimate = false;
+        if(me.arrFrames.length>0)
+        {
+            var objFirstFrame=me.arrFrames[0];
+            me.removeChildFrames(objFirstFrame["frameId"],true,isAnimate,true);
+            if(clAppBuffer.getWindowType() == Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+             document.getElementById("olTabbedPane").innerHTML='';
+            me.arrFrames.length=0;
+            me.iFrameCount=0;
+        }
+    };
+    /**
+     * this method is used to remove child frame of current frame
+     * @param sFrameId :FrameId of current frame
+     * @param isRemoveCurrentFrame :boolean value to remove current frame as well
+     * @param isAnimate :to close frame with animation if is not multipane tab and if not from IE browser
+     */
+
+    this.removeChildFrames=function(sFrameId,isRemoveCurrentFrame,isAnimate)
+    {
+
+        var objFlexContainer,arrFrameInfo,iLength,objFrame,objDeleteFrame,iDelCount=0,iCuurFrameId=0,i,sArrCuurFrameId=null,objAnimateRight;
+        objFlexContainer = document.getElementById(me.sContainerId);
+        objFrame=document.getElementById(sFrameId);
+        iLength=me.arrFrames.length;
+        if(sFrameId)
+        {
+            sArrCuurFrameId = sFrameId.split("_");
+            iCuurFrameId = parseInt(sArrCuurFrameId[1]);
+        }
+      /*  if(clAppBuffer.getWindowType()!=Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+        {*/
+        if(iLength>0)
+        {
+            var iCurrentFrameIndex=-1;
+            for(i=0; i < me.arrFrames.length; i++)
+            {
+                arrFrameInfo=me.arrFrames[i];
+                if(arrFrameInfo["parentId"]==sFrameId)
+                {
+                    iDelCount=(me.arrFrames.length-i);
+
+                    objDeleteFrame=document.getElementById(arrFrameInfo["frameId"]);
+                     if(objDeleteFrame.id == me.sSetSelectedFrame)
+                {
+                    me.sSetSelectedFrame = null;
+                    me.bsetCurrentFramemax = false;
+                }
+                    var objId = objDeleteFrame.id;
+                    var iFrameId = objId.split("_");
+                    if(clAppBuffer.getLanguage() == Constants.ILANGUAGE_TYPE.ENGLISH)
+                    $("li#li_"+iFrameId[1]).nextAll().remove();
+                    else
+                        $("li#li_"+iFrameId[1]).prevAll().remove();
+                    $("li#li_"+iFrameId[1]).remove();
+                    for(var j=0; j < iDelCount-1; j++)
+                        objFlexContainer.removeChild(objDeleteFrame.nextSibling);
+                    objFlexContainer.removeChild(objDeleteFrame);
+                    if(clAppBuffer.getWindowType() == Constants.IMODULE_WINDOW.TABBEDT_PANE)
+                        objFlexContainer.removeAttribute("iscrollpos_"+iFrameId[i]);
+
+                    me.arrFrames.splice(i,iDelCount);
+
+                    break;
+                }
+                else if(isRemoveCurrentFrame && sFrameId==arrFrameInfo["frameId"])
+                {
+                    iCurrentFrameIndex=i;
+
+                }
+
+            }
+
+
+            if(isRemoveCurrentFrame)/* && arrFrameInfo["frameId"]==sFrameId*/
+            {
+
+               /* if(me.arrFrames.length ==1 && me.isNtClsFirstFrame && !isRemoveAll)
+                {
+                   util.addClass(document.getElementById("li_0"),"selected");
+                    return true;
+                }*/
+
+                var objFrameDiv =document.getElementById(sFrameId);
+                if(objFrameDiv) {
+                var objCurrentFrameDvId = objFrameDiv.id;
+                var iCurrentFrameDvId = objCurrentFrameDvId.split("_");
+                if(clAppBuffer.getWindowType() != Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE){
+                    var objLeftPanel;
+                    objLeftPanel = document.getElementById("navDv");
+                    objLeftPanel.style.zIndex = 70;
+                    objLeftPanel.style.position = "fixed";
+
+                    setTimeout(function()
+                    {
+                        objLeftPanel.style.zIndex ="";
+                        objLeftPanel.style.position = "";
+                    },900);
+                }
+                if(isAnimate)
+                {
+
+                    objAnimateRight = sFrameId.split("_");
+                    if(!me.isIE)
+                    {
+                        if(objAnimateRight[1]==0  && clAppBuffer.getWindowType() != Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+                            util.addClass(objFrameDiv,"frame-moveFromRight");
+                        else
+                            util.addClass(objFrameDiv,"frame-moveToRight");
+                        var iDuration=1000;//2s
+                        setTimeout(function()
+                        {
+                            if(objFrameDiv)
+                                objFlexContainer.removeChild(objFrameDiv);
+                        },iDuration);
+                    }
+                    else if(objFrameDiv)
+                        objFlexContainer.removeChild(objFrameDiv);
+                    if(objAnimateRight[1]!=0 && clAppBuffer.getWindowType()!=Constants.IMODULE_WINDOW.MULTI_PANE )
+                    {
+//                        if(clAppBuffer.getWindowType()!=Constants.IMODULE_WINDOW.MULTI_PANE)
+                        if( document.getElementById("li_"+objAnimateRight[1])) {
+                            var linextSibling = document.getElementById("li_" + objAnimateRight[1]).nextSibling;
+                            util.addClass(linextSibling, "selected");
+                        }
+                    }
+                    if(clAppBuffer.getWindowType()!=Constants.IMODULE_WINDOW.MULTI_PANE)
+                    $("li#li_"+iCurrentFrameDvId[1]).remove();
+                    me.ismaximize=null;
+                }
+
+                else
+                {
+                    if(objFrameDiv)
+                        objFlexContainer.removeChild(objFrameDiv);
+                    $("li#li_"+iCurrentFrameDvId[1]).remove();
+                    me.ismaximize=null;
+                }
+                me.arrFrames.splice(iCurrentFrameIndex,1);
+                    if(clAppBuffer.getWindowType() == Constants.IMODULE_WINDOW.TABBEDT_PANE)
+                    objFlexContainer.removeAttribute("iscrollpos_"+iCurrentFrameDvId[1])
+                if(objFrameDiv.id == me.sSetSelectedFrame)
+                {
+                    me.sSetSelectedFrame = null;
+                    me.bsetCurrentFramemax = false;
+                }
+              if(clAppBuffer.getLanguage() == Constants.ILANGUAGE_TYPE.ENGLISH)
+              util.addClass(document.getElementById("li_0"),"selected");
+              else
+              document.getElementById("navDv").style.float="right";
+                }
+            }
+
+        }
+
+       /* else
+        {
+            alert(sFrameId)
+            alert(document.getElementById(arrFrameInfo["frameId"])
+            var sFrmId = document.getElementById(sFrameId);
+             objFlexContainer.removeChild(sFrmId);
+
+                    me.arrFrames.splice(0,1);
+        }*/
+    };
+
+
+    /**
+     * this method is used to remove frame
+     * @param sFrameId :FrameId to be removed
+     * @param iClientWidth :Client width of frame
+     * @param sResponse :to set response to Container after closing the frame
+     * @param callBackFunc : to set callback as response handler
+     */
+    this.removeFrame=function(sFrameId,iClientWidth,sResponse,callBackFunc)
+    {
+        var objFrameInfo=getFrameInfo(sFrameId);
+        var responseHandler = callBackFunc;
+        var isAnimate=true;
+//        if(clAppBuffer.getWindowType() != Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+        me.removeChildFrames(sFrameId,true,isAnimate);
+        /*else
+        {
+            var sFrmId = document.getElementById(sFrameId);
+            var objId = sFrmId.id;
+            var iFrameId = objId.split("_");
+            var parentDiv = sFrmId.parentNode;
+            $("li#li_"+iFrameId[1]).remove();
+            util.addClass(sFrmId,"frame-moveToRight");
+            setTimeout(function()
+            {
+               parentDiv.removeChild(sFrmId);
+             util.addClass(document.getElementById("li_0"),"selected");
+            },1000)
+
+            me.arrFrames.splice(0,1);
+        }*/
+
+        setTimeout(function()
+        {
+
+            if(sResponse  && clAppBuffer.getWindowType() != Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+            {
+                if(me.arrFrames.length>=1)
+                {
+                    for(var i=0;i<=me.arrFrames.length-1;i++)
+                    {
+                        document.getElementById("fr_"+me.arrFrames[i]["frameIndex"]).contentWindow.location.reload();
+                    }
+
+
+//                    listView.getRefresh();
+//                     con.sendPostRequest(null, null,"listView.getRefresh", null, con.RESPONSE_HTML,null, null, false, false, ACTION_LOADING);
+                }
+                /*else
+                {
+                    document.getElementById("fr_"+0).contentWindow.location.reload();
+                    if(responseHandler)
+                    {
+                    eval(responseHandler)();
+                    }
+                }*/
+            }
+            if(me.arrFrames.length==1 && clAppBuffer.getWindowType() != Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+            {
+                if(me.iToggleNav==1 )
+                {
+                    iClientWidth = iClientWidth+170;
+                    if(clAppBuffer.getWindowType() == Constants.IMODULE_WINDOW.TABBEDT_PANE)
+                        me.sSetSelectedFrame = "dv_0";
+                }
+                else
+                    iClientWidth = me.iMaxWidth;
+               if(document.getElementById("resize_0"))
+               util.removeClass(document.getElementById("resize_0"),"crm-dashlet-maximize");
+                var isMultiTab = false;
+                if(clAppBuffer.getWindowType() == Constants.IMODULE_WINDOW.TABBEDT_PANE)
+                isMultiTab = true;
+                me.frameResize(iClientWidth,isMultiTab,false,false);
+
+            }
+            if(responseHandler)
+            {
+                eval(responseHandler)();
+            }
+        },700)
+
+//           util.writeToLog(me.arrFrames.length)
+        if(me.arrFrames.length==0 && clAppBuffer.getWindowType() != Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+        {
+            clAppBuffer.setWindowType(Constants.IMODULE_WINDOW.DEFAULT);
+            setTimeout(function()
+            {
+                me.ismaximize=null;
+                me.iToggleNav = 0;
+                me.sFrameTitle = null;
+                var objContainer=document.getElementById(me.sContainerId);
+                function fnCallback(sResponse)
+                {
+                    initAllCombos=null;
+                    objContainer.innerHTML=sResponse;
+                    loadResources(objContainer,util.onScriptsLoad);
+//                    eval(sUserCallBack);
+
+                }
+                me.iFrameCount =0;
+                objContainer.style.maxWidth = "";
+                me.bMultipaneDisplay=false;
+                document.getElementById(me.sDvTabbedPane).style.display="none";
+                document.getElementById(me.sDvTabbedPane).innerHTML="";
+                me.bTabbedPane = true;
+                if(me.isIE)
+                    util.removeClass(objContainer,"iE-Frame-container");
+                else
+                    util.removeClass(objContainer,"frame-container");
+               /* var sURL="module/moduleView!getBackUrlView.do";
+                var  sParams="moduleId=2589&title=Home&byAction=3";
+                con.sendPostRequest(sURL, sParams,fnCallback, null, con.RESPONSE_HTML,null, null, false, false, ACTION_LOADING);*/
+                var sURL="/common/dashboard!showDashboard.do";
+                home.setCenterUI(sURL, null, true, false, null, false, null, false, false, false, 0, true);
+
+
+
+            },800);
+        }
+        /* var fnCallback=objFrameInfo["callback"];
+         if(fnCallback)
+         fnCallback(me.FRAME_REMOVED,sFrameId);*/
+
+        //isCancel=1
+        //        }
+    };
+    /**
+     * this method is used to return frame info which is stored in global variable
+     * @param sFrameId :Particular frameId
+     * @returns {*}
+     */
+    function getFrameInfo(sFrameId)
+    {
+        for(var i=0; i < me.arrFrames.length; i++)
+        {
+            if(me.arrFrames[i]==sFrameId)
+                return me.arrFrames[i];
+        }
+        return null;
+    }
+
+    /**
+     * this method is used to resize frame after adding or deletion of frames if it is not multipane tabs
+     * @param iWidth : resize to how much width
+     * @param iMultiTab :if its multi tab
+     * @param isSetFrameLeft : if first frame need to set
+     * @param isSetMaxTabbed
+     * @param bSplitView :boolean value if true need then frame is opened in splitview
+     * @param splitFrameId :splitvalue frameId if open in splitview
+     */
+    this.frameResize = function(iWidth,iMultiTab,isSetFrameLeft,isSetMaxTabbed,bSplitView,splitFrameId)
+    {
+        var objFirstFrame,objFirstChild,arrFirstChild,arrContainerChild,arrFrame,objFrameHeader,arrHeaderChildren,arrAction;
+        objFirstFrame=me.arrFrames[0];
+        if(isSetFrameLeft)
+            objFirstChild = document.getElementById(me.ismaximize);
+        else if(isSetMaxTabbed && clAppBuffer.getWindowType()==Constants.IMODULE_WINDOW.TABBEDT_PANE)
+            objFirstChild = document.getElementById(me.sSetSelectedFrame);
+        else if(bSplitView)
+             objFirstChild = document.getElementById(splitFrameId);
+        else
+            objFirstChild=document.getElementById(objFirstFrame["frameId"]);
+        if(objFirstChild){
+        objFirstChild.style.width=iWidth;
+        if((!me.bSetTabbed &&!isSetMaxTabbed && !iMultiTab) )
+        {
+            objFrameHeader =  cross.getChildren(objFirstChild)[0];
+            arrHeaderChildren = cross.getChildren(objFrameHeader)[1];
+            arrAction =  cross.getChildren(arrHeaderChildren)[0];
+             if(me.arrFrames.length>1 && !isSetFrameLeft)
+            {
+            util.removeClass(arrAction,"crm crm-dashlet-minimize");
+            util.addClass(arrAction,"crm crm-dashlet-maximize");
+            }
+        }
+        arrFirstChild=cross.getChildren(objFirstChild)[1];
+        arrFirstChild.style.maxWidth = iWidth-5+"px";
+        arrContainerChild= cross.getChildren(arrFirstChild)[0];
+        if(me.arrFrames.length>=1)
+            arrContainerChild.style.maxWidth = iWidth-5+"px";
+        else
+            arrContainerChild.style.maxWidth = iWidth-5+"px";
+        arrFrame = cross.getChildren(arrContainerChild)[0];
+        arrFrame.style.width = (iWidth-5)+"px";
+        }
+    };
+    /**
+     * this method is used to create frames and is called after add Frame method
+     * @param iFrameId : To set frameId
+     * @param sUrl : Url to set for frames
+     * @param iWidth : width od the frame
+     * @param iHeight :height of the frame
+     * @param sContainerId : container Id in which frames are set
+     * @param e :mouse event
+     * @param sUserCallBack : user call back function
+     * @param isMultiPaneTab :boolean value if its multipane tab
+     * @param iModuleId : moduleId of the frame
+     * @returns {string}
+     */
+
+    this.createNewFrame = function(iFrameId,sUrl,iWidth,iHeight,sContainerId,e,sUserCallBack,isMultiPaneTab,iModuleId)
+    {
+        var sFrameId="dv_"+iFrameId;
+        var objFrame,objRemoveImg,objFlexContainer,objFrameContainerChild,dvParentFrame,dvHeader,dvActions ,liNode,
+                objDvZindex,objMaximizeImg,objDiv,spnTitle,spnTitle1,cltimer,sModuleCaption;
+        objFlexContainer = document.getElementById(sContainerId);
+        iHeight="98.4%";
+        /*if(clAppBuffer.getWindowType() == Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+        {
+             if(me.arrFrames.length>0)
+              objFlexContainer.setAttribute("iScrollPos_"+iFrameId,((objFlexContainer.offsetWidth*me.arrFrames.length)-300));
+            else
+             objFlexContainer.setAttribute("iScrollPos_"+iFrameId,0);
+        }*/
+
+        sModuleCaption=clAppBuffer.getModuleCaption(iModuleId);
+        document.getElementById(me.sContainerId).style.marginTop="0px";
+        if(isMultiPaneTab)
+        {
+            document.getElementById(me.sContainerId).style.marginTop="3px";
+            iWidth = me.iMaxWidth;
+        }
+        if(isMultiPaneTab && me.isToggleLeft && clAppBuffer.getWindowType() != Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+        {
+            iWidth = me.iMaxWidth+170;
+            me.sSetSelectedFrame  = "dv_"+iFrameId;
+        }
+        objDiv = document.createElement("div");
+        objDiv.style.width=0;
+        objDiv.id=sFrameId;
+        objDiv.style.zIndex =(-iFrameId+50);
+        objDvZindex = objDiv.style.zIndex;
+        objDiv.style.visibility="hidden";
+        if(me.isIE)
+            objDiv.setAttribute("class","iEFrameDv");
+        else
+            objDiv.setAttribute("class","iFrameDv");
+        dvHeader = document.createElement("div");
+        dvHeader.setAttribute("class","frameHeader");
+        if(!isMultiPaneTab)
+            dvHeader.setAttribute("ondblclick","clFrame.maximizeFrame("+iFrameId+","+iWidth+",'"+objDvZindex+"')");
+        spnTitle = document.createElement("div");
+        spnTitle.setAttribute("class","spnTitle");
+        spnTitle1 = document.createElement("span");
+        util.addClass(spnTitle1,"spnTitleTrans");
+        dvActions=document.createElement("span");
+        dvActions.setAttribute("class","dvActions");
+        if(!me.isIE)
+        {
+            dvActions.style.display="flex";
+            spnTitle.style.whiteSpace="noWrap";
+        }
+        objMaximizeImg = document.createElement("span");
+        if(me.arrFrames.length>0)
+        objMaximizeImg.className= "crm crm-dashlet-maximize";
+        objMaximizeImg.id="resize_"+iFrameId;
+        util.addClass(objMaximizeImg,"iconMax");
+        objMaximizeImg.setAttribute("onclick","clFrame.maximizeFrame("+iFrameId+","+iWidth+",'"+objDvZindex+"',false,"+isMultiPaneTab+")");
+        objRemoveImg = document.createElement("span");
+        objRemoveImg.className = "crm crm-close-dlg";
+        objRemoveImg.setAttribute("onclick","clFrame.removeFrame('"+sFrameId+"',"+me.iMaxWidth+")");
+        dvParentFrame = document.createElement("div");
+        dvParentFrame.style.maxWidth = 0;
+        dvParentFrame.style.height = "98%";             /*iHeight+"px";*/
+        dvParentFrame.setAttribute("class","dvParentFrame loadingImg");
+        objFrameContainerChild= document.createElement("div");
+        objFrameContainerChild.style.maxWidth=0;
+        objFrameContainerChild.style.height=iHeight;
+        dvParentFrame.style.textAlign="left";
+        objFrameContainerChild.setAttribute("class","dvFrameContainer");
+
+        if(me.arrFrames.length==0)
+        {
+            if(me.isToggleLeft && clAppBuffer.getWindowType() != Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+                iWidth = me.iMaxWidth+170;
+            else
+                iWidth = me.iMaxWidth;
+
+//            if(home.getWindowType()==Constants.IMODULE_WINDOW.MULTI_PANE && me.arrFrames.length)
+//            objMaximizeImg.className= "crm crm-dashlet-minimize";
+        }
+
+        var isIFrame;
+        objFrame = document.createElement("iframe");
+        objFrame.id = "fr_"+iFrameId;
+        objFrame.name = "fr_"+iFrameId;
+        isIFrame=true;
+        objDiv.style.background = "#ffffff";
+        objRemoveImg.id="spRemoveImg_"+iFrameId;
+        objFrame.height = iHeight; /*iHeight+"px";*/
+        objFrame.style.border=0;
+        if(!isMultiPaneTab)
+        {
+            objDiv.onmousedown=function(e)
+            {
+                var objNextFrameCont,objNextParentDv,objNextFrame,objPrevFrameCont,objPrevParentDv,objPrevFrame;
+                if(objDiv.nextSibling)
+                {
+                    objNextFrameCont = cross.getChildren(objDiv.nextSibling)[1];
+                    objNextParentDv = cross.getChildren(objNextFrameCont)[0];
+                    objNextFrame = cross.getChildren(objNextParentDv)[0];
+                    objNextFrame.style.pointerEvents = "none";
+                }
+                if(objDiv.previousSibling)
+                {
+
+                    objPrevFrameCont = cross.getChildren(objDiv.previousSibling)[1];
+                    objPrevParentDv = cross.getChildren(objPrevFrameCont)[0];
+                    objPrevFrame = cross.getChildren(objPrevParentDv)[0];
+                    objPrevFrame.style.pointerEvents = "none";
+                }
+                if(me.ismaximize==null)
+                {
+                    clFrame.onResizeMouseDown(sFrameId,e);
+                    objFrame.style.pointerEvents = "none";
+                }
+            };
+            objDiv.onmouseup = function(e)
+            {
+                var objNextFrameCont,objNextParentDv,objNextFrame,objPrevFrameCont,objPrevParentDv,objPrevFrame;
+                if(objDiv.nextSibling)
+                {
+                    objNextFrameCont = cross.getChildren(objDiv.nextSibling)[1];
+                    objNextParentDv = cross.getChildren(objNextFrameCont)[0];
+                    objNextFrame = cross.getChildren(objNextParentDv)[0];
+                    objNextFrame.style.pointerEvents = "auto";
+                }
+                if(objDiv.previousSibling)
+                {
+
+                    objPrevFrameCont = cross.getChildren(objDiv.previousSibling)[1];
+                    objPrevParentDv = cross.getChildren(objPrevFrameCont)[0];
+                    objPrevFrame = cross.getChildren(objPrevParentDv)[0];
+                    objPrevFrame.style.pointerEvents = "auto";
+                }
+                objFrame.style.pointerEvents="auto";
+            };
+        };
+        if(!isMultiPaneTab)
+        {
+            spnTitle.appendChild(spnTitle1);
+            dvHeader.appendChild(spnTitle);
+            dvHeader.appendChild(dvActions);
+            dvActions.appendChild(objMaximizeImg);
+            dvActions.appendChild(objRemoveImg);
+            dvHeader.style.height="16px";
+            dvHeader.style.padding="3px 0px";
+            objDiv.style.border="1px solid #B9B9B9";
+        }
+
+        objDiv.appendChild(dvHeader);
+        dvParentFrame.appendChild(objFrame);
+        objFrameContainerChild.appendChild(dvParentFrame);
+        objDiv.appendChild(objFrameContainerChild);
+        objFlexContainer.appendChild(objDiv);
+        if(isMultiPaneTab)
+        {
+            var liTextNode = document.createElement("span");
+            var iloading = document.createElement("i");
+            iloading.style.marginLeft="2px";
+            var liCloseSpan = document.createElement("span");
+            var liHoverContent = document.createElement("span");
+            liCloseSpan.id="liClose_"+iFrameId;
+            util.addClass(liCloseSpan,"tabClose crm crm-close-dlg");
+            liCloseSpan.style.marginRight="4px";
+            if(clAppBuffer.getLanguage()==Constants.ILANGUAGE_TYPE.ARABIC || clAppBuffer.getLanguage()==Constants.ILANGUAGE_TYPE.PERSIAN)
+            liCloseSpan.style.float="left";
+            var objUl= document.getElementById("olTabbedPane");
+            var objli = document.createElement("span");
+            var objliHov = document.createElement("span");
+            objliHov.id="objliHov_"+iFrameId;
+            objli.id="liText_"+iFrameId;
+            liTextNode.id="liContent_"+iFrameId;
+            liTextNode.innerHTML = sModuleCaption;
+            liTextNode.setAttribute("onclick","clFrame.onClkTab("+iFrameId+")");
+            liNode = document.createElement("li");
+            liNode.id="li_"+iFrameId;
+            util.addClass(liTextNode,"liTextNode");
+            util.addClass(iloading,"fa titleLoad fa-spin");
+            util.addClass(liNode,"liNodes");
+            liCloseSpan.setAttribute("onclick","clFrame.removeFrame('"+sFrameId+"',"+me.iMaxWidth+")");
+            liHoverContent.appendChild(objliHov);
+            liNode.appendChild(iloading);
+            liNode.appendChild(liHoverContent);
+            liNode.appendChild(liTextNode);
+//            if(home.getWindowType() == Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE && me.arrFrames.length>0)
+            if(clAppBuffer.getWindowType() == Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE && me.arrFrames.length>0)
+            liNode.appendChild(liCloseSpan);
+            else if(clAppBuffer.getWindowType() != Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+            liNode.appendChild(liCloseSpan);
+           if(clAppBuffer.getLanguage()==Constants.ILANGUAGE_TYPE.ENGLISH)
+            objUl.appendChild(liNode);
+            else
+           objUl.insertBefore(liNode, objUl.childNodes[0]);
+            var ulItem=cross.getChildren(objUl);
+            for(i=0;i<ulItem.length;i++)
+            {
+                util.removeClass(ulItem[i],"selected");
+            }
+            util.addClass(liNode,"selected");
+        }
+        me.sCallback = sUserCallBack;
+        if(!isMultiPaneTab)
+        {
+            objDiv.onmouseover = function(e)
+            {
+                var objFrameCont;
+                objFrameCont=parseInt(objFrameContainerChild.style.maxWidth,10);
+                var offset =  $(objDiv).offset();
+                var s=e.pageX - offset.left;
+
+                if(s>=objFrameCont)
+                {
+                    me.isResize= true;
+                    objDiv.style.cursor="col-resize";
+                }
+                else
+                {
+                    me.isResize= false;
+                    objDiv.style.cursor="";
+                }
+            };
+        };
+
+        if(!me.isIE && me.arrFrames.length>0)
+        {
+            if(clAppBuffer.getLanguage()==Constants.ILANGUAGE_TYPE.ENGLISH)
+            util.addClass(objDiv,"frame-moveToLeft");
+             else if((clAppBuffer.getLanguage()==Constants.ILANGUAGE_TYPE.ARABIC || clAppBuffer.getLanguage()==Constants.ILANGUAGE_TYPE.PERSIAN) && clAppBuffer.getWindowType() == Constants.IMODULE_WINDOW.TABBEDT_PANE )
+                objFlexContainer.style.overflowX="hidden";
+
+        }
+        objDiv.style.visibility='visible';
+        if(me.arrFrames.length==0)
+        {
+            var iFirstFrameposition=cross.getPosition(objDiv);
+            me.iFirstFrameLeft = iFirstFrameposition[0];
+            me.iFirstFrameTop = iFirstFrameposition[1];
+        }
+        setTimeout(function()
+        {
+            objDiv.style.width = iWidth+"px";
+            objFrameContainerChild.style.maxWidth=(iWidth-5)+"px";
+            dvParentFrame.style.maxWidth=(iWidth-5)+"px";
+            objFrame.style.width = (iWidth-5)+"px";
+        },50);
+
+
+        var iDuration=1100;//2s
+
+        if(isMultiPaneTab &&  (clAppBuffer.getLanguage()==Constants.ILANGUAGE_TYPE.ENGLISH))
+            document.getElementById(me.sContainerId).addEventListener("scroll",clFrame.onWndscroll);
+        if(clAppBuffer.getWindowType() == Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+        {
+
+            if(me.arrFrames.length>0)
+            {
+                if(clAppBuffer.getLanguage()==Constants.ILANGUAGE_TYPE.ENGLISH)
+            $('#'+me.sContainerId).animate({ scrollLeft: objFlexContainer.offsetWidth*me.arrFrames.length+20},iDuration);
+                else
+               $('#'+me.sContainerId).animate({ scrollLeft: -(objFlexContainer.offsetWidth*me.arrFrames.length+100)},iDuration); 
+                setTimeout(function()
+            {
+                objFlexContainer.setAttribute("iScrollPos_"+iFrameId,objFlexContainer.scrollLeft);
+
+            },iDuration);
+            }
+            else
+              objFlexContainer.setAttribute("iScrollPos_"+iFrameId,0);
+
+
+        }
+        else
+        {
+             if(clAppBuffer.getLanguage()==Constants.ILANGUAGE_TYPE.ENGLISH)
+            $('#'+me.sContainerId).animate({ scrollLeft: objFlexContainer.offsetWidth*me.arrFrames.length},iDuration);
+            else
+             {
+
+                 $('#'+me.sContainerId).animate({ scrollLeft: -(objFlexContainer.offsetWidth*me.arrFrames.length+100)},iDuration);
+             }
+            var sUsrAg = navigator.userAgent;
+            if((clAppBuffer.getLanguage()!=Constants.ILANGUAGE_TYPE.ENGLISH) && (me.arrFrames.length>0) && (objFlexContainer.scrollLeft==0) &&(sUsrAg.indexOf("Firefox") == -1) && (sUsrAg.indexOf("Trident") ==-1))//chrome arabic
+            {
+                me.setScrollAttribute(objFlexContainer,iFrameId,true);
+                //$('#'+me.sContainerId).animate({ scrollLeft: (me.iMaxWidth*me.arrFrames.length)},iDuration);
+            }
+             else if((clAppBuffer.getLanguage()!=Constants.ILANGUAGE_TYPE.ENGLISH) && (me.arrFrames.length>0) && (sUsrAg.indexOf("Trident") >-1))// IE arabic
+             {
+                 me.setScrollAttribute(objFlexContainer,iFrameId,false);
+                 $('#'+me.sContainerId).animate({ scrollLeft: (me.iMaxWidth*me.arrFrames.length)},0);
+             }
+             else {
+                setTimeout(function () {
+                    if (objFlexContainer.scrollLeft != 0)
+                        objFlexContainer.setAttribute("iScrollPos_" + iFrameId, objFlexContainer.scrollLeft);
+                }, iDuration);
+            }
+        }
+        if(me.arrFrames.length==1 && !isMultiPaneTab)
+        {
+            var iresize =1;
+            setTimeout(function()
+            {
+                me.frameResize(iWidth,null,false,false);
+            },500);
+        }
+        var sParams=sUrl.substring(sUrl.indexOf("?")+1);
+        sUrl=sUrl.substring(0,sUrl.indexOf("?"));
+        sParams+="&isIFrame="+isIFrame+"&isExcludeJs=false";
+    {
+
+        objFrame.src=clAppBuffer.getFrameTemplateUrl()+"?url="+sUrl+"&"+sParams;//"common/modSettings!getFrameTemplate.do?url="+sUrl+"&"+sParams;
+        objFrame.onload = function()
+        {
+            if(me.sFrameTitle!=null)
+            {
+                if(!isMultiPaneTab)
+                {
+                    spnTitle1.innerText = me.sFrameTitle;
+                    if(document.getElementById("disableBGImg") && document.getElementById("disableBGImg").style.display!="none")
+                        util.toggleBackground(false);
+                }
+
+                if(isMultiPaneTab)
+                {
+                    util.addClass(objliHov,"tooltiptext");
+                    util.addClass(liHoverContent,"tooltip");
+                    if(me.isIE)
+                        liHoverContent.style.display = "block";
+                    liTextNode.innerText = me.sFrameTitle;
+                    objliHov.innerText = me.sFrameTitle;
+                    util.removeClass(iloading,"fa titleLoad fa-spin");
+                    if(document.getElementById("disableBGImg") && document.getElementById("disableBGImg").style.display!="none")
+                    util.toggleBackground(false);
+                }
+            }
+            util.removeClass(dvParentFrame,"loadingImg");
+
+        };
+    }
+
+
+        return sFrameId;
+    };
+
+    /**
+     * this function is used when frames are in multi tabbed pane,to set the attribute iScrollPosition_iFrameIndex after adding new frame
+     * @param objFlexContainer : container in which frames are appended
+     * @param iFrameId : Id of the added frame
+     * @param isFromMozilla :boolean value true if from mozilla browser
+     */
+
+    this.setScrollAttribute = function(objFlexContainer,iFrameId,isFromMozilla)
+    {
+        var iCount=me.arrFrames.length;
+        for(var i=0;i<=me.arrFrames.length;i++)
+        {
+            var iFrameIndex;
+            if(i==me.arrFrames.length)
+                iFrameIndex = iFrameId;
+            else
+                iFrameIndex =me.arrFrames[i].frameIndex;
+            if(isFromMozilla)
+            {
+                objFlexContainer.setAttribute("iScrollPos_"+iFrameIndex,(me.iMaxWidth*iCount));
+                iCount--;
+            }
+            else
+            objFlexContainer.setAttribute("iScrollPos_"+iFrameIndex,(me.iMaxWidth*i))
+
+        }
+    };
+
+    /**
+     * this method is used to set the scroll after maximizing or minimizing the frame if multi-pane tab frame to set scroll left
+     * @param objFlexContainer : Container in which frames are appended
+     * @param iAddWidth : width value which need to added to container offsetwidth
+     */
+
+    this.setScroll = function(objFlexContainer,iAddWidth)
+    {
+        //util.writeToLog("scroll===="+(objFlexContainer.offsetWidth+(iAddWidth)));
+        objFlexContainer.scrollLeft=objFlexContainer.offsetWidth+(iAddWidth);
+
+    };
+
+    /**
+     * this method is used to maximize frame from multi pane tab onclick of maximize Icon to view frame in complete container
+     * @param iFrameId :frame id that needs to be maximize
+     * @param iWidth : width to set for the frame
+     * @param iZIndex : index to set higher than than the existing frames
+     */
+    this.maximizeFrame = function(iFrameId,iWidth,iZIndex)
+    {
+        var objContainer,objFrame,arrParentDv,arrContentDv,objResizeImg,objFrameContainerChild,iPositions,iClientWidth;
+        objContainer=document.getElementById(me.sContainerId);
+        objFrame=document.getElementById("dv_"+iFrameId);
+        objResizeImg = document.getElementById("resize_"+iFrameId);
+        var arrobjFramePosition = cross.getPosition(objFrame);
+        iPositions=cross.getPosition(objContainer);
+        objFrameContainerChild = cross.getChildren(objFrame)[1];
+        arrParentDv = cross.getChildren(objFrameContainerChild)[0];
+        arrContentDv = cross.getChildren(arrParentDv)[0];
+        //        iClientWidth = parseInt(document.getElementById("hfClientWidth").value);
+        if(me.iToggleNav==1)
+            iClientWidth = me.iMaxWidth+170;
+        else
+            iClientWidth = me.iMaxWidth;
+        if(me.arrFrames.length==1)
+        {
+            return true;
+        }
+        if(me.ismaximize==null)
+        {
+            objFrame.style.zIndex = 60;
+            objFrame.style.position = 'absolute';
+            objFrame.style.backgroundColor ="#ffffff";
+            util.removeClass(objFrame,"frame-moveToLeft");
+            if(!me.isIE && clAppBuffer.getLanguage()==Constants.ILANGUAGE_TYPE.ENGLISH)
+            {
+                setTimeout(function()
+                {
+                    objFrame.style.width =0;
+                    objFrameContainerChild.style.maxWidth =0;
+                    arrParentDv.style.maxWidth=0;
+                    arrContentDv.style.width=0;
+                    if(!me.isToggleLeft)
+                        objFrame.style.left =me.iFirstFrameLeft+"px";
+                    else
+                        objFrame.style.left =(me.iFirstFrameLeft-170)+"px";
+                    objFrame.style.top = me.iFirstFrameTop+"px";
+                    util.addClass(objFrame,"frame-moveMaxFrame");
+                    objFrame.style.height = "100%";
+                    setTimeout(function()
+                    {
+                        objFrame.style.left = iPositions[0]+"px";
+                        objFrame.style.top = iPositions[1]+"px";
+                        util.removeClass(objResizeImg,"crm crm-dashlet-maximize");
+                        util.addClass(objResizeImg,"crm crm-dashlet-minimize");
+                        objFrame.style.width = iClientWidth+"px";/*"+="+iWidth+"px"*/;
+                        objFrameContainerChild.style.maxWidth =iClientWidth+"px";
+                        arrParentDv.style.maxWidth = iClientWidth+"px";
+                        arrContentDv.style.width = iClientWidth+"px";
+                        util.removeClass(objFrame,"frame-moveMaxFrame");
+                    },400);
+                },0.2);
+            }
+            else
+            {
+                objFrame.style.zIndex = 60;
+                objFrame.style.position = 'absolute';
+                objFrame.style.width =iWidth+"px";
+                objFrame.style.left =arrobjFramePosition[0]+"px";
+                objFrame.style.top = arrobjFramePosition[1]+"px";
+                objFrame.style.backgroundColor ="#ffffff";
+                setTimeout(function()
+                {
+                    objFrame.style.left = iPositions[0]+"px";
+                    objFrame.style.top = iPositions[1]+"px";
+                    objFrame.style.height = "100%";
+                    util.removeClass(objResizeImg,"crm crm-dashlet-maximize");
+                    util.addClass(objResizeImg,"crm crm-dashlet-minimize");
+                    objFrame.style.width = iClientWidth+"px";/*"+="+iWidth+"px"*/;
+                    objFrameContainerChild.style.maxWidth =iClientWidth+"px";
+                    arrParentDv.style.maxWidth = iClientWidth+"px";
+                    arrContentDv.style.width = iClientWidth+"px";
+                },2);
+            }
+            me.dvZIndex = iZIndex;
+            me.ismaximize="dv_"+iFrameId;
+        }
+        else
+        {
+            objFrame.style.zIndex=iZIndex;
+            objFrame.style.position = 'static';
+            objFrame.style.width = iWidth;
+            objFrame.style.left = arrobjFramePosition[0];
+            objFrame.style.top = arrobjFramePosition[1];
+            objFrameContainerChild.style.maxWidth =(iWidth-5)+"px";
+            arrParentDv.style.maxWidth = (iWidth-5)+"px";
+            arrContentDv.style.width = (iWidth-5)+"px";
+            objFrame.style.height="";
+            if(!me.isIE)
+                util.removeClass(objFrame,"frame-moveToLeft");
+            util.removeClass(objResizeImg,"crm crm-dashlet-minimize");
+            util.addClass(objResizeImg,"crm crm-dashlet-maximize");
+            me.setScroll(objContainer,iWidth);
+            me.ismaximize=null;
+            setTimeout(function()
+            {
+                objFrame.style.left = '';
+                objFrame.style.top = '';
+                util.removeClass(objFrame,"frame-moveMaxFrame");
+            },50);
+            objContainer.scrollLeft = objContainer.offsetWidth*me.arrFrames.length+100;
+
+        }
+    };
+    /**
+     * this method is used to delete all the frames from the container.
+     */
+    this.DeleteFrameLength = function()
+    {
+        if(document.getElementById(me.sContainerId) && document.getElementById(me.sDvTabbedPane)){
+            var objDvCenter = document.getElementById(me.sContainerId);
+            var dvTabbedPane = document.getElementById(me.sDvTabbedPane);
+            me.arrFrames.length=0;
+            me.iFrameCount=0;
+            me.bMultipaneDisplay=false;
+            me.bMultipaneDisplay=false;
+            me.bTabbedPane=true;
+            me.bsetCurrentFramemax = false;
+            me.sSetSelectedFrame  = null;
+            me.ismaximize = null;
+
+            var objTd = document.getElementById("td");
+            var objTdCenter =  document.getElementById("tdCenter");
+            objDvCenter.style.maxWidth="";
+            objDvCenter.align="center";
+            objDvCenter.style.height="";
+            objTd.style.padding="2px 5px 5px 5px";
+            objTdCenter.style.padding="1px 2px 2px 0px";
+            dvTabbedPane.style.display="none";
+            dvTabbedPane.innerHTML="";
+            if(document.getElementById("tdMainLeft"))
+                document.getElementById("tdMainLeft").style.width="10px";
+            var isIEBrowser=clFrame.isIEbrowser();
+            if(isIEBrowser)
+                util.removeClass(objDvCenter,"iE-Frame-container");
+            else
+                util.removeClass(objDvCenter,"frame-container");
+              if(clAppBuffer.getLanguage() == Constants.ILANGUAGE_TYPE.ENGLISH)
+              document.getElementById("navDv").style.float="left";
+        }
+
+    };
+    /**
+     * this method is used to set the value to global variables,called from navmenu.js while toggle
+     * @param isFromNavMenu: if show navbar
+     * @returns {boolean|*}
+     */
+    this.isMultipaneDisplay = function(isFromNavMenu)
+    {
+        if(isFromNavMenu)
+        {
+            me.iToggleNav = 1;
+            me.iToggleLeft = 1;
+            me.isSetLeft = true;
+        }
+        return me.bMultipaneDisplay;
+
+    };
+    /**
+     * not using
+     * @param multipaneDisplay
+     */
+    this.setMultipaneDisplay = function(multipaneDisplay)
+    {
+        me.ismaximize=null;
+        me.sFrameTitle= null;
+        me.iToggleNav = 0;
+
+        me.bMultipaneDisplay=multipaneDisplay;
+    };
+
+
+    /**
+     * this method is called if save action or delete action is called from editview screen
+     * @param sResponse : if response length is greater than last frame will not be removed
+     * @param callBackFunc : call back function after removing cuurent last frame
+     */
+
+    this.handleResponseHTML=function(sResponse,callBackFunc)
+    {
+
+        var bReturn = false;
+        if(util.trim(sResponse).length>0)
+            bReturn = true;
+        var objLastFrameInfo=me.arrFrames[me.arrFrames.length-1];
+          setTimeout(function()
+        {
+            me.removeFrame(objLastFrameInfo["frameId"],me.iMaxWidth,bReturn,callBackFunc);
+        },200);
+    };
+
+
+    this.getPreviousFrameId = function()
+    {
+        if(me.arrFrames.length>1)
+        {
+            var objFrameInfo=me.arrFrames[me.arrFrames.length-2];
+            return objFrameInfo["frameId"];
+        }
+
+        return null;
+    };
+
+
+
+    this.setFrame = function(iModuleId,sURL,objMenuItem,isIgnoreURL,sUserCallBack,isIgnoreForHashing,sParams,clEvent,isMultiPaneTab,iClienttWid,bRemoveAllFrames)
+    {
+        var fnCaller,isMultipaneView,objDvCenter,objTd,objTdCenter,iClientHeight;
+        if(iModuleId>0) //updating module id from next request url
+            me.iCurrentModuleId=iModuleId;
+        else //if module id is not present in the URL, using the existing moduleid
+            iModuleId=me.iCurrentModuleId;
+        if(clAppBuffer.getWindowType() != Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+            iClienttWid=iClienttWid-20;
+        me.iScrollLeft = iClienttWid;
+        /*event=null;
+         fnCaller=arguments.callee.caller;
+         while(fnCaller)
+         {
+         if(!fnCaller.caller)
+         {
+         event=fnCaller.arguments[fnCaller.arguments.length-1];
+         break;
+         }
+         fnCaller=fnCaller.caller;
+         }*/
+        var isCheckToggle = clNavMenu.isToggle();
+       if(isCheckToggle)
+            me.isToggleLeft = true;
+        else
+       me.isToggleLeft = false;
+        isMultipaneView=util.checkBit(clAppBuffer.getModulewiseProperties(iModuleId),Constants.IMODULE_SETTINGS.WINDOW_STYLE_MULTI_PANE);
+         var isCancelUrl=(sParams.indexOf("isCancel=1")!=-1);
+
+        me.bSetTabbed= false;
+        //if(!isCancelUrl && isMultipaneView  )// in case url is not dialog
+        //{
+        if(isMultiPaneTab)
+            me.bsetCurrentFramemax= true;
+        else
+            me.bsetCurrentFramemax= false;
+//        if(!bRemoveAllFrames)
+            me.isRemoveAllFrame = bRemoveAllFrames;
+        if(!isCancelUrl && (isMultipaneView ||clAppBuffer.getWindowType() == Constants.IMODULE_WINDOW.MULTI_PANE|| isMultiPaneTab) )// in case url is not dialog
+        {
+            //                isMultiPaneTab=true;
+
+            var objCreateTabPanned;
+            if(clAppBuffer.getWindowType() == Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE){
+                me.sContainerId = "dvMultipane2";
+                me.sDvTabbedPane =  "dvTabbedPane2";
+                objDvCenter = parent.document.getElementById(me.sContainerId);
+                objDvCenter.style.display = "";
+                if(document.getElementById(me.sDvTabbedPane) == null){
+                    objCreateTabPanned = document.createElement("div");
+                    objCreateTabPanned.id=me.sDvTabbedPane;
+                    objCreateTabPanned.style.width="100%";
+                    objCreateTabPanned.style.display="none";
+                    objCreateTabPanned.style.background = "rgba(216, 216, 216, 0.42)";
+                    //                objCreateTabPanned.appendChild(objDvCenter);
+                    //                    alert(objDvCenter)
+                    //                 parent.document.body.removeChild(objDvCenter);
+
+                }
+                else
+                    objCreateTabPanned = document.getElementById(me.sDvTabbedPane);
+
+                parent.document.getElementById("dvResizer").insertBefore(objCreateTabPanned,objDvCenter);
+                if(me.bSplitPaneDvResize)
+                {
+
+                me.iSplitWidth = parseInt(document.getElementById("dvResizer").style.width, 10);
+
+                me.bSplitPaneDvResize = false;
+                }
+            }
+            else
+            {
+                me.sContainerId = "dvCenter";
+                me.sDvTabbedPane =  "dvTabbedPane";
+            }
+            if(objDvCenter == null)
+                objDvCenter = parent.document.getElementById(me.sContainerId);
+            objTd = document.getElementById("td");
+            objTdCenter =  document.getElementById("tdCenter");
+            if(isMultiPaneTab)
+            {
+                if(me.bTabbedPane)
+                {
+                    var objOl;
+                    if(objCreateTabPanned == null)
+                        objCreateTabPanned= document.getElementById(me.sDvTabbedPane);
+                    objCreateTabPanned.style.display = "";
+                    objOl = document.createElement("ol");
+                    objOl.id="olTabbedPane";
+
+                    util.addClass(objOl,"ulTabbed");
+
+                    objCreateTabPanned.appendChild(objOl);
+                    me.bTabbedPane = false;
+                }
+            }
+            //            if(document.getElementById("hfClientWidth"))
+            me.iMaxWidth = iClienttWid;
+            if(!me.isToggleLeft && clAppBuffer.getWindowType() == Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+            {
+            me.iMaxWidth = iClienttWid -180;
+            }
+            //                iClientWidth =  iClienttWid;
+            /* if(me.iToggleNav==1)
+             {
+             *//*alert(me.iToggleNav+"==    Toggle")
+         iClientWidth = me.iMaxWidth+170;*//*
+         }*/
+            if(document.getElementById("hfClientHeight"))
+                iClientHeight = document.getElementById("hfClientHeight").value;
+
+            me.bMultipaneDisplay=true;
+            if(me.isToggleLeft && clAppBuffer.getWindowType() != Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+                objDvCenter.style.maxWidth = (me.iMaxWidth+170)+"px";
+            else if(!me.isToggleLeft && clAppBuffer.getWindowType() == Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+                objDvCenter.style.maxWidth = iClienttWid+"px";
+            else
+            objDvCenter.style.maxWidth = me.iMaxWidth+"px";
+            objDvCenter.style.height = iClientHeight+"px";
+            objTd.style.padding = 0;
+//            objTdCenter.style.padding = 0;
+            objDvCenter.align="";
+            if(document.getElementById("tdMainLeft"))
+                document.getElementById("tdMainLeft").style.width="0px";
+            /*if(!clAppBuffer.isSplitWithTabbedPane())
+             */
+            //             objDvCenter.onscroll=clFrame.onWndscroll()
+            if(me.isIE)
+                util.addClass(objDvCenter,"iE-Frame-container");
+            else
+                util.addClass(objDvCenter,"frame-container");
+            sParams+="&isMultipaneView=1";
+            clFrame.addFrame(sURL + "?" + sParams, 900, null,null, null, me.sContainerId, clEvent,sUserCallBack,isMultiPaneTab,iModuleId);
+        }
+        else
+        {
+            if(sParams.indexOf("isCancel=1")==-1)
+            {
+                me.bMultipaneDisplay=false;
+                me.bTabbedPane = true;
+                document.getElementById(me.sDvTabbedPane).style.display="none";
+                document.getElementById(me.sDvTabbedPane).innerHTML="";
+                if(document.getElementById("tdMainLeft"))
+                    document.getElementById("tdMainLeft").style.width="10px";
+            }
+            me.ismaximize=null;
+            me.sFrameTitle= null;
+            me.bsetCurrentFramemax = false;
+            me.sSetSelectedFrame  = null;
+            if(!isIgnoreURL)
+                sParams+="isSaveUrl=true";
+            util.toggleBackground(true);
+            /* */
+            con.sendPostRequest(sURL, sParams,null, sUserCallBack, false, null, null, false, false, ACTION_LOADING);
+        }
+        // }
+        me.sFrameTitle = null;
+    };
+
+    this.isIEbrowser = function()
+    {
+        return me.isIE;
+    };
+
+
+    var objMainFrame,objParentFrame,objMainFrameChild,objChildFrame,x,iCurrentWidth,objMainCont,icontWidth;
+    this.onResizeMouseDown= function(sFrameId,event)
+    {
+        event=cross.getEvent(event);
+        x=event.clientX;
+        objMainFrame=document.getElementById(sFrameId);
+        iCurrentWidth = parseInt(objMainFrame.offsetWidth);
+        objMainFrameChild = cross.getChildren(objMainFrame)[1];
+        objParentFrame = cross.getChildren(objMainFrameChild)[0];
+        objChildFrame = cross.getChildren(objParentFrame)[0];
+        objMainCont = document.getElementById(me.sContainerId);
+        function onResizeMouseMove(event)
+        {
+            event=cross.getEvent(event);
+            icontWidth= iCurrentWidth-(x-event.clientX);
+            if(icontWidth<200)
+            {
+                return false;
+            }
+            objMainFrame.style.width=iCurrentWidth-(x-event.clientX);
+            objMainFrameChild.style.maxWidth=(iCurrentWidth-5)-(x-event.clientX);
+            objParentFrame.style.maxWidth=(iCurrentWidth-5)-(x-event.clientX);
+            objChildFrame.style.width=(iCurrentWidth-5)-(x-event.clientX);
+//            objMainFrame.setAttribute("scrollPosition") = iCurrentWidth-(x-event.clientX);
+            cross.cancelBubble(event);
+            return false;
+        };
+
+        function onResizeMouseUp(event)
+        {
+            event=cross.getEvent(event);
+            document.onmousemove=null;
+            document.onmouseup=null;
+            cross.cancelBubble(event);
+            return false;
+        };
+        document.onmousemove=onResizeMouseMove;
+        document.onmouseup=onResizeMouseUp;
+        cross.cancelBubble(event);
+        return false;
+    };
+
+    this.getTitle = function(sTitle)
+    {
+        var sFrame,sFirstString,sSecondString,sSecondSubString;
+        sFrame =sTitle.split("<");
+        sFirstString = sFrame[0];
+        sSecondString = sFrame[1];
+        if(sTitle.indexOf("<")!=-1)
+        {
+              sSecondSubString= sSecondString.substring(24,sSecondString.length);
+            if(sFirstString.indexOf("Det")!=-1)
+            sFirstString = sFirstString.substring(10,sFirstString.length);
+            else if(sFirstString.indexOf("Edit")!=-1)
+            sFirstString = sFirstString.substring(5,sFirstString.length);
+            //parent.clFrame.sFrameTitle = sFirstString.concat(sSecondSubString);
+            parent.clFrame.sFrameTitle = util.decodeHTML(sSecondSubString);
+        }
+        else
+            parent.clFrame.sFrameTitle = util.decodeHTML(sFirstString);
+    };
+    this.setLeftFrame = function()
+    {
+         me.saveSelectedTab = null;
+        me.iToggleNav = 0;
+        var objContainer = document.getElementById(me.sContainerId);
+
+        if(objContainer)
+         objContainer.style.maxWidth =me.iMaxWidth;
+        me.bSetTabbed= false;
+        /*if(me.ismaximize!=null)
+        {
+            me.minimizeFrame();
+        }*/
+         if(me.ismaximize!=null)
+        {
+          document.getElementById(me.ismaximize).style.left=me.iFirstFrameLeft;
+          me.frameResize(me.iMaxWidth,null,true,false);
+        }
+        if(me.bsetCurrentFramemax && clAppBuffer.getWindowType()!=Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+        {
+              me.frameResize(me.iMaxWidth,null,false,true);
+        }
+         if(me.arrFrames.length==1 && clAppBuffer.getWindowType()==Constants.IMODULE_WINDOW.MULTI_PANE )
+         {
+             me.frameResize(me.iMaxWidth,null,false,false);
+         }
+        if(me.arrFrames.length==1 && clAppBuffer.getWindowType()==Constants.IMODULE_WINDOW.TABBEDT_PANE )
+         {
+             me.frameResize(me.iMaxWidth,true,false,false);
+         }
+        if(clAppBuffer.getWindowType()==Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+        {
+            var objDvSplitContainer,objdvResizer,iDvSplitMaxWidth;
+            objDvSplitContainer = document.getElementById(me.sContainerId);
+            objdvResizer = document.getElementById("dvResizer");
+            iDvSplitMaxWidth = document.getElementById(me.sContainerId).style.maxWidth;
+            iDvSplitMaxWidth = parseInt(iDvSplitMaxWidth,10);
+            objdvResizer.style.width = parseInt(me.iSplitWidth-170);
+            objDvSplitContainer.style.width = iDvSplitMaxWidth-195;
+            for(var i=0;i<me.arrFrames.length;i++)
+            {
+                var sFrameId=me.arrFrames[i].frameId;
+                me.frameResize(iDvSplitMaxWidth-190,null,false,true,true,sFrameId);
+                var iSplitFrameId =sFrameId.split("_");
+                if(iSplitFrameId[1]>0)
+                {
+
+                    var iScrollPosition= parseInt(objDvSplitContainer.getAttribute("iScrollPos_"+iSplitFrameId[1]));
+                    objDvSplitContainer.setAttribute("iScrollPos_"+iSplitFrameId[1],iScrollPosition-180);
+                    var objLiId = document.getElementById("li_"+iSplitFrameId[1]);
+                    if(util.hasClass(objLiId,"selected"))
+                        me.saveSelectedTab =iSplitFrameId[1];
+                    else
+                        me.saveSelectedTab =null;
+                }
+            }
+            if(me.saveSelectedTab!=null)
+            {
+                var iScrollPos = parseInt(objDvSplitContainer.getAttribute("iScrollPos_"+me.saveSelectedTab));
+                setTimeout(function()
+                {
+
+                   objDvSplitContainer.scrollLeft=iScrollPos;
+                },200);
+            }
+        }
+
+        me.isToggleLeft= false;
+    };
+
+
+    /**
+     * this method is called to change the first frame size if toggle from navbar
+     */
+    this.setFristFrame = function()
+    {
+        me.saveSelectedTab = null;
+        me.isSetLeft = false;
+        var objContainer = document.getElementById(me.sContainerId);
+        //        var iClientWidth=parseInt(document.getElementById("hfClientWidth").value);
+        if(clAppBuffer.getWindowType() != Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+        {
+            if(objContainer)
+                objContainer.style.maxWidth = me.iMaxWidth+170;
+        var objContainWidth = me.iMaxWidth+170;
+        }
+        if(me.ismaximize!=null)
+        {
+          document.getElementById(me.ismaximize).style.left=me.iFirstFrameLeft-170;
+          me.frameResize(objContainWidth,null,true,false);
+        }
+
+        else if(me.arrFrames.length==1 && clAppBuffer.getWindowType() != Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+        {
+            me.bSetTabbed= true;
+            me.frameResize(objContainWidth,null,false,false);
+        }
+        if(me.bsetCurrentFramemax && clAppBuffer.getWindowType() != Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+        {
+            if(document.querySelector('.selected')) {
+                var objResizeDiv = document.querySelector('.selected').id;
+                objResizeDiv = objResizeDiv.split("_");
+                me.sSetSelectedFrame = "dv_" + objResizeDiv[1];
+            }
+            me.frameResize(objContainWidth,null,false,true);
+        }
+
+         if(clAppBuffer.getWindowType()==Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+        {
+            var objDvSplitContainer,objdvResizer,iDvSplitMaxWidth;
+            objDvSplitContainer = document.getElementById(me.sContainerId);
+            objdvResizer = document.getElementById("dvResizer");
+            iDvSplitMaxWidth = objDvSplitContainer.style.maxWidth;
+            iDvSplitMaxWidth = parseInt(iDvSplitMaxWidth,10);
+            objdvResizer.style.width = parseInt(me.iSplitWidth);
+            objDvSplitContainer.style.width = iDvSplitMaxWidth-8;
+             for(var i=0;i<me.arrFrames.length;i++)
+            {
+                var sFrameId=me.arrFrames[i].frameId;
+                me.frameResize(iDvSplitMaxWidth,null,false,true,true,sFrameId);
+                var iSplitFrameId =sFrameId.split("_");
+                if(iSplitFrameId[1]>0)
+                {
+
+                    var iScrollPosition= parseInt(objDvSplitContainer.getAttribute("iScrollPos_"+iSplitFrameId[1]));
+                    objDvSplitContainer.setAttribute("iScrollPos_"+iSplitFrameId[1],iScrollPosition+180);
+                    var objLiId = document.getElementById("li_"+iSplitFrameId[1]);
+                    if(util.hasClass(objLiId,"selected"))
+                        me.saveSelectedTab =iSplitFrameId[1];
+                    else
+                        me.saveSelectedTab =null;
+                }
+            }
+
+            if( me.saveSelectedTab!=null)
+            {
+                var iScrollPos = parseInt(objDvSplitContainer.getAttribute("iScrollPos_"+me.saveSelectedTab));
+                setTimeout(function()
+                {
+
+                     objDvSplitContainer.scrollLeft=iScrollPos;
+                },200);
+        }
+        }
+        me.isToggleLeft = true;
+
+    };
+
+
+    /**
+     * this method is used to minimize frame
+     */
+    this.minimizeFrame = function()
+    {
+        var objDv,objFrameContainer,objContainerChild,objArrParentDv,objHeader,arrHeaderElem,arrAction,iDefaultWidth;
+        iDefaultWidth = 900;
+        objDv =document.getElementById(me.ismaximize);
+        objFrameContainer = cross.getChildren(objDv)[1];
+        objContainerChild = cross.getChildren(objFrameContainer)[0];
+        objArrParentDv  = cross.getChildren(objContainerChild)[0];
+        objHeader =  cross.getChildren(objDv)[0];
+        arrHeaderElem  = cross.getChildren(objHeader)[1];
+        arrAction =  cross.getChildren(arrHeaderElem)[0];
+        util.removeClass(arrAction,"crm-dashlet-minimize");
+        util.addClass(arrAction,"crm-dashlet-maximize");
+        objDv.style.width=iDefaultWidth+"px";
+        objContainerChild.style.maxWidth=(iDefaultWidth-5)+"px";
+        objContainerChild.style.maxWidth = (iDefaultWidth-5)+"px";
+        objArrParentDv.style.width = (iDefaultWidth-5)+"px";
+        if(!me.isIE)
+            util.removeClass(objDv,"frame-moveToLeft");
+
+        objDv.style.position='';
+        objDv.style.height='';
+        if(me.dvZIndex>0)
+            objDv.style.zIndex =me.dvZIndex;
+        me.ismaximize = null;
+    };
+
+    /**
+     * this method is called on click of tabbed pane header to select the selected tab content visible
+     * @param iFrameId :frame that need to be visible
+     */
+    this.onClkTab = function(iFrameId)
+    {
+        if(me.ismaximize!=null)
+            me.minimizeFrame();
+        var objdvCenter = document.getElementById(me.sContainerId);
+        var objUl= document.getElementById("olTabbedPane");
+        var liNode,i;
+        if(me.sSetSelectedFrame!=null && clAppBuffer.getWindowType() != Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+            me.frameResize(me.iMaxWidth,null,false,true);
+        var ulItem=cross.getChildren(objUl);
+        for(i=0;i<ulItem.length;i++)
+        {
+            util.removeClass(ulItem[i],"selected");
+        }
+        util.addClass(document.getElementById("li_"+iFrameId),"selected");
+        var iDvScrollCont = objdvCenter.getAttribute("iScrollPos_"+iFrameId);
+        if(me.isToggleLeft && clAppBuffer.getWindowType() == Constants.IMODULE_WINDOW.TABBEDT_PANE)
+        {
+            me.sSetSelectedFrame = "dv_"+iFrameId;
+            me.frameResize(me.iMaxWidth+170,null,false,true);
+        }
+         if(clAppBuffer.getWindowType() == Constants.IMODULE_WINDOW.SPLIT_PANE_WITH_TABBED_PANE)
+        {
+
+             if(me.arrFrames.length>0 && iFrameId!=0)
+             {
+             $('#'+me.sContainerId).animate({ scrollLeft: iDvScrollCont},500);
+             }
+            else
+              $('#'+me.sContainerId).animate({ scrollLeft:0},500);
+        }
+
+        if(clAppBuffer.getLanguage()!=Constants.ILANGUAGE_TYPE.ENGLISH && navigator.userAgent.indexOf("Safari")!=-1 && navigator.userAgent.indexOf("Chrome") == -1) // safari arabic tab cllick since scroll cannot be set for rtl direction
+        {
+            for(i=0;i<me.arrFrames.length;i++)
+                document.getElementById(me.arrFrames[i].frameId).style.display="none";
+            document.getElementById("dv_"+iFrameId).style.display="";
+        }
+        else
+        $('#'+me.sContainerId).animate({ scrollLeft:iDvScrollCont },600);
+    };
+
+    /**
+     * this method is called on window scroll to select the tabbed pane to active when scroll
+     * @param evt
+     */
+    //
+    this.onWndscroll=function(evt)
+    {
+        if(me.arrFrames && me.arrFrames.length>1)
+        {
+            var objCenter=document.getElementById(me.sContainerId);
+            evt=cross.getEvent(evt);
+            for(var i=(me.arrFrames.length-1);i>=0;i--)
+            {
+                var iFrameId=me.arrFrames[i].frameId;
+
+                iFrameId=iFrameId.substring(iFrameId.indexOf("_")+1);
+
+                if(objCenter.scrollLeft>=parseInt(objCenter.getAttribute("iScrollPos_"+iFrameId)-600))
+                {
+                    var liNode;
+                    liNode=document.getElementById("li_"+iFrameId);
+                    $('#olTabbedPane').find('.selected').each(function(){
+                        $(this).removeClass("selected");
+                    });
+                    util.addClass(liNode,"selected");
+                    break;
+                }
+            }
+        }
+    };
+   /* this.onWndscroll=function(evt)
+    {
+        if(me.arrFrames && me.arrFrames.length>1)
+         {
+            var objCenter=document.getElementById(me.sContainerId);
+            evt=cross.getEvent(evt);
+            var iCurrentFrameWidth=0;
+            var iPrevFrameWidth=0;
+
+
+            for(var i=(me.arrFrames.length-1);i>=0;i--)
+            {
+                var sFrameId=me.arrFrames[i].frameId;
+                if(i>0)
+                {
+                    var sPrevFrameId=me.arrFrames[i-1].frameId;
+                    iPrevFrameWidth=document.getElementById(sPrevFrameId).offsetWidth;
+                }
+                else
+                    iPrevFrameWidth=0;
+
+                iCurrentFrameWidth=document.getElementById(sFrameId).offsetWidth;
+
+                if( objCenter.scrollLeft+20>(iPrevFrameWidth*(i)) && objCenter.scrollLeft<(iCurrentFrameWidth*(i+1)))//>=)parseInt(objCenter.getAttribute("iScrollPos_"+iFrameId)-600))
+                {
+                    var iFrameId=sFrameId.substring(sFrameId.indexOf("_")+1);
+                    var liNode;
+                    liNode=document.getElementById("li_"+iFrameId);
+                    $('#olTabbedPane').find('.selected').each(function(){
+                        $(this).removeClass("selected");
+                    });
+                    util.addClass(liNode,"selected");
+                    break;
+                }
+                //iFrameWidth+=document.getElementById(iFrameId).width;
+            }
+        }
+    };*/
+};

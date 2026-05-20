@@ -1,0 +1,304 @@
+/*  Fixed Colors */
+/*  /Fixed Colors */
+/*
+
+/*GRAY THEME HEADER BLACK */
+/* /GRAY THEME HEADER BLACK */
+/*To create frames in row wise*/
+.frame-container {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  flex-flow: row;
+  float: left;
+  background-color: #fff;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  /*margin-top:3px;*/
+  /*-ms-overflow-style: scrollbar;*/ }
+
+.iE-Frame-container {
+  display: block;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap; }
+
+.iFrameDv {
+  /*border:1px solid #B9B9B9;*/
+  /*float:left;*/ }
+
+.iEFrameDv {
+  display: inline-block;
+  border: 1px solid #A9A9A9;
+  border-top: 0px; }
+
+.frame-container::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, rgba(255, 87, 34, 0.4), rgba(255, 152, 0, 0.52), rgba(255, 87, 34, 0.4)); }
+
+.frame-container::-webkit-scrollbar-thumb:hover {
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  background: #FF8D09; }
+
+.frame-container::-webkit-scrollbar {
+  width: 7px;
+  height: 10px; }
+
+.dvParentFrame::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  background: #B8C3DC; }
+
+.dvParentFrame::-webkit-scrollbar {
+  width: 6px;
+  height: 6px; }
+
+.frameHeader {
+  /*padding: .5px 0px;*/
+  background: #38B1EA;
+  background: linear-gradient(269deg, #38B1EA, #38B1EA, #38B1EA);
+  width: 100%;
+  display: flex;
+  cursor: pointer;
+  /*height:1.2px;*/ }
+
+.dvActions {
+  float: right;
+  padding-right: 2px; }
+
+.spnTitle {
+  width: 100%;
+  font-size: 78.5%;
+  font-weight: bold;
+  color: #fff;
+  padding-left: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis; }
+
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  /* Safari only override */
+  ::i-block-chrome, .spnTitle {
+    width: 85%;
+    float: left; } }
+
+.spnTitleTrans {
+  -webkit-transition: color 1s;
+  transition: color 1s; }
+
+.spnTitleTrans:hover {
+  color: #fff; }
+
+.dvParentFrame {
+  overflow-x: auto;
+  overflow-y: overlay; }
+
+.crm-dashlet-maximize:before {
+  font-size: 92.8%;
+  font-weight: bold;
+  color: #333; }
+
+.crm-bookmark-add:before {
+  font-size: 107%;
+  color: #333; }
+
+.frame-moveMaxFrame {
+  -webkit-animation: moveMax 1s ease;
+  animation: moveMax 1s ease; }
+
+@keyframes moveMax {
+  from {
+    width: 0%; }
+  to {
+    width: 85%; } }
+
+.dvFrameContainer {
+  margin-right: 3px; }
+
+/*.frame-moveToLeft {
+    -webkit-animation: moveToLeft 2s ease ;
+    animation: moveToLeft 2s ease ;
+}*/
+.frame-moveToLeft {
+  -webkit-animation: moveToLeft 1s ease;
+  animation: moveToLeft 1s ease; }
+
+@keyframes moveToLeft {
+  from {
+    width: 0%; }
+  to {
+    width: 100%; } }
+
+.frame-moveToRight {
+  -webkit-animation: moveToRight 1s ease;
+  animation: moveToRight 1s ease; }
+
+@keyframes moveToRight {
+  from {
+    width: 100%; }
+  to {
+    width: 0%; } }
+
+.liNodes {
+  border-radius: 3px;
+  display: inline-block;
+  height: 25px;
+  width: 200px;
+  border-bottom: 0;
+  float: left;
+  margin-bottom: -2px;
+  /*border:1px solid #C2C2C2;*/
+  border-bottom: 0;
+  z-index: 70;
+  position: relative;
+  padding-top: 3px;
+  padding-right: 3px;
+  /*border-top:4px solid rgb(209, 209, 209);*/ }
+
+.ulTabbed {
+  margin: 0;
+  padding: 0px;
+  /*border-bottom:2px solid gray;*/
+  /*border-bottom: 1px solid gray;*/
+  display: table;
+  /*width:100%;*/ }
+
+.liNodes:not(.selected) {
+  margin-right: 3px;
+  margin-top: 1px;
+  margin-left: 1px; }
+
+.liTextNode {
+  display: inline-block;
+  overflow: hidden;
+  padding-left: 5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 170px;
+  font-weight: bold;
+  padding-top: 3px;
+  -webkit-user-selection: none;
+  /* Chrome all / Safari all */
+  -moz-user-select: none;
+  /* Firefox all */
+  -ms-user-select: none;
+  /* IE 10+ */
+  user-select: none;
+  font-size: 78.5%; }
+
+.selected {
+  background: #fff;
+  color: #333;
+  cursor: default;
+  border-top: 4px solid #38B1EA;
+  margin-bottom: -5px; }
+
+.liNodes:hover {
+  background: #fff;
+  padding-top: 1px;
+  padding-bottom: 1px; }
+
+.tabClose {
+  float: right;
+  position: absolute;
+  width: 50px; }
+
+.tabClose:before {
+  margin-right: 1px;
+  height: 15px;
+  padding-top: 3px;
+  margin-top: 1px;
+  float: right;
+  font-family: fontcrm;
+  content: "\e02a";
+  font-size: 64.2%;
+  color: #333;
+  padding-left: 5px;
+  padding-right: 6px; }
+
+.tabClose:hover:before {
+  background: #81909e;
+  border-radius: 50%;
+  color: #fff;
+  height: 16px;
+  font-weight: bold;
+  cursor: pointer; }
+
+.tooltip {
+  position: relative;
+  top: 26px; }
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 7px;
+  position: absolute;
+  left: 20%;
+  opacity: 0.76;
+  width: -moz-max-content;
+  width: -webkit-max-content; }
+
+@-moz-document url-prefix() {
+  .tooltip .tooltiptext {
+    top: -16px; } }
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #333 transparent; }
+
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  /* Safari only override */
+  ::i-block-chrome, .tooltiptext {
+    width: auto;
+    display: inline-table;
+    -webkit-padding-start: 10px;
+    -webkit-padding-after: 4px;
+    -webkit-padding-before: 4px;
+    -webkit-padding-end: 4px; } }
+
+.liNodes:hover .tooltiptext {
+  visibility: visible; }
+
+.frame-moveFromRight {
+  -webkit-animation: moveFrmRight 2s ease both;
+  animation: moveFrmRight 2s ease both; }
+
+@keyframes moveFrmRight {
+  from { }
+  to {
+    -webkit-transform: translateX(100%);
+    transform: translateX(100%); } }
+
+.titleLoad:before {
+  content: "\f110";
+  font-size: 114%;
+  vertical-align: bottom; }
+
+.frameHeader .crm-close-dlg::before {
+  color: #fff;
+  font-size: 8px; }
+
+.frameHeader .crm-dashlet-maximize:before, .frameHeader .crm-dashlet-minimize {
+  color: #fff; }
+
+/*
+.row
+{
+    margin-left:0px !important;
+}
+*/
+
+/*# sourceMappingURL=../../../../../scss/target */

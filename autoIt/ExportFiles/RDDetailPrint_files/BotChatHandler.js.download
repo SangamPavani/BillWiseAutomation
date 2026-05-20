@@ -1,0 +1,234 @@
+/**
+ * Created by Praveen on 3/17/2020.
+ */
+
+var clBotChatHandler = new function()
+{
+    var me = this;
+
+    me.BOT_RESPONSE_SUCCESS = 1;
+    me.BOT_RESPONSE_HISTORY = 2;
+
+    me.RESPONSE_TYPE_CONTAINER = 1;
+    me.RESPONSE_TYPE_DISPLAY = 2;
+    me.RESPONSE_TYPE_INPUT = 3;
+
+    me.ACTION_TYPE_REPLY = "Reply";
+    me.ACTION_TYPE_FORWARD = "Forward";
+    me.ACTION_TYPE_OPERATOR_BUSY = "Operator-Busy";
+    me.ACTION_TYPE_BLOCK = "Block";
+    me.ACTION_TYPE_PENDING = "Pending";
+    me.ACTION_TYPE_ERROR = "Error";
+    me.ACTION_TYPE_END = "End";
+
+    //this.CONTAINER = "Container";
+    //this.QUESTION = "Question";
+    //this.SURVEY = "Survey";
+    me.TYPE_MULTICARDS = "Multiple";
+    me.TYPE_LINEAR = "Linear";
+    me.TYPE_SURVEY = "Survey";
+    me.TYPE_COLUMNSET = "ColumnSet";
+    me.TYPE_GALLERY = "Gallery";
+    me.TYPE_IMAGESET = "ImageSet";
+    me.TYPE_FORM = "Form";
+
+    me.TYPE_TEXT = "Text";
+    me.TYPE_LINKS = "Links";
+    me.TYPE_URL= "Url";
+    me.TYPE_VIDEO = "Vedio";
+    me.TYPE_IMAGE = "Image";
+    me.TYPE_ARTICLES = "Articles";
+
+    me.TYPE_INPUT_TEXT = "Input-Text";
+    me.TYPE_INPUT_NUMBER = "Input-Number";
+    me.TYPE_INPUT_DECIMAL = "Input-Decimal";
+    me.TYPE_INPUT_TEXT_AREA = "Input-Text-Area";
+    me.TYPE_NAME = "Name";
+    me.TYPE_EMAIL = "Email";
+    me.TYPE_PHONE = "Phone";
+    me.TYPE_RADIO = "Radio";
+    me.TYPE_CALENDAR = "Calendar";
+    me.TYPE_FILE = "File";
+    me.TYPE_SELECT = "Select";
+    me.TYPE_MULTI_SELECT = "MultiSelect";
+    me.TYPE_COMBO_SELECT = "ComboSelect";
+
+    me.TYPE_LOCATION = "Location";
+    me.TYPE_STAR_RATING = "Star-Rating";
+    me.TYPE_LIKE = "Like";
+    me.TYPE_HAPPINESS_RATING = "Happiness-Rating";
+
+    me.TYPE_SUBMIT = "Submit";
+    me.TYPE_CLEAR = "Clear";
+    me.TYPE_BUTTON = "Button";
+
+    me.sessionId = null;
+
+    this.handleRequest = function(sSubmitData)
+    {
+        clBotChat.showLoadingAction();
+        var sUrl = clBotChat.server_URL+"botChat/getChatData";
+        //var sUrl = clSimpleConnection.getContextPath()+"/botChat/getChatData";
+        clSimpleConnection.makePostRequest(sUrl,sSubmitData,null,clBotChatHandler.handleResponse,clBotChatHandler.handleServerExceptions,null,false,"application/json",me.sessionId);
+    };
+
+    this.handleResponse =function(sResponse,iStatusCode,sMessage,appValue)
+    {
+        if(iStatusCode == me.BOT_RESPONSE_SUCCESS || iStatusCode == me.BOT_RESPONSE_HISTORY) {
+            me.sessionId = appValue;
+            var objResponse = JSON.parse(sResponse);
+            clBotChat.hideLoadingAction();
+            if(iStatusCode == me.BOT_RESPONSE_HISTORY)
+                clBotChat.showHistory(objResponse);
+            else
+                me.showCardByType(objResponse, false);
+        }else{
+            //alert(sMessage)
+            me.showErrorMessages(sMessage);
+        }
+    };
+
+    this.handleServerExceptions = function(iStatus,sStatus,sResponse)
+    {
+        var sMessage = "Failed to connect server";
+        if(iStatus == 0)
+        {
+            me.showErrorMessages(sMessage);
+        }
+    };
+
+    this.showErrorMessages = function(sMessage)
+    {
+        var sTime = new Date().toLocaleTimeString();
+        if (!clBotChat.isShowSeconds)
+            sTime = clBotUtilities.getTimeStringFromDateObject(new Date());
+        if(sMessage != null && sMessage.trim().length > 0)
+            clBotChat.createBotMessage(sMessage,null,0,false,true,sTime);
+        else
+            clBotChat.createBotMessage("Unable to handle the request due to some error at server..",null,0,false,true,sTime);
+        clBotChat.hideLoadingAction();
+        clBotChat.updateLoadIndex();
+    };
+
+    this.showCardByType = function(objResponse,isContainer,iCount,arrReply,isSurvey)
+    {
+        //var objResponse = JSON.parse(sResponse);
+        var sActionType = objResponse.actionType;
+        var sType = null;
+        if(isContainer)
+        {
+            var objReplies = objResponse.replies;
+            var arrItems = null;
+            var objCard = null;
+            if(isSurvey)
+            {
+                arrItems = objReplies.questions;
+                objCard = arrItems[iCount].input;
+                sType = objCard.type;
+            }
+            else {
+                arrItems = objReplies.items;
+                objCard = arrItems[iCount];
+                sType = objCard.type;
+            }
+        }else {
+            sType = objResponse.type;
+        }
+        //if(sActionType == this.ACTION_TYPE_REPLY)
+        {
+            if(sType == me.TYPE_COMBO_SELECT)
+                clBotChat.handleComboSelectAction(objResponse,isContainer,iCount,arrReply,isSurvey);
+            else if(sType == me.TYPE_SELECT)
+                clBotChat.handleButtonSelectAction(objResponse,isContainer,iCount,arrReply,isSurvey);
+            else if(sType == me.TYPE_EMAIL || sType == me.TYPE_INPUT_TEXT || sType == me.TYPE_INPUT_DECIMAL ||
+                    sType == me.TYPE_INPUT_NUMBER || sType == me.TYPE_PHONE || sType == me.TYPE_FILE ||
+                    sType == me.TYPE_URL)
+                clBotChat.handleInputAction(objResponse,isContainer,iCount,arrReply,isSurvey);
+            else if(sType == me.TYPE_BUTTON)
+                clBotChat.handleButtonAction(objResponse,isContainer,iCount,arrReply,isSurvey);
+            else if(sType == me.TYPE_MULTICARDS)
+                clBotChat.handleMultiCards(objResponse);
+            else if(sType == me.TYPE_SURVEY)
+                clBotChat.handleSurvey(objResponse);
+            else if(sType == me.TYPE_FORM)
+                clBotChat.handleCustomForm(objResponse);
+            else if(sType == me.TYPE_IMAGE)
+                clBotChat.handleImage(objResponse);
+            else if(sType == me.TYPE_ARTICLES)
+                clBotChat.handleArticles(objResponse);
+            else if(sType == me.TYPE_VIDEO)
+                clBotChat.handleVideo(objResponse);
+            else if(sType == me.TYPE_LINKS)
+                clBotChat.handleLinks(objResponse);
+            else
+                clBotChat.addTextMessage(objResponse,isContainer,iCount,arrReply,isSurvey);
+        }
+        setTimeout(
+            function(){
+                if(sType == me.TYPE_FORM || sType == me.TYPE_LINKS)
+                    clBotChat.handleScroll();
+                clBotChat.updateLoadIndex();
+            },2000
+        );
+    };
+
+    /*this.handleMessage = function(objResponse,sActionType,sContextId,sType)
+    {
+        //alert("result"+objResponse);
+        //if(sActionType == this.ACTION_TYPE_REPLY)
+        {
+            if(sType == this.TYPE_SELECT)
+            {
+                clBotChat.addSelectAction(sContextId,objResponse);
+            }else if(sType == this.TYPE_EMAIL)
+            {
+                clBotChat.addSubTypeAction(sContextId,objResponse);
+            }else
+            {
+                clBotChat.addTextMessage(sContextId,objResponse);
+            }
+        }
+        //if(iResActionType == me.ACTION_REPLY)
+        //    this.addReplyActions(objReplies);
+        //else if(iResActionType ==
+        me.{
+        ACTION_CONTEXT)
+        //    this.addContextActions(iContextId,objReplies,arrSuggestions,arrQuestions);
+    };*/
+
+    /*this.addReplyActions = function(objReplies)
+    {
+        var iReplyType = objReplies.type;
+        var sText = objReplies.text;
+        var objValue = objReplies.value;
+        var iDelay = objReplies.delay;
+
+        if(iReplyType == me.TYPE_ARTICLE)
+            clBotChat.addArticleMessage(sText,objValue,iDelay);
+        else if(iReplyType == me.TYPE_IMAGE)
+            clBotChat.addImageMessage(sText,objValue,iDelay);
+        else if(iReplyType == me.TYPE_LINK)
+            clBotChat.addLinkMessage(sText,objValue,iDelay);
+        else if(iReplyType == me.TYPE_VIDEO)
+            clBotChat.addVideoMessage(sText,objValue,iDelay);
+        else
+            clBotChat.addTextMessage(sText,objValue,iDelay);
+
+    };
+
+    this.addContextActions = function(iContextId,objReplies,arrSuggestions,arrQuestions)
+    {
+        var iReplyType = objReplies.type;
+
+        if(iReplyType == me.TYPE_BUTTON)
+            clBotChat.addButtonAction(iContextId,objReplies,arrSuggestions,arrQuestions);
+        else if(iReplyType == me.TYPE_TEXT)
+            clBotChat.addTextAction(iContextId,objReplies,arrSuggestions,arrQuestions);
+        else if(iReplyType == me.TYPE_SELECTION || iReplyType == me.TYPE_MULTISELECTION)
+            clBotChat.addSelectAction(iContextId,objReplies);
+        else if(iReplyType == me.TYPE_FILE || iReplyType == me.TYPE_RANGE ||
+            iReplyType == me.TYPE_PHONE || iReplyType == me.TYPE_EMAIL ||iReplyType == me.TYPE_URL)
+            clBotChat.addSubTypeAction(iContextId,objReplies);
+    };*/
+
+};

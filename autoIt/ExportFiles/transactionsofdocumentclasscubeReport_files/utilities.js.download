@@ -1,0 +1,3150 @@
+var util=new function()
+{
+
+    var me=this;
+    this.resizeTimer = undefined;
+    this.resizeTimer2 = undefined;
+    this.resizeInProgress = false;
+
+    this.sResizeUrl=null;
+    this.sPrintUrl=null;
+    this.fnWindowResizeCB=null
+     this.setSelectionRange = function(el, start, end)
+    {       // alert("sss")
+        if (document.createRange && window.getSelection)
+        {
+            var range = document.createRange();
+            range.selectNodeContents(el);
+            var textNodes = util.getTextNodesIn(el);
+                   // alert(textNodes)
+            var foundStart = false;
+            var charCount = 0, endCharCount;
+
+            for (var i = 0, textNode; textNode = textNodes[i++]; )
+            {
+                          //  alert(textNode.length)
+                endCharCount = charCount + textNode.length;
+                // setting start index
+                if (!foundStart && start >= charCount && (start < endCharCount ||
+                                                          (start == endCharCount && i < textNodes.length)))
+                {
+                    range.setStart(textNode, start - charCount);
+                    foundStart = true;
+                }
+                // setting end index
+                if (foundStart && end <= endCharCount)
+                {
+                    range.setEnd(textNode, end - charCount);
+                    break;
+                }
+                charCount = endCharCount;
+            }
+
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+        // its for ie  old vesions
+        else if (document.selection && document.body.createTextRange)
+        {
+
+            var textRange = document.body.createTextRange();
+            textRange.moveToElementText(el);
+            textRange.collapse(true);
+            textRange.moveEnd("character", end);
+            textRange.moveStart("character", start);
+            textRange.select();
+        }
+    };
+
+       this.getTextNodesIn = function(node)
+    {
+        var textNodes = [];
+        if (node.nodeType == 3)
+            textNodes.push(node);
+        else
+        {
+            var children = node.childNodes;
+            for (var i = 0, len = children.length; i < len; ++i)
+            {
+                textNodes.push.apply(textNodes, me.getTextNodesIn(children[i]));
+            }
+        }
+        return textNodes;
+    };
+    this.hasClass=function(ele, cls)
+    {
+        if(ele && ele.className)
+            return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+        return false;
+    };
+
+    this.addClass=function(ele, cls)
+    {
+        if (ele && !me.hasClass(ele, cls))
+        {
+            var sOldClass=ele.className;
+            if(sOldClass)
+                ele.className =sOldClass+" "+cls;
+            else
+                ele.className=cls;
+        }
+    };
+
+    this.removeClass=function(ele, cls)
+    {
+        if (ele && me.hasClass(ele, cls))
+        {
+            var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
+            ele.className = ele.className.replace(reg, ' ');
+        }
+    };
+
+    this.startsWith=function(sValue, sStartString)
+    {
+        if (!sValue)
+        {
+            return false;
+        }
+        //alert(this.replaceHtmlEntites)
+        sValue=me.htmlEnDeCode.htmlDecode(sValue);
+      //  util.writeToLog(sValue.length+"  "+sValue+" "+decodeURIComponent(sValue)+" "+decodeURIComponent(sValue).length)
+        sValue = sValue.substring(0, sStartString.length);
+       // util.writeToLog(decodeURI(sValue+"-"+sStartString+"  "+(sValue == sStartString)));
+
+        if (sValue == sStartString)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    };
+
+    this.addSlashes=function(str)
+    {
+
+        str = str.replace(/\\/g, '\\\\');
+        str = str.replace(/\'/g, '\\\'');
+        str = str.replace(/\"/g, '\\"');
+        str = str.replace(/\0/g, '\\0');
+        return str;
+    };
+
+    this.stripSlashes=function(str)
+    {
+        str = str.replace(/\\\\/g, '\\');
+        str = str.replace(/\\'/g, '\'');
+        str = str.replace(/\\"/g, '"');
+        str = str.replace(/\\0/g, '\0');
+
+        return str;
+    };
+
+
+
+    this.endsWith=function(sValue, sEndString)
+    {
+        sValue=me.htmlEnDeCode.htmlDecode(sValue);
+        sValue = sValue.substring(sValue.length - sEndString.length, sValue.length);
+        if (sValue == sEndString)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    };
+
+    this.checkNetConnection= function(FuncName,sKey)
+    {
+        var xhr = new XMLHttpRequest();
+        var file = "/streamline/res/global/images/blank.png";
+        xhr.open('HEAD', file, false);  //
+        try {
+            xhr.send();
+            if (xhr.status >= 200 && xhr.status < 304) {
+                if(FuncName)
+                {
+                    //cross.callFunction(null,eval(FuncName),[true]);
+                    FuncName(true,sKey);
+                }
+
+            } else {
+                if(FuncName)
+                {
+                    FuncName(false,sKey);
+                }
+
+            }
+        } catch (e) {
+            return false;
+        }
+    };
+
+    this.checkBit=function(ivalue, ibitpos)
+    {
+        if ((ivalue & (1 << ibitpos) ) > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    };
+
+
+    this.packBit=function(ivalue, ibitpos)
+    {
+        //alert('pack bit  '+ivalue+','+ibitpos)
+        //alert((ivalue | ( 1 << ibitpos)));
+        ivalue = (ivalue | ( 1 << ibitpos));
+        //alert(ivalue );
+        return ivalue;
+    };
+
+    this.unPackBit=function(ivalue, ibitpos)
+    {
+        ivalue = (ivalue & (~(1 << ibitpos)));
+        return ivalue;
+    };
+
+    /************************************************************
+     Trims the given string by removing left and right spaces.
+     *************************************************************/
+
+    this.trim=function(value)
+    {
+        if (value )
+        {
+            if( value.length > 0 && (value.charAt(0)==' ' || value.charAt(value.length-1)==' '))
+                return value.replace(/^\s+|\s+$/g, '');
+            return value;
+                /*return value;
+            else //if(isFinite(value))
+                return value.replace(/^\s+|\s+$/g, '');*/
+            /*else
+                return value;*/
+        }
+
+        return "";
+    };
+
+    this.getMimeTypes = function(sExtensions)
+    {
+        var arrExtensions = null;
+        //if(sExtensions.indexOf("|") > 0)
+        //    arrExtensions = sExtensions.split("|");
+        if(sExtensions.indexOf(",") > 0)
+            arrExtensions = sExtensions.split(",");
+        else {
+            arrExtensions = new Array();
+            arrExtensions[0] = sExtensions;
+        }
+
+        var sAccept = "";
+        for(var i=0; i<arrExtensions.length;i++)
+        {
+            var sMimeType = me.getMimeType(arrExtensions[i]);
+            if(i > 0)
+                sAccept += ",";
+            sAccept += sMimeType;
+        }
+        return sAccept;
+    };
+
+    this.getMimeType = function(sFileName)
+    {
+        return me.getMimeTypeByExt(sFileName.substring(sFileName.lastIndexOf('.')+1));
+    };
+
+    this.getMimeTypeByExt = function(sExt)
+    {
+        sExt = sExt.toLowerCase();
+        if (sExt == "z") {
+            return "application/x-compress";
+        }
+        else if (sExt == "zip")
+        {
+            return "application/zip";
+        }
+        else if (sExt == "exe")
+        {
+            return "application/octet-stream";
+        }
+        else if (sExt == "gif")
+        {
+            return "image/gif";
+        }
+        else if (sExt == "jpg")
+        {
+            return "image/jpeg";
+        }else if (sExt == "jpeg")
+        {
+            return "image/jpeg";
+        }
+        else if (sExt == "png")
+        {
+            return "image/png";
+        }else if (sExt == "bmp")
+        {
+            return "image/bmp";
+        }else if (sExt == "doc")
+        {
+            return "application/msword";
+        }
+        else if (sExt == "docx")
+        {
+            return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        }
+        else if (sExt == "xls")
+        {
+            return "application/vnd.ms-excel";
+        }else if (sExt == "xlsx")
+        {
+            return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        }
+        else if (sExt == "csv")
+        {
+            return "text/csv";
+            //return "application/text";
+        }
+        else if (sExt == "pdf")
+        {
+            return "application/pdf";
+        }
+        else if (sExt == "html" || sExt == "htm" || sExt == "htmls" || sExt == "htx")
+        {
+            return "text/html";
+        }
+        else if (sExt == "apk")
+        {
+            return "application/octet-stream";
+        }else if (sExt == "mp4")
+        {
+            return "video/mpeg";
+        }else if (sExt == "wmv")
+        {
+            return "video/x-ms-wmv";
+        }else if (sExt == "flv")
+        {
+            return "video/x-flv";
+        }else if (sExt == "mov")
+        {
+            return "video/quicktime";
+        }else if (sExt == "3gp")
+        {
+            return "video/3gpp";
+        }else if (sExt == "avi")
+        {
+            return "video/avi";
+//            return "video/x-msvideo;";
+        }else if (sExt == "mp3")
+        {
+            return "audio/mp3";
+        }else if (sExt == "snd")
+        {
+            return "audio/basic";
+        }else if (sExt == "mid")
+        {
+            return "audio/mid";
+        }else if (sExt == "ogg")
+        {
+            return "audio/ogg";
+        }else if (sExt == "wav")
+        {
+            return "audio/vnd.wav";
+        }else if (sExt == "xml")
+        {
+            return "application/xml";
+        }else if (sExt == "fcb")//no mime types found
+        {
+            return ".fcb";
+        }else if (sExt == "obj")
+        {
+            return ".obj";
+        }else if (sExt == "rpt")
+        {
+            return ".rpt";
+        }else if (sExt == "tsv")
+        {
+            return ".tsv";
+        }else if (sExt == "vcf")
+        {
+            return ".vcf";
+        }else if (sExt == "dbf")
+        {
+            return ".dbf";
+        }
+        else
+        {
+            return "text/plain";
+        }
+    };
+
+    this.parseNumberValue=function(sNumber)
+    {
+        if(sNumber)
+            sNumber=me.replaceAll(sNumber.toString()+"",",","");
+        return sNumber;
+    };
+
+    this.formatNumberToString=function(fValue)
+    {
+        if(!fValue)
+            return 0;
+
+        var sValue=fValue.toString();
+        sValue=me.parseNumberValue(sValue);
+
+        if(isNaN(sValue))
+            return 0;
+
+        var sFraction=null;
+        var iIndex=sValue.indexOf(".");
+        if(iIndex!=-1)
+        {
+            sFraction = sValue.substring(iIndex, sValue.length);
+            sValue=sValue.substring(0,iIndex);
+        }
+        if(!sValue || sValue==0 || sValue=="-")
+            return fValue;
+        var iValue=parseFloat(sValue);
+        if(!Browser.isSafari){
+            if(clAppBuffer.getNumberFormat()==Constants.INUMBER_FORMAT.MILLION)
+                sValue=iValue.toLocaleString('en-US');
+            else if(clAppBuffer.getNumberFormat()==Constants.INUMBER_FORMAT.LAKH)
+                sValue=iValue.toLocaleString('en-IN');//'en-US'
+        }else{
+            if(clAppBuffer.getNumberFormat()==Constants.INUMBER_FORMAT.MILLION)
+                sValue=me.formatMillion(iValue);
+            else if(clAppBuffer.getNumberFormat()==Constants.INUMBER_FORMAT.LAKH)
+                sValue=me.formatLakh(iValue);//'en-US'
+        }
+        if(sFraction!=null)
+            sValue+=sFraction;
+        return sValue;
+        //var sValue=fValue.toString();
+        //return sValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    };
+
+    this.replaceAll=function(sValue,sSearchText,sReplacedWith){
+        while(sValue.indexOf(sSearchText)!=-1 )
+            sValue=util.trim(sValue.replace(sSearchText,sReplacedWith));
+        return sValue;
+    };
+
+    // removes all the childnodes of an element
+    this.removeAll=function(objElement)
+    {
+        while (objElement.childNodes && objElement.childNodes.length > 0)//alert('removing...');
+        {
+            objElement.removeChild(objElement.firstChild);
+        }
+        //document.removeChild(objElement);
+    };
+
+    // returns x,y  properties relative to window in terms clientX, clientY event properties
+    /*function getPosition(obj)
+     {
+     var curleft = 0, curtop = 0;
+     if (obj.offsetParent)
+     {
+     curleft = obj.offsetLeft;
+     curtop = obj.offsetTop;
+     while (obj = obj.offsetParent)
+     {
+     curleft += obj.offsetLeft;
+     curtop += obj.offsetTop;
+     }
+     }
+
+     return [curleft,curtop];
+     }*/
+
+
+    this.encodeURI=function(sValue)
+    {
+        if (encodeURIComponent)
+            sValue= encodeURIComponent(sValue);
+        else if (escape)
+            sValue = escape(sValue);
+        return sValue;
+    };
+
+/*
+    this.getSrcElement=function(evt)
+    {
+        evt = window.event || evt;
+        return (evt.srcElement) ? evt.srcElement : evt.target;
+    };
+
+    this.getEvent=function(evt)
+    {
+        return (window.event || evt);
+    };
+*/
+     //     getResWidth(), getResHeight() are al
+   /* this.getResWidth=function(iWidth)
+    {
+        var iScreenWidth = document.body.clientWidth;
+        if (iScreenWidth != 1024)
+        {
+            iWidth = (iScreenWidth * (iWidth / 1024));
+        }
+        return iWidth;
+    };
+
+    this.getResHeight=function(iHeight)
+    {
+        var iScreenHeight = document.body.clientHeight;
+        if (iScreenHeight != 786)
+        {
+            iHeight = (iScreenHeight * (iHeight / 786));
+        }
+        return iHeight;
+    };*/
+
+    this.getElement=function(sId)
+    {
+        /*alert(sId)
+         alert("sId "+document.all(sId))*/
+        if (document.all)// && document.getElementById!="undefined")
+        {
+            return document.all(sId);//document.all(sId);
+        }
+        else if (document.getElementById && document.getElementById != "undefined")
+        {
+            return document.getElementById(sId);
+        }
+
+        return null;
+    };
+
+    this.isSupportsHTML5FileAPI=function()
+    {
+        // Checking all the possible window objects needed for file api
+        if (window.File && window.FileReader && window.FileList && window.Blob)
+            return true;
+        return false;
+    };
+
+    /*this.isSupportsHTML5ColorPicker=function()
+    {
+        var i = document.createElement("input");
+        i.setAttribute("type", "color");
+        return (i.type !== "text"?1:0);
+    };*/
+
+    this.getHTML5Support=function()
+    {
+        var iHTML5Support=0;
+        if(me.isSupportsHTML5FileAPI())
+            iHTML5Support=util.packBit(iHTML5Support,Constants.IHTML5_SUPPORT.UPLOAD);
+
+        var objInput = document.createElement("input");
+        objInput.setAttribute("type", "color");
+        if(objInput.type !== "text")
+            iHTML5Support=util.packBit(iHTML5Support,Constants.IHTML5_SUPPORT.COLOR_PICKER);
+        return iHTML5Support;
+    };
+
+    /*
+     * this function is used to convert RGB into a interger value
+     * */
+    this.RGBPacking=function(iRed, iGreen, iBlue)
+    {
+        return parseInt(iRed) + ((1 << 8) * parseInt(iGreen)) + ((1 << 16) * parseInt(iBlue));
+    };
+
+    /*
+     * this function is used to convert interger value into array with length 3, contains Red,Green,Blue
+     * */
+    this.RGBUnPacking=function(iColor)
+    {
+        var arrRGB = new Array();
+        arrRGB[arrRGB.length] = ((iColor % (1 << 16)) % (1 << 8)) / 100;
+        arrRGB[arrRGB.length] = ((iColor % (1 << 16)) / (1 << 8)) / 100;
+        arrRGB[arrRGB.length] = (iColor / (1 << 16)) / 100;
+        return arrRGB;
+    };
+
+    this.getHexaColor2=function(iColor) {
+        var hex = parseInt(iColor).toString(16);
+        return (hex.length < 2) ? "0" + hex : hex;
+    };
+
+    this.getHexaColor=function(iColorVal)
+    {
+        var shValue=(iColorVal/(0x10000));// red
+        shValue=parseInt(shValue);
+        var sHexaColor= me.getFixedLengthString(shValue.toString(16),2);
+
+        iColorVal=(iColorVal%(0x10000));
+
+        shValue=(iColorVal/(0x100)); // green
+        shValue=parseInt(shValue);
+        sHexaColor=sHexaColor+me.getFixedLengthString(shValue.toString(16),2);
+
+        shValue=(iColorVal%(0x100));  //blue
+        shValue=parseInt(shValue);
+        sHexaColor=sHexaColor+me.getFixedLengthString(shValue.toString(16),2);
+
+        return sHexaColor;
+    };
+    this.getTextColor=function(sHexaColor) //opposite color
+    {
+        var iColorCodes = this.getRGBColor(sHexaColor);
+        var r = parseInt(iColorCodes[0],16);
+        var g = parseInt(iColorCodes[1],16);
+        var b = parseInt(iColorCodes[2],16);
+
+        var iBrightNess  = r*0.299+g*0.587+b*0.114;
+        return  iBrightNess>250?"#000000":"#ffffff";//iBrightNess>186?"#000000":"#ffffff";
+
+    };
+    this.getTextColor2=function(sHexaColor) //opposite color
+    {
+        var iColorCodes = this.getRGBColor(sHexaColor);
+        var r = parseInt(iColorCodes[0],10);
+        var g = parseInt(iColorCodes[1],10);
+        var b = parseInt(iColorCodes[2],10);
+
+
+        var iBrightNess = (0.2126*r) +  (0.7152*g) +(0.0722*b);//brrightness
+        return  iBrightNess>0.5?"#000000":"#FFFFFF";
+
+    };
+    this.getRGBColor = function(sHexaColor)
+    {
+
+        var r = sHexaColor.slice(1,2);
+        var g = sHexaColor.slice(2,3);
+        var b = sHexaColor.slice(3,4);
+        var arrColor=new Array();
+        arrColor[0] = parseInt(r+r,16);
+        arrColor[1] = parseInt(g+g,16);
+        arrColor[2] = parseInt(b+b,16);
+        return arrColor;
+    };
+    this.getRGBColor2 = function(sHexaColor)
+    {
+        var arrColor=[];
+        var iColorVal = this.packHexaColor(sHexaColor);
+        arrColor[0]=parseInt(iColorVal/(0x10000));
+        iColorVal=(iColorVal%(0x10000));
+        arrColor[1]=parseInt(iColorVal/(0x100));
+        arrColor[2]=parseInt(iColorVal%(0x100));
+        return arrColor;
+    }
+
+    this.getOppositeColor=function(sColor)
+    {
+        var chormaLuminace=chroma(sColor).luminance();
+        if(chormaLuminace>0.5)
+            sColor=chroma(sColor).darken(4).hex();
+        else
+            sColor=chroma(sColor).brighten(4).hex();
+
+        return sColor;
+    };
+
+    this.getFixedLengthString=function(sValue,iLength)
+    {
+        if(sValue==null)
+            sValue="";
+
+        if(iLength-sValue.length>0)
+        {
+            var chValue='0';
+            var chRepeatStr=new Array(iLength-sValue.length);
+            for ( var i = 0; i < chRepeatStr.length; i++)
+                chRepeatStr[i]=chValue;
+            var sValuePrefix=chRepeatStr.join("");
+            return sValuePrefix+sValue;
+        }
+        return sValue;
+    };
+
+    this.packHexaColor=function(hex) {
+        return parseInt("0x" + hex);
+    };
+
+    this.writeToConsole=function(sMsg)
+    {
+        if (window.console)
+        {
+            var clDate = new Date();
+            console.log(clDate.getHours()+":"+clDate.getMinutes()+":"+clDate.getSeconds()+":"+clDate.getMilliseconds()+"=="+sMsg);
+        }
+    };
+
+    this.writeToLog=function(sMsg)
+    {
+       /* if (typeof console != "undefined")
+        {
+            console.info(sMsg);
+        }
+        else
+        {*/
+            var objDiv = document.getElementById("logDiv");
+            if (!objDiv)
+            {
+                objDiv = document.createElement("DIV");
+                objDiv.style.width = "240px";
+                objDiv.style.backgroundColor = "#cccccc";
+                objDiv.style.position = "absolute";
+                objDiv.style.zIndex = 200;
+                var iStartXPos = 5;
+                var iStartYPos = 5;
+                /*if(document.body.scrollLeft>0)
+                 iStartYPos+=document.body.scrollTop;*/
+                if (document.body.scrollTop > 0)
+                {
+                    iStartYPos += document.body.scrollTop;
+                }
+
+                objDiv.style.left = iStartXPos + "px";
+                objDiv.style.top = iStartYPos + "px";
+                objDiv.innerHTML = "<div align='right'><a href='javascript:void(0)' onclick='this.parentNode.nextSibling.innerHTML=\"\";'>Clear</a>&nbsp;&nbsp;" +
+                                   "<a href='javascript:void(0)' id='logDivLink'>Hide</a>&nbsp;&nbsp;</div><div id='logDiv'></div>";
+                document.body.appendChild(objDiv);
+                objDiv = document.getElementById("logDiv");
+                var objDivLink = document.getElementById("logDivLink");
+
+                objDivLink.onclick = function()
+                {
+                    if (objDiv.style.display == "none")
+                    {
+                        objDiv.style.display = "block";
+                        objDivLink.innerHTML = "Hide";
+                    }
+                    else
+                    {
+                        objDiv.style.display = "none";
+                        objDivLink.innerHTML = "Show";
+                    }
+                };
+            }
+            objDiv.innerHTML += sMsg + "<br>";
+       // }
+    };
+
+    this.hideLogger=function()
+    {
+        var objDiv = document.getElementById("logDiv");
+        if (objDiv)
+        {
+            objDiv.style.display = "none";
+        }
+    };
+
+    this.setBackgroundImgDimensions=function(iWidth,iHeight)
+    {
+        var objImg = document.getElementById("disableBGImg");
+        if (objImg)
+        {
+            //alert(iClientWidth+","+iClientHeight)
+            objImg.style.width = iWidth;
+            objImg.style.height = iHeight;
+        }
+        //document.getElementById("loadstatus").style.left=iClientWidth/2; //setting 'loading' image left margin
+    };
+
+    this.getWindowDimensions=function()
+    {
+        var iClientWidth=0;
+        var iClientHeight=0;
+
+        if (document.body)
+        {
+            iClientWidth = document.body.clientWidth;
+            iClientHeight = document.body.clientHeight;
+            //        alert(document.body.scrollHeight)
+            //        if (document.body.scrollHeight)
+            //            iClientHeight += document.body.scrollHeight;
+            //alert(iClientHeight+","+document.body.clientHeight)
+        }
+        else
+        {
+            iClientWidth = window.innerWidth;
+            iClientHeight = window.innerHeight;
+        }
+        //alert(iClientWidth+","+iClientHeight)
+        return [iClientWidth,iClientHeight];
+    };
+
+    this.toggleDlgBackground=function(isDisable,isHideLoadStatus)
+    {
+        me.toggleBackground(isDisable,isHideLoadStatus,null,false,true,null);
+    };
+
+    this.toggleBackground=function(isDisable,isHideLoadStatus,sMessage,isHideBgImg,isForDialog,sActionViewId)
+    {
+        var elemImg
+        if(isForDialog)
+            elemImg = document.getElementById("disableDlgBGImg");
+        else
+            elemImg = document.getElementById("disableBGImg");
+
+       /* if(!elemImg)
+            elemImg=parent.document.getElementById("disableBGImg");*/
+
+        if (!elemImg)
+        {
+            elemImg = document.createElement("img");
+            if(isForDialog)
+            {
+                elemImg.id = "disableDlgBGImg";
+
+            }
+            else
+                elemImg.id = "disableBGImg";
+
+            elemImg.className = "disableBGImg";
+//            elemImg.src = app.getImagePath(true) + "disable-bg.gif";
+            elemImg.src = app.getImagePath(true) + "blank.png";
+//            elemImg.className = "sModule s-disable-bg";
+
+
+
+            document.body.appendChild(elemImg);
+           // elemImg.style.width=document.body.scrollWidth;
+          //  elemImg.style.height=document.body.scrollHeight; 
+            //me.setBackgroundImgDimensions();
+        }
+       // else
+        {
+            //elemImg.style.width=document.body.offsetWidth;
+            //elemImg.style.height=document.body.offsetHeight;
+             if(cross.isIE())
+           {
+
+            var clElement = document.getElementById("dialogscroller")
+            if (!clElement)
+                clElement=document.getElementById("containerDiv")
+            if(!clElement)
+                clElement=document.body;
+              elemImg.style.width=clElement.scrollWidth;
+              elemImg.style.height=clElement.scrollHeight;
+          //   alert("=="+elemImg.style.height+clElement.id)
+           }
+          else
+             {
+            elemImg.style.width=document.body.scrollWidth;
+            elemImg.style.height=document.body.scrollHeight;
+             }
+            //elemImg.style.backgroundColor='red';
+
+        }
+
+        if(isHideBgImg)
+            elemImg.style.opacity="0";
+        else
+            elemImg.style.opacity="0.3";
+
+
+        var objContainerTable=document.getElementById("containerTable");
+        if(objContainerTable)
+            objContainerTable.style.cssText ="";
+
+        if (isDisable)
+        {
+            me.startLoadTimer();
+            elemImg.style.display = "block";
+            /*if(isForDialog)
+                elemImg.style.zIndex="3";*/
+
+            if(isForDialog && objContainerTable)
+                objContainerTable.style.cssText ="-webkit-filter: blur(0px);"; //removed blur feature for enabling them to view background values
+        }
+        else
+        {
+            elemImg.style.display = "none";
+            me.endLoadTimer();
+            /*if(isForDialog)
+                elemImg.style.zIndex="10";*/
+        }
+
+        me.toggleLoadStatus(!isDisable || isHideLoadStatus,sMessage,sActionViewId);
+
+    };
+
+    this.toggleLoadStatus=function(isHide,sMessage,sActionViewId)
+    {
+
+
+        if(sActionViewId)
+        {
+            var clActionElement = document.getElementById(sActionViewId);
+            if(isHide==true)
+            {
+                var clActionLabel=clActionElement.getAttribute('d_oldlabel');
+                clActionElement.setAttribute("d_oldlabel", "");
+                clActionElement.value = clActionLabel;
+            }
+            else
+            {
+                clActionElement.setAttribute("d_oldlabel", clActionElement.value);
+                clActionElement.value = sMessage;
+            }
+
+        }
+        else
+        {
+            var objLoadStatus = document.getElementById("loadstatus");
+            if (!objLoadStatus) {
+
+                try {
+                    objLoadStatus = parent.document.getElementById("loadstatus");
+                }
+                catch (e) {
+                }
+            }
+//        if(!objLoadStatus)
+//            objLoadStatus=parent.document.getElementById("loadstatus");
+            if (objLoadStatus) {
+
+                if (isHide)
+                    objLoadStatus.style.display = "none";
+                else {
+                    if (!sMessage)
+                        sMessage = MsgHandler.getMsg(MsgConstants.LOADING);//"Loading...";
+
+                    var objLoadstatusMsg = document.getElementById("loadstatusMsg");
+                    if (!objLoadstatusMsg)
+                        objLoadstatusMsg = parent.document.getElementById("loadstatusMsg");
+//                if(!objLoadstatusMsg)
+//                    objLoadstatusMsg=parent.document.getElementById("loadstatusMsg");
+                    if(objLoadstatusMsg )
+                        objLoadstatusMsg.innerHTML = sMessage;
+                    objLoadStatus.style.display = "";
+                }
+            }
+        }
+    };
+
+    // for disable perticular element.
+    this.toggleElementBackground=function(element,isDisable,isHideLoadImg,sMessage)
+    {
+        var objDiv,position;
+        objDiv=document.getElementById("elmntBGDisable");
+        if(element)
+        {
+            position=cross.getPosition(element);
+            var iTop,iLeft;
+            iLeft=position[0];
+            iTop=position[1];
+            var iClientWidth=document.body.clientWidth;
+            var iClientHeight=document.body.clientHeight;
+
+            if(!objDiv)
+            {
+                objDiv=window.document.createElement("DIV");
+                objDiv.id="elmntBGDisable";
+                objDiv.style.zIndex="70";   // For tabbed and multipane
+
+                var sHtml;
+                sHtml = "<img id='elmntDisableBGImg' class='disableBGImg' src='" + app.getImagePath(true) + "disable-bg.gif'";
+                sHtml += "width='100%' height='100%' style='opacity:0.04;display:none' />";
+                sHtml += "<table id='elmntLoadstatus' class='loadstatus'  cellpadding='3' style='display: none;'>";
+                sHtml += "<tr><td width='18'>";
+                sHtml += "<span   id='elmntLoadstatusImg' style='background-color:transparent;' class='fa fa-spinner fa-pulse' ></span></td>";
+                sHtml += "<td id='elmntLoadstatusMsg' valign='middle' nowrap='true'>Loading</td></tr></table>";
+                objDiv.innerHTML = sHtml;
+                cross.setVisible(objDiv,false);
+            }
+
+            var clElement=document.getElementById("containerDiv");
+            clElement=(clElement?clElement:element);
+            clElement.appendChild(objDiv);
+
+            if(isDisable)
+            {
+                var objDisableBGImg,objLoadstatus;
+                objDisableBGImg=document.getElementById("elmntDisableBGImg");
+                objLoadstatus = document.getElementById("elmntLoadstatus");
+                if(sMessage)
+                {
+                    objDiv.className=null;
+                    objDisableBGImg.style.left = iLeft + "px";
+                    objDisableBGImg.style.top = iTop + "px";
+
+                    objLoadstatus.style.left = ((iClientWidth) / 2) + "px";
+                    objLoadstatus.style.top = (iClientHeight/ 2) + "px";
+
+                    cross.setVisible(objDisableBGImg,true);
+                    cross.setVisible(objLoadstatus,true);
+                }
+                else
+                {
+                    objDiv.className="disableElementBG"+ (isHideLoadImg?"":" loadingImg");
+                    cross.setVisible(objDisableBGImg,false);
+                    cross.setVisible(objLoadstatus,false);
+                }
+
+                objDiv.style.left= iLeft;
+                objDiv.style.top= iTop;
+
+                objDiv.style.width= element.offsetWidth;
+                objDiv.style.height= element.offsetHeight;
+            }
+
+            cross.setVisible(objDiv,isDisable);
+        }
+        else if(objDiv)
+            cross.setVisible(objDiv,false);
+    };
+
+    var iTimerId;
+     var iLoadStartTime = 0;
+
+    this.startLoadTimer=function()
+    {
+        if (typeof window["iLoadStartTime"] != "undefined" && iLoadStartTime == 0)
+            iLoadStartTime = new Date().getTime();
+        //writeToLog("loading started at "+new Date().getMilliseconds())
+    };
+
+    this.endLoadTimer=function()
+    {
+        if (typeof window["iLoadStartTime"] != "undefined" && iLoadStartTime > 0)
+        {
+            iLoadStartTime = 0;
+            iTimerId = setTimeout("util.hideLoadTime", 3000);
+        }
+    };
+
+    this.hideLoadTime=function()
+    {
+        util.hideLogger();
+        if (iTimerId)
+        {
+            clearTimeout(iTimerId);
+        }
+        iTimerId = null;
+    };
+
+    this.onScriptsLoad=function()
+    {
+        if(typeof window["initAllCombos"]=="function")
+            initAllCombos();
+    };
+
+    this.GetZoomFactor=function()
+    {
+        var factor = 1;
+        if (document.body.getBoundingClientRect) {
+            // rect is only in physical pixel size in IE before version 8
+            var rect = document.body.getBoundingClientRect ();
+            var physicalW = rect.right - rect.left;
+            var logicalW = document.body.offsetWidth;
+
+            // the zoom level is always an integer percent value
+            factor = Math.round ((physicalW / logicalW) * 100) / 100;
+        }
+        return factor;
+    };
+
+    this.getDateSeparator=function(iFormat)
+    {
+        switch(iFormat)
+        {
+            case Constants.DDMMYYYY:
+            case Constants.MMDDYYYY:
+            case Constants.YYYYMMDD:
+            case Constants.DDMMYY:
+                return "/";
+            case Constants.DD_MM_YYYY:
+            case Constants.DD_MM_YY:
+            case Constants.MM_DD_YYYY:
+            case Constants.YYYY_MM_DD:
+            case Constants.DD_MON_YY:
+            case Constants.DD_MON_YYYY:
+                return "-";
+            case Constants.DD__MON__YYYY:
+            case Constants.DD__MON__YY:
+                return " ";
+            case Constants.DD____MM____YYYY:
+            case Constants.DD____MM____YY:
+            case Constants.MM____DD____YYYY:
+                return "\\";
+            default:
+                return "/";
+        }
+    };
+
+    this.getDateFromDateTime = function(sDateTime,iFormat)
+    {
+        if(iFormat == Constants.DD__MON__YYYY || iFormat == Constants.DD__MON__YY)
+        {
+            sDateTime = sDateTime.substring(0, sDateTime.indexOf(" ",9));
+        }else {
+            sDateTime = sDateTime.substring(0, sDateTime.indexOf(" "));
+        }
+        return sDateTime;
+    };
+
+    this.getTimeFromDateTime = function(sDateTime,iFormat)
+    {
+        if(iFormat == Constants.DD__MON__YYYY || iFormat == Constants.DD__MON__YY )
+        {
+            sDateTime = sDateTime.substring(sDateTime.indexOf(" ",9) + 1);
+        }else {
+            sDateTime = sDateTime.substring(sDateTime.indexOf(" ") + 1);
+        }
+        return sDateTime;
+    };
+
+    this.parseDate=function(sDate,iFormat,isDateTime)
+    {
+        if(!iFormat)
+            iFormat=clAppBuffer.getDateFormat();
+
+        iFormat=parseInt(iFormat,10);
+        if(isDateTime)
+        {
+            sDate = me.getDateFromDateTime(sDate,iFormat);
+        }
+
+        var sArrReturnDate=sDate.split(util.getDateSeparator(iFormat));
+
+        switch(iFormat)
+        {
+            case Constants.DDMMYYYY:
+            case Constants.DD_MM_YYYY:
+            {
+                return sArrReturnDate;
+            }
+            case Constants.MMDDYYYY:
+            case Constants.MM_DD_YYYY:
+                return [sArrReturnDate[1],sArrReturnDate[0],sArrReturnDate[2]];
+            case Constants.YYYYMMDD:
+            case Constants.YYYY_MM_DD:
+                return [sArrReturnDate[2],sArrReturnDate[1],sArrReturnDate[0]];
+            case Constants.DD__MON__YYYY:
+            {
+                return [sArrReturnDate[0],me.getNumberMonth(sArrReturnDate[1]),sArrReturnDate[2]];
+            }
+            default:
+            {
+                return sArrReturnDate;
+            }
+        }
+    };
+
+    this.getNumberMonth = function(sMonth)
+    {
+        if(sMonth.toLowerCase() == "jan")
+            return 1;
+        else if(sMonth.toLowerCase() == "feb")
+            return 2;
+        else if(sMonth.toLowerCase() == "mar")
+            return 3;
+        else if(sMonth.toLowerCase() == "apr")
+            return 4;
+        else if(sMonth.toLowerCase() == "may")
+            return 5;
+        else if(sMonth.toLowerCase() == "jun")
+            return 6;
+        else if(sMonth.toLowerCase() == "jul")
+            return 7;
+        else if(sMonth.toLowerCase() == "aug")
+            return 8;
+        else if(sMonth.toLowerCase() == "sep")
+            return 9;
+        else if(sMonth.toLowerCase() == "oct")
+            return 10;
+        else if(sMonth.toLowerCase() == "nov")
+            return 11;
+        else if(sMonth.toLowerCase() == "dec")
+            return 12;
+    };
+
+    this.getJsDate=function()
+    {
+        return new Date();
+    };
+
+    this.getCurrentDate=function()
+    {
+        return this.getDateObject();
+    };
+
+    this.getDateObject=function(sDate,isDateTime,isSetTime)
+    {
+        var dStartDate=new Date();
+        if(!sDate)
+            sDate=clAppBuffer.getTodaysDateAsString();
+
+        if(sDate)
+        {
+            var sArrDate=util.parseDate(sDate,null,isDateTime);
+            dStartDate.setDate(1);
+            dStartDate.setMonth(parseInt(sArrDate[1],10)-1);
+            dStartDate.setYear(sArrDate[2]);
+            dStartDate.setDate(sArrDate[0]);
+
+            if(isDateTime)
+            {
+                if(isSetTime)
+                {
+                    var sArrTime=util.parseTime(util.getTimeFromDateTime(sDate,clAppBuffer.getDateFormat()));//sDate.substring(sDate.indexOf(" ")+1));
+                    dStartDate.setHours(sArrTime[0]);
+                    dStartDate.setMinutes(sArrTime[1]);
+                }
+                else
+                {
+                    dStartDate.setHours(0);
+                    dStartDate.setMinutes(0);
+                }
+            }
+        }
+        return dStartDate;
+    };
+
+    /**
+     * This method returns day count between startdate and endate. For same dates it will return zero
+     * @param dStartDate
+     * @param dEndDate
+     */
+    this.getDateDiff=function(dStartDate,dEndDate)
+    {
+        return (dEndDate - dStartDate) / (1000*60*60*24); //86400000;
+    };
+
+    /**
+     * This method returns minute count between startdate and endate
+     * @param dStartDate
+     * @param dEndDate
+     */
+    this.getTimeDiff=function(dStartDate,dEndDate)
+    {
+        return (dEndDate - dStartDate) / (1000*60);
+    };
+
+    this.getDateAdd=function(dDate,iAddValue)
+    {
+        dDate.setDate(dDate.getDate()+iAddValue);
+        return dDate;
+    };
+
+    this.parseTime=function(sTime)
+    {
+        var sArrTime=sTime.split(":");
+        var sTimePart=sArrTime[1].split(" ");
+
+        if(sTimePart.length>1)
+        {
+            if(sTimePart[1].toUpperCase()=="PM")
+            {
+                 if(sArrTime[0]!="12")
+                    sArrTime[0]=parseInt(sArrTime[0],10)+12;
+            }
+            else if(sArrTime[0]=="12")
+                sArrTime[0]=0;
+            sArrTime[1]=sTimePart[0];
+        }
+
+        return sArrTime;
+    };
+    this.setWindowResizeCB=function(fnCallback)
+     {
+          me.fnWindowResizeCB=fnCallback;
+     };
+
+    /**
+     * This function fires while resizing the browser................
+     */
+    this.windowResizeBrowserHandler=function()
+    {
+        if (!me.resizeInProgress)  // Avoid multiple calling while resizing
+        {
+            me.resizeInProgress = true;
+            if (me.resizeTimer != undefined)
+                clearTimeout(me.resizeTimer);
+            me.resizeTimer = setTimeout(function(){
+                                                     me.resizeInProgress = false;
+                                                     clearTimeout(me.resizeTimer);
+                                                     clearTimeout(me.resizeTimer2);
+
+                                                    var arrDimensions,iWidth,iHeight;
+                                                    arrDimensions=me.getWindowDimensions();   // Get current clientWidth and clientHeight of browser without Scrolling ...
+                                                    iWidth=arrDimensions[0];
+
+                                                    iHeight=arrDimensions[1];
+
+
+                                                    me.resizeNavMenu(iWidth,iHeight);
+
+                                                    if(me.fnWindowResizeCB)
+                                                       me.fnWindowResizeCB(iWidth,iHeight);
+
+                                                     me.resizeTimer2 = setTimeout(util.resizeComplete, 500);
+                                                   }, 10);
+        }
+
+    };
+    /**
+     * This is the spot to run a custom function after the  browser has completed resizing
+     */
+    this.resizeComplete=function()
+    {
+        clearTimeout(me.resizeTimer2);
+        //me.resizeInProgress = false;
+
+        var arrDimensions,iWidth,iHeight;
+        arrDimensions=me.getWindowDimensions();   // Get current clientWidth and clientHeight of browser without Scrolling ...
+        iWidth=arrDimensions[0];
+        iHeight=arrDimensions[1];
+        me.setBackgroundImgDimensions(iWidth,iHeight);    //for Background image...
+        con.sendPostRequest(me.sResizeUrl,"&clientWidth="+iWidth+"&clientHeight="+iHeight); // Update clientWidth and clientHeight at serverSide (CLHomeCtl)...
+    };
+
+    this.resizeNavMenu=function(iWidth,iHeight)
+    {
+        var objCenterContent = document.getElementById("navContentAreaDv");
+        var objMenuContent = document.getElementById("navDv");
+        var sUrl = window.location.href;
+        var isHomeView = sUrl.includes("crmhome.do");
+
+        if(isHomeView)
+        {
+            if(iWidth>=768) {
+                if(objMenuContent.offsetWidth < 220)
+                    iWidth = iWidth-90;
+                else
+                    iWidth = iWidth-265;
+            }
+
+        }
+        else
+        {
+            if(objMenuContent.offsetWidth<220)
+                iWidth = iWidth-60;
+            else
+                iWidth = iWidth-232;
+
+        }
+        if (objCenterContent)
+        {
+            objCenterContent.style.width = iWidth;
+        }
+    };
+
+    this.roundValue=function(sValue,iNoOfDecimals,isFormatNumber)
+    {
+        var sValue1=null;
+
+        if(sValue)
+            sValue1 = me.parseNumberValue(sValue).trim();
+
+        if(sValue1 && !isNaN(sValue1))
+        {
+            //var result = Math.round(sValue1 * Math.pow(10, iNoOfDecimals)) / Math.pow(10, iNoOfDecimals);
+            //formatting 267.525 is giving result as 267.52, but it should be 267.53
+            var result = (parseFloat(sValue1)+0.0000000000001).toFixed(iNoOfDecimals);
+            if (isFormatNumber)
+            {
+                result = me.formatNumberToString(result);
+            }
+            return result;
+        }
+        else
+            return sValue;
+    };
+
+    this.getFixedLengthString=function(sValue,iLength,sReplaceChar)
+    {
+        if(sValue==null)
+            sValue="";
+
+        if(!sReplaceChar)
+            sReplaceChar="0";
+
+        while(iLength-sValue.length>0)
+        {
+            sValue="0"+sValue;
+        }
+        return sValue;
+    }
+
+    this.printView =  function(sUrl,sParams,isDontShowPrintHeader,isDontShowCompanyInfo)
+    {
+        /*if(sParams)
+            sUrl=sUrl+"?"+sParams;
+        var sImportUrl = util.encodeURI(sUrl);
+        sUrl=me.sPrintUrl+"?sImportUrl="+sImportUrl;
+       if(isDontShowPrintHeader)
+           sUrl+="&showPrintHeader="+!isDontShowPrintHeader;
+       if(isDontShowCompanyInfo)
+           sUrl+="&showCompanyInfo="+!isDontShowCompanyInfo;
+        window.open(clAppBuffer.getContextPath()+"/"+sUrl);*/
+
+        var frmPrintView =document.getElementById("frm_PrintView");
+        var hfImportUrl =document.getElementById("hfPVImportUrl");
+        var hfShowPrintHeader =document.getElementById("hfPVShowPrintHeader");
+        var hfShowCompanyInfo =document.getElementById("hfPVShowCompanyInfo");
+        if(frmPrintView==null)
+        {
+            frmPrintView = document.createElement("form");
+            frmPrintView.setAttribute("method", "post");
+            frmPrintView.setAttribute("action", clAppBuffer.getContextPath()+"/"+me.sPrintUrl);
+            frmPrintView.setAttribute("target", "_blank");
+
+
+            hfImportUrl = document.createElement("input");
+            hfImportUrl.setAttribute("id", "hfPVImportUrl");
+            hfImportUrl.setAttribute("type", "hidden");
+            hfImportUrl.setAttribute("name", "sImportUrl");
+            frmPrintView.appendChild(hfImportUrl);
+
+            hfShowPrintHeader = document.createElement("input");
+            hfShowPrintHeader.setAttribute("id", "hfPVShowPrintHeader");
+            hfShowPrintHeader.setAttribute("type", "hidden");
+            hfShowPrintHeader.setAttribute("name", "showPrintHeader");
+            frmPrintView.appendChild(hfShowPrintHeader);
+
+            hfShowCompanyInfo = document.createElement("input");
+            hfShowCompanyInfo.setAttribute("id", "hfPVShowCompanyInfo");
+            hfShowCompanyInfo.setAttribute("type", "hidden");
+            hfShowCompanyInfo.setAttribute("name", "showCompanyInfo");
+            frmPrintView.appendChild(hfImportUrl);
+
+            document.body.appendChild(frmPrintView);
+        }
+
+        if(sParams)
+            sUrl=sUrl+"?"+sParams;
+
+        hfImportUrl.setAttribute("value", sUrl);
+        hfShowPrintHeader.setAttribute("value", isDontShowPrintHeader);
+        hfShowCompanyInfo.setAttribute("value", isDontShowCompanyInfo);
+
+        frmPrintView.style.display="none";
+
+        frmPrintView.submit();
+    };
+
+
+    this.replaceHtmlTags = function(sHTML,sTag,sReplaceVal)
+    {
+        var cRegExp=null;
+         if(sTag && sTag.length>0)
+            cRegExp=new RegExp("<\/?[("+sTag.toLowerCase()+"|"+sTag.toUpperCase()+")>]+>","ig");
+         else
+            cRegExp=/<\/?[^>]+>/g;
+
+        //cRegExp=/<\/?[(b|B)>]+>/g;
+
+         return sHTML.replace(cRegExp,sReplaceVal);
+
+    }
+      this.decodeHTML = function(sText)
+    {
+        return me.htmlEnDeCode.htmlDecode(sText);
+    }
+    this.eecodeHTML = function(sText)
+    {
+        return me.htmlEnDeCode.htmlEncode(sText);
+    }
+
+    this.decodeHTML = function(sText)
+    {
+        return me.htmlEnDeCode.htmlDecode(sText);
+    }
+    this.encodeHTML = function(sText)
+    {
+        return me.htmlEnDeCode.htmlEncode(sText);
+    }
+    this.replaceHtmlEntites = function(sText)
+      {
+          var translate_re = /&(nbsp|amp|quot|lt|gt|#33|#34|#35|#36|#37|#38|#39|#40|#41|#42|#43|#44|#45|#47|#60|#61|#62|#63|#64|#91|#92|#93|#94|#96|#123|#124|#125|#126);/g;
+          var translate =
+          {
+            "nbsp": " ",
+            "amp" : "&",
+            "quot": "\"",
+            "lt"  : "<",
+            "gt"  : ">",
+            "#33"  : "!",
+            "#34"  : "\"",
+            "#35"  : "#",
+            "#36"  : "$",
+            "#37"  : "%",
+            "#38"  : "&",
+            "#39"  : "\'",
+            "#40"  : "(",
+            "#41"  : ")",
+            "#42"  : "*",
+            "#43"  : "+",
+            "#44"  : ",",
+            "#45"  : "-",
+            "#47"  : "/",
+            "#60"  : "<",
+            "#61"  : "=",
+            "#62"  : ">",
+            "#63"  : "?",
+            "#64"  : "@",
+            "#91"  : "[",
+            "#92"  : "\\",
+            "#93"  : "]",
+            "#94"  : "^",
+            "#96"  : "`",
+            "#123"  : "{",
+            "#124"  : "|",
+            "#125"  : "}",
+            "#126"  : "~"
+          };
+
+          sText=sText.replace(translate_re, function(match, entity)
+            {
+              return translate[entity];
+            } );
+               //alert("sText  "+sText)
+          return sText;
+        };
+    /**
+     * author:nagababu
+     * using this function we can shake element.
+     */
+    var rector=3,a=1,iCount = 0;
+    var g_ele,g_iNoOfShakes;
+    this.shake = function()
+    {
+        if (a==1)
+            g_ele.style.top=parseInt(g_ele.style.top)+rector+"px";
+        else if (a==2)
+            g_ele.style.left=parseInt(g_ele.style.left)+rector+"px";
+        else if (a==3)
+                g_ele.style.top=parseInt(g_ele.style.top)-rector+"px";
+            else
+                g_ele.style.left=parseInt(g_ele.style.left)-rector+"px";
+        iCount++;
+        if (a<4)
+            a++;
+        else
+            a=1;
+        if(iCount == g_iNoOfShakes)
+        {
+            iCount=0;
+            g_ele.style.position = "";
+            clearInterval(iIntervalId);
+        }
+    };
+    /**
+     * author:nagababu
+     * Using this function we can call to shake function
+     */
+    var iIntervalId=0;
+    this.shakeElement = function(ele,iNoOfShakes)
+    {
+        ele.style.position = "relative";
+        g_ele = ele ;
+        g_iNoOfShakes = iNoOfShakes;
+        g_ele.style.left=0;
+        g_ele.style.top=0;
+        iIntervalId = setInterval(me.shake,1);
+    };
+
+    this.setCookie=function(name,value,days)
+    {
+        var expires = "";
+        if (days)
+        {
+            var date = new Date();
+            date.setTime(date.getTime()+(days*24*60*60*1000));
+            expires = "; expires="+date.toGMTString();
+        }
+
+        document.cookie = name+"="+value+expires+";;samesite=strict";
+    };
+
+    this.expireCookie=function(cName)
+    {
+        document.cookie =cName+"=deleted; expires=" +new Date( 0 ).toUTCString();
+    };
+
+    this.readCookie=function (name)
+    {
+        // alert(name);
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0;i < ca.length;i++)
+        {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        }
+        return null;
+    };
+
+
+    this.convertNumberToWord=function(number)
+    {
+        if ((number < 0) || (number > 999999999))
+        {
+            return "";
+        }
+        var Gn = Math.floor(number / 10000000);  /* Crore */
+        number -= Gn * 10000000;
+        var kn = Math.floor(number / 100000);     /* lakhs */
+        number -= kn * 100000;
+        var Hn = Math.floor(number / 1000);      /* thousand */
+        number -= Hn * 1000;
+        var Dn = Math.floor(number / 100);       /* Tens (deca) */
+        number = number % 100;               /* Ones */
+        var tn= Math.floor(number / 10);
+        var one=Math.floor(number % 10);
+        var res = "";
+
+        if (Gn>0)
+        {
+            res += (util.convertNumberToWord(Gn) + " Crore");
+        }
+        if (kn>0)
+        {
+            res += (((res=="") ? "" : " ") +
+                    util.convertNumberToWord(kn) + " Lakhs");
+        }
+        if (Hn>0)
+        {
+            res += (((res=="") ? "" : " ") +
+                    util.convertNumberToWord(Hn) + " Thousand");
+        }
+
+        if (Dn)
+        {
+            res += (((res=="") ? "" : " ") +
+                    util.convertNumberToWord(Dn) + " hundred");
+        }
+
+
+        var ones = Array("", "One", "Two", "Three", "Four", "Five", "Six","Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen","Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eightteen","Nineteen");
+        var tens = Array("", "", "Twenty", "Thirty", "Fourty", "Fifty", "Sixty","Seventy", "Eigthy", "Ninety");
+
+        if (tn>0 || one>0)
+        {
+            if (!(res==""))
+            {
+                res += " and ";
+            }
+            if (tn < 2)
+            {
+                res += ones[tn * 10 + one];
+            }
+            else
+            {
+
+                res += tens[tn];
+                if (one>0)
+                {
+                    res += ("-" + ones[one]);
+                }
+            }
+        }
+
+        if (res=="")
+        {
+            res = "";
+        }
+        return res;
+    }
+
+
+
+
+this.htmlEnDeCode = (
+        function()
+        {
+    var charToEntityRegex,
+        entityToCharRegex,
+        charToEntity,
+        entityToChar;
+
+    function resetCharacterEntities() {
+        charToEntity = {};
+        entityToChar = {};
+        // add the default set
+        addCharacterEntities({
+            '&amp;'     :   '&',
+            '&gt;'      :   '>',
+            '&lt;'      :   '<',
+            '&quot;'    :   '"',
+            '&#39;'     :   "'"
+        });
+    }
+
+    function addCharacterEntities(newEntities) {
+        var charKeys = [],
+            entityKeys = [],
+            key, echar;
+        for (key in newEntities) {
+            echar = newEntities[key];
+            entityToChar[key] = echar;
+            charToEntity[echar] = key;
+            charKeys.push(echar);
+            entityKeys.push(key);
+        }
+        charToEntityRegex = new RegExp('(' + charKeys.join('|') + ')', 'g');
+        entityToCharRegex = new RegExp('(' + entityKeys.join('|') + '|&#[0-9]{1,5};' + ')', 'g');
+    }
+
+    function htmlEncode(value){
+        var htmlEncodeReplaceFn = function(match, capture) {
+            return charToEntity[capture];
+        };
+
+        return (!value) ? value : String(value).replace(charToEntityRegex, htmlEncodeReplaceFn);
+    }
+
+    function htmlDecode(value) {
+        var htmlDecodeReplaceFn = function(match, capture) {
+            return (capture in entityToChar) ? entityToChar[capture] : String.fromCharCode(parseInt(capture.substr(2), 10));
+        };
+
+        return (!value) ? value : String(value).replace(entityToCharRegex, htmlDecodeReplaceFn);
+    }
+
+    resetCharacterEntities();
+
+    return {
+        htmlEncode: htmlEncode,
+        htmlDecode: htmlDecode
+    };
+})();
+
+    /*this.exportHTMLAsImage=function(objElement)
+    {
+        html2canvas(objElement,
+        {
+          onrendered: function(canvas) {
+              window.open().location = canvas.toDataURL("image/png");
+            //document.body.appendChild(canvas);
+          }
+        });
+    };*/
+
+
+    function param_default(arrProperties,pname,def,sSuffix)
+    {
+        if (typeof arrProperties[pname] == "undefined")
+        {
+            arrProperties[pname] = def;
+        }
+        if(sSuffix && !util.endsWith(arrProperties[pname],sSuffix))
+            arrProperties[pname] = arrProperties[pname]+sSuffix;
+    };
+
+    /**
+     * this method is used to animate width or height for given object
+     * @param objElement: object to animate
+     * @param arrProperties :arrProperties can be width or height
+     */
+    this.animateToggle=function(objElement,arrProperties)
+    {
+        var isToggleHeight,isToggleWidth,arrTransProperty,arrTransSplit,iOriginalHeight,iTransitionDuration;
+        var iOriginalWidth;
+
+        if(!objElement.getAttribute("iOriginalWidth"))
+        {
+             if(!objElement.style.width)
+                objElement.style.width=objElement.offsetWidth;
+            if(!objElement.style.height)
+                objElement.style.height=objElement.offsetHeight;
+
+            iOriginalWidth=objElement.style.width;
+            iOriginalHeight=objElement.style.height;
+
+            if(iOriginalWidth.indexOf("px")!=-1)
+                iOriginalWidth=parseInt(iOriginalWidth.substring(0,iOriginalWidth.indexOf("px")),10);
+            if(iOriginalHeight.indexOf("px")!=-1)
+                iOriginalHeight=parseInt(iOriginalHeight.substring(0,iOriginalHeight.indexOf("px")),10);
+
+            objElement.setAttribute("iOriginalWidth",iOriginalWidth);
+            objElement.setAttribute("iOriginalHeight",iOriginalHeight);
+        }
+        else
+        {
+            iOriginalWidth=objElement.getAttribute("iOriginalWidth");
+            iOriginalHeight=objElement.getAttribute("iOriginalHeight");
+        }
+
+        isToggleHeight=false;
+        isToggleWidth=false;
+
+        arrTransProperty=arrProperties["transition-property"];
+        arrTransSplit = arrTransProperty.split(",");
+
+        for(var i=0;i<arrTransSplit.length;i++)
+        {
+            if(arrTransSplit[i]=="width")
+            {
+                isToggleWidth=true;
+                if(objElement.style.visibility=="hidden")
+                    objElement.style.width="0px";
+            }
+            else if(arrTransSplit[i]=="height")
+            {
+                isToggleHeight=true;
+                if(objElement.style.visibility=="hidden")
+                    objElement.style.height="0px";
+            }
+        }
+
+
+        if(isToggleWidth && isToggleHeight)
+        {
+            param_default(arrProperties,"transition-property","height,width",null);
+        }
+        else if(isToggleWidth)
+        {
+            param_default(arrProperties,"transition-property","width",null);
+        }
+        else //if(isToggleWidth)
+        {
+            param_default(arrProperties,"transition-property","height",null);
+        }
+         param_default(arrProperties,"transition-timing-function","linear",null);
+        param_default(arrProperties,"transition-duration","0.4","s");
+        param_default(arrProperties,"transition-delay","0","s");
+
+
+        if(!util.hasClass(objElement,"toggleTransition"))
+            util.addClass(objElement,"toggleTransition");
+        objElement.style.transitionProperty=arrProperties["transition-property"];
+        objElement.style.transitionDuration=arrProperties["transition-duration"];
+        objElement.style.transitionDelay=arrProperties["transition-delay"];
+        objElement.style.transitionTimingFunction = arrProperties["transition-timing-function"];
+
+
+
+        function setWidthAndHeight(iWidth,iHeight)
+        {
+            if(isToggleWidth)
+                objElement.style.width=iWidth+"px";
+            if(isToggleHeight)
+                objElement.style.height=iHeight+"px";
+        }
+
+        if(objElement.style.visibility=="hidden")
+        {
+            setTimeout(function()
+            {
+                objElement.style.visibility="visible";
+                setWidthAndHeight(iOriginalWidth,iOriginalHeight);
+
+            },50);
+
+        }
+        else
+        {
+            setTimeout(function()
+            {
+                setWidthAndHeight(0,0);
+
+                var sIndex=arrProperties["transition-duration"].indexOf('s');
+                iTransitionDuration=arrProperties["transition-duration"].substring(0,sIndex);
+
+                setTimeout(function()
+                {
+                    objElement.style.visibility="hidden";
+                },iTransitionDuration*1000);
+            },50);
+        }
+
+
+};
+
+
+    /**
+       *This method is used for animating the selected image till the target destination
+       * @param objTarget           :target Element object
+       * @Param isHideAfterMove     :if the image needs to be hide once reached target(Boolean value)
+       * @param arrProperties       :Transition properties in the form of array
+       * @param arrAnimationStyles  :arrAnimationStyles=[{'name':'color','value':'#ff0000'},{'name':'font-size','value':'14px'}]
+     */
+
+      //arrAnimationStyles=[{'name':'color','value':'#ff0000'},{'name':'font-size','value':'14px'}]
+      //transition-duration and transition-delay should be in seconds ex: 5 seconds is default
+      this.animateMove=function(objThis,objTarget,arrProperties,arrAnimationStyles,isHideAfterMove)
+      {
+          var objElem,arrTargetPosition,arrPosition,spTargetClone;
+          objElem=document.getElementById(objThis.id);
+          if(util.hasClass(objElem,"appliedStyles"))
+          {
+              return true;
+          }
+          param_default(arrProperties,"top","0",null);
+          param_default(arrProperties,"left","0",null);
+          param_default(arrProperties,"transition-property","top,left",null);
+          param_default(arrProperties,"transition-timing-function","linear",null);
+          param_default(arrProperties,"transition-duration","5","s");
+          param_default(arrProperties,"transition-delay","0","s");
+
+          arrTargetPosition = cross.getPosition(objTarget);
+          arrPosition =cross.getPosition(objElem);
+          spTargetClone=objThis.cloneNode(true);
+          spTargetClone.style.position="absolute";
+          spTargetClone.style.zIndex="1000000";
+          spTargetClone.style.left= arrPosition[0];
+          spTargetClone.style.top = arrPosition[1];
+          spTargetClone.style.transitionProperty=arrProperties["transition-property"];
+          spTargetClone.style.transitionDuration=arrProperties["transition-duration"];
+          spTargetClone.style.transitionDelay=arrProperties["transition-delay"];
+          var isIconTag=false;
+          function applyElementStyles(spTargetClone,isIconTag)
+          {
+              if(isIconTag)
+              {
+                  util.addClass(objThis,"appliedStyles");
+                  spTargetClone.pseudoStyle("before",arrAnimationStyles);
+              }
+              else
+              {
+
+                  util.addClass(objThis,"appliedStyles");
+                   for(var i=0; i < arrAnimationStyles.length; i++)
+                      spTargetClone.style[arrAnimationStyles[i].name]=arrAnimationStyles[i].value;
+              }
+          }
+
+          if(util.hasClass(objThis,"fa") || util.hasClass(objThis,"crm"))
+              isIconTag=true;
+
+         document.body.appendChild(spTargetClone);
+          var sIndex=arrProperties["transition-duration"].indexOf('s');
+          var iTransitionDuration=arrProperties["transition-duration"].substring(0,sIndex);
+          setTimeout(function()
+          {
+              applyElementStyles(spTargetClone,isIconTag);
+              spTargetClone.style.left=arrTargetPosition[0];
+              spTargetClone.style.top = arrTargetPosition[1];
+              if(isHideAfterMove)
+              {
+                  setTimeout(
+                          function()
+                          {
+                              document.body.removeChild(spTargetClone);
+
+                          }
+                          ,(iTransitionDuration*1000));
+              }
+          }
+                  ,(iTransitionDuration));
+      };
+
+
+      this.isSafari = function()
+     {
+         return (document.childNodes)&&(!document.all)&&(!navigator.taintEnabled)&&(!navigator.accentColorName)?true:false;
+     }
+
+    this.checkUserPassword=function(sPassword)
+    {
+        if(sPassword.indexOf('é')!=-1)
+        {
+            var iIndex =sPassword.indexOf('é');
+            var iCharCode=sPassword.charCodeAt(iIndex);
+            if(iCharCode==233)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    this.getAPITransId=function(iTransId,iModuleType,iLocationId)
+    {
+        if(iTransId==0)
+            return iTransId;
+        if(iLocationId==0)
+            iLocationId=1;
+
+        var iValue1=new BigNumber(iModuleType).multiply (70368744177664);
+        var iValue2=new BigNumber(iLocationId).multiply (2147483648);
+        var iValue3=new BigNumber(iValue1).add(iValue2);
+
+        var iAPITransId=new BigNumber(iValue3).add(iTransId).toString();
+
+
+        //iAPITransId=((iModuleType*70368744177664)+ (iLocationId*2147483648) + iTransId);
+        return iAPITransId;
+    };
+
+    this.getAPITransIdToInt=function(iAPITransId)
+    {
+        var iTransId=new BigNumber(iAPITransId).mod(2147483648);
+        return iTransId;
+    };
+
+    this.isPlaySound=true;
+    this.playNotificationSound=function()
+    {
+        if(me.isPlaySound)
+            me.playAudioUsingBufferLoader("notifysound","res/sounds/notify.mp3");
+    };
+
+    this.playAudioUsingBufferLoader=function(key,url)
+    {
+        try
+        {
+            var bufferLoader=app.getFromBuffer(key);
+            if(!bufferLoader)
+            {
+                window.AudioContext = window.AudioContext||window.webkitAudioContext;
+                var context = new AudioContext();
+                bufferLoader = new BufferLoader(context,key,url,finishedBufferLoading);
+                bufferLoader.loadBuffer();
+                app.addToBuffer(key,bufferLoader);
+            }
+            else
+                bufferLoader.afterLoad();
+
+        }
+        catch(e) {
+            me.playAudioUsingHTML(url);
+        }
+
+        function finishedBufferLoading(context,buffer)
+        {
+            var source = context.createBufferSource();
+            source.buffer = buffer;
+            source.connect(context.destination);
+            source.start(0);
+        }
+
+
+    };
+
+    this.playAudioUsingHTML=function(sUrl,bPlayInBackground ,evt,sScrollElementId)
+    {
+        if (window.HTMLAudioElement)  // Check for audio element support.
+        {
+            try
+            {
+                var objSrcElmt;
+                if(evt)
+                {
+                    cross.cancelBubble(evt);
+                    objSrcElmt=cross.getSrcElement(evt);
+                }
+
+                var objAudio=document.getElementById("oAudio");
+                if(!objAudio)
+                {
+                    objAudio = document.createElement('AUDIO');
+                    objAudio.controls=true;
+
+                    objAudio.id="oAudio";
+                    objAudio.style.position="absolute";
+                    objAudio.style.zIndex="999";
+                    document.body.appendChild(objAudio);
+                }
+                objAudio.controls=!bPlayInBackground;
+                objAudio.style.display="";
+
+                if(objSrcElmt && !bPlayInBackground)
+                {
+                    var iScrollTop =0;
+                    if(sScrollElementId && document.getElementById(sScrollElementId))
+                    {
+                        iScrollTop = parseInt(window.scrollY);
+                        iScrollTop -= parseInt(document.getElementById(sScrollElementId).scrollTop);
+                    }
+
+                    var positions = cross.getPosition(objSrcElmt);
+                    objAudio.style.left = ((positions[0] + objSrcElmt.offsetWidth) - objAudio.offsetWidth) + "px";
+                    objAudio.style.top = ((positions[1] +iScrollTop+ objSrcElmt.offsetHeight / 2) - objAudio.offsetHeight / 2) + "px";
+
+                    me.iListenerCount = -1;
+                    me.iListenerId = cross.registerEventListener(cross.EVENT_ONCLICK, hideAudioPlayer, [], null, Constants.SCOPE_SCREEN);
+                }
+
+                objAudio.src = sUrl;
+                objAudio.load();
+                objAudio.play();
+                cross.cancelBubble(evt,false,false);
+            }
+            catch (e) {
+                // Fail silently
+            }
+        }
+
+        function hideAudioPlayer()
+        {
+            if(me.iListenerCount >= 0)
+            {
+                cross.unregisterEventListener(me.iListenerId);
+                var objAudio = document.getElementById("oAudio");
+                objAudio.pause();
+                objAudio.currentTime = 0;
+                objAudio.style.display="none";
+                //objAudio.parentNode.removeChild(objAudio);
+
+                me.iListenerCount=-1;
+            }
+            else
+            {
+                me.iListenerCount=1;
+            }
+        }
+    };
+
+    this.sessionExpired=function()
+    {
+        var sHTML="<div style='width:100%;height:100%;background-color: #E0E0E0;'>";
+        sHTML+="<table width='100%' height='100%'><tr><td align='center'><table cellpadding='4' cellspacing='4' width='100%' align='center'>";
+        sHTML+="<tr><td align='center'><span  class='fa fa-exclamation-circle' style='font-size:257%'></span></td></tr>";
+        sHTML+="<tr><td style='font-size: 128%;color:#797C7F' align='center'>Oops! Your session has expired.</td></tr>";  /*font-weight: bold;*/
+
+        //sHTML+="<tr><td><a style='color:deepskyblue'>click here to</a> login again</td></tr>";
+        sHTML+="<tr><td align='center'><input type='button' value='Login' style='width: 100px;font-size: 92.8%;background-color: #5AAA7B;color: white;border: 0;' onclick=' app.redirectToLogin();'></td></tr>";   /*font-weight: bold;*/
+        sHTML+="</td></tr></table></table></div>";
+
+        document.body.innerHTML=sHTML;
+    };
+    this.sessionExpired_=function()
+    {
+
+        ///msg.showMessage(0,"Your session has expired",null,0,null,callBackSessionExpired);
+
+        var iClientWidht=document.body.clientWidth;
+        var iClientHeight=document.body.clientHeight;
+        me.toggleBackground(true,true);
+        var sHTML="<div style='width:350px;height:150px;background-color: #32383E;padding:10px;position: absolute;top: "+(iClientHeight-150)/2+"px;left: "+(iClientWidht-350)/2+"px;z-index: 108'>";
+        sHTML+="<table cellpadding='5' cellspacing='5' height='100%' width='100%' align='center' style='background-color:#fff;border-radius: 15px;'><tr>";
+        sHTML+="<td style='font-size: 142%;color:#32383E' align='center'>Your session has expired</td></tr><tr><td align='center'><input type='button' value='Sign in' style='width: 100px;font-size: 92.8%;background-color: #5AAA7B;color: white;border: 0;' onclick=' app.redirectToLogin();'></td></tr></table></div>";  /*font-weight: bold;*/
+
+        var objDiv=document.createElement("DIV");
+        //objDiv.innerHTML=sHTML;
+        //document.body.appendChild(objDiv);
+
+        document.body.innerHTML=sHTML;
+
+        function callBackSessionExpired()
+        {
+            app.redirectToLogin();
+        }
+    }
+    this.blinkInterval=null;
+    this.blinkBrowserTab=function(sTitle1,sTitle2)
+    {
+        if(!document.oldTitle)
+            document.oldTitle =document.title;
+        if(!document.hasFocus())
+        {
+            if(me.blinkInterval)
+                clearInterval(me.blinkInterval);
+            me.blinkInterval = window.setInterval(blinkTab, 1000);
+            function blinkTab()
+            {
+                if (document.title == sTitle1)
+                    document.title = sTitle2;
+                 else
+                    document.title = sTitle1;
+            }
+        }
+        else
+        {
+            me.stopBlinkBrowserTab();
+        }
+    };
+    this.stopBlinkBrowserTab=function()
+    {
+        if(me.blinkInterval)// && me.sOldTitle)
+        {
+            document.title = document.oldTitle;
+            clearInterval(me.blinkInterval);
+            me.blinkInterval = null;
+        }
+    };
+
+    /**
+     * Author : Alekhya
+     *This method is used for lazy loading of Images
+     * @param sImgClass           :ClassName for listing Image objects
+     * @Param sAttrActualDataSrc :Attribute name containing Actual image url
+     * @param sDefaultSrc       :Default image to be loaded if Actual image url not exists
+     * @param isResponsive       : if true set list of images in data-srcset attribute with sizes
+     * Ex :data-srcset="res/global/images/image1.jpg 768w, res/global/images/image2.jpg 1024w, res/global/images/gardens/image3.jpg 1280w, res/global/images/gardens/image4.jpg 1536w"
+     * Inabove example 768w,1024w,1280w,1536w are client widths
+     *
+     * ****Optional :  set class "lazy" for image for more effect****
+     */
+    this.lazyLoadImages = function(sImgClass,sAttrActualDataSrc,isResponsive,sDefaultSrc)
+    {
+        var arrImgs,sDataSrc,iIndex,sImgName,sDataSrcSet;
+        arrImgs = document.getElementsByClassName(sImgClass);
+        if(arrImgs!=null && arrImgs.length>0)
+        {
+            setTimeout(function(){
+            for(iIndex=0;iIndex<arrImgs.length;iIndex++)
+            {
+                var objImg = (arrImgs[iIndex]);
+                if(util.hasClass(objImg,"lazy"))
+                {
+                    util.removeClass(objImg,"lazy");
+                    util.addClass(objImg,"loaded");
+                }
+                sDataSrc = objImg.getAttribute(sAttrActualDataSrc);
+                if(isResponsive)
+                {
+                    sDataSrcSet = objImg.getAttribute("data-srcset");
+                    setImgSrcSet(objImg,sDataSrcSet,iIndex);
+                }
+                if(sDataSrc!=null && sDataSrc.length>0)
+                {
+                    if(sDataSrc.indexOf(".do?")!=-1)
+                        sDataSrc+="&dateTime="+dateUtils.getCurrentDateTimeToInt();
+                    setImgSrc(objImg,sDataSrc,iIndex);
+                }
+                else
+                {
+                    setImgSrc(objImg,sDefaultSrc,iIndex);
+                }
+              }
+                },100);
+            }
+        function setImgSrc(objImg,sDataSrc,iIndex)
+        {
+            setTimeout(function(objImg,sDataSrc,iIndex)
+            {
+            objImg.src = sDataSrc;
+            }(objImg,sDataSrc,iIndex),1000*iIndex)
+        }
+        function setImgSrcSet(objImg,sDataSrc,iIndex)
+        {
+            setTimeout(function(objImg,sDataSrcSet,iIndex)
+            {
+                objImg.srcset = sDataSrcSet;
+            }(objImg,sDataSrcSet,iIndex),1000*iIndex)
+        }
+    };
+
+
+
+    /**
+     * Author : Alekhya
+     *This method is used for lazy loading of Css Images
+     * Need to set lazy-bg class for html element
+     * Need to define image url in class .YOURCLASSName .lazy-bg-loaded
+     * EX: Your classname is dvMain then define your image in class .dvMain .lazy-bg-loaded
+      */
+    this.lazyLoadCssImages = function()
+    {
+        setTimeout(function()
+        {
+            var arrImgs = document.getElementsByClassName("lazy-bg");
+            if(arrImgs!=null )
+            {
+                for(var iIndex=0;iIndex<arrImgs.length;iIndex++)
+                {
+                    var objDiv = (arrImgs[iIndex]);
+                    if(util.hasClass(objDiv,"lazy-bg"))
+                        util.removeClass(objDiv,"lazy-bg");
+                    util.addClass(objDiv,"lazy-bg-loaded");
+                }
+            }
+        },100);
+    };
+
+    this.copyToClipboard =function(element)
+    {
+        if(element.nodeName=="INPUT")
+        {
+            element.select();
+        }
+        else
+        {
+            var range = document.createRange();
+            range.selectNodeContents(element);
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+        document.execCommand('copy');
+    };
+
+
+    me.debounceTimer;
+    this.debounce=function(func, wait, immediate)
+    {
+        var context = this, args = arguments;
+        var later = function()
+        {
+            me.debounceTimer = null;
+            if (!immediate) func.apply(context, args);
+        };
+
+        var callNow = immediate && !me.debounceTimer;
+        clearTimeout(me.debounceTimer);
+        me.debounceTimer = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
+    };
+    this.formatMillion=function(nStr){
+        var values = nStr.toString().split('.');
+        return values[0].replace(/.(?=(?:.{3})+$)/g, '$&,') + ( values.length == 2 ? '.' + values[1] : '' )
+
+    };
+    this.formatLakh=function(nStr){
+        nStr += '';
+        x = nStr.split('.');
+        x1 = x[0];
+        x2 = x.length > 1 ? '.' + x[1] : '' ;
+        var rgx = /(\d+)(\d{3})/;
+        var z = 0;
+        var len = String(x1).length;
+        var num = parseInt((len/2)-1);
+
+        while (rgx.test(x1))
+        {
+            if(z > 0)
+            {
+                x1 = x1.replace(rgx, '$1' + ',' + '$2');
+            }
+            else
+            {
+                x1 = x1.replace(rgx, '$1' + ',' + '$2');
+                rgx = /(\d+)(\d{2})/;
+            }
+            z++;
+            num--;
+            if(num == 0)
+            {
+                break;
+            }
+        }
+        return x1 + x2;
+    };
+    this.convertShamsitoDigits = function(sDate)
+    {
+        var arrEng = ['0','1','2','3','4','5','6','7','8','9'];
+        var arrSham = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+
+        for (var shNum = 0; shNum <= 9; shNum++)
+        {
+            sDate = this.replaceAll(sDate,arrSham[shNum],arrEng[shNum]);
+        }
+        if (!sDate || !util.trim(sDate))
+            return null;
+
+            sDate = sDate.replace(/-/g, '/')
+            var sDateDets = sDate.split("/");
+            var iYear = 0, iMonth = 0, iDay = 0,byDateFormat=clAppBuffer.getDateFormat();
+
+            if (byDateFormat == Constants.DDMMYYYY)
+            {
+                iDay = sDateDets[0];
+                iMonth = sDateDets[1];
+                iYear = sDateDets[2];
+            }
+            else if (byDateFormat == Constants.MMDDYYYY)
+            {
+                iMonth = sDateDets[0];
+                iDay = sDateDets[1];
+                iYear = sDateDets[2];
+            }
+            else if (byDateFormat == Constants.YYYYMMDD)
+            {
+                iYear = sDateDets[0];
+                iMonth = sDateDets[1];
+                iDay = sDateDets[2];
+            }
+            return [parseInt(iDay),parseInt(iMonth),parseInt(iYear)];
+    }
+    this.setDateShamsi = function(sId)
+    {
+        var sDate = document.getElementById(sId).value;
+        if(sDate!=null && sDate.length>0) {
+            var iDates = util.convertShamsitoDigits(sDate);
+            $('#'+sId+"button").MdPersianDateTimePicker('setDatePersian',{year:iDates[2],month:iDates[1],day:iDates[0]});
+        }
+    };
+
+    this.getDateValue = function(sDateId)
+    {
+        return document.getElementById(sDateId).value;
+    };
+
+    this.encryptString=function(sValue)
+    {
+        var sKey=clAppBuffer.getEncKey();
+        if(sKey==null)
+            sKey="98852";
+
+        if(sValue)
+            return CryptoJS.AES.encrypt(sValue.toString(),sKey);
+        return sValue;
+    };
+
+    this.decryptString=function(sValue)
+    {
+        var sKey=clAppBuffer.getEncKey();
+        if(sKey==null)
+            sKey="98852";
+
+        if(sValue)
+            return CryptoJS.AES.decrypt(sValue.toString(),sKey).toString(CryptoJS.enc.Utf8);
+        return sValue;
+    };
+
+
+    var customEncrypt=new function()
+    {
+        /*
+         To turn a text string (UTF-8 encoded) into a base-64 string, you need:
+
+         var textString = 'Hello world'; // Utf8-encoded string
+         var words = CryptoJS.enc.Utf8.parse(textString); // WordArray object
+         var base64 = CryptoJS.enc.Base64.stringify(words); // string: 'SGVsbG8gd29ybGQ='
+
+         To turn a base-64 encoded string back into text (UTF-8 encoded), it's:
+
+         var base64 = 'SGVsbG8gd29ybGQ=';
+         var words = CryptoJS.enc.Base64.parse(base64);
+         var textString = CryptoJS.enc.Utf8.stringify(words); // 'Hello world'
+
+         */
+
+        const AES_IV_SIZE = 16;
+        const DEFAULT_SALT_SIZE = 32;
+
+
+
+        function generateKey(sPassword,bSalt)
+        {
+            const bKey = CryptoJS.PBKDF2(sPassword, bSalt,
+                {
+                    iterations: 128,
+                    keySize: 128 / 32,
+                });
+
+            return bKey;
+        }
+
+
+        this.encrypt= function(sData,sPassword)
+        {
+            const bIV= CryptoJS.lib.WordArray.random(AES_IV_SIZE);
+            const bSalt = CryptoJS.lib.WordArray.random(DEFAULT_SALT_SIZE);
+            const bKey=generateKey(sPassword,bSalt);
+            const encrypted = CryptoJS.AES.encrypt(sData, bKey,
+                {	iv: bIV,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                }
+            );
+
+            var sEncrptText= CryptoJS.enc.Base64.stringify( bSalt)+"."+CryptoJS.enc.Base64.stringify(bIV)+"."+CryptoJS.enc.Base64.stringify(encrypted.ciphertext)
+            return sEncrptText;
+        }
+
+        this.decrypt= function(sEncryData,sPassword)
+        {
+            const digest = sEncryData.split('.');
+
+            const bSalt = CryptoJS.enc.Base64.parse(digest[0])
+            const bIv = CryptoJS.enc.Base64.parse(digest[1])
+            const bEncryptedData = CryptoJS.enc.Base64.parse(digest[2])
+
+            var bKey=generateKey(sPassword,bSalt);
+            //const key = CryptoJS.PBKDF2(sPassword, bSalt, {
+            //  iterations: 128,
+            //keySize: 128/32,
+            //})
+         //   alert(bKey.toString())
+            const sDecrypted = CryptoJS.AES.decrypt(
+                {
+                    ciphertext: bEncryptedData
+                },
+                bKey,
+                {
+                    iv: bIv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                }
+            ).toString(CryptoJS.enc.Utf8);
+
+          //  alert(sDecrypted)
+
+            return (sDecrypted);
+        }
+    };
+
+    this.RGBtoHex = function(r,g,b)
+    {
+        return "#"+(1<<24|r<<16|g<<8|b).toString(16).slice(1);
+    };
+
+    this.getLightenColor =function(sHexaColor,dFraction)//dFraction --ratio for lightening ex:0.3/0.4 etc
+    {
+        if(sHexaColor!=null && sHexaColor.indexOf("#")!=-1)
+        {
+            sHexaColor = sHexaColor.substring(1,sHexaColor.length);
+        }
+        var iRgb =  this.getRGBColor2(sHexaColor);
+        var r,g,b,a;
+        r = parseInt(Math.round(Math.min(255,iRgb[0]+(255*dFraction))));
+        g = parseInt(Math.round(Math.min(255,iRgb[1]+(255*dFraction))));
+        b = parseInt(Math.round(Math.min(255,iRgb[2]+(255*dFraction))));
+        sHexaColor =this.RGBtoHex(r,g,b);
+        return sHexaColor;
+    }
+
+    this.getDarkerColor =function(sHexaColor,dFraction)//dFraction --ratio for lightening ex:0.3/0.4 etc
+    {
+        if(sHexaColor!=null && sHexaColor.indexOf("#")!=-1)
+        {
+            sHexaColor = sHexaColor.substring(1,sHexaColor.length);
+        }
+        var iRgb =  this.getRGBColor2(sHexaColor);
+
+        var r,g,b,a;
+        r = parseInt(Math.round(Math.min(255,iRgb[0]-(255*dFraction))));
+        g = parseInt(Math.round(Math.min(255,iRgb[1]-(255*dFraction))));
+        b = parseInt(Math.round(Math.min(255,iRgb[2]-(255*dFraction))));
+        sHexaColor =this.RGBtoHex(r,g,b);
+        return sHexaColor;
+    }
+};
+
+/*var clDateUtil=new function()
+{
+
+
+
+
+};*/
+
+var Browser =
+{
+    getVersion: function (a, b)
+    {
+        var t = navigator.userAgent.split(a)[1];
+        return (t) ? t.split(b)[0] : false;
+    }
+}
+
+
+Browser =
+{
+    isOpera:
+            (window.opera) ?    (document.createElementNS) ?    (document.createCDATASection) ? (document.styleSheets) ? 9 : 8 : 7 : 6 : false,
+    isSafari:
+            (document.createCDATASection && document.createElementNS) ? Browser.getVersion('AppleWebKit/', '('): false,
+    isKDE:
+            (document.createCDATASection && document.createElementNS) ?Browser.getVersion('Konqueror/', ';'): false,
+    isGecko:
+            (document.createCDATASection && document.createElementNS) ? Browser.getVersion('Gecko/', ' '): false,
+
+    isChrome:(window.chrome) ? Browser.getVersion('Chrome/', ' '): false,
+    isNN4:
+            (document.layers && typeof document.layers == 'object') ? true : false, isWinIE:
+    /*@cc_on @if (@_win64 || @_win32 || @_win16)
+     (document.getElementsByTagName) ?
+     (@_jscript_version > 5.6) ? 7 :
+     (@_jscript_version == 5.6) ? 6 :
+     (@_jscript_version == 5.5) ? 5.5 :
+     5
+     : 4
+     @else@*/false/*@end @*/,
+    isMacIE:
+        /*@cc_on @if (@_mac && (@_PowerPC || @_mc680x0))
+         (document.getElementsByTagName) ? 5 : 4
+         @else@*/false/*@end @*/
+
+}
+
+
+
+
+Array.prototype.indexOf = function(v, n) {
+    n = (n == null) ? 0 : n;
+    var m = this.length;
+    for (var i = n; i < m; i++)
+        if (this[i] == v)
+        {
+            return i;
+        }
+    return -1;
+}
+
+Array.prototype.fill = function(value)
+{
+    for (var i = 0; i < this.length; i++)
+    {
+        this[i] = value;
+    }
+
+}
+
+Number.prototype.toFixed = function(decimals)
+{           //  alert('decimals='+decimals)
+    var decDigits = (isNaN(decimals)) ? 2 : decimals;
+    var k = Math.pow(10, decDigits);
+    var fixedNum = Math.round(parseFloat(this) * k) / k;
+    var sFixedNum = new String(fixedNum);
+    var aFixedNum = sFixedNum.split('.');
+    var i = (aFixedNum[1]) ? aFixedNum[1].length : 0;
+    if (i == 0 && decDigits)
+    {
+        sFixedNum += '.';
+    }
+    while (i++ < decDigits)
+    {
+        sFixedNum += '0';
+    }
+    return sFixedNum;
+}
+
+
+ var UID = {
+        _current: 0,
+        getNew: function(){
+            this._current++;
+            return this._current;
+        }
+    };
+
+    /*//sPseudoStyle=before or after
+    HTMLElement.prototype.pseudoStyle = function(sPseudoStyle,arrCSSProperties)
+    {  *//*,prop3,value3*//*
+
+        var _this = this;
+        var _sheetId = "pseudoStyles";
+        var _head = document.head || document.getElementsByTagName('head')[0];
+        var _sheet = document.getElementById(_sheetId) || document.createElement('style');
+        _sheet.id = _sheetId;
+        var className = "pseudoStyle" *//*+ UID.getNew()*//*;
+        _sheet.innerHTML += " ."+className+":"+sPseudoStyle+"{";        *//*+prop+":"+value+";" *//*
+        if(arrCSSProperties)
+        {
+
+            for(var i=0; i < arrCSSProperties.length; i++)
+                _sheet.innerHTML +=arrCSSProperties[i].name+":"+arrCSSProperties[i].value+''+"!important"+";" ;
+        }
+        _sheet.innerHTML +="}";
+        _head.appendChild(_sheet);
+        if(!util.hasClass(_this,className))
+        {
+            _this.className +=  " "+className;
+        }
+
+        return this;
+    };
+*/
+
+ //Changes in accordance with animateToggle and FontIconPicker
+//sPseudoStyle=before or after
+HTMLElement.prototype.pseudoStyle = function(sPseudoStyle,arrCSSProperties,objElement,isonLoad)
+{  /*,prop3,value3*/
+    if(objElement>0)
+        var iconTag=document.getElementById("icon_"+objElement);
+    else
+        var iconTag=document.getElementById(objElement);
+    var _this = this;
+    var _sheetId = "pseudoStyles";
+    var _head = document.head || document.getElementsByTagName('head')[0];
+    var _sheet = document.getElementById(_sheetId) || document.createElement('style');
+    _sheet.id = _sheetId;
+
+    if(isonLoad!=null)
+    {
+        if(isonLoad==1)
+        {
+            var className = "onloadColorChg";
+        }
+        else
+        {
+            var className = "pseudoStyle";
+            if(util.hasClass(iconTag,"pseudoStyle"))
+                util.removeClass(iconTag,"pseudoStyle");
+        }
+        if(isonLoad==2)
+        {
+            if(util.hasClass(iconTag,"onloadColorChg"))
+                util.removeClass(iconTag,"onloadColorChg");
+            if(util.hasClass(iconTag,"onUserChange"))
+                util.removeClass(iconTag,"onUserChange");
+            var className = "onUserChange";
+        }
+    }
+    else
+        var className = "pseudoStyle";
+
+    _sheet.innerHTML += " ."+className+":"+sPseudoStyle+"{";
+    if(arrCSSProperties)
+    {
+
+        for(var i=0; i < arrCSSProperties.length; i++)
+            _sheet.innerHTML +=arrCSSProperties[i].name+":"+arrCSSProperties[i].value+''+"!important"+";" ;
+    }
+    _sheet.innerHTML +="}";
+    _head.appendChild(_sheet);
+    if(!util.hasClass(_this,className))
+    {
+        _this.className +=  " "+className;
+    }
+
+    return this;
+}
+
+function BufferLoader(context, key, url, callback)
+{
+    this.context = context;
+    this.key = key;
+    this.url = url;
+    this.callback = callback;
+    this.buffer = null;
+}
+
+BufferLoader.prototype.loadBuffer = function()
+{
+    var loader = this;
+    var request = new XMLHttpRequest();
+    request.open("GET", loader.url, true);
+    request.responseType = "arraybuffer";
+
+    request.onload = function()
+    {
+        loader.context.decodeAudioData(
+                request.response,
+                function(buffer)
+                {
+                    if (!buffer)
+                    {
+                      //  alert('error decoding file data: ' + loader.url);
+                        return;
+                    }
+                    loader.buffer=buffer;
+                     loader.afterLoad();
+                },
+                function(error) {
+                    //alert('decodeAudioData error', error);
+                }
+            );
+    }
+    request.onerror = function(e)
+    {
+       // alert('BufferLoader: XHR error : '+e);
+    }
+    request.send();
+}
+BufferLoader.prototype.afterLoad = function()
+{
+    this.callback(this.context,this.buffer);
+}
+
+var clUtilFarsi = new function()
+{
+    var me=this;
+    this.getDateAdd=function(dDate,iAddValue)
+    {
+        dDate = new Date().fa(dDate.getDate(),dDate.getMonth(),dDate.getYear());
+        dDate.addDays(iAddValue);
+        return dDate;
+    };
+
+    this.getDateObject=function(sDate,isDateTime,isSetTime)
+    {
+        var dStartDate=new Date().fa();
+        if(!sDate)
+            sDate=clAppBuffer.getTodaysDateAsString();
+        sDate = clUtilFarsi.toEnglishNumber(sDate);
+        if(sDate)
+        {
+            var sArrDate=util.parseDate(sDate,null,isDateTime);
+            dStartDate=new Date().fa(parseInt(sArrDate[2]),(parseInt(sArrDate[1],10)),parseInt(sArrDate[0]));
+
+            if(isDateTime)
+            {
+                if(isSetTime)
+                {
+                    var sArrTime=util.parseTime(sDate.substring(sDate.indexOf(" ")+1));
+                    dStartDate.setHours(sArrTime[0]);
+                    dStartDate.setMinutes(sArrTime[1]);
+                }
+                else
+                {
+                    dStartDate.setHours(0);
+                    dStartDate.setMinutes(0);
+                }
+            }
+        }
+        return dStartDate;
+    };
+
+    this.setDateValue = function(sId)
+    {
+        var sDate = document.getElementById(sId).value,sTime;
+        if(sDate!=null && sDate.length>0)
+        {
+            var arrTime=[0,0];
+            if(sDate.indexOf(" ")!=-1) {
+                sTime = sDate.substring(sDate.indexOf(" ")+1);
+                sDate = sDate.substring(0,sDate.indexOf(" "));
+                arrTime = sDate.split(":");
+            }
+            //document.getElementById(sId).value = sDate;
+            var iDates = clUtilFarsi.convertShamsitoDigits(sDate);
+
+            $('#'+sId+"button").MdPersianDateTimePicker('setDatePersian',{year:iDates[2], month:iDates[1], day:iDates[0],hour:arrTime[0], minute:arrTime[1]});
+
+            $('#'+sId).on('shown.bs.popover', function ()
+            {
+
+
+            });
+        }
+    }
+
+    this.toEnglishNumber = function(sValue) {
+        if (!sValue) return '';
+        var str = sValue.toString().trim();
+        if (!str) return '';
+        str = str.replace(/۰/img, '0');
+        str = str.replace(/۱/img, '1');
+        str = str.replace(/۲/img, '2');
+        str = str.replace(/۳/img, '3');
+        str = str.replace(/۴/img, '4');
+        str = str.replace(/۵/img, '5');
+        str = str.replace(/۶/img, '6');
+        str = str.replace(/۷/img, '7');
+        str = str.replace(/۸/img, '8');
+        str = str.replace(/۹/img, '9');
+        return str;
+    }
+
+    this.toPersianNumber = function(sValue) {
+        if (!sValue) return '';
+        var str = sValue.toString().trim();
+        if (!str) return '';
+        str = str.replace(/0/img, '۰');
+        str = str.replace(/1/img, '۱');
+        str = str.replace(/2/img, '۲');
+        str = str.replace(/3/img, '۳');
+        str = str.replace(/4/img, '۴');
+        str = str.replace(/5/img, '۵');
+        str = str.replace(/6/img, '۶');
+        str = str.replace(/7/img, '۷');
+        str = str.replace(/8/img, '۸');
+        str = str.replace(/9/img, '۹');
+        return str;
+    }
+
+    this.getGreDate = function(sDate)
+    {
+        var arrEng = ['0','1','2','3','4','5','6','7','8','9'];
+        var arrSham = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+
+        for (var shNum = 0; shNum <= 9; shNum++)
+        {
+            sDate = this.replaceAll(sDate,arrSham[shNum],arrEng[shNum]);
+        }
+        if (!sDate || !util.trim(sDate))
+            return null;
+
+        sDate = sDate.replace(/-/g, '/')
+        var sDateDets = sDate.split("/");
+        var iYear = 0, iMonth = 0, iDay = 0,byDateFormat=clAppBuffer.getDateFormat();
+
+        if (byDateFormat == Constants.DDMMYYYY)
+        {
+            iDay = sDateDets[0];
+            iMonth = sDateDets[1];
+            iYear = sDateDets[2];
+        }
+        else if (byDateFormat == Constants.MMDDYYYY)
+        {
+            iMonth = sDateDets[0];
+            iDay = sDateDets[1];
+            iYear = sDateDets[2];
+        }
+        else if (byDateFormat == Constants.YYYYMMDD)
+        {
+            iYear = sDateDets[0];
+            iMonth = sDateDets[1];
+            iDay = sDateDets[2];
+        }
+        return [parseInt(iDay),parseInt(iMonth),parseInt(iYear)];
+    };
+
+    this.getDateComponents = function(sDate)
+    {
+        sDate = sDate.replace(/-/g, '/')
+        var sDateDets = sDate.split("/");
+        var iYear = 0, iMonth = 0, iDay = 0,byDateFormat=clAppBuffer.getDateFormat();
+
+        if (byDateFormat == Constants.DDMMYYYY)
+        {
+            iDay = sDateDets[0];
+            iMonth = sDateDets[1];
+            iYear = sDateDets[2];
+        }
+        else if (byDateFormat == Constants.MMDDYYYY)
+        {
+            iMonth = sDateDets[0];
+            iDay = sDateDets[1];
+            iYear = sDateDets[2];
+        }
+        else if (byDateFormat == Constants.YYYYMMDD)
+        {
+            iYear = sDateDets[0];
+            iMonth = sDateDets[1];
+            iDay = sDateDets[2];
+        }
+        else if (byDateFormat == Constants.DD__MON__YYYY)
+        {
+            iDay = parseInt(sDateDets[0],10);
+            iMonth = parseInt(me.getNumberMonth(sDateDets[1]));
+            iYear = parseInt(sDateDets[2],10);
+        }
+        return [parseInt(iDay),parseInt(iMonth),parseInt(iYear)];
+    }
+    this.setDateShamsi = function(sId)
+    {
+        var sDate = document.getElementById(sId).value;
+        if(sDate!=null && sDate.length>0) {
+            var iDates = clUtilFarsi.getGreDate(sDate);
+            $('#'+sId+"button").MdPersianDateTimePicker('setDatePersian',{year:iDates[2],month:iDates[1],day:iDates[0]});
+        }
+    }
+    this.escapeSeq = function(sId) {
+        return sId.replace(/(:|\.|\[|\]|,|=|@)/g, "\\$1")
+    }
+};
+
+var clUtilDate = new function()
+{
+    this.getDateObject = function(sDate,isDateTime,isSetTime)
+    {
+        var dStartDate=new Date();
+        if(!sDate)
+            sDate=clAppBuffer.getTodaysDateAsString();
+
+        if(sDate)
+        {
+            var sArrDate=util.parseDate(sDate,null,isDateTime);
+            dStartDate.setDate(1);
+            dStartDate.setMonth(parseInt(sArrDate[1],10)-1);
+            dStartDate.setYear(sArrDate[2]);
+            dStartDate.setDate(sArrDate[0]);
+
+            if(isDateTime)
+            {
+                if(isSetTime)
+                {
+                    var sArrTime=util.parseTime(sDate.substring(sDate.indexOf(" ")+1));
+                    dStartDate.setHours(sArrTime[0]);
+                    dStartDate.setMinutes(sArrTime[1]);
+                }
+                else
+                {
+                    dStartDate.setHours(0);
+                    dStartDate.setMinutes(0);
+                }
+            }
+        }
+        return dStartDate;
+    };
+    this.getDateAdd=function(dDate,iAddValue)
+    {
+        dDate.setDate(dDate.getDate()+iAddValue);
+        return dDate;
+    };
+};
+
+
+
+/*
+ const publicKey =
+ `-----BEGIN PUBLIC KEY-----
+ MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAunF5aDa6HCfLMMI/MZLT
+ 5hDk304CU+ypFMFiBjowQdUMQKYHZ+fklB7GpLxCatxYJ/hZ7rjfHH3Klq20/Y1E
+ bYDRopyTSfkrTzPzwsX4Ur/l25CtdQldhHCTMgwf/Ev/buBNobfzdZE+Dhdv5lQw
+ KtjI43lDKvAi5kEet2TFwfJcJrBiRJeEcLfVgWTXGRQn7gngWKykUu5rS83eAU1x
+ H9FLojQfyia89/EykiOO7/3UWwd+MATZ9HLjSx2/Lf3g2jr81eifEmYDlri/OZp4
+ OhZu+0Bo1LXloCTe+vmIQ2YCX7EatUOuyQMt2Vwx4uV+d/A3DP6PtMGBKpF8St4i
+ GwIDAQAB
+ -----END PUBLIC KEY-----`;
+ */
+
+/*8
+var clEncryptionUtil=new function() {
+
+// PEM encoded X.509 key
+
+
+////////////////////////////////////////////////////////////
+    this.encryptText=async function(sText) {
+        const subtle = window.crypto.subtle;
+        //var keyAB = b642ab("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuuKRgspvg47d4I3pAzCIWKSim2Rs1QeTVE1Hs+P099PkiuMt5dq5GIaIT1DZTYwJrwtUpxnMcr1TNdWGGfovDLJuIRXUFeST1xOD9+rA4FhVZPO/x6ts2TYKiueEq/qPlXREXw8aVq+msw0nYhHFIAAyrtmj7UR6gD3xxl1ghviIycKqUf7rL98b1d6YkYoNW62aIP/u3cJ5v3Fhnth02Cb02M/fX5gvFKJ3Nj2ARbLygZWbO3U09Vs/hnElxE2k1sKxYRqImJdQM04oQOXVVpafZP7eF9/T+YYDxMLcEKAwH9z0fTt9HaL4gyiDWUT02r6qWF7vI85I1jrPLn71mQIDAQAB")
+
+        var publicKey = clAppBuffer.getEncKey();
+
+        //publicKey = '-----BEGIN PUBLIC KEY-----'+
+         //publicKey+
+         //'-----END PUBLIC KEY-----';
+
+        var keyAB = b642ab(publicKey);
+        //alert("keyAB==" + keyAB)
+        //alert("keyAB toString==" + ab2str(keyAB))
+
+        var key = await subtle.importKey("spki", new Uint8Array(keyAB), {
+            name: "RSA-OAEP",
+            hash: "SHA-256"
+        }, false, ["encrypt"])
+        //alert("key==" + key);
+
+
+        const encrypted = await encryptRSA(key, new TextEncoder().encode(sText));
+        //alert("encrypted==" + encrypted);
+
+        const encryptedBase64 = window.btoa(ab2str(encrypted));
+        console.log(encryptedBase64.replace(/(.{64})/g, "$1\n"));
+
+        //alert("encryptedBase64==" + encryptedBase64);
+
+        return encryptedBase64;
+
+    };
+
+
+//
+// Helper
+//
+
+    async function encryptRSA(key, plaintext) {
+        let encrypted = await window.crypto.subtle.encrypt(
+            {
+                name: "RSA-OAEP"
+            },
+            key,
+            plaintext
+        );
+        return encrypted;
+    }
+
+
+// https://stackoverflow.com/a/11058858
+    function str2ab(str) {
+        const buf = new ArrayBuffer(str.length);
+        const bufView = new Uint8Array(buf);
+        for (let i = 0, strLen = str.length; i < strLen; i++) {
+            bufView[i] = str.charCodeAt(i);
+        }
+        return buf;
+    }
+
+    function ab2str(buf) {
+        return String.fromCharCode.apply(null, new Uint8Array(buf));
+    }
+
+    function b642ab(base64string) {
+        return Uint8Array.from(atob(base64string), c => c.charCodeAt(0)).buffer;
+    }
+
+////////////////////////////////////////////////////////////
+
+};
+*/
+
+var clChecksumUtil = new function()
+{
+
+//const textToHash = "myData";
+//const hash = await sha256(textToHash);
+//console.log(hash);
+
+
+
+    this.getFileChecksum=function(file,fnCallback)
+    {
+        //alert("getChecksum  "+file);
+        var r = new FileReader();
+        r.onload = async function(event)
+        {
+            //alert("result---1  "+event);
+            //alert("result---2  "+event.target.result);
+            var hash=await getChecksum(event.target.result);
+            //alert("hash==="+hash);
+
+            fnCallback(hash)
+        };
+
+        r.readAsArrayBuffer(file);
+        // alert("returning")
+
+    };
+
+
+    this.getChecksumValue = async function(sText)
+    {
+        const textAsBuffer = new TextEncoder().encode(sText);
+        var hash = await getChecksum(textAsBuffer);
+        return hash;
+    };
+
+    function arrayBufferToWordArray(data)
+    {
+        var i8a = new Uint8Array(data);
+        var a=[];
+        for(var i=0; i < i8a.length; i+=4)
+        {
+            a.push(i8a[i] << 24 | i8a[i+1] << 16 | i8a[i+2] << 8 | i8a[i+3]);
+        }
+
+        return CryptoJS.lib.WordArray.create(a,i8a.length);
+    }
+
+    async function getChecksum(data)
+    {
+        //alert("getChecksum=="+data);
+
+        var wordArray=arrayBufferToWordArray(data);
+        //alert("wordArray=="+wordArray)
+
+        //const digest = CryptoJS.SHA256(msg);//.toString();
+        const digest = CryptoJS.SHA256(wordArray);
+        //const digest = Buffer.from(CryptoJS.SHA256(CryptoJS.enc.Hex.parse(data)).toString(CryptoJS.enc.Hex));
+        //const digest = CryptoJS.SHA256(wordArray).toString(CryptoJS.enc.Hex);
+        //alert("digest=="+digest);
+        return digest;
+    };
+
+    async function getChecksum_old(data)
+    {
+        //alert("encryptWithSHA256=="+data);
+
+        //alert("file data=="+data)
+        //const textAsBuffer = new TextEncoder().encode(data);
+        //alert("textAsBuffer=="+textAsBuffer)
+        const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
+        //alert("hashBuffer=="+hashBuffer)
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const digest = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return digest;
+    };
+
+
+
+
+    const hashValue = (val,fnCallback) =>
+        crypto.subtle
+            .digest('SHA-256', new TextEncoder('utf-8').encode(val))
+            .then(h => {
+                let hexes = [],
+                    view = new DataView(h);
+                for (let i = 0; i < view.byteLength; i += 4)
+                    hexes.push(('00000000' + view.getUint32(i).toString(16)).slice(-8));
+                var a= hexes.join('');
+                alert("hex="+a);
+                //fnCallback(a);
+                //return a;
+            });
+
+};

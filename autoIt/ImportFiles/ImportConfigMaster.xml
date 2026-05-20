@@ -1,0 +1,2918 @@
+<?xml version="1.0"?>
+<MasterImportExportData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Masters>
+    <Master>
+      <ReportsAttached>
+        <ReportsIds />
+        <UserId>0</UserId>
+      </ReportsAttached>
+      <DestinationRowSequenceId>0</DestinationRowSequenceId>
+      <iType>0</iType>
+      <InsertAt>false</InsertAt>
+      <LanguageDtls>
+        <LanguageDtls>
+          <LinkType>0</LinkType>
+          <LinkID>3001</LinkID>
+          <LanguageID>0</LanguageID>
+          <Caption>Imported Master</Caption>
+          <iLanguageId>0</iLanguageId>
+          <iMasterId>0</iMasterId>
+        </LanguageDtls>
+        <LanguageDtls>
+          <LinkType>0</LinkType>
+          <LinkID>3001</LinkID>
+          <LanguageID>1</LanguageID>
+          <Caption>Imported Master</Caption>
+          <iLanguageId>0</iLanguageId>
+          <iMasterId>0</iMasterId>
+        </LanguageDtls>
+      </LanguageDtls>
+      <MasterTypeId>3001</MasterTypeId>
+      <LoadMasterData>false</LoadMasterData>
+      <MenuUnder>1000</MenuUnder>
+      <MenuUnderName>mnuMasters</MenuUnderName>
+      <MenuUnderCaption>Masters</MenuUnderCaption>
+      <OldMasterTypeId>0</OldMasterTypeId>
+      <AccountOrProductTypeId>0</AccountOrProductTypeId>
+      <ViewId>75</ViewId>
+      <OldViewId>0</OldViewId>
+      <SelectedViewId>0</SelectedViewId>
+      <MasterName>ImportedMaster</MasterName>
+      <Caption>Imported Master</Caption>
+      <Alias>Imported Master</Alias>
+      <SearchBy>false</SearchBy>
+      <AllowDuplicateNames>false</AllowDuplicateNames>
+      <IsDefault>false</IsDefault>
+      <IsGroupMandatory>false</IsGroupMandatory>
+      <IsPickCode>false</IsPickCode>
+      <AllowRevision>false</AllowRevision>
+      <Module>Core</Module>
+      <Tabs>
+        <Tabs>
+          <NewTabId>0</NewTabId>
+          <IsHidden>false</IsHidden>
+          <TabId>116</TabId>
+          <OldTabId>0</OldTabId>
+          <TabName>tp_General</TabName>
+          <TabCaption>General</TabCaption>
+          <Alias>General</Alias>
+          <Tables>
+            <Tables>
+              <NewTableId>0</NewTableId>
+              <TableId>175</TableId>
+              <OldTableId>0</OldTableId>
+              <TableName>mCore_ImportedMaster</TableName>
+              <TableType>false</TableType>
+              <MainTable>true</MainTable>
+              <IsDefault>true</IsDefault>
+              <Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <MandatoryValues />
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304882</FieldId>
+                  <FieldViewId>1834</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>iMasterId</FieldName>
+                  <FieldCaption>MasterId</FieldCaption>
+                  <Alias>MasterId</Alias>
+                  <MasterTypeId>3001</MasterTypeId>
+                  <DataTypeId>1</DataTypeId>
+                  <MaxSize>2</MaxSize>
+                  <DefaultValue />
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>true</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <WhereCondition />
+                  <ReadOnly>true</ReadOnly>
+                  <Variable>M3001F1</Variable>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>0</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>true</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>true</MergeField>
+                  <MassUpdate>true</MassUpdate>
+                  <IncludeInQuickCreate>true</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <FilterCriteria />
+                  <LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304882</LinkID>
+                      <LanguageID>0</LanguageID>
+                      <Caption>MasterId</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304882</LinkID>
+                      <LanguageID>1</LanguageID>
+                      <Caption>MasterId</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                  </LanguageDtls>
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <MandatoryValues />
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304883</FieldId>
+                  <FieldViewId>1835</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>sName</FieldName>
+                  <FieldCaption>Name</FieldCaption>
+                  <Alias>Name</Alias>
+                  <MasterTypeId>3001</MasterTypeId>
+                  <DataTypeId>0</DataTypeId>
+                  <MaxSize>100</MaxSize>
+                  <DefaultValue />
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>true</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>false</IsHidden>
+                  <WhereCondition />
+                  <ReadOnly>false</ReadOnly>
+                  <Variable>M3001F2</Variable>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>1</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>false</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>true</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>true</MergeField>
+                  <MassUpdate>true</MassUpdate>
+                  <IncludeInQuickCreate>true</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <Font />
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <FilterCriteria />
+                  <LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304883</LinkID>
+                      <LanguageID>0</LanguageID>
+                      <Caption>Name</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304883</LinkID>
+                      <LanguageID>1</LanguageID>
+                      <Caption>Name</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                  </LanguageDtls>
+                  <FieldType>0</FieldType>
+                  <InternalStdField>false</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <MandatoryValues />
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304884</FieldId>
+                  <FieldViewId>1836</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>sCode</FieldName>
+                  <FieldCaption>Code</FieldCaption>
+                  <Alias>Code</Alias>
+                  <MasterTypeId>3001</MasterTypeId>
+                  <DataTypeId>0</DataTypeId>
+                  <MaxSize>100</MaxSize>
+                  <DefaultValue />
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>true</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>false</IsHidden>
+                  <WhereCondition />
+                  <ReadOnly>false</ReadOnly>
+                  <Variable>M3001F3</Variable>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>2</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>false</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>true</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>true</MergeField>
+                  <MassUpdate>true</MassUpdate>
+                  <IncludeInQuickCreate>true</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <FilterCriteria />
+                  <LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304884</LinkID>
+                      <LanguageID>0</LanguageID>
+                      <Caption>Code</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304884</LinkID>
+                      <LanguageID>1</LanguageID>
+                      <Caption>Code</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                  </LanguageDtls>
+                  <FieldType>0</FieldType>
+                  <InternalStdField>false</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <MandatoryValues />
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304885</FieldId>
+                  <FieldViewId>1837</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>bGroup</FieldName>
+                  <FieldCaption>Group</FieldCaption>
+                  <Alias>Group</Alias>
+                  <MasterTypeId>3001</MasterTypeId>
+                  <DataTypeId>2</DataTypeId>
+                  <MaxSize>1</MaxSize>
+                  <DefaultValue>0</DefaultValue>
+                  <DisplayControlId>1</DisplayControlId>
+                  <IsDefault>true</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <WhereCondition />
+                  <ReadOnly>true</ReadOnly>
+                  <Variable>M3001F4</Variable>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>3</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>true</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>true</MergeField>
+                  <MassUpdate>true</MassUpdate>
+                  <IncludeInQuickCreate>true</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <FilterCriteria />
+                  <LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304885</LinkID>
+                      <LanguageID>0</LanguageID>
+                      <Caption>Group</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304885</LinkID>
+                      <LanguageID>1</LanguageID>
+                      <Caption>Group</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                  </LanguageDtls>
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <MandatoryValues />
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304886</FieldId>
+                  <FieldViewId>1838</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>iStatus</FieldName>
+                  <FieldCaption>Status</FieldCaption>
+                  <Alias>Status</Alias>
+                  <MasterTypeId>3001</MasterTypeId>
+                  <DataTypeId>1</DataTypeId>
+                  <MaxSize>1</MaxSize>
+                  <DefaultValue>0</DefaultValue>
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>true</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <WhereCondition />
+                  <ReadOnly>true</ReadOnly>
+                  <Variable>M3001F5</Variable>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>4</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>true</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>true</MergeField>
+                  <MassUpdate>true</MassUpdate>
+                  <IncludeInQuickCreate>true</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <FilterCriteria />
+                  <LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304886</LinkID>
+                      <LanguageID>0</LanguageID>
+                      <Caption>Status</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304886</LinkID>
+                      <LanguageID>1</LanguageID>
+                      <Caption>Status</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                  </LanguageDtls>
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <MandatoryValues />
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304887</FieldId>
+                  <FieldViewId>1839</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>bDoNotRestrict</FieldName>
+                  <FieldCaption>Do Not Restrict</FieldCaption>
+                  <Alias>Do Not Restrict</Alias>
+                  <MasterTypeId>3001</MasterTypeId>
+                  <DataTypeId>2</DataTypeId>
+                  <MaxSize>1</MaxSize>
+                  <DefaultValue>0</DefaultValue>
+                  <DisplayControlId>1</DisplayControlId>
+                  <IsDefault>true</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <WhereCondition />
+                  <ReadOnly>true</ReadOnly>
+                  <Variable>M3001F6</Variable>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>5</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>true</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>true</MergeField>
+                  <MassUpdate>true</MassUpdate>
+                  <IncludeInQuickCreate>true</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <FilterCriteria />
+                  <LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304887</LinkID>
+                      <LanguageID>0</LanguageID>
+                      <Caption>Do Not Restrict</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304887</LinkID>
+                      <LanguageID>1</LanguageID>
+                      <Caption>Do Not Restrict</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                  </LanguageDtls>
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <MandatoryValues />
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304888</FieldId>
+                  <FieldViewId>1840</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>iCreatedBy</FieldName>
+                  <FieldCaption>CreatedBy</FieldCaption>
+                  <Alias>CreatedBy</Alias>
+                  <MasterTypeId>3001</MasterTypeId>
+                  <DataTypeId>0</DataTypeId>
+                  <MaxSize>1</MaxSize>
+                  <DefaultValue>0</DefaultValue>
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>true</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster>mSec_Users</LinkMaster>
+                  <LinkValueField>iUserId</LinkValueField>
+                  <LinkDisplayField>sLoginName</LinkDisplayField>
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <WhereCondition />
+                  <ReadOnly>true</ReadOnly>
+                  <Variable>M3001F7</Variable>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>6</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>true</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>true</MergeField>
+                  <MassUpdate>true</MassUpdate>
+                  <IncludeInQuickCreate>true</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <FilterCriteria />
+                  <LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304888</LinkID>
+                      <LanguageID>0</LanguageID>
+                      <Caption>CreatedBy</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304888</LinkID>
+                      <LanguageID>1</LanguageID>
+                      <Caption>CreatedBy</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                  </LanguageDtls>
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <MandatoryValues />
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304889</FieldId>
+                  <FieldViewId>1841</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>iModifiedBy</FieldName>
+                  <FieldCaption>Modified By</FieldCaption>
+                  <Alias>Modified By</Alias>
+                  <MasterTypeId>3001</MasterTypeId>
+                  <DataTypeId>0</DataTypeId>
+                  <MaxSize>1</MaxSize>
+                  <DefaultValue>0</DefaultValue>
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>true</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster>mSec_Users</LinkMaster>
+                  <LinkValueField>iUserId</LinkValueField>
+                  <LinkDisplayField>sLoginName</LinkDisplayField>
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <WhereCondition />
+                  <ReadOnly>true</ReadOnly>
+                  <Variable>M3001F8</Variable>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>7</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>true</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>true</MergeField>
+                  <MassUpdate>true</MassUpdate>
+                  <IncludeInQuickCreate>true</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <FilterCriteria />
+                  <LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304889</LinkID>
+                      <LanguageID>0</LanguageID>
+                      <Caption>Modified By</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304889</LinkID>
+                      <LanguageID>1</LanguageID>
+                      <Caption>Modified By</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                  </LanguageDtls>
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <MandatoryValues />
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304890</FieldId>
+                  <FieldViewId>1842</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>iCreatedDate</FieldName>
+                  <FieldCaption>Created Date</FieldCaption>
+                  <Alias>Created Date</Alias>
+                  <MasterTypeId>3001</MasterTypeId>
+                  <DataTypeId>3</DataTypeId>
+                  <MaxSize>1</MaxSize>
+                  <DefaultValue />
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>true</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <WhereCondition />
+                  <ReadOnly>true</ReadOnly>
+                  <Variable>M3001F9</Variable>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>8</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>true</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>true</MergeField>
+                  <MassUpdate>true</MassUpdate>
+                  <IncludeInQuickCreate>true</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <FilterCriteria />
+                  <LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304890</LinkID>
+                      <LanguageID>0</LanguageID>
+                      <Caption>Created Date</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304890</LinkID>
+                      <LanguageID>1</LanguageID>
+                      <Caption>Created Date</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                  </LanguageDtls>
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <MandatoryValues />
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304891</FieldId>
+                  <FieldViewId>1843</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>iModifiedDate</FieldName>
+                  <FieldCaption>Modified Date</FieldCaption>
+                  <Alias>Modified Date</Alias>
+                  <MasterTypeId>3001</MasterTypeId>
+                  <DataTypeId>3</DataTypeId>
+                  <MaxSize>1</MaxSize>
+                  <DefaultValue />
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>true</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <WhereCondition />
+                  <ReadOnly>true</ReadOnly>
+                  <Variable>M3001F10</Variable>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>9</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>true</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>true</MergeField>
+                  <MassUpdate>true</MassUpdate>
+                  <IncludeInQuickCreate>true</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <FilterCriteria />
+                  <LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304891</LinkID>
+                      <LanguageID>0</LanguageID>
+                      <Caption>Modified Date</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304891</LinkID>
+                      <LanguageID>1</LanguageID>
+                      <Caption>Modified Date</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                  </LanguageDtls>
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <MandatoryValues />
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304892</FieldId>
+                  <FieldViewId>1844</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>iLocationId</FieldName>
+                  <FieldCaption>Location Id</FieldCaption>
+                  <Alias>Location Id</Alias>
+                  <MasterTypeId>3001</MasterTypeId>
+                  <DataTypeId>1</DataTypeId>
+                  <MaxSize>2</MaxSize>
+                  <DefaultValue>0</DefaultValue>
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>true</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <WhereCondition />
+                  <ReadOnly>true</ReadOnly>
+                  <Variable>M3001F11</Variable>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>10</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>true</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>true</MergeField>
+                  <MassUpdate>true</MassUpdate>
+                  <IncludeInQuickCreate>true</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <FilterCriteria />
+                  <LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304892</LinkID>
+                      <LanguageID>0</LanguageID>
+                      <Caption>Location Id</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304892</LinkID>
+                      <LanguageID>1</LanguageID>
+                      <Caption>Location Id</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                  </LanguageDtls>
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <MandatoryValues />
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304893</FieldId>
+                  <FieldViewId>1845</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>bEditedFrom</FieldName>
+                  <FieldCaption>Edited From</FieldCaption>
+                  <Alias>Edited From</Alias>
+                  <MasterTypeId>3001</MasterTypeId>
+                  <DataTypeId>2</DataTypeId>
+                  <MaxSize>1</MaxSize>
+                  <DefaultValue>0</DefaultValue>
+                  <DisplayControlId>1</DisplayControlId>
+                  <IsDefault>true</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <WhereCondition />
+                  <ReadOnly>true</ReadOnly>
+                  <Variable>M3001F12</Variable>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>11</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>true</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>true</MergeField>
+                  <MassUpdate>true</MassUpdate>
+                  <IncludeInQuickCreate>true</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <FilterCriteria />
+                  <LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304893</LinkID>
+                      <LanguageID>0</LanguageID>
+                      <Caption>Edited From</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304893</LinkID>
+                      <LanguageID>1</LanguageID>
+                      <Caption>Edited From</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                  </LanguageDtls>
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <MandatoryValues />
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304894</FieldId>
+                  <FieldViewId>1846</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>iClosingDate</FieldName>
+                  <FieldCaption>Closing Date</FieldCaption>
+                  <Alias>Closing Date</Alias>
+                  <MasterTypeId>3001</MasterTypeId>
+                  <DataTypeId>1</DataTypeId>
+                  <MaxSize>1</MaxSize>
+                  <DefaultValue>0</DefaultValue>
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>true</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <WhereCondition />
+                  <ReadOnly>true</ReadOnly>
+                  <Variable>M3001F13</Variable>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>12</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>true</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>true</MergeField>
+                  <MassUpdate>true</MassUpdate>
+                  <IncludeInQuickCreate>true</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <FilterCriteria />
+                  <LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304894</LinkID>
+                      <LanguageID>0</LanguageID>
+                      <Caption>Closing Date</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304894</LinkID>
+                      <LanguageID>1</LanguageID>
+                      <Caption>Closing Date</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                  </LanguageDtls>
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <MandatoryValues />
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304895</FieldId>
+                  <FieldViewId>1847</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>bAllowOtherCompaniesToViewRecord</FieldName>
+                  <FieldCaption>Allow Other Companies To View Record</FieldCaption>
+                  <Alias>Allow Other Companies To View Record</Alias>
+                  <MasterTypeId>3001</MasterTypeId>
+                  <DataTypeId>2</DataTypeId>
+                  <MaxSize>1</MaxSize>
+                  <DefaultValue>0</DefaultValue>
+                  <DisplayControlId>1</DisplayControlId>
+                  <IsDefault>true</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <WhereCondition />
+                  <ReadOnly>true</ReadOnly>
+                  <Variable>M3001F14</Variable>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>13</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>true</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>true</MergeField>
+                  <MassUpdate>true</MassUpdate>
+                  <IncludeInQuickCreate>true</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <FilterCriteria />
+                  <LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304895</LinkID>
+                      <LanguageID>0</LanguageID>
+                      <Caption>Allow Other Companies To View Record</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304895</LinkID>
+                      <LanguageID>1</LanguageID>
+                      <Caption>Allow Other Companies To View Record</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                  </LanguageDtls>
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <MandatoryValues />
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304896</FieldId>
+                  <FieldViewId>1848</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>iSyncReceivedDate</FieldName>
+                  <FieldCaption>Sync Received Date</FieldCaption>
+                  <Alias>Sync Received Date</Alias>
+                  <MasterTypeId>3001</MasterTypeId>
+                  <DataTypeId>3</DataTypeId>
+                  <MaxSize>1</MaxSize>
+                  <DefaultValue />
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>true</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <WhereCondition />
+                  <ReadOnly>true</ReadOnly>
+                  <Variable>M3001F15</Variable>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>14</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>true</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>true</MergeField>
+                  <MassUpdate>true</MassUpdate>
+                  <IncludeInQuickCreate>true</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <FilterCriteria />
+                  <LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304896</LinkID>
+                      <LanguageID>0</LanguageID>
+                      <Caption>Sync Received Date</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304896</LinkID>
+                      <LanguageID>1</LanguageID>
+                      <Caption>Sync Received Date</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                  </LanguageDtls>
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <MandatoryValues />
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304897</FieldId>
+                  <FieldViewId>1849</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>iEditingLocation</FieldName>
+                  <FieldCaption>Editing Location</FieldCaption>
+                  <Alias>Editing Location</Alias>
+                  <MasterTypeId>3001</MasterTypeId>
+                  <DataTypeId>1</DataTypeId>
+                  <MaxSize>2</MaxSize>
+                  <DefaultValue>0</DefaultValue>
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>true</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <WhereCondition />
+                  <ReadOnly>true</ReadOnly>
+                  <Variable>M3001F16</Variable>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>15</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>true</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>true</MergeField>
+                  <MassUpdate>true</MassUpdate>
+                  <IncludeInQuickCreate>true</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <FilterCriteria />
+                  <LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304897</LinkID>
+                      <LanguageID>0</LanguageID>
+                      <Caption>Editing Location</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                    <LanguageDtls>
+                      <LinkType>2</LinkType>
+                      <LinkID>304897</LinkID>
+                      <LanguageID>1</LanguageID>
+                      <Caption>Editing Location</Caption>
+                      <iLanguageId>0</iLanguageId>
+                      <iMasterId>0</iMasterId>
+                    </LanguageDtls>
+                  </LanguageDtls>
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+              </Fields>
+            </Tables>
+          </Tables>
+          <LanguageDtls>
+            <LanguageDtls>
+              <LinkType>4</LinkType>
+              <LinkID>116</LinkID>
+              <LanguageID>0</LanguageID>
+              <Caption>General</Caption>
+              <iLanguageId>0</iLanguageId>
+              <iMasterId>0</iMasterId>
+            </LanguageDtls>
+            <LanguageDtls>
+              <LinkType>4</LinkType>
+              <LinkID>116</LinkID>
+              <LanguageID>1</LanguageID>
+              <Caption>General</Caption>
+              <iLanguageId>0</iLanguageId>
+              <iMasterId>0</iMasterId>
+            </LanguageDtls>
+          </LanguageDtls>
+          <TabType>0</TabType>
+          <LinkMasterId>0</LinkMasterId>
+        </Tabs>
+      </Tabs>
+      <ExternalModules />
+      <UniqueConstraints>
+        <UniqueConstraints>
+          <NewConstraintId>0</NewConstraintId>
+          <OldConstraintId>0</OldConstraintId>
+          <ConstraintId>77</ConstraintId>
+          <ConstraintName>Default Code Constraint</ConstraintName>
+          <ConstraintFields>
+            <ConstraintFields>
+              <FieldId>304884</FieldId>
+              <NewFieldId>304884</NewFieldId>
+              <OldFieldId>304884</OldFieldId>
+              <FieldName>sCode</FieldName>
+              <LinkMasterId>0</LinkMasterId>
+              <TableName>mCore_ImportedMaster</TableName>
+              <TableType>false</TableType>
+              <DataTypeId>0</DataTypeId>
+              <IsMainTable>false</IsMainTable>
+            </ConstraintFields>
+          </ConstraintFields>
+          <TabId>116</TabId>
+          <OldTabId>0</OldTabId>
+          <TableType>0</TableType>
+          <IsMainTable>false</IsMainTable>
+        </UniqueConstraints>
+      </UniqueConstraints>
+      <InfoPanels />
+      <RecordExists>false</RecordExists>
+    </Master>
+  </Masters>
+  <Views>
+    <Master>
+      <DestinationRowSequenceId>0</DestinationRowSequenceId>
+      <iType>0</iType>
+      <InsertAt>false</InsertAt>
+      <LanguageDtls>
+        <LanguageDtls>
+          <LinkType>1</LinkType>
+          <LinkID>75</LinkID>
+          <LanguageID>0</LanguageID>
+          <Caption>Imported Master</Caption>
+          <iLanguageId>0</iLanguageId>
+          <iMasterId>0</iMasterId>
+        </LanguageDtls>
+        <LanguageDtls>
+          <LinkType>1</LinkType>
+          <LinkID>75</LinkID>
+          <LanguageID>1</LanguageID>
+          <Caption>Imported Master</Caption>
+          <iLanguageId>0</iLanguageId>
+          <iMasterId>0</iMasterId>
+        </LanguageDtls>
+      </LanguageDtls>
+      <MasterTypeId>3001</MasterTypeId>
+      <LoadMasterData>false</LoadMasterData>
+      <MenuUnder>0</MenuUnder>
+      <OldMasterTypeId>0</OldMasterTypeId>
+      <AccountOrProductTypeId>0</AccountOrProductTypeId>
+      <ViewId>75</ViewId>
+      <OldViewId>0</OldViewId>
+      <SelectedViewId>0</SelectedViewId>
+      <MasterName>ImportedMaster</MasterName>
+      <Caption>Imported Master</Caption>
+      <SearchBy>false</SearchBy>
+      <AllowDuplicateNames>false</AllowDuplicateNames>
+      <IsDefault>true</IsDefault>
+      <IsGroupMandatory>false</IsGroupMandatory>
+      <IsPickCode>false</IsPickCode>
+      <AllowRevision>false</AllowRevision>
+      <Tabs>
+        <Tabs>
+          <NewTabId>0</NewTabId>
+          <IsHidden>false</IsHidden>
+          <TabId>116</TabId>
+          <OldTabId>0</OldTabId>
+          <TabName>tp_General</TabName>
+          <TabCaption>General</TabCaption>
+          <Tables>
+            <Tables>
+              <NewTableId>0</NewTableId>
+              <TableId>175</TableId>
+              <OldTableId>0</OldTableId>
+              <TableName>mCore_ImportedMaster</TableName>
+              <TableType>false</TableType>
+              <MainTable>true</MainTable>
+              <IsDefault>true</IsDefault>
+              <Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304882</FieldId>
+                  <FieldViewId>1834</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>iMasterId</FieldName>
+                  <FieldCaption>MasterId</FieldCaption>
+                  <Alias>MasterId</Alias>
+                  <MasterTypeId>0</MasterTypeId>
+                  <DataTypeId>1</DataTypeId>
+                  <MaxSize>0</MaxSize>
+                  <DefaultValue />
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>false</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <ReadOnly>true</ReadOnly>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>0</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>false</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>false</MergeField>
+                  <MassUpdate>false</MassUpdate>
+                  <IncludeInQuickCreate>false</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <LanguageDtls />
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304883</FieldId>
+                  <FieldViewId>1835</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>sName</FieldName>
+                  <FieldCaption>Name</FieldCaption>
+                  <Alias>Name</Alias>
+                  <MasterTypeId>0</MasterTypeId>
+                  <DataTypeId>0</DataTypeId>
+                  <MaxSize>0</MaxSize>
+                  <DefaultValue />
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>false</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>false</IsHidden>
+                  <ReadOnly>false</ReadOnly>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>1</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>false</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>false</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>false</MergeField>
+                  <MassUpdate>false</MassUpdate>
+                  <IncludeInQuickCreate>false</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <LanguageDtls />
+                  <FieldType>0</FieldType>
+                  <InternalStdField>false</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304884</FieldId>
+                  <FieldViewId>1836</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>sCode</FieldName>
+                  <FieldCaption>Code</FieldCaption>
+                  <Alias>Code</Alias>
+                  <MasterTypeId>0</MasterTypeId>
+                  <DataTypeId>0</DataTypeId>
+                  <MaxSize>0</MaxSize>
+                  <DefaultValue />
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>false</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>false</IsHidden>
+                  <ReadOnly>false</ReadOnly>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>2</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>false</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>false</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>false</MergeField>
+                  <MassUpdate>false</MassUpdate>
+                  <IncludeInQuickCreate>false</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <LanguageDtls />
+                  <FieldType>0</FieldType>
+                  <InternalStdField>false</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304885</FieldId>
+                  <FieldViewId>1837</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>bGroup</FieldName>
+                  <FieldCaption>Group</FieldCaption>
+                  <Alias>Group</Alias>
+                  <MasterTypeId>0</MasterTypeId>
+                  <DataTypeId>2</DataTypeId>
+                  <MaxSize>0</MaxSize>
+                  <DefaultValue />
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>false</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <ReadOnly>true</ReadOnly>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>3</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>false</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>false</MergeField>
+                  <MassUpdate>false</MassUpdate>
+                  <IncludeInQuickCreate>false</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <LanguageDtls />
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304886</FieldId>
+                  <FieldViewId>1838</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>iStatus</FieldName>
+                  <FieldCaption>Status</FieldCaption>
+                  <Alias>Status</Alias>
+                  <MasterTypeId>0</MasterTypeId>
+                  <DataTypeId>1</DataTypeId>
+                  <MaxSize>0</MaxSize>
+                  <DefaultValue />
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>false</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <ReadOnly>true</ReadOnly>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>4</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>false</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>false</MergeField>
+                  <MassUpdate>false</MassUpdate>
+                  <IncludeInQuickCreate>false</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <LanguageDtls />
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304887</FieldId>
+                  <FieldViewId>1839</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>bDoNotRestrict</FieldName>
+                  <FieldCaption>Do Not Restrict</FieldCaption>
+                  <Alias>Do Not Restrict</Alias>
+                  <MasterTypeId>0</MasterTypeId>
+                  <DataTypeId>2</DataTypeId>
+                  <MaxSize>0</MaxSize>
+                  <DefaultValue />
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>false</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <ReadOnly>true</ReadOnly>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>5</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>false</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>false</MergeField>
+                  <MassUpdate>false</MassUpdate>
+                  <IncludeInQuickCreate>false</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <LanguageDtls />
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304888</FieldId>
+                  <FieldViewId>1840</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>iCreatedBy</FieldName>
+                  <FieldCaption>CreatedBy</FieldCaption>
+                  <Alias>CreatedBy</Alias>
+                  <MasterTypeId>0</MasterTypeId>
+                  <DataTypeId>14</DataTypeId>
+                  <MaxSize>0</MaxSize>
+                  <DefaultValue />
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>false</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster>mSec_Users</LinkMaster>
+                  <LinkValueField>iUserId</LinkValueField>
+                  <LinkDisplayField>sLoginName</LinkDisplayField>
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <ReadOnly>true</ReadOnly>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>6</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>false</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>false</MergeField>
+                  <MassUpdate>false</MassUpdate>
+                  <IncludeInQuickCreate>false</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <LanguageDtls />
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304889</FieldId>
+                  <FieldViewId>1841</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>iModifiedBy</FieldName>
+                  <FieldCaption>Modified By</FieldCaption>
+                  <Alias>Modified By</Alias>
+                  <MasterTypeId>0</MasterTypeId>
+                  <DataTypeId>14</DataTypeId>
+                  <MaxSize>0</MaxSize>
+                  <DefaultValue />
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>false</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster>mSec_Users</LinkMaster>
+                  <LinkValueField>iUserId</LinkValueField>
+                  <LinkDisplayField>sLoginName</LinkDisplayField>
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <ReadOnly>true</ReadOnly>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>7</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>false</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>false</MergeField>
+                  <MassUpdate>false</MassUpdate>
+                  <IncludeInQuickCreate>false</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <LanguageDtls />
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304890</FieldId>
+                  <FieldViewId>1842</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>iCreatedDate</FieldName>
+                  <FieldCaption>Created Date</FieldCaption>
+                  <Alias>Created Date</Alias>
+                  <MasterTypeId>0</MasterTypeId>
+                  <DataTypeId>3</DataTypeId>
+                  <MaxSize>0</MaxSize>
+                  <DefaultValue />
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>false</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <ReadOnly>true</ReadOnly>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>8</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>false</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>false</MergeField>
+                  <MassUpdate>false</MassUpdate>
+                  <IncludeInQuickCreate>false</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <LanguageDtls />
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304891</FieldId>
+                  <FieldViewId>1843</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>iModifiedDate</FieldName>
+                  <FieldCaption>Modified Date</FieldCaption>
+                  <Alias>Modified Date</Alias>
+                  <MasterTypeId>0</MasterTypeId>
+                  <DataTypeId>3</DataTypeId>
+                  <MaxSize>0</MaxSize>
+                  <DefaultValue />
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>false</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <ReadOnly>true</ReadOnly>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>9</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>false</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>false</MergeField>
+                  <MassUpdate>false</MassUpdate>
+                  <IncludeInQuickCreate>false</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <LanguageDtls />
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304892</FieldId>
+                  <FieldViewId>1844</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>iLocationId</FieldName>
+                  <FieldCaption>Location Id</FieldCaption>
+                  <Alias>Location Id</Alias>
+                  <MasterTypeId>0</MasterTypeId>
+                  <DataTypeId>1</DataTypeId>
+                  <MaxSize>0</MaxSize>
+                  <DefaultValue />
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>false</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <ReadOnly>true</ReadOnly>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>10</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>false</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>false</MergeField>
+                  <MassUpdate>false</MassUpdate>
+                  <IncludeInQuickCreate>false</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <LanguageDtls />
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304893</FieldId>
+                  <FieldViewId>1845</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>bEditedFrom</FieldName>
+                  <FieldCaption>Edited From</FieldCaption>
+                  <Alias>Edited From</Alias>
+                  <MasterTypeId>0</MasterTypeId>
+                  <DataTypeId>2</DataTypeId>
+                  <MaxSize>0</MaxSize>
+                  <DefaultValue />
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>false</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <ReadOnly>true</ReadOnly>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>11</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>false</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>false</MergeField>
+                  <MassUpdate>false</MassUpdate>
+                  <IncludeInQuickCreate>false</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <LanguageDtls />
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304894</FieldId>
+                  <FieldViewId>1846</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>iClosingDate</FieldName>
+                  <FieldCaption>Closing Date</FieldCaption>
+                  <Alias>Closing Date</Alias>
+                  <MasterTypeId>0</MasterTypeId>
+                  <DataTypeId>1</DataTypeId>
+                  <MaxSize>0</MaxSize>
+                  <DefaultValue />
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>false</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <ReadOnly>true</ReadOnly>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>12</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>false</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>false</MergeField>
+                  <MassUpdate>false</MassUpdate>
+                  <IncludeInQuickCreate>false</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <LanguageDtls />
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304895</FieldId>
+                  <FieldViewId>1847</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>bAllowOtherCompaniesToViewRecord</FieldName>
+                  <FieldCaption>Allow Other Companies To View Record</FieldCaption>
+                  <Alias>Allow Other Companies To View Record</Alias>
+                  <MasterTypeId>0</MasterTypeId>
+                  <DataTypeId>2</DataTypeId>
+                  <MaxSize>0</MaxSize>
+                  <DefaultValue />
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>false</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <ReadOnly>true</ReadOnly>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>13</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>false</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>false</MergeField>
+                  <MassUpdate>false</MassUpdate>
+                  <IncludeInQuickCreate>false</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <LanguageDtls />
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304896</FieldId>
+                  <FieldViewId>1848</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>iSyncReceivedDate</FieldName>
+                  <FieldCaption>Sync Received Date</FieldCaption>
+                  <Alias>Sync Received Date</Alias>
+                  <MasterTypeId>0</MasterTypeId>
+                  <DataTypeId>3</DataTypeId>
+                  <MaxSize>0</MaxSize>
+                  <DefaultValue />
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>false</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <ReadOnly>true</ReadOnly>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>14</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>false</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>false</MergeField>
+                  <MassUpdate>false</MassUpdate>
+                  <IncludeInQuickCreate>false</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <LanguageDtls />
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+                <Fields>
+                  <TableId>0</TableId>
+                  <NewFieldId>0</NewFieldId>
+                  <OldFieldId>0</OldFieldId>
+                  <IsRemoved>false</IsRemoved>
+                  <IntervalValue>0</IntervalValue>
+                  <CalenderTypeId>0</CalenderTypeId>
+                  <FieldId>304897</FieldId>
+                  <FieldViewId>1849</FieldViewId>
+                  <OldFieldViewId>0</OldFieldViewId>
+                  <FieldName>iEditingLocation</FieldName>
+                  <FieldCaption>Editing Location</FieldCaption>
+                  <Alias>Editing Location</Alias>
+                  <MasterTypeId>0</MasterTypeId>
+                  <DataTypeId>1</DataTypeId>
+                  <MaxSize>0</MaxSize>
+                  <DefaultValue />
+                  <DisplayControlId>0</DisplayControlId>
+                  <IsDefault>false</IsDefault>
+                  <AllowAsParameter>false</AllowAsParameter>
+                  <IsMandatory>true</IsMandatory>
+                  <LinkMasterId>0</LinkMasterId>
+                  <LinkTypeId>0</LinkTypeId>
+                  <OldLinkMasterId>0</OldLinkMasterId>
+                  <LinkMaster />
+                  <LinkValueField />
+                  <LinkDisplayField />
+                  <MandatoryFields />
+                  <IsHidden>true</IsHidden>
+                  <ReadOnly>true</ReadOnly>
+                  <ToolTip />
+                  <BannerText />
+                  <InformationField>false</InformationField>
+                  <FieldOrder>15</FieldOrder>
+                  <RegularExpression />
+                  <ErrorMessage />
+                  <CopyFromParent>false</CopyFromParent>
+                  <HiddenInGroup>true</HiddenInGroup>
+                  <MandatoryInGroup>true</MandatoryInGroup>
+                  <IsMandatoryInRevision>false</IsMandatoryInRevision>
+                  <SpellCheck>false</SpellCheck>
+                  <AuditTrial>false</AuditTrial>
+                  <NotAvailableForReports>false</NotAvailableForReports>
+                  <MergeField>false</MergeField>
+                  <MassUpdate>false</MassUpdate>
+                  <IncludeInQuickCreate>false</IncludeInQuickCreate>
+                  <CannotBeExported>false</CannotBeExported>
+                  <CannotBeImported>false</CannotBeImported>
+                  <Behaviour>0</Behaviour>
+                  <WordWrap>false</WordWrap>
+                  <ScrollBar>0</ScrollBar>
+                  <MinVal>0</MinVal>
+                  <MaxVal>0</MaxVal>
+                  <ColumnSpan>1</ColumnSpan>
+                  <RowSpan>1</RowSpan>
+                  <CharacterCasing>0</CharacterCasing>
+                  <TextAlign>0</TextAlign>
+                  <BackColor />
+                  <ExternalModuleAttachedOnViewField>false</ExternalModuleAttachedOnViewField>
+                  <RuleAttachedOnViewField>false</RuleAttachedOnViewField>
+                  <ExternalModuleAttachedOnField>false</ExternalModuleAttachedOnField>
+                  <RuleAttachedOnField>false</RuleAttachedOnField>
+                  <LanguageDtls />
+                  <FieldType>0</FieldType>
+                  <InternalStdField>true</InternalStdField>
+                  <IsIncremntal>false</IsIncremntal>
+                  <PartOfDeliveryAddress>false</PartOfDeliveryAddress>
+                  <PartOfBillingAddress>false</PartOfBillingAddress>
+                  <IncludeGroups>0</IncludeGroups>
+                  <MandatoryRevision>false</MandatoryRevision>
+                  <AvailableinCustomerPortal>false</AvailableinCustomerPortal>
+                  <EditableinCustomerPortal>false</EditableinCustomerPortal>
+                  <iTagType>0</iTagType>
+                </Fields>
+              </Fields>
+            </Tables>
+          </Tables>
+          <LanguageDtls>
+            <LanguageDtls>
+              <LinkType>1</LinkType>
+              <LinkID>75</LinkID>
+              <LanguageID>0</LanguageID>
+              <Caption>Imported Master</Caption>
+              <iLanguageId>0</iLanguageId>
+              <iMasterId>0</iMasterId>
+            </LanguageDtls>
+            <LanguageDtls>
+              <LinkType>1</LinkType>
+              <LinkID>75</LinkID>
+              <LanguageID>1</LanguageID>
+              <Caption>Imported Master</Caption>
+              <iLanguageId>0</iLanguageId>
+              <iMasterId>0</iMasterId>
+            </LanguageDtls>
+          </LanguageDtls>
+          <TabType>0</TabType>
+          <LinkMasterId>0</LinkMasterId>
+        </Tabs>
+      </Tabs>
+      <Rules />
+      <ExternalModules />
+      <RecordExists>false</RecordExists>
+    </Master>
+  </Views>
+  <AuthorizationDetails />
+  <OtherMaster />
+</MasterImportExportData>

@@ -1,0 +1,58 @@
+var ISurveyConstants=new  function()
+{
+    this.ISurveyType=new function()
+    {
+        this.GENERIC=1;
+        this.MODULE_SPECIFIC=2;
+    };
+
+    this.IQuestionType=new function()
+    {
+        this.SECTION_HEADING=1;
+        this.HORIZONTAL_LINE=2;
+        this.YES_NO=3;
+        this.TEXT_RESPONSE=4;
+        this.TEXT_RESPONSE_GRID=5;
+        this.DROPDOWN=6;
+        this.DROPDOWN_GRID=7;
+        this.SINGLE_CHOICE=8;
+        this.SINGLE_CHOICE_GRID=9;
+        this.MULTIPLE_CHOICE=10;
+        this.MULTIPLE_CHOICE_GRID=11;
+        this.DATETIME=12;
+        this.PICTURE=13;
+        this.SCORE=14;
+        this.HIDDEN=15;
+        this.SLIDER=16;
+        this.RANKING=17;
+        this.RANKING_GRID=18;
+    };
+
+    this.IValidationType=new function()
+    {
+        this.NONE=0;
+        this.TEXT=1;
+        this.EMAIL=2;
+        this.INTEGER=3;
+        this.FLOAT=4;
+        this.PERCENTAGE=5;
+        this.URL=6;
+        this.DATETIME=7;
+        this.DATE=8;
+        this.TIME=9;
+    };
+
+    this.IFormat=new function()
+    {
+        this.DATETIME=1;
+        this.DATE=2;
+        this.TIME=3;
+    };
+    this.ISurvey_Assignment_Mode=new function()
+    {
+        this.EMAIL=1;
+        this.PORTAL=2;
+        this.MOBILEAPP=3;
+        this.APPLICATION=4;
+    };
+};

@@ -1,0 +1,59 @@
+
+var clApprovalStatus=new function()
+{
+    var me=this;
+    var objTD, dvApprStatus,dvContainer,g_iModuleId,g_iTransId,g_sId;
+    app.registerInstance("ApprovalStatus",this);
+    this.getCardview=function(thisObj,iModuleId,iTransId){
+        if(iModuleId<=0)
+           iModuleId=listView.getModuleId();
+        objTD=thisObj;
+        g_iModuleId=iModuleId;
+        g_iTransId=iTransId;
+        dvApprStatus=document.getElementById("dvApprStatus_"+iModuleId+"_"+iTransId);
+        g_sId = "dvApprStatus_"+iModuleId+"_"+iTransId;
+        dvContainer = document.getElementById("containerDiv_"+iModuleId);
+        
+        if(dvContainer==null)
+            dvContainer = document.getElementById("containerDiv_1");
+
+        if(dvApprStatus && util.trim(dvApprStatus.innerHTML).length>0){
+            me.timer=setTimeout(function(){
+                msg.showToastWindow(thisObj,dvApprStatus.innerHTML,0,null,0,
+                        false,true,g_sId,Constants.PRONG_TOP,null,null,null,null,null,dvContainer);
+            },800);
+
+        }
+        else{
+            var sUrl;
+            dvApprStatus=document.createElement("div");
+            dvApprStatus.id="dvApprStatus_"+iModuleId+"_"+iTransId;
+            dvApprStatus.style.display="none";
+            document.body.appendChild(dvApprStatus);
+
+            sUrl=con.getStruts2Url("module","moduleView","getApprovalStatus",null,true);
+            sUrl+="?moduleId="+iModuleId+"&transId="+iTransId+"&fromListview=1";
+            con.sendPostRequest(sUrl,null,null,"clApprovalStatus.setApprovalStatus");
+
+        };
+    };
+        this.setApprovalStatus=function(sResponse){
+            dvApprStatus.innerHTML=sResponse;
+            if(util.trim(dvApprStatus.innerHTML).length>0){
+               me.timer= setTimeout(function()
+                {
+                    msg.showToastWindow(objTD,dvApprStatus.innerHTML,0,null,0,
+                            false,true,g_sId,Constants.PRONG_TOP,null,null,null,null,null,dvContainer);
+                },800);
+            }
+
+        };
+    this.hideCardview=function(){
+        msg.removeToastWindowDlg(g_sId);
+        clearTimeout(cross.timer);
+
+
+//        msg.hideToastWindowDlg(false,null,objTD);
+    };
+
+};

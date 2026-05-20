@@ -1,0 +1,2596 @@
+
+
+
+var clHTML5Upload=new function()
+{
+    app.registerInstance("clHTML5Upload",clHTML5Upload);
+
+    this.UPLOAD_TYPE_FILE = 1;
+    this.UPLOAD_TYPE_IMAGE = 2;
+    this.UPLOAD_TYPE_PREVIEW = 3;
+    this.UPLOAD_TYPE_SIGNATURE = 4;
+    this.UPLOAD_TYPE_VIDEO = 5;
+    this.UPLOAD_TYPE_AUDIO = 6;
+    // common variables
+    var iBytesUploaded = 0;
+    var iBytesTotal = 0;
+    var iPreviousBytesLoaded = 0;
+    var oTimer = 0;
+
+
+    var me=this;
+    var arrUploadFields={};
+    var arrUploadParentIds={};
+    var iElapsedTime=0;
+    var sUploadFieldId=null;
+    var sNewUploadFldId=null;
+    var sFileName=null;
+    var sNewUploadTab=null;
+    var sNewId=null;
+    var iUploadCnt=1;
+    var iCurrentUploadCnt=0;
+    var isMultiAttachments=false;
+    var iFilesLength=0;
+    var iFilesCnt=0;
+    var iTotFilesCnt=0;
+    var objFileInput=null;
+    var sImageFileName = null;
+    var iUploadCount = 1;
+    var sBaseId = null;
+    var isMediaDeviceAvail = false;
+    var isAudioDeviceAvail = false;
+    /*isbodyattahment means grid*/
+    /*isshowattachicons means grid picture or header picture datatype is that isshowattachicons is true*/
+
+    this.init = function(sId,sUrl, sDestPath, iFileLimit, sAllowedExtensions, sDesc, iWidth, iHeight, sOnUploadDone,
+                         sAttachCaption,iType,isBorder,sFileName,isCropper,sHiddenFileName,iCropImgHeight,iCropImgWidth,
+                         sAttachImageUrl,sAttachImageCallBack,isAllowRemove,isAllowMultiUploads,bTemp,arrIndexes,iFileUploadLimit,
+                         isBodyAttachment,isGoogle,isOneDrive,isShowAttachIcons,isShowNameAtBottom,isDefaultIcon,isAppendRemoveAttr,
+                         isAllowDrawOnImg)/*todo check:bTemp */
+    {
+        var arrProperties={};
+        arrProperties["sId"]=sId;
+        arrProperties["sUrl"]=sUrl+"?JSESSIONID="+sDesc;
+        arrProperties["sDestPath"]=sDestPath;
+        arrProperties["sHiddenName"]=sHiddenFileName;
+        arrProperties["sOnUploadDone"]=sOnUploadDone;
+        arrProperties["sAttachImageCallBack"]=sAttachImageCallBack;
+        arrProperties["isAllowRemove"]=isAllowRemove;
+
+        arrProperties["iFileLimit"]=iFileLimit;
+        if(sAllowedExtensions)
+        {
+            sAllowedExtensions=util.trim(sAllowedExtensions);
+            if(sAllowedExtensions!="*.*")
+                arrProperties["sExtensions"]=sAllowedExtensions;
+        }
+        arrProperties["iType"]=iType;
+
+        arrProperties["isCropper"]=isCropper;
+        arrProperties["isAllowDrawOnImg"]=isAllowDrawOnImg;
+        arrProperties["iCropImgWidth"]=iCropImgWidth;
+        arrProperties["iCropImgHeight"]=iCropImgHeight;
+        arrProperties["isAllowMultiUploads"]=isAllowMultiUploads;
+        arrProperties["isGoogle"]=isGoogle;
+        arrProperties["isOneDrive"]=isOneDrive;
+        arrProperties["iUploadLimit"]=iFileUploadLimit;
+        arrProperties["arrIndexes"]=arrIndexes;
+        arrProperties["isBodyAttachment"]=isBodyAttachment;
+        arrProperties["isShowAttachIcons"]=isShowAttachIcons;
+        arrProperties["isShowNameAtBottom"]=isShowNameAtBottom;
+        arrProperties["isDefaultIcon"]=isDefaultIcon;
+        arrProperties["isAppendRemoveAttr"]=isAppendRemoveAttr;
+        //if(isAllowMultiUploads && arrProperties.iUploadLimit > 1)
+        //    document.getElementById(sHiddenFileName+"_"+sId).setAttribute("isIgnore",true);
+
+
+        arrUploadFields[sId]=arrProperties;
+        arrUploadParentIds[sId]=sId;
+        var fileInput=document.getElementById(arrProperties["sId"]);
+        if(fileInput)
+        {
+
+            var dropbox = fileInput.parentNode;
+            dropbox.setAttribute("fileid",arrProperties["sId"]);
+            //init event handlers
+            dropbox.addEventListener("dragenter", me.dragEnter, false);
+            dropbox.addEventListener("dragexit", me.dragExit, false);
+            dropbox.addEventListener("dragover", me.dragOver, false);
+            dropbox.addEventListener("drop", me.dragDrop, false);
+
+        }
+        if (sFileName!=null && sFileName.length > 0 && ((isOneDrive && sFileName.indexOf("onedrive:") != -1) || (isGoogle && sFileName.indexOf("gdrive:") != -1)))
+        {
+            me.initSocialAttachment(sFileName,sId);
+
+        }
+        //isDefaultIcon true need to enable Preview image else display span icon
+        if(isDefaultIcon && sFileName!=null && sFileName.length > 0)
+            me.toggleSpanAndImage(sId,true);
+        if(clAppBuffer.getAllowCameraAccess() == "true")
+            me.handleMediaDevices(iType);
+        me.handleMaxSize(iFileLimit,sId,isAllowMultiUploads);
+    };
+
+    this.initSocialAttachment = function(sFileName,sId)
+    {
+        var sSrc = sFileName, sImageName = "", sDriveSrc = "", iFileId,sPreviewSrc;
+        var objAch = cross.getFirstElement(document.getElementById("fileName_" + sId).childNodes);
+        sImageName = sFileName.substring(sFileName.indexOf("|") + 1);
+        iFileId = sFileName.substring(sFileName.indexOf(":") + 1, sFileName.indexOf("|"));
+        if (sFileName.indexOf("onedrive:") != -1)
+        {
+            sSrc = iFileId;
+            /*sFileName.indexOf("onedrive:");
+            sSrc = "https://onedrive.live.com/download?resid=" + iFileId.substring(iFileId.lastIndexOf("&")+1);
+            objAch.setAttribute("href", sSrc);
+            sDriveSrc = "onedrive:" + iFileId + "|" + sImageName;
+            sPreviewSrc = sSrc;  --old*/
+            objAch.setAttribute("href", sSrc);
+            sDriveSrc = "onedrive:" + iFileId + "|" + sImageName;
+            sPreviewSrc = sSrc;
+        }
+        else if (sFileName.indexOf("gdrive:") != -1)
+        {
+            sSrc = "https://drive.google.com/uc?&id=" + iFileId;
+            objAch.setAttribute("href", sSrc + "&export=download");
+            sDriveSrc = "gdrive:" + iFileId + "|" + sImageName;
+            sPreviewSrc = "https://drive.google.com/thumbnail?id="+iFileId;
+
+        }
+        cross.setInnerText(objAch,sImageName);
+        objAch.setAttribute("title",sImageName);
+        if(document.getElementById("preview_"+sId)!=null)
+            document.getElementById("preview_"+sId).src = sPreviewSrc;
+        document.getElementById("uploadFileName_"+sId).value = sDriveSrc;
+        if(document.getElementById("user_"+sId)!=null)
+            document.getElementById("user_"+sId).value = sSrc;
+    };
+
+
+    //isDefaultIcon true need to enable Preview image else display span icon
+    this.toggleSpanAndImage=function(sId,isRowDisplay)
+    {
+        var obj=document.getElementById("preview_"+sId);
+        if(obj!=null)
+        {
+            cross.setVisible(obj,isRowDisplay);//test
+            cross.setVisible(document.getElementById("sp_"+sId),!isRowDisplay);
+        }
+    };
+
+    this.handleMediaDevices = function(iUploadType)
+    {
+        if(iUploadType == me.UPLOAD_TYPE_PREVIEW || iUploadType == me.UPLOAD_TYPE_VIDEO)
+        {
+            if(navigator.mediaDevices)
+            {
+                navigator.mediaDevices.getUserMedia({video: true, audio: false})
+                    .then(function () {
+                        isMediaDeviceAvail = true;
+                    });
+            }
+        }
+        else if(iUploadType == me.UPLOAD_TYPE_AUDIO)
+        {
+            if(navigator.mediaDevices)
+            {
+                navigator.mediaDevices.getUserMedia({audio: true})
+                    .then(function () {
+                        isAudioDeviceAvail = true;
+                    });
+            }
+        }
+    };
+
+    this.handleMaxSize = function(iFileLimit,sId,isAllowMultiUploads)
+    {
+        var iMaxSize = clAppBuffer.getMaxAllowedFileSize();
+        if(iMaxSize > 0 && iMaxSize < iFileLimit)
+        {
+            var  sMaxSize;
+            if (iMaxSize < 1024)
+                sMaxSize = iMaxSize + "KB";
+            else if (iMaxSize < (1024*1024))
+                sMaxSize = iMaxSize / 1024 + "MB";
+            else
+                sMaxSize = (iMaxSize / (1024*1024)) + "GB";
+            var sUploadFieldId = "spMaxSize_"+sId;
+            if(isAllowMultiUploads)
+                sUploadFieldId = "spMaxSize_"+sId+"[0]";
+            if(document.getElementById(sUploadFieldId))
+                document.getElementById(sUploadFieldId).innerHTML = "(Max:" + sMaxSize + ")";
+        }
+
+    };
+
+    this.getBaseId = function(sId)
+    {
+        if(sId.indexOf('[')!=-1) {
+            var arrProperties = me.getPropertiesArray(sId);
+            if(arrProperties == undefined || arrProperties == null)
+                return sId.substring(0,sId.indexOf('['));
+            else
+                return sId;
+        }
+
+        else
+            return sId;
+    };
+
+    this.getPropertiesArray=function(sId)
+    {
+        return arrUploadFields[sId];
+    };
+
+    this.getUploadCnt=function()
+    {
+        return iUploadCnt;
+    };
+    this.getUploadCount=function()
+    {
+        return iUploadCount;
+    };
+    this.setUploadCount=function(iCount)
+    {
+        iUploadCount = iCount;
+    };
+
+    this.toggleRemoveImage = function(sId,isShowRemoveImage)
+    {
+        var arrProperties=me.getPropertiesArray(arrUploadParentIds[clHTML5Upload.getBaseId(sId)]);
+        if(isShowRemoveImage)
+        {
+            arrProperties["isAllowRemove"] = isShowRemoveImage;
+            me.showRemoveImage(sId);
+            document.getElementById(sId).disabled = false;
+
+        }else{
+            me.hideRemoveImage(sId);
+            document.getElementById(sId).disabled = true;
+            arrProperties["isAllowRemove"] = isShowRemoveImage;
+        }
+    };
+
+    this.setAttachLabelAndExtension = function(sId,sAttachLabel,sExtensions)
+    {
+        if(sId != null)
+        {
+            if (sAttachLabel != null)
+                document.getElementById("lblUpload_" + sId).innerHTML = sAttachLabel;
+            if (sExtensions != null)
+            {
+                var arrProperties = me.getPropertiesArray(sId);
+                arrProperties["sExtensions"] = sExtensions;
+                document.getElementById(sId).setAttribute("accept", util.getMimeTypes(sExtensions));
+            }
+        }
+    };
+
+    this.onFileSelection=function(objButton,sFieldId)
+    {
+        document.getElementById(sFieldId).click();
+    };
+
+
+    this.validateFileSelection=function(fileInput,objFile)
+    {
+        if(!objFile)
+            return false;
+
+        var isValid=true;
+        var objRegExp=null;
+        var sExtensions=arrUploadFields[clHTML5Upload.getBaseId(sUploadFieldId)].sExtensions;
+
+        if(sExtensions && sExtensions != "*.*")
+        {
+            if(sExtensions.substring(0,1)=="*")
+                sExtensions=sExtensions.substring(1);
+            //var arrExts = sExtensions.split("|");
+            var arrExts = sExtensions.split(",");
+            var sPattern = "";
+            for(var k=0; k<arrExts.length; k++)
+            {
+                if(k > 0)
+                    sPattern += "|";
+                sPattern += "\\"+arrExts[k].toLowerCase()+"$";
+            }
+            //var sPattern="\\"+sExtensions+"$";;
+            objRegExp=new RegExp(sPattern);
+
+            if(!objRegExp.test(objFile.name.toLowerCase()))
+            {
+                //var sAllowedExts = arrUploadFields[clHTML5Upload.getBaseId(sUploadFieldId)].sExtensions.replaceAll("|",",");
+                var sAllowedExts = arrUploadFields[clHTML5Upload.getBaseId(sUploadFieldId)].sExtensions;
+                msg.showMessage(0,"Invalid attachment <br>Allowed file types: "+sAllowedExts);
+                isValid=false;
+                iUploadCount--;
+            }
+        }else if(arrUploadFields[clHTML5Upload.getBaseId(sUploadFieldId)].iType==me.UPLOAD_TYPE_PREVIEW || arrUploadFields[clHTML5Upload.getBaseId(sUploadFieldId)].iType==me.UPLOAD_TYPE_IMAGE)
+        {
+            objRegExp=/^(image\/bmp|image\/gif|image\/jpeg|image\/png|image\/tiff|image\/svg\+xml)$/i; // filter for image files
+            if(!objRegExp.test(objFile.type))
+            {
+                msg.showMessage(0,"Invalid image file");
+                isValid=false;
+            }
+        }
+        else if(arrUploadFields[clHTML5Upload.getBaseId(sUploadFieldId)].iType==me.UPLOAD_TYPE_VIDEO)
+        {
+            //mp4//wmv//flv//avi//mov//3gp
+            objRegExp=/^(video\/mp4|video\/x-ms-wmv|video\/x-flv|video\/x-msvideo|video\/avi|video\/quicktime|video\/3gpp|video\/tiff)$/i; // filter for video files
+            if(!objRegExp.test(objFile.type))
+            {
+                msg.showMessage(0,"Invalid video file");
+                isValid=false;
+            }
+        }else if(arrUploadFields[clHTML5Upload.getBaseId(sUploadFieldId)].iType==me.UPLOAD_TYPE_AUDIO)
+        {
+            //snd//mid//mp3//aif//m3u//ram//ogg//wav
+            objRegExp=/^(audio\/basic|audio\/mid|audio\/mpeg|audio\/x-aiff|audio\/ogg|audio\/wav|audio\/tiff)$/i; // filter for audio files
+            if(!objRegExp.test(objFile.type))
+            {
+                msg.showMessage(0,"Invalid audio file");
+                isValid=false;
+            }
+        }
+        /*else if(sExtensions)
+         {
+         if(sExtensions.substring(0,1)=="*")
+         sExtensions=sExtensions.substring(1);
+         //var arrExts = sExtensions.split("|");
+         var arrExts = sExtensions.split(",");
+         var sPattern = "";
+         for(var k=0; k<arrExts.length; k++)
+         {
+         if(k > 0)
+         sPattern += "|";
+         sPattern += "\\"+arrExts[k].toLowerCase()+"$";
+         }
+         //var sPattern="\\"+sExtensions+"$";;
+         objRegExp=new RegExp(sPattern);
+
+         if(!objRegExp.test(objFile.name.toLowerCase()))
+         {
+         //var sAllowedExts = arrUploadFields[clHTML5Upload.getBaseId(sUploadFieldId)].sExtensions.replaceAll("|",",");
+         var sAllowedExts = arrUploadFields[clHTML5Upload.getBaseId(sUploadFieldId)].sExtensions;
+         msg.showMessage(0,"Invalid attachment <br>Allowed file types: "+sAllowedExts);
+         isValid=false;
+         iUploadCount--;
+         }
+         }*/
+
+        if(!isValid)
+        {
+            //alert("Selected file is not an Image");
+            fileInput.value="";
+            return false;
+        }
+
+        var iFileLimit=arrUploadFields[clHTML5Upload.getBaseId(sUploadFieldId)].iFileLimit;
+        //alert(objFile.size+","+iFileLimit)
+        // little test for filesize
+        var iMaxSize = clAppBuffer.getMaxAllowedFileSize();
+
+        if(iMaxSize > 0 && iMaxSize < iFileLimit)
+            iFileLimit = iMaxSize;
+        //if ((objFile.size/1024) > iFileLimit || (iMaxSize>0 && (objFile.size/1024) >iMaxSize) )
+        if ((objFile.size/1024) > iFileLimit)
+        {
+            if(sExtensions!=undefined && sExtensions.indexOf("fcb")!=-1 && window.location.href.indexOf("localhost")!=-1)
+            {
+                return true;
+            }
+
+            var sSize;
+            //if(iMaxSize>0)// && iFileLimit>clAppBuffer.getMaxAllowedFileSize())
+            //    iFileLimit = clAppBuffer.getMaxAllowedFileSize();
+            if(iFileLimit < 1024)
+                sSize=iFileLimit+" KB";
+            else if(iFileLimit < (1024*1024))
+                sSize=iFileLimit/1024+" MB";
+            else
+                sSize=(iFileLimit/(1024*1024))+" GB";
+            msg.showMessage(0,"File size should be less than "+sSize);
+
+            fileInput.value="";
+            iUploadCount--;
+            return false;
+        }
+
+        return true;
+    };
+
+    this.dragEnter=function (evt) {
+        cross.cancelBubble(evt);
+    }
+    this.dragExit=function (evt) {
+        cross.cancelBubble(evt);
+    }
+    this.dragOver=function (evt) {
+        cross.cancelBubble(evt);
+    }
+    this.dragDrop=function (evt)
+    {
+        var clSource=cross.getSrcElement(evt);
+        cross.cancelBubble(evt);
+
+        var files = evt.dataTransfer.files;
+        var count = files.length;
+
+        // Only call the handler if 1 or more files was dropped.
+        if (count==1)
+        {
+            var fileInput=document.getElementById(sUploadFieldId);
+            me.startUploading(fileInput,files[0]);
+        }
+    }
+
+
+
+    function base64ToBlob(base64,filename, mime)
+    {
+        mime = mime || '';
+        var sliceSize = 1024;
+        var byteChars = window.atob(base64);
+        var byteArrays = [];
+
+        for (var offset = 0, len = byteChars.length; offset < len; offset += sliceSize) {
+            var slice = byteChars.slice(offset, offset + sliceSize);
+
+            var byteNumbers = new Array(slice.length);
+            for (var i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+            }
+
+            var byteArray = new Uint8Array(byteNumbers);
+
+            byteArrays.push(byteArray);
+        }
+
+        return new Blob(byteArrays, {type: mime});
+        //var blob = new Blob(byteArrays, { type: mime , lastModified: Date.now()});
+        //return  new File([blob], filename);
+    }
+
+    /////git test/////
+
+    this.uploadSignature=function(sId,sData)
+    {
+//        var sData="iVBORw0KGgoAAAANSUhEUgAAAMgAAACWCAYAAACb3McZAAAFGUlEQVR4nO3dTUtUbQDG8T6cC3FS1CKV1BbOhEypZZCLCCMCo8AiJKWgRNQWRb6gkraaFqYtDLGCLDEEe8FFUjEKEdeze3geyKvU49wzZ/6/T3Bt/gyH+8x9DgnAjg6FHgDkMwIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAIBDAJB5H79+qWhoaHQMyJBIIjUq1evdPLkSd28eTP0lEgQCCLz8OFDJRIJTU9Ph54SGQLBvi0uLqqtrU0XLlzQ2tpa6DmRIhDs2ffv39XW1qZjx47pyZMnoeccCALBnkxMTOjIkSPq6elRNpsNPefAEAh2ZXl5WR0dHTp37pxev34des6BIxD8tfv37+vw4cMaHR0NPSVnCAR/ND8/r1Qqpa6uLm1sbISek1MEgh39+PFDN27cUENDgzKZTOg5QRAIfuvp06eqqanR7du39fPnz9BzgiEQ/M+nT590+fJlpdNpvXz5MvSc4AgE/xoZGVFZWZkGBgZCT8kbBAKtrKyoo6ND58+f1/Lycug5eYVAitzQ0JBKS0v1+PHj0FPyEoEUqaWlJbW0tOjSpUtaX18PPSdvEUgRunv3rqqrq2P7/lSUCKSIvHjxQslkUteuXdPXr19DzykIBFIEtre31draquPHjxftgd9eEUjMZTIZ1dfX69atW9re3g49p+AQSExtbm7q+vXrampq0vz8fOg5BYtAYmhmZkZHjx7VnTt3Qk8peAQSIxsbG7py5YrS6bQWFxdDz4kFAomJyclJVVRUqL+/P/SUWCGQAvfx40d1dnbqzJkzevPmTeg5sUMgBWx8fFyJREKDg4Ohp8QWgRSg9fV1Xbx4Ue3t7Xr79m3oObFGIAVmfHxcZWVlGh4eDj2lKBBIgfj8+bM6Ozt19uxZfjVyiEAKwNTUlMrLy3nWCIBA8ti3b9/U1dWl06dPF8UdVPmIQPLU7Oys6urqOA0PjEDy0L1791RXV6fnz5+HnlL0CCSPbG1tKZVKqampSZubm6HnQASSN1ZXV9Xc3Ky+vr7QU/AfBJIH5ubmVFlZWVR33hYKAglsdHRUlZWVmpubCz0Fv0EgAfX19am5uVmrq6uhp2AHBBJANptVMplUMpnU1tZW6DkwCCTH3r17p1QqxflGgSCQHMpkMkokEpqYmAg9BX+JQHLkwYMHqq2t1cLCQugp2AUCyYF0Oq329nZ9+fIl9BTsEoEcoPfv3+vUqVPq7u4OPQV7RCAHZGRkRKWlpRobGws9BftAIBH78OGDUqmUkskk39qIAQKJ0MLCgqqqqvTo0aPQUxARAonIzMyMSkpK9OzZs9BTECEC2Ye1tTX19PSotbVVjY2N/OsvhghkD5aWlnTixAlVV1fr6tWr6u3t5eb0mCKQPchms3xno0gQCGAQCGAQCGAQCGAQCGAQCGAQCGAQCGAQCGAQCGAQCGAQCGAQCGAQCGAQCGAQCGAQCGAQCGAQCGAQCGAQCGAQCGAQCGAQCGAQCGD8A6mVP5AwgkNWAAAAAElFTkSuQmCC";
+//        var sData="iVBORw0KGgoAAAANSUhEUgAAAdAAAAEwCAYAAAAHGSCCAAAJFUlEQVR4nO3a34vU9R7H8f64ZQShBdOMNFjTbgxt8cKWdpnMRbFSNq2klRJt8wf7i/UnVqJMgu3GFhSbkjepLeSKvwoMsrT3ueqiY4eOr45n1B4P+N58vt+B18xcPC9mHisA4J491u4BAPAwElAACAgoAAQEFAACAgoAAQEFgICAAkBAQAEgIKAAEBBQAAgIKAAEBBQAAgIKAAEBBYCAgAJAQEABICCgABAQUAAICCgABAQUAAICCgABAQWAgIACQEBAASAgoAAQEFAACAgoAAQEFAACAgoAAQEFgICAAkBAQAEgIKAAEBBQAAgIKAAEBBQAAgIKAAEBBYCAgAJAQEABICCgABAQUAAICCgABAQUAAICCgABAQWAgIACQEBAASAgoAAQEFAACAgoAAQEFAACAgoAAQEFgICAAkBAQAEgIKAAEBBQAAgIKAAEBBQAAgIKAAEBBYCAgAJAQEABICCgABAQUAAICCgABAQUAAICCgABAQWAgIACQEBAqS+//LI+/fTTds8AeKgIKDU3N1fvvPNOdXR01Jo1a2rPnj11/vz5ds8CeKAJKH9w8ODBevnll2vFihW1YMGCevvtt2vHjh116NChmp6ertnZ2bp9+3a7ZwK0nYDyH/344481OTlZw8PDtXXr1urp6amurq5qNBrV1dVVL730Ur311ls1Pj5eU1NTdfHixXZPBvi/EVDu2W+//Vazs7P12Wef1cTERG3fvr16e3urr6+v5s+fX2vWrKnBwcFqtVp16dKlds8FuC8ElP+pn3/+ub766qsaGRmp/v7+Wrp0aT3xxBPV29tbzWazTp8+XVeuXGn3TIC/TUC573744YeampqqdevWVbPZrKeeeqqefPLJ6uvrq6GhoZqamqrr16+3eybAPRFQ2uLatWs1OTlZu3fvrt7e3lq0aFE1m83q7u6ujRs31s6dO+vIkSM1PT1d3333Xd26davdkwH+QEB5YFy5cqVmZmbqxIkTtXfv3hoYGKienp5atmxZNRqNevrpp2v16tW1fv362rNnTx08eLCmp6fr+++/b/d04B9IQHko3Llzpy5fvlxnzpypTz75pI4ePVrbtm2rnp6eeuaZZ6qjo6O6urpq8+bNNTg4WB9++GGdPXu2bt682e7pwCNKQHkk/P7P4Onp6RoZGanXX3+9Vq1aVZ2dnbV48eJau3Zt7dq1q44cOVJnzpypn376qd2TgYecgPLIu3r1an3xxRd19OjRGhgYqNWrV9fjjz9eS5Ysqb6+vnrvvffqxIkT9e2339adO3faPRd4SAgo/1hzc3M1OTlZ+/btq40bN9Zzzz1XjUajnn322XrllVdq9+7d1Wq16sKFC+2eCjyABBT+zcWLF+vUqVM1NDRU/f39tXz58uro6KgVK1ZUf39/TUxM1MmTJ+vcuXN+Y4V/MAGF/9L58+er1WrV2NhYbdiwoVauXFmdnZ21cOHCeuGFF+q1116rvXv3VqvVqm+++aauXr3a7snAfSSg8DfduHGjvv766/roo49q586d1d/fX88//3wtXry4Go1GLVmypLq7u2vDhg21Y8eOOnbsWB0/frympqbq7NmzNTs7Wzdu3Khffvml3W8FuAcCCvfR7du3a25urmZmZurkyZM1PDxcH3zwQW3atKl6e3tr1apV1dXVVQsXLqxGo1Hz5s2rzs7OWrRoUS1durSWL19eK1eurO7u7nrxxRer2WzWli1b6tVXX63NmzfXG2+8UW+++WZt3769BgcH6913360tW7bU1q1ba2ho6K5rfHz8T8+bzeZdZ6Ojo3/53MTExF33fn9ds9ms0dHRGhsba/fXAPeFgMID5Ndff62bN2/W9evX69KlS3XhwoU6d+5czczM1Oeff16nT5+uVqtVH3/8cR07dqwOHz5cBw4cqPHx8RoZGan9+/fXtm3bamBgoN5///27rrGxsT89bzabd50NDw//5XPj4+N33fv9dc1ms4aHh2t0dLTdHyvcFwIKAAEBBYCAgAJAQEABICCgABAQUAAICCgABAQUAAICCgABAQWAgIACQEBAASAgoAAQEFAACAgoAAQEFAACAgoAAQEFgICAAkBAQAEgIKAAEBBQAAgIKAAEBBQAAgIKAAEBBYCAgAJAQEABICCgABAQUAAICCgABAQUAAICCgABAQWAgIACQEBAASAgoAAQEFAACAgoAAQEFAACAgoAAQEFgICAAkBAQAEgIKAAEBBQAAgIKAAEBBQAAgIKAAEBBYCAgAJAQEABICCgABAQUAAICCgABAQUAAICCgABAQWAgIACQEBAASAgoAAQEFAACAgoAAQEFAACAgoAAQEFgICAAkBAQAEgIKAAEBBQAAgIKAAEBBQAAgIKAAEBBYCAgAJAQEABICCgABAQUAAICCgABAQUAAICCgABAQWAgIACQEBAASAgoAAQEFAACAgoAAQEFAACAgoAAQEFgICAAkBAQAEgIKAAEBBQAAgIKAAEBBQAAgIKAAEBBYCAgAJAQEABICCgABAQUAAICCgABAQUAAICCgABAQWAgIACQEBAASAgoAAQEFAACAgoAAQEFAACAgoAAQEFgICAAkBAQAEgIKAAEBBQAAgIKAAEBBQAAgIKAAEBBYCAgAJAQEABICCgABAQUAAICCgABAQUAAICCgABAQWAgIACQEBAASAgoAAQEFAACAgoAAQEFAACAgoAAQEFgICAAkBAQAEgIKAAEBBQAAgIKAAEBBQAAgIKAAEBBYCAgAJAQEABICCgABAQUAAICCgABAQUAAICCgABAQWAgIACQEBAASAgoAAQEFAACAgoAAQEFAACAgoAAQEFgICAAkBAQAEgIKAAEBBQAAgIKAAEBBQAAgIKAAEBBYCAgAJAQEABICCgABAQUAAICCgABAQUAAICCgABAQWAgIACQEBAASAgoAAQEFAACAgoAAQEFAACAgoAAQEFgICAAkBAQAEgIKAAEBBQAAgIKAAEBBQAAgIKAAEBBYCAgAJAQEABICCgABAQUAAICCgABAQUAAICCgABAQWAgIACQEBAASAgoAAQEFAACAgoAAQEFAACAgoAAQEFgICAAkBAQAEgIKAAEBBQAAj8CyAxk4RMoMDVAAAAAElFTkSuQmCC";
+        var sImageName = new Date().getTime();
+        sImageName = sImageName+".png";
+        sImageFileName = sImageName;
+        var objFile=base64ToBlob(sData,sImageName,'image/png');
+//         arrUploadParentIds[sId]=sId;
+        me.startUploading(sId,objFile,sData,sImageName);
+    };
+    /*onclick="clHTML5Upload.onClkAttach(this,event);"*/
+    /*this.onClkAttach = function(fileInput,e)
+     {
+     var arrProperties=me.getPropertiesArray(clHTML5Upload.getBaseId(fileInput.id));
+     var isMultiUploads = false;
+     if(arrProperties.isAllowMultiUploads){
+     isMultiUploads = true;
+     }
+     var isPrevent = fileInput.getAttribute("isfilesystem");
+     if(isPrevent == 'false' || !isPrevent) {
+     e.preventDefault();
+
+     var arrActions = new Array();
+     arrActions[0] = MsgHandler.getMsg(MsgConstants.OK, 0, 0) + "|clFileSelectionSystem.onClkSave";
+     arrActions[1] = MsgHandler.getMsg(MsgConstants.CLOSE, 0, 0) + "|";
+     var sUrl = "module/document!getFileSelectionSystem.do?sId=" + fileInput.id+"&multiUploads="+isMultiUploads;
+     var sFileSizeLimit = arrProperties.iFileLimit;
+     if(sFileSizeLimit != null) {
+     sUrl += "&fileSizeLimit=" + sFileSizeLimit;
+     }
+     var dlgSelectionSystem = new DialogBox("dlgFileSystemSelection", "File Selection System", 80, 110, 800, 200, sUrl, true, null, true, true, arrActions, false, null, true, false, false, true, false, false, true);
+     dlgSelectionSystem.setCenter();
+     dlgSelectionSystem.show();
+     }else{
+     return true;
+     }
+     };*/
+
+    this.startUploading=function(fileInput,objFile,sData,sImageName,isWebCamFile)
+    {
+
+        if (!objFile)
+            objFile = fileInput.files[0];
+
+        function fnCallback(hash) {
+            var iFilesLength = 0;
+            //alert(fileInput.files)
+            //alert("hash in callback=="+hash)
+            if (fileInput.files)
+                iFilesLength = fileInput.files.length;
+
+            if (iFilesLength > 1) {
+                objFileInput = fileInput;
+                //isMultiAttachments=true;
+                alert("One File at a time\n");
+                return;
+            }
+            if (sUploadFieldId == null || fileInput.id != null)
+                sUploadFieldId = fileInput.id;
+            if (sUploadFieldId.indexOf("_") != -1) {
+                iCurrentUploadCnt = sUploadFieldId.substring(sUploadFieldId.indexOf("_"));
+                sNewUploadFldId = sUploadFieldId;
+            } else if (sUploadFieldId.indexOf("[") != -1) {
+                iCurrentUploadCnt = sUploadFieldId.substring(sUploadFieldId.indexOf("["));
+                sNewUploadFldId = sUploadFieldId;
+            } else if (sUploadFieldId.indexOf("[") == -1 && sUploadFieldId.indexOf("_") == -1) {
+                sNewUploadFldId = fileInput.id;
+            }
+            if (arrUploadParentIds[sUploadFieldId])
+                sUploadFieldId = arrUploadParentIds[sUploadFieldId];
+
+            var sBaseId = clHTML5Upload.getBaseId(sUploadFieldId);
+            var iUploadType = arrUploadFields[sBaseId].iType;
+
+            var arrProperties = me.getPropertiesArray(sBaseId);
+            if (arrProperties.isAllowMultiUploads) {
+                me.cloneUpload(sUploadFieldId);
+
+                /*remove isignore attribute for last element*/
+                /*var objRemoveFile = document.getElementById(sNewUploadFldId + ".removeFile");
+                 var objName = document.getElementById(sNewUploadFldId + ".name");
+                 objRemoveFile.removeAttribute("isIgnore");
+                 objName.removeAttribute("isIgnore");
+                 objIndex.removeAttribute("isIgnore");*/
+
+                /*append index if last element index is greater than upload limit*/
+                me.alterPropertiesIndex(sNewUploadFldId, arrProperties);
+
+            }
+            /*if (!objFile)
+                objFile = fileInput.files[0];*/
+            if (!me.validateFileSelection(fileInput, objFile)) {
+                sUploadFieldId = null;
+                return;
+            }
+            if (iUploadType == me.UPLOAD_TYPE_SIGNATURE)
+                sFileName = sImageName;
+            else
+                sFileName = objFile.name;
+
+            var dvProgress = document.getElementById("progress_info");
+            if (!dvProgress)
+                dvProgress = createProgressDiv();
+            else {
+                var oUploadResponse = document.getElementById('upload_response');
+                oUploadResponse.innerHTML = 'Uploading...';
+                dvProgress.style.display = "block";
+            }
+
+
+            fileInput.parentNode.style.display = "";
+            //setHiddenFieldValues(sNewUploadFldId?sNewUploadFldId:sUploadFieldId,objFile,sImageName,arrProperties.isAllowMultiUploads,arrProperties.isBodyAttachment,arrProperties.iType,arrProperties.isShowAttachIcons);
+            setHiddenFieldValues(sNewUploadFldId ? sNewUploadFldId : sUploadFieldId, objFile, sImageName, arrProperties.isAllowMultiUploads, arrProperties.iType, arrProperties.isShowAttachIcons, arrProperties.isShowNameAtBottom);
+            //if(arrProperties.isAllowMultiUploads && arrProperties.iUploadLimit > 1)
+            //    document.getElementById(arrProperties.sHiddenName+"_"+fileInput.getAttribute("id")).removeAttribute("isIgnore");
+
+            if (iUploadType == me.UPLOAD_TYPE_PREVIEW || iUploadType == me.UPLOAD_TYPE_IMAGE ||
+                iUploadType == me.UPLOAD_TYPE_SIGNATURE || iUploadType == me.UPLOAD_TYPE_VIDEO ||
+                iUploadType == me.UPLOAD_TYPE_AUDIO) {
+                showPreview(fileInput, isWebCamFile, sData, iUploadType, objFile);
+//            showPreview(sNewUploadFldId?sNewUploadFldId:sUploadFieldId);
+            }
+
+            iPreviousBytesLoaded = 0;
+            var objTd = fileInput.parentNode;
+            objTd.appendChild(dvProgress.parentNode.removeChild(dvProgress));
+
+            document.getElementById('progress_percent').innerHTML = '';
+            var oProgress = document.getElementById('progress');
+            oProgress.style.display = 'block';
+            oProgress.style.width = '0px';
+
+
+            // get form data for POSTing
+            //var vFD = document.getElementById('upload_form').getFormData(); // for FF3
+
+            var fileInputParent = fileInput.parentNode;
+            var vFD = null;
+            if (objFile) {
+                vFD = new FormData();
+                if (iUploadType == me.UPLOAD_TYPE_SIGNATURE)
+                    vFD.append('upload', objFile, sImageName);
+
+                else
+                    vFD.append('upload', objFile);
+
+                //for (var i = 0; i < files.length; i++)
+                //{
+                //if (tests.formdata) formData.append('file', files[i]);
+                //  previewfile(files[i]);
+                //}
+            }
+            else {
+                var objForm = getUploadForm(fileInput);
+                vFD = new FormData(objForm);
+            }
+
+            var sUrl = arrUploadFields[sBaseId].sUrl;
+            if (iUploadType == me.UPLOAD_TYPE_SIGNATURE)
+                sUrl += "&uploadFileName=" + util.encodeURI(sImageName);
+            else
+                sUrl += "&uploadFileName=" + util.encodeURI(objFile.name);
+
+            var iCtrlType = document.getElementById(sUploadFieldId).getAttribute("ctrltype");
+            if (iCtrlType == Constants.CONTROLTYPE_DOCUMENTCTRL || iCtrlType == Constants.CONTROLTYPE_PICTUREBOX ||
+                iCtrlType == Constants.CONTROLTYPE_SIGNATURE || iCtrlType == Constants.CONTROLTYPE_VIDEO ||
+                iCtrlType == Constants.CONTROLTYPE_AUDIO || iCtrlType == Constants.CONTROLTYPE_CARD_SCAN) {
+                sUrl += "&uploadFieldId=" + util.encodeURI(sNewUploadFldId.substring(1));
+            }
+
+            if(hash)
+                sUrl += "&checksum=" + util.encodeURI(hash);
+
+            //alert("sUrl=="+sUrl)
+            // create XMLHttpRequest object, adding few event listeners, and POSTing our data
+            var oXHR = new XMLHttpRequest();
+            oXHR.upload.addEventListener('progress', uploadProgress, false);
+            //oXHR.addEventListener('load', uploadFinish, false);
+            oXHR.addEventListener('error', uploadError, false);
+            oXHR.addEventListener('abort', uploadAbort, false);
+            oXHR.onreadystatechange = function (e) {
+                if (oXHR.readyState == 4) {
+                    if (oXHR.status == 200)
+                        uploadFinish(oXHR.responseText);
+                    else {
+                        alert("Error loading page\n");
+                        if (cross.isVisible(document.getElementById('progress_info'), true)) {
+                            cross.setVisible(document.getElementById('progress_info'), false);
+                            iUploadCount--;
+                        }
+
+                    }
+                }
+            };
+
+            oXHR.open('POST', clAppBuffer.getContextPath() + "/" + sUrl);
+            oXHR.send(vFD);
+
+
+            fileInputParent.appendChild(fileInput);
+
+            // set inner timer
+            oTimer = setInterval(doInnerUpdates, 500);
+        }
+
+
+        //fnCallback(null);
+        if((objFile.size/1024) <= 102400) //calculating checksum only if file size is <= 100MB (for out of memory issue of large files)
+            clChecksumUtil.getFileChecksum(objFile,fnCallback); //TODO enable for checksum
+        else
+            fnCallback(null);
+
+        //hashValue(fileInput.files[0],fnCallback);
+
+    };
+
+    this.alterPropertiesIndex = function(sNewUploadFldId,arrProperties)
+    {
+        var objIndex = document.getElementById(sNewUploadFldId + ".index");
+        var arrIndexes = arrProperties.arrIndexes;
+        if(objIndex.value > arrProperties.iUploadLimit)
+        {
+            for (var i = 1; i <= arrProperties.iUploadLimit; i++)
+            {
+                var iReturn = arrIndexes.indexOf("" + i + "");
+                if (iReturn == -1)
+                {
+                    objIndex.value = i;
+                    arrProperties.arrIndexes[arrProperties.arrIndexes.length] = ""+i+"";
+                    break;
+                }
+            }
+        }
+    };
+
+    this.onMOverFileName=function(sFieldId,e)
+    {
+        var arrProperties=me.getPropertiesArray(arrUploadParentIds[clHTML5Upload.getBaseId(sFieldId)]);
+        var sId = "uploadFileName_"+sFieldId;
+        if(arrProperties.isAllowMultiUploads)
+            sId = sFieldId+".name";
+        var iUploadType = arrProperties.iType;
+        var iLength = document.getElementById(sId).value.trim().length;
+        if((iUploadType == me.UPLOAD_TYPE_PREVIEW || iUploadType == me.UPLOAD_TYPE_VIDEO||
+            iUploadType == me.UPLOAD_TYPE_AUDIO || iUploadType == me.UPLOAD_TYPE_SIGNATURE) && iLength > 0 )
+        {
+            document.getElementById("fileName_" + sFieldId).style.display = "";
+        }
+        me.showRemoveImage(sFieldId);
+        if((iUploadType == me.UPLOAD_TYPE_PREVIEW || iUploadType == me.UPLOAD_TYPE_VIDEO|| iUploadType == me.UPLOAD_TYPE_AUDIO) && iLength > 0 && arrProperties.isShowAttachIcons)
+            me.onMOverShowDwnldOptn(sFieldId);
+
+        //cross.cancelBubble(e);
+        //return false;
+    };
+
+    this.onMOutFileName=function(sFieldId,e)
+    {
+        var arrProperties=me.getPropertiesArray(arrUploadParentIds[clHTML5Upload.getBaseId(sFieldId)]);
+        var sId = "uploadFileName_"+sFieldId;
+        if(arrProperties.isAllowMultiUploads)
+            sId = sFieldId+".name";
+        var iUploadType = arrProperties.iType;
+        var iLength = document.getElementById(sId).value.trim().length;
+        /*setTimeout(function()
+         {*/
+        if (iUploadType == me.UPLOAD_TYPE_PREVIEW || iUploadType == me.UPLOAD_TYPE_SIGNATURE
+            || iUploadType == me.UPLOAD_TYPE_VIDEO|| iUploadType == me.UPLOAD_TYPE_AUDIO)
+            document.getElementById("fileName_" + sFieldId).style.display = "none";
+        me.hideRemoveImage(sFieldId);
+        if((iUploadType == me.UPLOAD_TYPE_PREVIEW || iUploadType == me.UPLOAD_TYPE_VIDEO
+            || iUploadType == me.UPLOAD_TYPE_AUDIO)  && iLength > 0 && arrProperties.isShowAttachIcons)
+            me.onMOutRemoveDwnldOptn(sFieldId);
+        //},1000);
+
+        //cross.cancelBubble(e);
+        //return false;
+    };
+
+    this.setAttachment = function (sFieldId, sUrl, sFileName,sFileDisplayName,isCopyDocument)
+    {
+        //alert("set for fieldId"+sFieldId+" url"+sUrl +" filename"+sFileName)
+        var arrProperties=me.getPropertiesArray(arrUploadParentIds[clHTML5Upload.getBaseId(sFieldId)]);
+        var isBodyAttachment = arrProperties.isBodyAttachment;
+        var isShowAttachIcons = arrProperties.isShowAttachIcons;
+        var isAllowMultiUploads = arrProperties.isAllowMultiUploads;
+        var iUploadType = arrProperties.iType;
+        if(sFileName == null ||sFileName.trim().length == 0 || sFileName == undefined)
+            sFileName=null;
+        if(sUrl == null || sUrl.trim().length == 0 || sUrl == undefined)
+            sUrl=null;
+        if(sFileDisplayName == null || sFileDisplayName.trim().length == 0 || sFileDisplayName == undefined)
+            sFileDisplayName=sFileName;
+        if((iUploadType == me.UPLOAD_TYPE_PREVIEW || iUploadType == me.UPLOAD_TYPE_SIGNATURE
+            || iUploadType == me.UPLOAD_TYPE_VIDEO|| iUploadType == me.UPLOAD_TYPE_AUDIO)
+            && sUrl != null && sFileName != null)
+        {
+            var imgPreview = document.getElementById("preview_" + sFieldId);
+            if(iUploadType == me.UPLOAD_TYPE_VIDEO)
+                imgPreview = document.getElementById("videoPreview_" + sFieldId);
+            else if(iUploadType == me.UPLOAD_TYPE_AUDIO)
+                imgPreview = document.getElementById("audioPreview_" + sFieldId);
+            imgPreview.src=sUrl;
+        }
+        else if(isCopyDocument) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("GET", "fileCopy_nrf!"+sUrl, false);
+            xhttp.send();
+        }
+
+        if(sFileName == null)
+        {
+            clHTML5Upload.clearLink(sFieldId);
+            if(isShowAttachIcons && (iUploadType == me.UPLOAD_TYPE_PREVIEW || iUploadType == me.UPLOAD_TYPE_VIDEO|| iUploadType == me.UPLOAD_TYPE_AUDIO))
+                document.getElementById(sFieldId).parentNode.parentNode.style.display = "none";
+            //document.getElementById("preview_"+sFieldId).style.visibility = "visible";
+            //document.getElementById("tbl"+sFieldId).style.backgroundColor = "#ffffff";
+
+        }
+        else
+        {
+            var hfUploadFileName =clHTML5Upload.getUploadField(sFieldId,isAllowMultiUploads);
+            hfUploadFileName.value = sFileName;
+
+            var hfFileName = document.getElementById("fileName_" + sFieldId);
+            hfFileName.innerHTML = sFileDisplayName;
+            if(!isBodyAttachment) {
+                var hfFileValue = hfUploadFileName.nextSibling;
+                hfFileValue.value = sFileName;
+            }
+            if(isShowAttachIcons && (iUploadType == me.UPLOAD_TYPE_PREVIEW || iUploadType == me.UPLOAD_TYPE_VIDEO|| iUploadType == me.UPLOAD_TYPE_AUDIO))
+                hfFileName.innerHTML = "";
+
+            var tfFileFld = document.getElementById(sFieldId);
+            tfFileFld.parentNode.parentNode.style.display = "none";
+            hfUploadFileName.parentNode.parentNode.style.display = "";
+        }
+    };
+
+
+
+    /*in body level to image type in edit mode showing download icon and in other modes showing remove image icon*/
+    this.onMOverShowDwnldOptn = function(sFieldId)
+    {
+        var arrProperties=me.getPropertiesArray(arrUploadParentIds[clHTML5Upload.getBaseId(sFieldId)]);
+        //var iLength = document.getElementById("uploadFileName_"+sFieldId).value.trim().length;
+        //if(arrProperties.iType==me.UPLOAD_TYPE_PREVIEW  && arrProperties.isShowAttachIcons && iLength > 0)
+        //{
+        var dvScroll = document.getElementById("tbl" + sFieldId).parentNode.parentNode.parentNode.parentNode.parentNode;
+        var  spFileNameObj = document.getElementById("fileName_" + sFieldId);
+        var imgPreviewObj = document.getElementById("preview_"+sFieldId);
+        if(arrProperties.iType==me.UPLOAD_TYPE_VIDEO)
+            imgPreviewObj = document.getElementById("videoPreview_"+sFieldId);
+        else if(arrProperties.iType==me.UPLOAD_TYPE_AUDIO)
+            imgPreviewObj = document.getElementById("audioPreview_"+sFieldId);
+        var iImageWidth = parseInt(imgPreviewObj.parentNode.style.width);
+        spFileNameObj.style.marginLeft = "-"+iImageWidth/1.5;
+        spFileNameObj.style.marginTop ="-" + dvScroll.scrollTop + "px";
+        imgPreviewObj.style.opacity = "0.3";
+        if (document.getElementById("remove_"+sFieldId) && arrProperties.isAllowRemove) {
+            var imgRemoveObj = document.getElementById("remove_" + sFieldId);
+            imgRemoveObj.style.display = "";
+            imgRemoveObj.style.position = "absolute";
+            imgRemoveObj.style.paddingLeft = "5px";
+            imgRemoveObj.style.marginLeft = "-" + dvScroll.scrollLeft + "px";
+            imgRemoveObj.style.marginTop = "-" + dvScroll.scrollTop + "px";
+        }
+        //}
+    };
+
+    /*vice versa of onMOverShowDwnldOptn function*/
+    this.onMOutRemoveDwnldOptn = function(sFieldId)
+    {
+        var arrProperties=me.getPropertiesArray(arrUploadParentIds[clHTML5Upload.getBaseId(sFieldId)]);
+        //var iLength = document.getElementById("uploadFileName_"+sFieldId).value.trim().length;
+        //if (arrProperties.iType==me.UPLOAD_TYPE_PREVIEW  &&  arrProperties.isShowAttachIcons && iLength > 0) {
+        var imgPreviewObj = document.getElementById("preview_"+sFieldId);
+        if(arrProperties.iType == me.UPLOAD_TYPE_VIDEO)
+            imgPreviewObj = document.getElementById("videoPreview_"+sFieldId);
+        else if(arrProperties.iType == me.UPLOAD_TYPE_AUDIO)
+            imgPreviewObj = document.getElementById("audioPreview_"+sFieldId);
+        imgPreviewObj.style.opacity = "1";
+        //}
+    };
+
+    this.showRemoveImage=function(sFieldId)
+    {
+        var arrProperties=me.getPropertiesArray(arrUploadParentIds[clHTML5Upload.getBaseId(sFieldId)]);
+        if(arrProperties.isAllowRemove)
+        {
+            var objUploadField=clHTML5Upload.getUploadField(sFieldId,arrProperties.isAllowMultiUploads);
+            if(objUploadField.value!="")
+            {
+                var imgRemove=document.getElementById("remove_"+sFieldId);
+                imgRemove.style.display="inline-block";
+            }
+        }
+    };
+
+    this.hideRemoveImage=function(sFieldId)
+    {
+        var arrProperties=me.getPropertiesArray(arrUploadParentIds[clHTML5Upload.getBaseId(sFieldId)]);
+        if(arrProperties.isAllowRemove)
+        {
+            if(document.getElementById("remove_"+sFieldId))
+            {
+                var imgRemove=document.getElementById("remove_"+sFieldId);
+                imgRemove.style.display="none";
+            }
+        }
+    };
+
+    this.onClkRemoveFile=function(sFieldId)
+    {
+        if(!document.getElementById(sFieldId).disabled) //remove file when input is not disabled
+        {
+            var sParentUploadFieldId = arrUploadParentIds[sFieldId];
+            var arrProperties = me.getPropertiesArray(clHTML5Upload.getBaseId(sFieldId));
+            sUploadFieldId = sFieldId;
+            var sTempFileName = "";
+//        var sFileName = document.getElementById("uploadFileName_"+sFieldId).value;
+            var sFileName = arrProperties.sFileName;
+            var sSelectedFileName = document.getElementById("fileName_" + sFieldId).innerHTML.trim();
+            if(sSelectedFileName == null || sSelectedFileName.length ==0)
+                sSelectedFileName = sFileName;
+            if (sFileName && sFileName.indexOf(",") != -1) {
+                isMultiAttachments = true;
+                sFileName = sFileName.replace(sSelectedFileName, "");
+                var arrFields = sFileName.split(",");
+                for (var i = 0; i < arrFields.length; i++) {
+                    if (arrFields[i].trim().length > 0)
+                        sTempFileName += arrFields[i] + ",";
+                }
+                if (sTempFileName.lastIndexOf(",") != -1)
+                    sTempFileName = sTempFileName.substring(0, sTempFileName.lastIndexOf(","));
+            }
+            arrProperties.sFileName = sTempFileName;
+            document.getElementById(sFieldId).setAttribute("isfilesystem", false);
+            var sUrl = con.getStruts2Url(null, "removefile", "removeFile");
+
+            var iCtrlType = document.getElementById(sUploadFieldId).getAttribute("ctrltype");
+            if (iCtrlType == Constants.CONTROLTYPE_DOCUMENTCTRL || iCtrlType == Constants.CONTROLTYPE_PICTUREBOX ||
+                iCtrlType == Constants.CONTROLTYPE_SIGNATURE || iCtrlType == Constants.CONTROLTYPE_VIDEO ||
+                iCtrlType == Constants.CONTROLTYPE_AUDIO || iCtrlType == Constants.CONTROLTYPE_CARD_SCAN) {
+                sSelectedFileName = arrUploadFields[clHTML5Upload.getBaseId(sFieldId)].sId.substring(1) + "_" + sSelectedFileName;
+            }
+
+            var sSubmitData = "destPath=" + arrUploadFields[clHTML5Upload.getBaseId(sFieldId)].sDestPath + "&uploadFileName=" + sSelectedFileName;
+            con.sendPostRequest(sUrl, sSubmitData, this.clearLink, null);
+        }
+    };
+
+    this.clearLinks = function(sFieldId)
+    {
+        var arrProperties;
+        var sUploadFieldId;
+        arrProperties=me.getPropertiesArray(clHTML5Upload.getBaseId(sFieldId));
+        if(arrProperties.isAllowMultiUploads)
+            me.clearMultiUploadLinks(arrProperties,sFieldId);
+        else
+            me.clearLink(sFieldId);
+
+    };
+
+    this.clearMultiUploadLinks = function(arrProperties,sFieldId)
+    {
+        for(var j=0;j<arrProperties.iUploadLimit;j++)
+        {
+            if(sFieldId.indexOf('[') != -1)
+                sFieldId = sFieldId.substring(0,sFieldId.indexOf('[')+1)+j+"]";
+
+            if(document.getElementById("tbl"+sFieldId))
+            {
+                var objTable = document.getElementById("tbl"+sFieldId);
+                if (sFieldId.indexOf("[0") == -1)
+                    objTable.parentNode.removeChild(objTable);
+                else
+                {
+                    var objUploadField = document.getElementById(sFieldId);
+                    var objTR = objUploadField.parentNode.parentNode;
+                    objTR.previousSibling.style.display = "none";
+                    objTR.style.display = "";
+                    var sHiddenFldName = clUpload.getHiddenName(sFieldId, arrProperties.sHiddenName);
+                    //clearHiddenFieldValues(objUploadField, sHiddenFldName, arrProperties.isAllowMultiUploads,arrProperties.isBodyAttachment);
+                    clearHiddenFieldValues(objUploadField, sHiddenFldName, arrProperties.isAllowMultiUploads);
+                }
+            }else
+            {
+                break;
+            }
+        }
+        arrProperties.arrIndexes = ["1"];
+    };
+
+
+    this.clearLink=function(sFieldId,isClone)
+    {
+
+        var arrProperties;
+        if(sFieldId!=null)
+            sUploadFieldId=sFieldId;
+        sFieldId=sUploadFieldId;
+        var sCallBackId = sFieldId;
+        if(sUploadFieldId.indexOf("_")!=-1||sUploadFieldId.indexOf("[")!=-1)
+            sUploadFieldId=arrUploadParentIds[clHTML5Upload.getBaseId(sFieldId)];
+
+        arrProperties=me.getPropertiesArray(clHTML5Upload.getBaseId(sFieldId));
+        /*no need bcoz we are not removing the attachment tables*/
+        /*if(arrProperties.isAllowMultiUploads) {
+         var iIndex = document.getElementById(sFieldId + ".index").value;
+         var arrIndexes = arrProperties.arrIndexes;
+         var iReturn = arrIndexes.indexOf("" + iIndex + "");
+         arrProperties.arrIndexes[iReturn] = null;
+         }*/
+        //crop time checking
+        if(arrProperties.isDefaultIcon)
+            clHTML5Upload.toggleSpanAndImage(sFieldId, false);
+        var iUploadType = arrProperties.iType;
+
+        if(arrProperties.isAppendRemoveAttr)
+        {
+            var objRemoveFile = document.getElementById("removeFile_" + sFieldId);
+            var sRemoveFile = objRemoveFile.value;
+            if (!sRemoveFile || sRemoveFile == null || sRemoveFile.trim().length == 0)
+                objRemoveFile.value = document.getElementById("uploadFileName_" + sFieldId).value;
+        }
+
+        //document.getElementById("fileName_"+sUploadFieldId).innerHTML="";
+        var objUploadField=document.getElementById(sFieldId);
+        var objTR=objUploadField.parentNode.parentNode;
+        if(iUploadType == me.UPLOAD_TYPE_PREVIEW)
+            document.getElementById("preview_"+sFieldId).src=clAppBuffer.getImagePath(true)+"placeholder.png";
+        else if(iUploadType == me.UPLOAD_TYPE_SIGNATURE)
+            document.getElementById("preview_"+sFieldId).src=clAppBuffer.getImagePath(true)+"bSpace.gif";
+        else if(iUploadType == me.UPLOAD_TYPE_VIDEO || iUploadType == me.UPLOAD_TYPE_AUDIO)
+        {
+            setTimeout(function() {
+                var objVideoContainer = document.getElementById("videoPreview_" + sFieldId);
+                if(iUploadType == me.UPLOAD_TYPE_AUDIO)
+                    objVideoContainer = document.getElementById("audioPreview_" + sFieldId);
+                //objVideoContainer.src = null;
+                objVideoContainer.pause();
+                objVideoContainer.removeAttribute('src'); // empty source
+                objVideoContainer.load();
+            },100);
+        }
+        else
+            objTR.previousSibling.style.display="none";
+        if(arrProperties.isAllowMultiUploads && arrProperties.iUploadLimit > 1){
+            var objTable =  objTR.parentNode.parentNode;
+            var parentObj = objTable.parentNode;
+            parentObj.removeChild(objTable);
+            parentObj.appendChild(objTable);
+        }
+        objTR.style.display="";
+        /*if((arrProperties.iType == me.UPLOAD_TYPE_PREVIEW || arrProperties.iType == me.UPLOAD_TYPE_VIDEO)
+         && arrProperties.isBodyAttachment)
+         {
+         clHTML5Upload.onMOverShowCaption(sFieldId,null);
+         clHTML5Upload.onMOutHideCaption(sFieldId,null);
+         }*/
+        var sFileName=null;
+        if(isMultiAttachments )
+            sFileName = arrProperties.sFileName;
+
+        if(arrProperties.sOnUploadDone && !isClone)// && !arrProperties.isAllowMultiUploads)//&&arrProperties.iUploadLimit <= 1
+            clUpload.onUploadDoneCallback(arrProperties.sOnUploadDone,sFileName,sCallBackId,arrProperties.sDestPath,arrProperties.sHiddenName,arrProperties.sFileSize);
+        var sHiddenFldName = clUpload.getHiddenName(sFieldId,arrProperties.sHiddenName);//clUpload.getHiddenFieldId(sFieldId,arrProperties.sHiddenName);
+        //clearHiddenFieldValues(objUploadField, sHiddenFldName,arrProperties.isAllowMultiUploads,arrProperties.isBodyAttachment);
+        clearHiddenFieldValues(objUploadField, sHiddenFldName,arrProperties.isAllowMultiUploads);
+        //if(arrProperties.isAllowMultiUploads && arrProperties.iUploadLimit > 1)
+        //    document.getElementById(arrProperties.sHiddenName+"_"+objUploadField.getAttribute("id")).setAttribute("isIgnore",true);
+        if((arrProperties.iType == me.UPLOAD_TYPE_PREVIEW || arrProperties.iType == me.UPLOAD_TYPE_VIDEO|| arrProperties.iType == me.UPLOAD_TYPE_AUDIO)
+            && arrProperties.isBodyAttachment)
+        {
+            clHTML5Upload.onMOverShowCaption(sFieldId,null);
+            clHTML5Upload.onMOutHideCaption(sFieldId,null);
+        }
+        var sTableId="";
+        if(arrProperties.isAllowMultiUploads){
+            /*if(arrProperties.iUploadLimit <= 1){
+             var sArrMultiAttachments=document.getElementById("tbl"+sFieldId).parentNode.childNodes;
+             for(var i=0;i<sArrMultiAttachments.length;i++)
+             {
+             if(sArrMultiAttachments[i].nodeName=="TABLE")
+             {
+             sTableId=sArrMultiAttachments[i].id.replace("tbl","");
+             if(util.trim(sTableId)==util.trim(sFieldId))
+             document.getElementById("tbl"+sFieldId).style.display="none";
+             }
+             }
+
+             }else*/ if(arrProperties.iUploadLimit > 1  && clHTML5Upload.getUploadCount()<=arrProperties.iUploadLimit){
+                var sArrMultiAttachments=document.getElementById("tbl"+sFieldId).parentNode.childNodes;
+                for(var i=0;i<sArrMultiAttachments.length;i++)
+                {
+                    if(sArrMultiAttachments[i].nodeName=="TABLE")
+                    {
+                        sTableId=sArrMultiAttachments[i].id.replace("tbl","");
+                        if(util.trim(sTableId)==util.trim(sFieldId))
+                            document.getElementById("tbl"+sFieldId).style.display="none";
+                    }
+                }
+            }
+        }
+
+        if(iUploadType == me.UPLOAD_TYPE_PREVIEW || iUploadType == me.UPLOAD_TYPE_SIGNATURE ||
+            iUploadType == me.UPLOAD_TYPE_VIDEO || iUploadType == me.UPLOAD_TYPE_AUDIO){
+            me.hideRemoveImage(sFieldId);
+        }
+
+
+        iTotFilesCnt--;
+        iUploadCount--;
+//        alert("iFilesCnt=="+iFilesCnt+"==sUploadFieldId=="+sUploadFieldId+"==iUploadCnt=="+iUploadCnt)
+//        if(iTotFilesCnt==0)
+        {
+            /*if(isMultiAttachments && !arrProperties.isAllowMultiUploads)
+             {
+             var sUploadId=arrUploadParentIds[sUploadFieldId];
+             document.getElementById("tbl"+sUploadId+"_"+(iUploadCnt-1)).style.display="block";
+             }*/
+            sUploadFieldId=null;
+        }
+    };
+
+    this.zoomImage=function(sId)
+    {
+        var objHiddenFld = document.getElementById("uploadFileName_"+sId);
+        if(objHiddenFld.value)
+            clUpload.zoomImage(sId);
+    };
+
+    //function setHiddenFieldValues(fileInput,objFile,sImageName,isSignatureUpload,isAllowMultiUploads,isBodyAttachment,iType,isShowAttachIcons)
+    function setHiddenFieldValues(fileInputId,objFile,sImageName,isAllowMultiUploads,
+                                  iType,isShowAttachIcons,isShowNameAtBottom)
+    {
+        var objUploadField=clHTML5Upload.getUploadField(fileInputId,isAllowMultiUploads);
+        var objHiddenFld=document.getElementById("fileName_"+fileInputId);
+        //var objFile=fileInputId.files[0];
+        if(iType == me.UPLOAD_TYPE_SIGNATURE)
+        {
+            objUploadField.value = sImageName;
+            objHiddenFld.innerHTML=sImageName;
+        }else
+        {
+            objUploadField.value=objFile.name;
+            objHiddenFld.innerHTML=objFile.name;
+        }
+
+        if(isShowAttachIcons && (iType == me.UPLOAD_TYPE_PREVIEW || iType == me.UPLOAD_TYPE_VIDEO || iType == me.UPLOAD_TYPE_AUDIO))
+            objHiddenFld.innerHTML="";
+        if(iType == me.UPLOAD_TYPE_PREVIEW && isShowNameAtBottom && objFile.name.length > 25)
+        {
+            objHiddenFld.innerHTML=objFile.name.substring(0,25)+"..";
+            objHiddenFld.title = objFile.name;
+        }
+    };
+
+    //function clearHiddenFieldValues(fileInput, sHiddenFldName,isAllowMultiUploads,isBodyAttachment)
+    function clearHiddenFieldValues(fileInput, sHiddenFldName,isAllowMultiUploads)
+    {
+        var objUploadField=clHTML5Upload.getUploadField(fileInput.id,isAllowMultiUploads);
+        objUploadField.value="";
+
+        document.getElementById("fileName_"+fileInput.id).innerHTML="";
+        //if(!isAllowMultiUploads && !isBodyAttachment)
+        //    document.getElementById(sHiddenFldName).value="";
+        if(document.getElementById(sHiddenFldName))
+            document.getElementById(sHiddenFldName).value="";
+        //if(arrUploadFields[fileInput.id].iType!=me.UPLOAD_TYPE_PREVIEW)
+
+        fileInput.value="";
+
+        //if(isBodyAttachment)
+        //    document.getElementById("name_"+fileInput.id).value="";
+    };
+
+    function getUploadForm(fileInput)
+    {
+        var objForm=document.forms['uploadfile'];
+        if(objForm)
+            objForm.parentNode.removeChild(objForm);
+
+
+        objForm=document.createElement("form");
+        objForm.name="uploadfile";
+        objForm.method="post";
+        objForm.enctype="multipart/form-data";
+
+
+        objForm.appendChild(fileInput);
+        return objForm;
+    };
+
+
+    function doInnerUpdates()
+    { // we will use this function to display upload speed
+        var iCB = iBytesUploaded;
+        var iDiff = iCB - iPreviousBytesLoaded;
+
+        // if nothing new loaded - exit
+        if (iDiff == 0)
+            return;
+
+        iPreviousBytesLoaded = iCB;
+        iDiff = iDiff * 2;
+        var iBytesRem = iBytesTotal - iPreviousBytesLoaded;
+        var secondsRemaining = iBytesRem / iDiff;
+
+        //util.writeToLog("secondsRemaining  "+iBytesTotal +","+iPreviousBytesLoaded+","+ iDiff)
+        // update speed info
+        var iSpeed = iDiff.toString() + 'B/s';
+        if (iDiff > 1024 * 1024) {
+            iSpeed = (Math.round(iDiff * 100/(1024*1024))/100).toString() + ' MB/s';
+        } else if (iDiff > 1024) {
+            iSpeed =  (Math.round(iDiff * 100/1024)/100).toString() + ' KB/s';
+        }
+
+        document.getElementById('speed').innerHTML = iSpeed;
+        if(iElapsedTime%2==0)
+            document.getElementById('remaining').innerHTML =  secondsToTime(secondsRemaining);
+        //document.getElementById('elapse').innerHTML =  secondsToTime(iElapsedTime/2);
+        iElapsedTime++;
+    }
+
+    function uploadProgress(e)
+    { // upload process in progress
+        if (e.lengthComputable)
+        {
+            iBytesUploaded = e.loaded;
+            iBytesTotal = e.total;
+            var iPercentComplete = Math.round(e.loaded * 100 / e.total);
+            var iBytesTransfered = bytesToSize(iBytesUploaded);
+            var iTotalBytes= bytesToSize(e.total);
+
+            document.getElementById('progress_percent').innerHTML = iPercentComplete.toString() + '%';
+            document.getElementById('progress').style.width = (iPercentComplete * 3).toString() + 'px'; //for 300 width,3
+            document.getElementById('b_transfered').innerHTML = iBytesTransfered+"/"+iTotalBytes;
+            /*if (iPercentComplete == 100)
+             {
+
+             }*/
+        }
+        else
+        {
+            document.getElementById('progress').innerHTML = 'unable to compute';
+        }
+    }
+
+
+    function uploadFinish(sResponse)
+    {
+        // upload successfully finished
+        var oUploadResponse = document.getElementById('upload_response');
+        if(oUploadResponse)
+        {
+            oUploadResponse.innerHTML = 'Done';
+            if (document.getElementById('speed'))
+                document.getElementById('speed').innerHTML = "&nbsp;";
+
+//        document.getElementById('elapsed').innerHTML = "&nbsp;";
+//        document.getElementById('remaining').innerHTML="&nbsp;";
+
+            iElapsedTime = 0;
+            clearInterval(oTimer);
+
+            var objTR = document.getElementById(sNewUploadFldId ? sNewUploadFldId : sUploadFieldId).parentNode.parentNode;
+            objTR.style.display = "none";
+            objTR.previousSibling.style.display = "";
+            clUpload.onUploadDone(sNewUploadFldId ? sNewUploadFldId : sUploadFieldId, sUploadFieldId, sResponse);
+
+
+            setTimeout(function () {
+                var dvProgress = document.getElementById("progress_info");
+                dvProgress.style.display = "none";
+                document.body.appendChild(dvProgress.parentNode.removeChild(dvProgress));
+                if (sUploadFieldId) {
+                    //document.getElementById("lblUpload_"+sUploadFieldId).style.display="none";
+                    sUploadFieldId = null;
+                    sFileName = null;
+                }
+
+            }, 10);
+        }
+    }
+
+
+
+    function uploadError(e)
+    { // upload error
+        document.getElementById('error2').style.display = 'block';
+        clearInterval(oTimer);
+    }
+
+    function uploadAbort(e)
+    { // upload abort
+        document.getElementById('abort').style.display = 'block';
+        clearInterval(oTimer);
+    }
+
+
+
+    function secondsToTime(secs) { // we will use this function to convert seconds in normal time format
+        var hr = Math.floor(secs / 3600);
+        var min = Math.floor((secs - (hr * 3600))/60);
+        var sec = Math.floor(secs - (hr * 3600) -  (min * 60));
+
+        if (hr < 10) {hr = "0" + hr; }
+        if (min < 10) {min = "0" + min;}
+        if (sec < 10) {sec = "0" + sec;}
+        if (hr) {hr = "00";}
+        return hr + ':' + min + ':' + sec;
+    };
+
+    function bytesToSize(bytes) {
+        var sizes = ['Bytes', 'KB', 'MB','GB'];
+        if (bytes == 0) return 'n/a';
+        var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+        return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
+    };
+
+    function showPreview(fileInput,isWebCamFile,sData,iUploadType,objVideoFile)
+    {
+        // get preview element
+        var objFile;
+        var oImage = document.getElementById('preview_'+fileInput.id);
+        if(iUploadType == me.UPLOAD_TYPE_VIDEO)
+            oImage = document.getElementById('videoPreview_'+fileInput.id);
+        else if(iUploadType == me.UPLOAD_TYPE_AUDIO)
+            oImage = document.getElementById('audioPreview_'+fileInput.id);
+        oImage.style.display="";
+        if(iUploadType == me.UPLOAD_TYPE_SIGNATURE)
+            objFile = base64ToBlob(sData,sImageFileName,'image/png');
+        else if(isWebCamFile)
+            objFile = objVideoFile;
+        else
+            objFile = fileInput.files[0];
+
+        if(window.URL)
+            oImage.src = window.URL.createObjectURL(objFile);
+        else if(window.FileReader)
+        {
+            // prepare HTML5 FileReader
+            var oReader = new FileReader();
+            oReader.onload = function (e) {
+                // e.target.result contains the DataURL which we will use as a source of the image
+                oImage.src = e.target.result;
+            };
+            // read selected file as DataURL
+            oReader.readAsDataURL(objFile);
+        }else{
+            oImage.src = clAppBuffer.getImagePath(true)+"noPreview.png";
+        }
+    }
+
+
+    function createProgressDiv()
+    {
+        var dvProgress=document.createElement("DIV");
+        dvProgress.id="progress_info";
+        dvProgress.style.width="300px";
+        dvProgress.style.paddingTop="5px";
+        dvProgress.style.position="absolute";
+        dvProgress.style.zIndex="1";
+
+
+        var sInnerHTML="<table width='100%' style='table-layout:fixed'><col width='33%'><col width='33%'><col width='34%'><tr><td>&nbsp;</td>";
+        sInnerHTML+="<td  id='upload_response'>Uploading...</td><td id='progress_percent' colspan='3' align='right'>&nbsp;</td></tr>";
+        sInnerHTML+="<tr><td colspan='3'><span id='progress'>&nbsp;</span></td></tr>";
+        sInnerHTML+="<tr><td id='speed'>&nbsp;</td><td id='remaining'>&nbsp;</td><td id='b_transfered' nowrap='true'>&nbsp;</td></tr>";
+        sInnerHTML+="</table>";
+
+
+        /*var sInnerHTML="<div id='progress'></div><div id='progress_percent'>&nbsp;</div>";
+         sInnerHTML+="<div><span id='speed'>&nbsp;</span><span id='remaining'>&nbsp;</span><span id='b_transfered'>&nbsp;</span></div>";*/
+
+        dvProgress.innerHTML=sInnerHTML;
+        document.body.appendChild(dvProgress);
+        return dvProgress;
+    }
+
+    this.getUploadField=function(sUploadFldId,isAllowMultiUploads)
+    {
+        if(isAllowMultiUploads)
+            return document.getElementById(sUploadFldId+".name");
+        else
+            return document.getElementById("uploadFileName_"+sUploadFldId);
+
+    };
+
+    this.cloneUpload=function(sId,sNewId)
+    {
+        var arrProperties=me.getPropertiesArray(clHTML5Upload.getBaseId(sId));
+        if(!arrProperties.isAllowMultiUploads)
+        {
+            var sTableObj = null;
+            if(!sNewId)
+                sNewId=sId+"_"+iUploadCnt++;
+            if(sNewUploadFldId != null)
+            {
+                sTableObj = document.getElementById("tbl"+sId2);
+                sId2=sNewUploadFldId;
+                if(sTableObj == undefined || sTableObj == null) {
+                    sTableObj = document.getElementById("tbl" + sId);
+                    sId2=sId;
+                }
+            }else{
+                sTableObj = document.getElementById("tbl" + sId);
+                sId2=sId;
+            }
+            //var sId2=sNewUploadFldId?sNewUploadFldId:sId;
+            //sTableObj = document.getElementById("tbl"+sId2);
+            /*sNewUploadTab=sTableObj.cloneNode(true);
+             var sNewUpload=sNewUploadTab.innerHTML;
+             sNewUpload=sNewUpload.replace(new RegExp(sId2, 'g'),sNewId);
+             sNewUploadTab.id = "tbl"+sNewId;
+             sNewUploadTab.innerHTML=sNewUpload;*/
+            var sNewUpload = sTableObj.parentNode.innerHTML;
+            while(sNewUpload.indexOf(sId2)!=-1 )
+                sNewUpload=util.trim(sNewUpload.replace(sId2,sNewId));
+            var trObj = document.getElementById("uploadFileName_"+sNewId).parentNode.parentNode;
+            var objTable = trObj.parentNode.parentNode;
+            objTable.parentNode.innerHTML = sNewUpload;
+            if(arrProperties.isBodyAttachment)
+            {
+                var iOldIndex = sId2.substring(sId2.lastIndexOf('[') + 1, sId2.lastIndexOf(']'));
+                var iNewIndex = sNewId.substring(sNewId.lastIndexOf('[') + 1, sNewId.lastIndexOf(']'));
+                var sOldName = document.getElementById("uploadFileName_"+sId2).getAttribute("name");
+                var sNamePrefix = sOldName.substring(0, sOldName.lastIndexOf('['));
+                var sNamePostfix = sOldName.substring(sOldName.lastIndexOf(']')+1,sOldName.length);
+                var sNewName = sNamePrefix + "[" + iNewIndex + "]" +sNamePostfix;
+
+                var valueObj = document.getElementById("uploadFileName_"+sNewId);
+                valueObj.removeAttribute("name");
+                valueObj.setAttribute("name",sNewName);
+
+                var sOldName = document.getElementById("removeFile_"+sId2).getAttribute("name");
+                var sNamePrefix = sOldName.substring(0, sOldName.lastIndexOf('['));
+                var sNamePostfix = sOldName.substring(sOldName.lastIndexOf(']')+1,sOldName.length);
+                var sNewName = sNamePrefix + "[" + iNewIndex + "]" +sNamePostfix;
+
+                var removeFileObj = document.getElementById("removeFile_"+sNewId);
+                removeFileObj.removeAttribute("name");
+                removeFileObj.setAttribute("name",sNewName);
+
+            }
+            arrUploadParentIds[sNewId]=sId;
+            //if(arrProperties.isBodyAttachment)
+            arrUploadFields[sNewId]=arrProperties;
+        }
+        else if(arrProperties.iUploadLimit > 1  && clHTML5Upload.getUploadCount()<=arrProperties.iUploadLimit+1)
+        {
+            //var sParentId =null;
+            var sPrefix = null;
+            if (sId.indexOf('[') != -1)
+            {
+                //sParentId = sId;
+                sPrefix = sId.substring(0, sId.indexOf('[') + 1);
+            }
+            /*if(!(document.getElementById("tbl"+sParentId))){
+             sNewId = sParentId;
+             arrUploadParentIds[sId]=sNewId;
+             }else{*/
+            var isClone = false;
+            for (var i = 0; i < arrProperties.iUploadLimit; i++)
+            {
+                var tblObj = document.getElementById("tbl" + sPrefix + i + "]");
+                /*get if table is there then display it else create new one with new id*/
+                if (tblObj)
+                {
+                    if (tblObj.style.display == "none")
+                    {
+                        sNewId = sPrefix + i + ']';
+                        var parentObj = tblObj.parentNode;
+                        parentObj.removeChild(tblObj);
+                        parentObj.appendChild(tblObj);
+                        tblObj.style.display = "";
+                        break;
+                    }
+                }
+                else
+                {
+                    //if(!tblObj){
+                    sNewId = sPrefix + i + ']';
+                    isClone = true;
+                    break;
+                    //}
+                }
+
+            }
+            /*}*/
+            /*oly for new one we are goin g to clone the table*/
+            if (isClone)
+            {
+                var sTableObj = null;
+                if (!sNewId)
+                    sNewId = sId + "_" + iUploadCnt++;
+                var sId2 = sNewUploadFldId ? sNewUploadFldId : sId;
+
+                sTableObj = document.getElementById("tbl" + sId2);
+                sNewUploadTab = sTableObj.cloneNode(true);
+                var sNewUpload = sNewUploadTab.innerHTML;
+
+                /*replacing id's ,of new cloned data*/
+                var iOldIndex = sId2.substring(sId2.indexOf('[') + 1, sId2.indexOf(']'));
+                var iNewRowId = sNewId.substring(sNewId.indexOf('[') + 1, sNewId.indexOf(']'));
+                var sPrefix2 = sId2.substring(0, sNewId.indexOf('['));
+                sNewUpload = sNewUpload.replace(new RegExp(sPrefix2 + "\\[" + iOldIndex + "\\]", "g"), sPrefix2 + "[" + iNewRowId + "]");
+
+                //var objRemoveFile = document.getElementById(sId2 + ".removeFile");
+                //var objName = document.getElementById(sId2 + ".name");
+                var objIndex = document.getElementById(sId2 + ".index");
+                //objRemoveFile.setAttribute("isIgnore", false);
+                //objName.setAttribute("isIgnore", false);
+                //objIndex.setAttribute("isIgnore", false);
+
+                sTableObj = document.getElementById("tbl" + sId2);
+                sNewUploadTab = sTableObj.cloneNode(true);
+                var sNewUpload = sNewUploadTab.innerHTML;
+
+                /*replacing , names and ignore attibutes of new cloned data*/
+                var iOldIndex = sId2.substring(sId2.indexOf('[') + 1, sId2.indexOf(']'));
+                var iNewRowId = sNewId.substring(sNewId.indexOf('[') + 1, sNewId.indexOf(']'));
+                var sPrefix2 = sId2.substring(0, sNewId.indexOf('['));
+                sNewUpload = sNewUpload.replace(new RegExp(sPrefix2 + "\\[" + iOldIndex + "\\]", "g"), sPrefix2 + "[" + iNewRowId + "]");
+
+                var sOldName = document.getElementById(sId2 + ".name").getAttribute("name");
+                var sNamePrefix = sOldName.substring(0, sOldName.indexOf('['));
+                sNewUpload = sNewUpload.replace(new RegExp(sNamePrefix + "\\[" + iOldIndex + "\\]", "g"), sNamePrefix + "[" + iNewRowId + "]");
+
+                //sNewUpload = sNewUpload.replace(new RegExp("false", "g"), "true");
+                //objRemoveFile.removeAttribute("isIgnore");
+                //objName.removeAttribute("isIgnore");
+                //objIndex.removeAttribute("isIgnore");
+
+                sNewUploadTab.id = "tbl" + sNewId;
+                sNewUploadTab.innerHTML = sNewUpload;
+                /*if the index value coming in edit mode is greater than limitUpload --executes in edit mode oly*/
+                var arrIndexes = arrProperties.arrIndexes;
+                if (objIndex.value > arrProperties.iUploadLimit)
+                {
+                    for (var i = 1; i <= arrProperties.iUploadLimit; i++)
+                    {
+                        var iReturn = arrIndexes.indexOf("" + i + "");
+                        if (iReturn == -1)
+                        {
+                            objIndex.value = i;
+                            arrProperties.arrIndexes[arrProperties.arrIndexes.length] = "" + i + "";
+                            break;
+                        }
+                    }
+                }
+
+                //sTableObj.appendChild(sNewUploadTab);
+                var appendIndex = parseInt(objIndex.value) + 1;
+
+                /*if appending index is greater than upload limit then search for free index--executes in edit mode oly*/
+                var iReturn = arrIndexes.indexOf("" + appendIndex + "");
+                if (iReturn >= 0 || appendIndex > arrProperties.iUploadLimit)
+                {
+                    for (var i = 1; i <= arrProperties.iUploadLimit; i++)
+                    {
+                        var iReturn = arrIndexes.indexOf("" + i + "");
+                        if (iReturn == -1)
+                        {
+                            appendIndex = i;
+                            arrProperties.arrIndexes[arrProperties.arrIndexes.length] = "" + i + "";
+                            break;
+                        }
+                    }
+                }
+                //document.getElementById(sNewId + ".index").value = appendIndex;
+                //sTableObj.removeChild(sNewUploadTab);
+
+            }
+            else
+            {
+                sNewUploadTab = null;
+            }
+            iUploadCount++;
+
+            arrUploadParentIds[sNewId]=sId;
+        }
+
+        return sNewId;
+    };
+
+    this.appendCloneUpload=function(sId)
+    {
+        var sParentTableId = null;
+        sParentTableId = document.getElementById("tbl"+sId).parentNode;
+        /*if cloned then oly append*/
+        if(sNewUploadTab)
+            sParentTableId.appendChild(sNewUploadTab);
+//        var arrProperties=me.getPropertiesArray(sUploadFieldId);
+        if(isMultiAttachments)
+        {
+            iFilesCnt++;
+            iTotFilesCnt++;
+            sUploadFieldId=sNewId;
+            if(iFilesLength!=(iFilesCnt))
+                me.startUploading(objFileInput,objFileInput.files[(iFilesCnt)]);
+            else iFilesCnt=0;
+            /*else if(!arrProperties.isAllowMultiUploads)
+             {
+             var sUploadId=arrUploadParentIds[sUploadFieldId];
+             document.getElementById("tbl"+sUploadId+"_"+(iUploadCnt-1)).style.display="none";
+             }*/
+
+        }
+        else sNewUploadFldId=null;
+
+    };
+
+    /*this.onClkDownloadUrl=function(e)
+     {
+
+     }*/
+
+
+    this.driveMultiAttachRespHandler = function(sFileName,sId){
+        //isMultiAttachments = true;
+        clHTML5Upload.cloneUpload(sId);
+        var hdFldObj = document.getElementById(sId+".name");
+        hdFldObj.value =sFileName;
+        document.getElementById("fileName_" + sId).innerHTML = sFileName;
+        hdFldObj.parentNode.parentNode.style.display = "block";
+        hdFldObj.parentNode.parentNode.nextSibling.style.display = "none";
+        clHTML5Upload.appendCloneUpload(sId);
+    }
+
+
+    /*used for body level image to show captions on mouse over and place the caption according to the width and height of the image*/
+    this.onMOverShowCaption=function(sFieldId,e)
+    {
+        var arrProperties=me.getPropertiesArray(arrUploadParentIds[clHTML5Upload.getBaseId(sFieldId)]);
+        //if(document.getElementById("uploadFileName_"+sFieldId).value=="" && arrProperties.isAllowRemove)
+        if(document.getElementById("uploadFileName_"+sFieldId).value=="")
+        {
+            var trCaptionObj =  document.getElementById(sFieldId).parentNode.parentNode;
+            if(arrProperties.isDefaultIcon || arrProperties.isAppendRemoveAttr)
+                trCaptionObj.style.visibility = "visible";
+            else
+                trCaptionObj.style.display = "";
+            var imgPreviewObj = document.getElementById("preview_"+sFieldId);
+            if(arrProperties.iType == me.UPLOAD_TYPE_VIDEO)
+                imgPreviewObj = document.getElementById("videoPreview_"+sFieldId);
+            else if(arrProperties.iType == me.UPLOAD_TYPE_AUDIO)
+                imgPreviewObj = document.getElementById("audioPreview_"+sFieldId);
+            trCaptionObj.childNodes[0].style.width = parseInt(imgPreviewObj.parentNode.style.width);;
+            var dvScroll = document.getElementById("tbl"+sFieldId).parentNode.parentNode.parentNode.parentNode.parentNode;
+            var iLeft = parseInt(dvScroll.scrollLeft);
+            trCaptionObj.style.marginLeft = "-"+iLeft+"px";
+            imgPreviewObj.style.opacity = "0.7";
+            var iImageHeight = imgPreviewObj.parentNode.style.height;
+            if(iImageHeight != null && iImageHeight != undefined && iImageHeight.trim().length > 0)
+                iImageHeight = parseInt(iImageHeight);
+            else {
+                iImageHeight = parseInt(imgPreviewObj.parentNode.style.width);
+            }
+            var iTop = iImageHeight/2;
+            //isDefaultIcon attach file setting
+            //if(arrProperties.isDefaultIcon)
+            //    iTop=22;
+            //document.getElementById("lblUpload_"+sFieldId).style.display="block";
+            trCaptionObj.style.marginTop = "-"+(parseInt(dvScroll.scrollTop)+iTop);
+            if(arrProperties.isOneDrive && arrProperties.isGoogle)
+                document.getElementById(sFieldId).style.width="1";
+            //var lblUploadObj = document.getElementById("lblUpload_"+sFieldId);
+            //if(!arrProperties.isOneDrive && !arrProperties.isGoogle)
+            //    lblUploadObj.style.width = iImageWidth;
+            //else
+            //    lblUploadObj.style.width = "20px";
+        }
+
+    };
+    /*vice versa of onMOverShowCaption function*/
+    this.onMOutHideCaption = function(sFieldId,e)
+    {
+        var arrProperties=me.getPropertiesArray(arrUploadParentIds[clHTML5Upload.getBaseId(sFieldId)]);
+        if(document.getElementById("uploadFileName_"+sFieldId).value=="")
+        {
+            var trCaptionObj =  document.getElementById(sFieldId).parentNode.parentNode;
+            if(arrProperties.isDefaultIcon || arrProperties.isAppendRemoveAttr)
+                trCaptionObj.style.visibility= "hidden";
+            else
+                trCaptionObj.style.display = "none";
+            var imgPreviewObj = document.getElementById("preview_"+sFieldId);
+            if(arrProperties.iType==me.UPLOAD_TYPE_VIDEO)
+                imgPreviewObj = document.getElementById("videoPreview_"+sFieldId);
+            else if(arrProperties.iType==me.UPLOAD_TYPE_AUDIO)
+                imgPreviewObj = document.getElementById("audioPreview_"+sFieldId);
+            imgPreviewObj.style.opacity = "1";
+            trCaptionObj.style.marginTop = "";
+        }
+        //isDefaultIcon attach file setting
+        //if(arrProperties.isDefaultIcon)
+        //    cross.setVisible(document.getElementById("lblUpload_"+sFieldId),false);
+    };
+
+    this.onClkOpenAttachFromWebCamDlg = function(sFieldId,e)
+    {
+        var arrProperties=clHTML5Upload.getPropertiesArray(clHTML5Upload.getBaseId(sFieldId));
+        var fileInput =  document.getElementById(sFieldId);
+        var isPrevent = fileInput.getAttribute("isfilesystem");
+        var isWebCamAvail = false;
+        if(arrProperties.iType == me.UPLOAD_TYPE_PREVIEW || arrProperties.iType == me.UPLOAD_TYPE_VIDEO)
+            isWebCamAvail = isMediaDeviceAvail;
+        else if(arrProperties.iType == me.UPLOAD_TYPE_AUDIO)
+            isWebCamAvail = isAudioDeviceAvail;
+        if(isWebCamAvail && (isPrevent == 'false' || !isPrevent))
+        {
+            e.preventDefault();
+            var iHeight = 450;
+            var sTitle = "Attach video";
+            if(arrProperties.iType == me.UPLOAD_TYPE_PREVIEW)
+                sTitle = "Attach picture";
+            else if(arrProperties.iType == me.UPLOAD_TYPE_AUDIO) {
+                sTitle = "Attach audio";
+                iHeight = 300;
+            }
+            var arrActions = new Array();
+            arrActions[0] = MsgHandler.getMsg(MsgConstants.ATTACH) + "|clAttachVideoFileDlg.onClkAttachWebFile";
+            arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL) + "|";
+            var sUrl = "module/document!getAttachVideoDlg.do?fieldId="+sFieldId+"&mediaType="+arrProperties.iType;
+            var clAttachVideoDlg = new DialogBox("attachVideoDlg", sTitle, 100, 50, 400, iHeight, sUrl, true, null, false, true, arrActions, null, null, true, null, null, false, null, false, true);
+            clAttachVideoDlg.setCenter();
+            clAttachVideoDlg.show();
+        }else{
+            return true;
+        }
+    };
+
+    this.toggleUploadField = function(sFieldId,isShow)
+    {
+        var arrProperties=clHTML5Upload.getPropertiesArray(clHTML5Upload.getBaseId(sFieldId));
+        var iUploadType = arrProperties.iType;
+
+        var trCaptionObj =  document.getElementById(sFieldId).parentNode.parentNode;
+        var trValueObj =  document.getElementById("uploadFileName_"+sFieldId).parentNode.parentNode;
+        if(iUploadType == me.UPLOAD_TYPE_SIGNATURE)
+            trValueObj =  document.getElementById("fileName_"+sFieldId).parentNode.parentNode;
+
+        var trImageObj;
+        if(iUploadType == me.UPLOAD_TYPE_SIGNATURE)
+            trImageObj = document.getElementById("preview_"+sFieldId).parentNode.parentNode;
+        if(iUploadType == me.UPLOAD_TYPE_PREVIEW)
+            trImageObj = document.getElementById("preview_"+sFieldId).parentNode.parentNode.parentNode;
+
+        var sFileName;
+        if(document.getElementById("uploadFileName_"+sFieldId))
+            sFileName = document.getElementById("uploadFileName_"+sFieldId).value;
+
+        if(sFileName != null && sFileName.trim().length > 0)
+            trValueObj.style.display = isShow ? "" : "none";
+        else
+            trCaptionObj.style.display = isShow ? "" : "none";
+        if(iUploadType == me.UPLOAD_TYPE_PREVIEW || iUploadType == me.UPLOAD_TYPE_SIGNATURE)
+            trImageObj.style.display = isShow ? "" : "none";
+    }
+
+    /*this.hideFrame=function(sId)
+     {
+     var objFrame,objImg;
+     objImg = document.getElementById("preview_"+sId);
+     objFrame = document.getElementById("framepreview_"+sId);
+     if(objFrame!=null)
+     cross.setVisible(objFrame,false);
+     if(objImg!=null)
+     cross.setVisible(objImg,true);
+     };
+
+     this.createFrame=function(sId,sFileName,isGoogle)
+     {
+     var objImg,objFrame;
+
+     objImg = document.getElementById("preview_"+sId);
+     objFrame = document.getElementById("framepreview_"+sId);
+     if(objImg!=null) {
+     if (isGoogle) {
+     var sFileId = sFileName.substring(sFileName.indexOf(":") + 1, sFileName.indexOf("|"));
+     var sUrl = "https://drive.google.com/file/d/" + sFileId + "/preview";
+     //var sUrl = "https://drive.google.com/thumbnail?id="+sFileId;
+     cross.setVisible(objImg, false);
+     if (objFrame == null) {
+     objFrame = document.createElement("iframe");
+     objFrame.setAttribute("id", "framepreview_" + sId);
+
+     objImg.parentNode.appendChild(objFrame);
+     }
+     cross.setVisible(objFrame, true);
+     objFrame.setAttribute("src", sUrl);
+     objFrame.setAttribute("height", "100%");
+     objFrame.setAttribute("width", "100%");
+     }
+     else {
+     if (objFrame != null)
+     cross.setVisible(objFrame, false);
+     cross.setVisible(objImg, true);
+     }
+     }
+     };*/
+};
+
+
+
+var clUpload=new function()
+{
+    var me=this;
+    var sUploadFldId=null;
+
+    me.onUploadDone = function (sId,sUploadFieldId, sResponse)
+    {
+        var arrProperties=clHTML5Upload.getPropertiesArray(clHTML5Upload.getBaseId(sUploadFieldId));
+
+        var sUploadFileName=sResponse;
+        var iIndex = sUploadFileName.indexOf("|");
+        sResponse = sResponse.substring(iIndex+1);
+
+        sUploadFileName = sUploadFileName.substring(0,iIndex);
+        //sUploadFileName = sId+"_"+sUploadFileName;//TODO: file name conflict
+        if(arrProperties.isDefaultIcon)
+            cross.setVisible(document.getElementById("sp_"+arrProperties.sId),false);
+
+        if(clHTML5Upload.getUploadCnt() > 2 && arrProperties.iUploadLimit <= 1)
+        {
+            arrProperties.sFileName=arrProperties.sFileName+","+sUploadFileName;
+        }
+        else
+            arrProperties.sFileName = sUploadFileName;
+
+        var sFldId =  "uploadFileName_"+sId;
+        if(arrProperties.isAllowMultiUploads)
+            sFldId = sId+".name";
+
+        document.getElementById(sFldId).value = arrProperties.sFileName;
+
+        if(arrProperties.sHiddenName!=null)
+        {
+            var sHiddenFldName=me.getHiddenName(sId,arrProperties.sHiddenName);
+
+            if(document.getElementById(sHiddenFldName))
+                document.getElementById(sHiddenFldName).value = arrProperties.sFileName;
+        }
+
+        //alert("sResponse=="+sResponse)
+
+        iIndex=sResponse.indexOf("|");
+        if(iIndex!=-1)
+        {
+
+            arrProperties.sDestPath = util.encodeURI(sResponse.substring(iIndex+1));
+            sResponse = sResponse.substring(0,iIndex);
+        }
+
+        arrProperties.isEditMode = false;
+
+        if(arrProperties.isCropper)
+        {
+            clUpload.cropImage(arrProperties);
+        }
+        else if(arrProperties.isAllowDrawOnImg)
+        {
+            clUpload.drawOnImg(arrProperties);
+        }
+        else
+        {
+            arrProperties.sFileSize=sResponse;
+
+            var sUrl = con.getStruts2Url(null, "removefile", "getFile");
+            sUrl = sUrl + "destPath=" + arrProperties.sDestPath + "&uploadFileName="+util.encodeURI(arrProperties.sFileName);
+
+            //TODO: create download url
+            var iRemoveLink = document.getElementById('removeLink_'+sId);
+            if(iRemoveLink)
+            {
+                iRemoveLink.style.display = 'inline';
+                iRemoveLink.style.display = 'block';
+            }
+
+            if(arrProperties.sOnUploadDone)
+                clUpload.onUploadDoneCallback(arrProperties.sOnUploadDone,arrProperties.sFileName,sId,arrProperties.sDestPath,arrProperties.sHiddenName,arrProperties.sFileSize);
+        }
+
+        if(arrProperties.isAllowMultiUploads)
+        {
+            /*if(arrProperties.iUploadLimit <= 1){
+             clHTML5Upload.appendCloneUpload(sId);
+             }else*/
+            if(arrProperties.iUploadLimit > 1  && clHTML5Upload.getUploadCount()<=arrProperties.iUploadLimit)
+            {
+                clHTML5Upload.appendCloneUpload(sId);
+            }
+        }
+
+
+
+        //alert("111 "+JSON.stringify(arrProperties))
+    };
+
+
+    this.getHiddenName=function(sId,sHiddenFldName)
+    {
+        var sHiddenFldNameNew;
+
+        function getBodyHiddenFieldId(sId,sHiddenName)
+        {
+            var iNewIndex=sId.substring(sId.lastIndexOf("[")+1,sId.lastIndexOf("]"));
+            if(sHiddenName.indexOf("[")!=-1) {
+                var sHiddenFldName = sHiddenName.substring(0, sHiddenName.lastIndexOf("[") + 1) + iNewIndex + sHiddenName.substring(sHiddenName.lastIndexOf("]"), sHiddenName.length);
+                sHiddenFldName+="_"+sId;
+            }else
+                var sHiddenFldName=sHiddenName+"_"+sId;
+
+            //sHiddenFldName=arrProperties.sHiddenName.replace(new RegExp("\\[\d\\]","g"),"["+iNewIndex+"]");
+            //var sOldId = arrProperties.sHiddenName;
+            return sHiddenFldName;
+
+        };
+
+        if(sId.indexOf("[")!=-1)
+        {
+            /*var iNewIndex=sId.substring(sId.lastIndexOf("[")+1,sId.lastIndexOf("]"));
+             //sHiddenFldName=arrProperties.sHiddenName.replace(new RegExp("\\[\d\\]","g"),"["+iNewIndex+"]");
+             var sOldId = arrProperties.sHiddenName;
+             sHiddenFldName=sOldId.substring(0, sOldId.lastIndexOf("[") + 1) + iNewIndex + sOldId.substring(sOldId.lastIndexOf("]"),iIndex);
+             sHiddenFldName+="_"+sId;*/
+            sHiddenFldNameNew = getBodyHiddenFieldId(sId,sHiddenFldName);
+        }
+        else
+            sHiddenFldNameNew=sHiddenFldName+"_"+sId;
+
+        return sHiddenFldNameNew;
+    };
+
+
+    /*this.getHiddenFieldId = function(sId,sOldId){
+
+     var sHiddenFldName = null;
+     if(sId.lastIndexOf("[")!= -1){
+
+     var iNewIndex=sId.substring(sId.lastIndexOf("[")+1,sId.lastIndexOf("]"));
+     sHiddenFldName=sOldId.substring(0, sOldId.lastIndexOf("[") + 1) + iNewIndex + sOldId.substring(sOldId.lastIndexOf("]"),sOldId.length);
+     sHiddenFldName+="_"+sId;
+
+     }  else
+     {
+     sHiddenFldName = sOldId+"_"+sId;
+     }
+     //sHiddenFldName=arrProperties.sHiddenName.replace(new RegExp("\\[\d\\]","g"),"["+iNewIndex+"]");
+     //var sOldId = arrProperties.sHiddenName;
+     return sHiddenFldName;
+
+     };*/
+
+    this.onUploadDoneCallback = function(sOnUploadDone,sFileName,sFieldId,sDestPath,sHiddenFileName,sFileSize)
+    {
+        var sActionUrl='';
+
+        if(sFileName)
+        {
+            sActionUrl = con.getStruts2Url(null, "uploadImage", "getImage");
+            sActionUrl= sActionUrl+"sourceType="+Constants.IResource.SOURCE_TYPE_TEMP_FOLDER+"&uploadFileName="+sFileName; //preview=1&
+        }
+        else
+            sFileName='';
+
+        //alert("onUploadDone "+sOnUploadDone+","+sFileName)
+
+        me.invokeCallback(sOnUploadDone,sFileName,sActionUrl,sFieldId,sDestPath,sHiddenFileName,sFileSize);
+
+    };
+
+
+    this.invokeCallback=function(sOnUploadDone,sFileName,sActionUrl,sFieldId,sDestPath,sHiddenFileName,sFileSize)
+    {
+        var index=0;
+
+        if(sOnUploadDone)
+            index = sOnUploadDone.indexOf(".");
+
+        var sObjectName = null;
+        var sFuncName = null;
+        if (index > 0)
+        {
+            sObjectName = sOnUploadDone.substring(0, index);
+            sFuncName = sOnUploadDone.substring(index + 1);
+        }
+        else
+        {
+            sFuncName = sOnUploadDone;
+        }
+
+        var iIndex = 0;
+        var sIdIndex = 0;
+        var arrProperties = clHTML5Upload.getPropertiesArray(clHTML5Upload.getBaseId(sFieldId));
+        if(arrProperties.isAllowMultiUploads && sFileName) {
+            /*no need bcoz we are not removing the attachment tables*/
+            /*var arrIndexes = arrProperties.arrIndexes;
+             for (var i = 1; i <= arrProperties.iUploadLimit; i++) {
+             var iReturn = arrIndexes.indexOf("" + i + "");
+             if (iReturn == -1) {
+             iIndex = i;
+             break;
+             }
+             }
+
+             document.getElementById(sFieldId+".index").value = iIndex;
+             arrProperties.arrIndexes[arrProperties.arrIndexes.length] = ""+iIndex+"";*/
+            sIdIndex = sFieldId.substring(sFieldId.lastIndexOf("[") + 1,sFieldId.lastIndexOf("]"));
+        }
+
+        if ((index > 0 && typeof window[sObjectName][sFuncName] == "function"))
+        {
+            window[sObjectName][sFuncName](sFileName,sActionUrl,sFieldId,sDestPath,sHiddenFileName,sFileSize,sIdIndex);
+        }
+        else if ((window[sFuncName] == "function"))
+        {
+            window[sFuncName](sFileName,sActionUrl,sFieldId,sDestPath,sHiddenFileName,sFileSize,sIdIndex);
+        }
+        else if(typeof eval(sOnUploadDone) == "function")
+        {
+            eval(sOnUploadDone)(sFileName,sActionUrl,sFieldId,sDestPath,sHiddenFileName,sFileSize,sIdIndex);
+        }
+    };
+
+
+    this.zoomImage = function(sId)
+    {
+        var objImg=document.getElementById("preview_"+sId);
+        var arrProperties=clHTML5Upload.getPropertiesArray(clHTML5Upload.getBaseId(sId));
+
+        if(arrProperties.isAllowDrawOnImg)
+        {
+            sUploadFldId = sId;
+            msg.showImage(objImg, objImg.src, 0, 0, false, true, "clUpload.onClkEditImage");
+        }
+        else
+            msg.showImage(objImg,objImg.src);
+    };
+
+    this.onClkEditImage=function(objEditImg)
+    {
+        var objImgPreview = document.getElementById("dvImgPreview");
+        var imgPreviewClose=document.getElementById("imgPrevClose");
+
+        msg.removeImageWithoutAnimation(objImgPreview,imgPreviewClose,cross.EVENT_ONCLICK);
+
+        var objImg=document.getElementById("preview_"+sUploadFldId);
+
+        var arrProperties=clHTML5Upload.getPropertiesArray(clHTML5Upload.getBaseId(sUploadFldId));
+
+        arrProperties.isEditMode = true;
+        //arrProperties.sUrl = objImg.src;
+
+        //alert("onClkEditImage=="+JSON.stringify(arrProperties));
+
+        if(arrProperties.sHiddenName!=null)
+        {
+            var sHiddenFldName = me.getHiddenName(sUploadFldId,arrProperties.sHiddenName);
+            arrProperties.sFileName = document.getElementById(sHiddenFldName).value;
+        }
+
+        clUpload.drawOnImg(arrProperties);
+        //sUploadFldId=null;
+    };
+
+    me.downloadLink = function(sDownloadUrl)
+    {
+        var sFileName;
+        if(document.getElementById("uploadFileName_"+me.sId))
+            sFileName = document.getElementById("uploadFileName_"+me.sId).value;
+        else
+            sFileName = document.getElementById(me.sId+".name").value;
+        var sUrl = con.getStruts2Url(null, "removefile", "getFile");
+        var sSubmitData = "destPath=" + me.sDestPath + "&uploadFileName=" + sFileName;
+        con.sendPostRequest(sUrl, sSubmitData, null, null);
+    };
+
+
+
+    this.cropImage = function(arrProperties)
+    {
+        var  arrActions = new Array();
+        arrActions[0] = MsgHandler.getMsg(MsgConstants.OK)+"|clImage.onClkCrop";
+        arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL)+"|clImage.onClkCancel";
+
+        var sUrl = "upload!getImageCroppingDlg.do";
+        sUrl+="?sId="+arrProperties.sId;
+        sUrl+="&filename="+arrProperties.sFileName;
+
+        sUrl+="&maxCropHeight="+arrProperties.iCropImgHeight;
+        sUrl+="&maxCropWidth="+arrProperties.iCropImgWidth;
+        sUrl+="&callbackCrop=parent.clUpload.callBackCrop";
+
+        var sActionUrl = con.getStruts2Url(null, "upload", "getImage");
+        sActionUrl+= "sourceType="+Constants.IResource.SOURCE_TYPE_TEMP_FOLDER+"&uploadFileName="+arrProperties.sFileName;
+        var iCtrlType=document.getElementById(arrProperties.sId).getAttribute("ctrltype");
+        if( iCtrlType == Constants.CONTROLTYPE_PICTUREBOX)
+        {
+            sActionUrl += "&uploadFieldId=" + arrProperties.sId.substring(1);
+            sUrl += "&uploadFieldId=" + arrProperties.sId.substring(1);
+        }
+        sUrl+="&sActionUrl="+util.encodeURI(sActionUrl);
+
+        //var sTitle="ImageCrop(MaxHeight="+arrProperties.iCropImgHeight+"px,MaxWidth="+arrProperties.iCropImgWidth+"px)";
+        var sTitle="Crop Image";
+
+        var clDlg = new DialogBox("ImageCrop",sTitle,130,50,350,350,sUrl, true, null, true,true,arrActions,true,null,true,true);
+        clDlg.setCenter();
+        clDlg.show();
+        if(arrProperties.iCropImgWidth > 0 || arrProperties.iCropImgHeight > 0){
+            var dvImageCropcenterData = document.getElementById("ImageCropcenterData");
+            var dvImgInfo = document.createElement("DIV");
+            dvImgInfo.style.position="absolute";
+            dvImgInfo.style.top="30px";
+            dvImgInfo.style.right="20px";
+            dvImgInfo.style.border="1px solid #ccc";
+            dvImgInfo.style.padding="5px";
+            dvImgInfo.style.fontSize="75%";
+            dvImgInfo.style.background="#f0efefcc";
+            var dvHeightInfo = document.createElement("DIV");
+            var dvWidthInfo = document.createElement("DIV");
+
+            if(arrProperties.iCropImgWidth>0)
+                dvHeightInfo.innerText = "MaxHeight="+arrProperties.iCropImgWidth+"px";
+            if(arrProperties.iCropImgHeight>0)
+                dvWidthInfo.innerText = "MaxWidth="+arrProperties.iCropImgHeight+"px";
+            dvImgInfo.appendChild(dvHeightInfo);
+            dvImgInfo.appendChild(dvWidthInfo);
+            dvImageCropcenterData.appendChild(dvImgInfo);
+
+        }
+
+
+    };
+
+
+    this.callBackCrop = function(sId,sActionUrl,sFileName,sFileSize)
+    {
+        //alert("callBackCrop")
+        var arrProperties=clHTML5Upload.getPropertiesArray(clHTML5Upload.getBaseId(sId));
+
+        if(document.getElementById("uploadFileName_"+sId))
+            document.getElementById("uploadFileName_"+sId).value = sFileName;
+        else
+            document.getElementById(sId+".name").value = sFileName;
+        if(arrProperties.sHiddenName!=null)
+        {
+            if(!arrProperties.isShowAttachIcons)
+                document.getElementById(arrProperties.sHiddenName + "_" + sId).value = sFileName;
+        }
+
+        if(arrProperties.sOnUploadDone)
+            me.invokeCallback(arrProperties.sOnUploadDone,sFileName,sActionUrl,sId,arrProperties.sDestPath,arrProperties.sHiddenName,sFileSize);
+        if(arrProperties.isAllowDrawOnImg)
+            clUpload.drawOnImg(arrProperties);
+
+    };
+
+    this.drawOnImg = function(arrProperties)
+    {
+      //alert(JSON.stringify(arrProperties))
+        var iUploadType = arrProperties.iType;
+        if(iUploadType == clHTML5Upload.UPLOAD_TYPE_PREVIEW) {
+            var arrActions = new Array();
+            arrActions[0] = MsgHandler.getMsg(MsgConstants.OK) + "|clDrawOnImg.onClkSave";
+            arrActions[1] = MsgHandler.getMsg(MsgConstants.RESET) + "|clDrawOnImg.onClkReset";
+            arrActions[2] = MsgHandler.getMsg(MsgConstants.CANCEL) + "|clDrawOnImg.onClkCancel";
+
+            var sActionUrl;
+            var sUrl = "upload!getDrawOnImgDlg.do";
+            sUrl += "?sId=" + arrProperties.sId;
+            sUrl += "&filename=" + arrProperties.sFileName;
+            sUrl += "&callbackDrawOnImg=parent.clUpload.callbackDrawOnImg";
+
+            var iCtrlType = document.getElementById(arrProperties.sId).getAttribute("ctrltype");
+            if(arrProperties.isEditMode)
+                sActionUrl = document.getElementById("preview_"+sUploadFldId).src;
+            else {
+                sActionUrl = con.getStruts2Url(null, "upload", "getImage");
+                sActionUrl += "sourceType=" + Constants.IResource.SOURCE_TYPE_TEMP_FOLDER + "&uploadFileName=" + arrProperties.sFileName;
+                if (iCtrlType == Constants.CONTROLTYPE_PICTUREBOX)
+                    sActionUrl += "&uploadFieldId=" + arrProperties.sId.substring(1);
+            }
+            //var sSaveActionUrl = con.getStruts2Url(null, "upload", "saveSWFFile");
+            var sSaveActionUrl = arrProperties.sUrl;
+            sSaveActionUrl += "&sourceType=" + Constants.IResource.SOURCE_TYPE_TEMP_FOLDER + "&uploadFileName=" + arrProperties.sFileName;
+            if (iCtrlType == Constants.CONTROLTYPE_PICTUREBOX)
+            {
+                sSaveActionUrl += "&uploadFieldId=" + arrProperties.sId.substring(1);
+                sUrl += "&uploadFieldId=" + arrProperties.sId.substring(1);
+            }
+            sUrl += "&sSaveActionUrl=" + util.encodeURI(sSaveActionUrl);
+            sUrl += "&sActionUrl=" + util.encodeURI(sActionUrl);
+
+            var iDlgWidth=950,iDlgHeight = 600;
+            var isMobileBrowser = clAppBuffer.getViewMode() == Constants.MOBILE_BROWSER;
+            if (cross.getClientWidth() <= 480 || isMobileBrowser)
+            {
+                iDlgWidth = 450;
+                iDlgHeight = 450;
+                sUrl += "&isMobileBrowser=true";
+            }
+            //alert(JSON.stringify(sUrl))
+            var sTitle = "Draw On Image";
+            //var clDlg = new DialogBox("DrawOnImage",sTitle,130,50,550,600,sUrl, true, null, true,true,arrActions,true,null,true,true);
+            var clDlg = new DialogBox("DrawOnImage", sTitle, 130, 50, iDlgWidth, iDlgHeight, sUrl, true, null, false, true, arrActions, null, null, true, null, null, false, null, false, true);
+
+            clDlg.setCenter();
+            var iViewIn =0;
+            if(document.getElementById("viewIn"))
+                iViewIn = document.getElementById("viewIn").value;
+            if(iViewIn==1) {
+                CLButtonUtil.disableButton(parent.document.getElementById("btn_0"));
+                clDlg.onClose(me.onCloseDrawDialog)
+            }
+
+            //clDlg.show();
+        }
+
+    };
+    this.onCloseDrawDialog = function()
+    {
+
+        CLButtonUtil.enableButton(parent.parent.document.getElementById("btn_0"));
+    };
+
+    this.callbackDrawOnImg = function(sId,sActionUrl,sFileName,sFileSize)
+    {
+
+        var arrProperties=clHTML5Upload.getPropertiesArray(clHTML5Upload.getBaseId(sId));
+        if(arrProperties.isEditMode)
+        {
+            document.getElementById(sId+"_remove").value = sFileName;
+            var iCtrlType = document.getElementById(sId).getAttribute("ctrltype");
+            sActionUrl = con.getStruts2Url(null, "upload", "getImage");
+            sActionUrl += "sourceType=" + Constants.IResource.SOURCE_TYPE_TEMP_FOLDER + "&uploadFileName=" + sFileName;
+            if (iCtrlType == Constants.CONTROLTYPE_PICTUREBOX)
+                sActionUrl += "&uploadFieldId=" + sId.substring(1);
+        }
+
+        if(document.getElementById("preview_"+sId))
+            document.getElementById("preview_"+sId).src= sActionUrl+"&time="+new Date().getTime();
+
+        if(document.getElementById("uploadFileName_"+sId))
+            document.getElementById("uploadFileName_"+sId).value = sFileName;
+        else
+            document.getElementById(sId+".name").value = sFileName;
+        if(arrProperties.sHiddenName!=null)
+        {
+            if(!arrProperties.isShowAttachIcons)
+                document.getElementById(arrProperties.sHiddenName + "_" + sId).value = sFileName;
+        }
+
+        if(arrProperties.sOnUploadDone) {
+
+            me.invokeCallback(arrProperties.sOnUploadDone, sFileName, sActionUrl, sId, arrProperties.sDestPath, arrProperties.sHiddenName, sFileSize);
+        }
+    };
+
+    this.callBackCancel = function(sId)
+    {
+        var arrProperties=clHTML5Upload.getPropertiesArray(clHTML5Upload.getBaseId(sId));
+        if(arrProperties.sOnUploadDone)
+            me.invokeCallback(arrProperties.sOnUploadDone,sFileName,null,sId,arrProperties.sDestPath,arrProperties.sHiddenName,sFileSize);
+    }
+
+};
+
+
+var clSignature = new function()
+{
+    var me=this;
+    this.init = function(sId,iWidth,iHeight)
+    {
+        var objPreviewImage;
+        objPreviewImage = document.getElementById("preview_"+sId);
+        var screenwidth = screen.width;
+        if (screenwidth < 480)
+        {
+            var iScreenHeight;
+            iScreenHeight = parseInt(screenwidth/2);
+            objPreviewImage.width = screenwidth-70;
+            objPreviewImage.height = iScreenHeight-80;
+
+        }
+        else
+        {
+            objPreviewImage.width = 318;
+            objPreviewImage.height = 80;
+        }
+    };
+
+    this.onClkSignatureDialog = function(sId) {
+        if (document.getElementById(sId).disabled)
+            return;
+        var arrActions = new Array();
+        arrActions[0] = MsgHandler.getMsg(MsgConstants.OK) + "|clDrawSign.onClkSaveSig";
+        arrActions[1] = MsgHandler.getMsg(MsgConstants.RESET) + "|clDrawSign.onClkClearSig";
+        arrActions[2] = MsgHandler.getMsg(MsgConstants.CANCEL) + "|clDrawSign.onClkClearSig";
+        var iDlgWidth = 900;
+        var iDlgHeight = 500;
+        if(document.getElementById("dialogscroller") && clAppBuffer.getViewMode() ==Constants.MOBILE_BROWSER)
+        {
+            iDlgWidth = 500;
+            iDlgHeight = 300;
+        }
+        else if(document.getElementById("dialogscroller"))
+        {
+            iDlgWidth = 750;
+            iDlgHeight = 400;
+        }
+        var sUrl = "upload!getDrawSignatureDlg.do?fieldId="+sId;
+        var clSignatureDlg = new DialogBox("clSignatureDlg", ":: Capture Signature ::", 0, 0, iDlgWidth, iDlgHeight, sUrl, true, null, true, true, arrActions, null, null, false, null, null, false, null, false, true);
+        clSignatureDlg.setCenter();
+        clSignatureDlg.show();
+    }
+};
+var clSignature_ = new function()
+{
+    //app.registerInstance("signature",clSignature);
+    var me=this;
+    me.addedSign = false;
+    var arrSignature = [];
+
+    /**
+     * this method is called when component gets loading to style upload signature container
+     * @param sId
+     * @param iWidth
+     * @param iHeight
+     */
+    this.init= function(sId,iWidth,iHeight)
+    {
+        var objPreviewImage;
+        objPreviewImage = document.getElementById("preview_"+sId);
+        var screenwidth = screen.width;
+        if (screenwidth < 480)
+        {
+            var iScreenHeight;
+            iScreenHeight = parseInt(screenwidth/2);
+            objPreviewImage.width = screenwidth-70;
+            objPreviewImage.height = iScreenHeight-80;
+
+        }
+        else
+        {
+            objPreviewImage.width = 318;
+            objPreviewImage.height = 80;
+        }
+
+    };
+    /**
+     * this method is called on click of add signature link
+     * canvas get created,and signature can be added
+     * @param sId
+     */
+    this.onClkSignatureDialog = function(sId)
+    {
+        if(document.getElementById(sId).disabled)
+            return;
+        Validation.reset();
+        Validation.clearMessage(null,true,"msgbox");
+        util.toggleBackground(true,true,null,true);
+        //window.scrollTo(0,0);
+        var arrSignatureInfo,i,objSignature;
+        arrSignature[arrSignature.length] = {"signatureId":'dvSignature_'+sId};
+        for(i=0; i < arrSignature.length; i++)
+        {
+            arrSignatureInfo=arrSignature[i];
+            objSignature=document.getElementById(arrSignatureInfo["signatureId"]).style.display="none";
+        }
+        arrSignature.splice(i,arrSignature.length-1);
+        var dvSignature = document.getElementById("dvSignature_"+sId);
+        util.removeClass(dvSignature,"removeSignatureDv");
+        //if(document.getElementById("dialogscroller"))
+        //    dvSignature.style.position = "relative";
+        //else
+            dvSignature.style.position = "absolute";
+        dvSignature.style.display = "";
+        if(document.getElementById("dialogscroller"))
+            dvSignature.style.top = document.getElementById("preview_"+sId).getBoundingClientRect().top+"px";
+
+        var canvas = document.getElementById("newSignature_"+sId);
+
+        if(!canvas)
+        {
+            var parent = document.getElementById("canvas_"+sId);
+            parent.style.borderTop = "1px solid #3a87ad";
+            parent.style.borderBottom = "1px solid #3a87ad";
+
+            canvas = document.createElement("canvas");
+            canvas.setAttribute("id", "newSignature_"+sId);
+            //canvas.style.backgroundColor="#aaaaaa";
+            parent.appendChild(canvas);
+        }
+
+        var context = canvas.getContext("2d");
+
+        if (!context) {
+            throw new Error("Failed to get canvas' 2d context");
+        }
+
+        var screenwidth = window.innerWidth;
+        if(document.getElementById("dialogscroller") && clAppBuffer.getViewMode() ==Constants.MOBILE_BROWSER) {
+            dvSignature.style.top = "" + ((cross.getMousePos(window.event).x + 100) / 2) + "px";
+        }
+        if (screenwidth < 480)
+        {
+            //alert(screenwidth);
+            var iHeight;
+            iHeight = parseInt(screenwidth/2);
+            dvSignature.style.width = screenwidth-10;
+            dvSignature.style.height = iHeight+20;
+            canvas.width = screenwidth-70 ;
+            canvas.height = iHeight-80;
+
+        }
+        else
+        {
+            if(document.getElementById("dialogscroller")) {
+                canvas.width = 400;
+                canvas.height = 160;
+                dvSignature.style.width = 460;
+                dvSignature.style.height = 280;
+            }else{
+                //alert(screenwidth);
+                //canvas.width = 318;
+                canvas.width = 650;
+                //canvas.height = 80;
+                canvas.height = 400;
+                //dvSignature.style.width = 372;
+                dvSignature.style.width = 750;
+                //dvSignature.style.height = 200;
+                dvSignature.style.height = 500;
+            }
+
+        }
+
+        context.fillStyle = "#fff";
+        context.strokeStyle = "#444";
+        context.lineWidth = 1.2;
+        context.lineCap = "round";
+
+        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        context.fillStyle = "#3a87ad";
+        context.strokeStyle = "#3a87ad";
+        context.lineWidth = 1;
+        context.moveTo((canvas.width * 0.042), (canvas.height * 0.7));
+        context.lineTo((canvas.width * 0.958), (canvas.height * 0.7));
+        //        context.stroke();
+
+        context.fillStyle = "#fff";
+        context.strokeStyle = "#444";
+
+        var disableSave = true;
+        var pixels = [];
+        var cpixels = [];
+        var xyLast = {};
+        var xyAddLast = {};
+        var calculate = false;
+        //functions
+    {
+        function remove_event_listeners() {
+            canvas.removeEventListener('mousemove', on_mousemove, false);
+            canvas.removeEventListener('mouseup', on_mouseup, false);
+            canvas.removeEventListener('touchmove', on_mousemove, false);
+            canvas.removeEventListener('touchend', on_mouseup, false);
+
+            document.body.removeEventListener('mouseup', on_mouseup, false);
+            document.body.removeEventListener('touchend', on_mouseup, false);
+        }
+
+        function get_board_coords(e) {
+            var x, y;
+
+            if (e.changedTouches && e.changedTouches[0]) {
+
+                var arrXY=cross.getPosition(canvas);
+                var offsetx = arrXY[0];//canvas.offsetLeft || 0;
+                var offsety = arrXY[1];//canvas.offsetTop || 0;
+
+                x = e.changedTouches[0].pageX - offsetx;
+                y = e.changedTouches[0].pageY - offsety;
+
+                //util.writeToLog("touch event "+x+","+ y+","+arrXY[0]+","+arrXY[1]);
+            } else if (e.layerX || 0 == e.layerX) {
+                x = e.layerX;
+                y = e.layerY;
+
+                //util.writeToLog("layer "+x+","+ y);
+            } else if (e.offsetX || 0 == e.offsetX) {
+                x = e.offsetX;
+                y = e.offsetY;
+
+                //util.writeToLog("offset  "+x+","+ y);
+            }
+
+            return {
+                x : x,
+                y : y
+            };
+        };
+
+        function on_mousedown(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            canvas.addEventListener('mousemove', on_mousemove, false);
+            canvas.addEventListener('mouseup', on_mouseup, false);
+            canvas.addEventListener('touchmove', on_mousemove, false);
+            canvas.addEventListener('touchend', on_mouseup, false);
+
+            document.body.addEventListener('mouseup', on_mouseup, false);
+            document.body.addEventListener('touchend', on_mouseup, false);
+
+            empty = false;
+            var xy = get_board_coords(e);
+            context.beginPath();
+            pixels.push('moveStart');
+            context.moveTo(xy.x, xy.y);
+            pixels.push(xy.x, xy.y);
+            xyLast = xy;
+        };
+
+        function on_mousemove(e, finish) {
+            me.addedSign = true;
+            e.preventDefault();
+            e.stopPropagation();
+
+            var xy = get_board_coords(e);
+            var xyAdd = {
+                x : (xyLast.x + xy.x) / 2,
+                y : (xyLast.y + xy.y) / 2
+            };
+
+            if (calculate) {
+                var xLast = (xyAddLast.x + xyLast.x + xyAdd.x) / 3;
+                var yLast = (xyAddLast.y + xyLast.y + xyAdd.y) / 3;
+                pixels.push(xLast, yLast);
+            } else {
+                calculate = true;
+            }
+
+            context.quadraticCurveTo(xyLast.x, xyLast.y, xyAdd.x, xyAdd.y);
+            pixels.push(xyAdd.x, xyAdd.y);
+            context.stroke();
+            context.beginPath();
+            context.moveTo(xyAdd.x, xyAdd.y);
+            xyAddLast = xyAdd;
+            xyLast = xy;
+
+        };
+
+        function on_mouseup(e) {
+            remove_event_listeners();
+            disableSave = false;
+            context.stroke();
+            pixels.push('e');
+            calculate = false;
+        };
+
+    }
+
+        canvas.addEventListener('mousedown', on_mousedown, false);
+        canvas.addEventListener('touchstart', on_mousedown, false);
+
+    };
+
+    /**
+     * this method is called on click of save signature ok action.
+     *
+     * @param signatureId
+     */
+    this.onClkSaveSig  = function(signatureId)
+    {
+        Validation.reset();
+        Validation.clearMessage(null,true,"msgbox");
+        if(me.addedSign)
+        {
+            util.toggleBackground(false);
+            var canvas = document.getElementById("newSignature_"+signatureId);
+            var dataURL = canvas.toDataURL("image/png");
+            dataURL = dataURL.split(",");
+            var sDataUrl=dataURL[1];
+            var objSignatureDv= document.getElementById("dvSignature_"+signatureId);
+            util.addClass(objSignatureDv,"removeSignatureDv");
+            /*setTimeout(function()
+         {*/
+            var objFile = document.getElementById(signatureId );
+            objSignatureDv.style.display="none";
+            var objTest = document.getElementById("preview_"+signatureId);
+            //objTest.scrollIntoView();
+            clHTML5Upload.uploadSignature(objFile,sDataUrl);
+            me.addedSign = false;
+            /*},500);*/
+        }
+        else{
+            Validation.showMessage(MsgHandler.getMsg(MsgConstants.SIGNATURE,0,0),Validation.ERROR_MSG,null,Validation.ERROR_MANDATORY,true,"msgbox");
+        }
+    };
+    /**
+     * this method is used to clear signature
+     * clear canvas
+     * @param signatureId
+     */
+    this.onClkClearSig = function(signatureId)
+    {
+        Validation.reset();
+        Validation.clearMessage(null,true,"msgbox");
+        var sSignature = document.getElementById("newSignature_"+signatureId);
+        var iWidth=sSignature.width;
+        var iHeight=sSignature.height;
+        var context = sSignature.getContext("2d");
+        context.clearRect(0, 0, iWidth, iHeight);
+        me.addedSign = false;
+    };
+
+    /**
+     * thi smethod is called on click of close action
+     * set display to none canvas div
+     * @param sigantureId
+     */
+    this.onClkClose = function(sigantureId)
+    {
+        Validation.reset();
+        Validation.clearMessage(null,true,"msgbox");
+        util.toggleBackground(false);
+        var objSignatureDv=  document.getElementById("dvSignature_"+sigantureId);
+        util.addClass(objSignatureDv,"removeSignatureDv");
+        setTimeout(function()
+        {
+            objSignatureDv.style.display="none";
+        },500);
+    };
+};

@@ -1,0 +1,1372 @@
+/**
+ function openSDialog(url)
+ function closeSDialog()
+ function Enable()
+ */
+
+function Dialog(sDlgBoxArgs)
+{
+    var me =this;
+    this.objDialog = {popup:null, visible:false};
+
+    this.openDialog = function()
+    {
+        this.sFormName = sDlgBoxArgs["formName"];
+        this.sId= sDlgBoxArgs["id"];
+        this.objDialog.popup = document.getElementById(this.sId+'SWindow');
+        this.objTitleDiv = document.getElementById(this.sId+ "titlebar") ;
+        this.objIFrame = document.getElementById(this.sId+ "contentFrame");
+        this.objCenterContainer = document.getElementById(this.sId+"centerContainer");
+        this.objCenterData = document.getElementById(this.sId+"centerData");
+        this.isClearOnClose = sDlgBoxArgs["isClearOnClose"];
+        this.isGlobalDlg = sDlgBoxArgs["isGlobalDlg"];
+        this.ignoreAnimation = sDlgBoxArgs["ignoreAnimation"];
+        this.isResize = sDlgBoxArgs["isResize"];
+        this.isActionsExist = sDlgBoxArgs["isActionsExist"];
+        this.isSimple = sDlgBoxArgs["isSimple"];
+        this.ignoreMove = sDlgBoxArgs["ignoreMove"];
+        this.isIFramePostReq = sDlgBoxArgs["isIFramePostReq"];
+
+
+        if(!this.objDialog.visible)
+        {
+            if(sDlgBoxArgs["url"])
+            {
+
+
+                if(sDlgBoxArgs["isDefaultTemplate"])
+                {
+
+                    var sSrc=clAppBuffer.getContextPath()+"/dialogTemplate.action?isDialog=true";
+                    sSrc+="&actions="+util.encodeURI(sDlgBoxArgs["actions"])+"&dialogName="+sDlgBoxArgs["id"];
+                    sSrc+="&dlgWidth="+sDlgBoxArgs["width"]+"&dlgHeight="+sDlgBoxArgs["height"]+"&isExcludeJs="+sDlgBoxArgs["isExcludeJs"]+"&isIFramePostReq="+sDlgBoxArgs["isIFramePostReq"];
+
+
+                    if(!me.isIFramePostReq)
+                    {
+                        var sUrl, sUrl2, sResult;
+                        sUrl = sDlgBoxArgs["url"];
+
+                        if (sUrl.indexOf("?") != -1)
+                        {
+                            sUrl2 = sUrl.substring(0, sUrl.indexOf("?"));
+                            sResult = sUrl.substring(sUrl.indexOf("?") + 1);
+                        }
+                        else
+                            sUrl2 = sUrl;
+
+                        sSrc+="&url="+escape(sUrl2)+"&"+sResult;
+                    }
+
+
+                    this.objIFrame.src = sSrc;
+
+
+                }
+                else
+                    this.objIFrame.src = sDlgBoxArgs["url"];
+            }
+            else if(sDlgBoxArgs["isIFrame"])
+               this.objIFrame.src = "#";
+
+            if( ! this.ignoreMove)
+            {
+                this.objTitleDiv.onmousedown =function(evt)
+                {
+                    evt=evt?evt:window.event;
+                    startDrag(sDlgBoxArgs["id"],evt);
+                    //evt.cancelBubble=true;
+                    cross.cancelBubble(evt);
+                    return false;
+                };
+            }
+
+            this.setBounds(sDlgBoxArgs["title"],sDlgBoxArgs["x"],sDlgBoxArgs["y"],sDlgBoxArgs["width"],sDlgBoxArgs["height"]);
+         }
+        this.closeDialog();
+    };
+
+    this.setXY=function(x,y)
+    {
+        this.x=x;
+        this.y=y;
+    };
+
+    this.setURL = function()
+    {
+        this.objIFrame.src = sDlgBoxArgs["url"];
+    };
+
+    this.showDialog = function()
+    {
+       // alert("showDialog"+this.objDialog.popup.getAttribute("old_iTop"));
+        if(this.objDialog.popup.getAttribute("old_iTop")!=null)
+        {
+            this.objDialog.popup.style.top =this.objDialog.popup.getAttribute("old_iTop");
+            this.objDialog.popup.style.left =this.objDialog.popup.getAttribute("old_iLeft");
+            this.objDialog.popup.style.width =this.objDialog.popup.getAttribute("old_iWidth");
+            var iOldPopupHeight=this.objDialog.popup.getAttribute("old_iHeight");
+            this.objDialog.popup.style.height =iOldPopupHeight;
+            iOldPopupHeight =iOldPopupHeight.substring(0, iOldPopupHeight.length-2);
+            var iExcludeHeight;
+            iExcludeHeight=(me.isActionsExist?0:20);
+            iExcludeHeight=iExcludeHeight+((me.isResize||!me.isSimple)?0:18);
+            this.objCenterContainer.style.height = (iOldPopupHeight-38)+"px";
+            this.objCenterData.style.height = (iOldPopupHeight-(78-iExcludeHeight))+"px";
+        }
+
+        shiftTo(this.objDialog.popup, this.x, this.y);
+        this.objIFrame.style.scrollTop = "0px";
+        this.objDialog.popup.style.visibility = "visible";
+        this.objDialog.popup.style.display = "block";
+        this.objDialog.visible = true;
+
+        if(!this.ignoreAnimation &&  clAppBuffer.getWindowType() == Constants.IMODULE_WINDOW.DEFAULT)
+            this.zoomIn();
+
+       if(! sDlgBoxArgs["isIFrame"])    // call back function for non iframe dialogs
+         Focus.crm.view.arrDialogBox[this.sId].handleOnLoad();
+    };
+
+     this.zoomIn = function()
+     {
+         var iWidth,iHeight,iTop,iLeft,objMainContainer;
+         objMainContainer=this.objDialog.popup.parentNode;
+
+
+         iTop = this.objDialog.popup.style.top;
+         iLeft = this.objDialog.popup.style.left;
+         iWidth = this.objDialog.popup.style.width;
+         iHeight = this.objDialog.popup.style.height;
+                                                               
+         iTop = iTop.substring(0,(iTop.length - 2));
+         iLeft = iLeft.substring(0,(iLeft.length - 2));
+         iWidth = iWidth.substring(0,(iWidth.length - 2));
+         iHeight = iHeight.substring(0,(iHeight.length - 2));
+
+         this.objDialog.popup.style.width = 10;
+         this.objDialog.popup.style.height = 10;
+
+
+         this.objDialog.popup.style.left = (document.body.clientWidth / 2 )+ (document.body.scrollLeft?document.body.scrollLeft:objMainContainer.scrollLeft);
+          this.objDialog.popup.style.top = (document.body.clientHeight / 2) + (document.body.scrollTop?document.body.scrollTop:objMainContainer.scrollTop);
+
+         $(this.objDialog.popup).animate({"height": "+="+(iHeight - 10)+"px", "width": "+="+(iWidth - 10)+"px",
+                                            "left": "-="+(iWidth/2)+"px",
+                                            "top": "-="+(iHeight/2 -20)+"px"}, 200);
+
+        /*var popup,iMaxNo,iWidthInc,iHeightInc,iTopDec,iLeftDec,t,iInterval = 1000,iFrom=10;
+
+         iWidthInc = iWidth/iFrom;
+         iHeightInc = iHeight/iFrom;
+         iTopDec = (document.body.clientHeight / 2)/iFrom;
+         iLeftDec = (document.body.clientWidth / 2)/iFrom;
+
+        // alert(iLeft+","+iLeftDec);
+
+          popup = this.objDialog.popup;
+
+         popup.style.display = "block";
+
+         var iWidthInc2,iHeightInc2,iTopDec2,iLeftDec2;
+         iWidthInc2 = iWidthInc;
+         iHeightInc2 = iHeightInc;
+         iTopDec2 = (document.body.clientHeight / 2)-iTopDec;
+         iLeftDec2 = (document.body.clientWidth / 2)-iLeftDec;
+
+        t=setInterval(function()
+         {
+             if(iWidthInc2 <= iWidth)
+             {
+                // alert(iLeftDec2);
+                 popup.style.width = iWidthInc2 +"px";
+                 popup.style.height = iHeightInc2 +"px";
+                 popup.style.top = iTopDec2 +"px";
+                 popup.style.left = iLeftDec2 +"px";
+             }
+             else
+             {
+                 alert(iLeftDec+","+iLeftDec2);
+                 popup.style.width = (iWidth-iWidthInc2) +"px";
+                 popup.style.height = (iHeight-iHeightInc2) +"px";
+                 // popup.style.top = iTopDec +"px";
+                 var ileft = (document.body.clientHeight / 2)
+                 //popup.style.left = iLeftDec2-iLeft +"px";
+                 clearInterval(t);
+             }
+
+             iWidthInc2 += iWidthInc;
+             iHeightInc2 += iHeightInc;
+             if(iTopDec2 >= iTop)
+                iTopDec2 -= iTopDec;
+              if(iLeftDec2 >= iLeft)
+                iLeftDec2 -= iLeftDec;
+         }, iInterval); */
+
+     };
+
+    this.zoomOut = function()
+    {
+         this.objDialog.popup.style.display = "none";
+        this.objDialog.visible = false;
+
+        var iWidth,iHeight,iTop,iLeft;
+        iTop = this.objDialog.popup.style.top;
+        iLeft = this.objDialog.popup.style.left;
+        iWidth = this.objDialog.popup.style.width;
+        iHeight = this.objDialog.popup.style.height;
+
+        this.objDialog.popup.setAttribute("old_iTop",iTop);
+        this.objDialog.popup.setAttribute("old_iLeft",iLeft);
+        this.objDialog.popup.setAttribute("old_iWidth",iWidth);
+        this.objDialog.popup.setAttribute("old_iHeight",iHeight);
+
+        iTop = iTop.substring(0,(iTop.length - 2));
+        iLeft = iLeft.substring(0,(iLeft.length - 2));
+        iWidth = iWidth.substring(0,(iWidth.length - 2));
+        iHeight = iHeight.substring(0,(iHeight.length - 2));
+        if(clAppBuffer.getWindowType() == Constants.IMODULE_WINDOW.DEFAULT)
+        $(this.objDialog.popup).animate({"height": "-="+iHeight+"px", "width": "-="+iWidth+"px",
+            "left": "+="+(iWidth/2)+"px",
+            "top": "+="+(iHeight/2)+"px"}, 200,null,cross.createCallbackFunc(me,me.afterZoomOut));
+        else
+           cross.createCallbackFunc(me,me.afterZoomOut);
+         // this.closeDialog();
+    };
+
+    this.afterZoomOut=function()
+    {
+        if(!this.isGlobalDlg)// && this.isClearOnClose)
+        {
+            var objDlg=Focus.crm.view.arrDialogBox[this.sId];
+            if(objDlg)
+            {
+                try
+                {
+                    delete Focus.crm.view.arrDialogBox[this.sId];
+                    if(window.frames[this.sId+"contentFrame"].contentWindow)
+                       delete window.frames[this.sId+"contentFrame"].contentWindow;
+                    else
+                        delete window.frames[this.sId+"contentFrame"];
+                }
+                catch(ee) {
+
+                }
+                this.objDialog.popup.parentNode.removeChild(this.objDialog.popup);
+            }
+        }
+        else
+           me.closeDialog();
+    };
+
+    this.closeDialog = function()
+    {
+        this.objDialog.popup.style.display = "none";
+        this.objDialog.visible = false;
+    };
+
+
+   this.setBounds=function(sTitle,xPosition,yPosition,iWidth,iHeight)
+    {
+       /* if (sDlgBoxArgs["x"] <= 1)
+            xPosition = 2;
+        if (sDlgBoxArgs["y"] <= 1)
+            yPosition = 2;*/
+        if(xPosition>0 && yPosition>0)
+            this.setXY(xPosition,yPosition);
+        this.objDialog.popup.style.width = iWidth + 'px';
+        this.objDialog.popup.style.height = (iHeight) + 'px';
+        var iExcludeHeight;
+        iExcludeHeight=(me.isActionsExist?0:20);
+        iExcludeHeight=iExcludeHeight+((me.isResize||!me.isSimple)?0:18);
+        this.objCenterContainer.style.height = (iHeight-38) + 'px';
+        this.objCenterData.style.height = (iHeight-(78-iExcludeHeight)) + 'px';
+        this.objIFrame.style.width = '100%';
+        if(getDialogBox(sDlgBoxArgs["id"]).getContentPane().contentWindow)
+            this.objIFrame.style.height = '100%';
+        else
+            this.objIFrame.style.height = '86%';
+
+        shiftTo(this.objDialog.popup, this.x, this.y);
+     };
+
+    this.openDialog();
+ }
+
+var selectedObj;
+var offsetX, offsetY;
+var objPrevMouseOverHandler=null;
+var bIsChildWindowEvent = false;
+var objPrevMouseUpHandler=null;
+var isDragging = false;
+//var sDialogBoxId;
+var clDialogBox;
+
+function startDrag(sId, evt)
+{
+//    sDialogBoxId=sId;
+//    alert(1111111111)
+    var obj=document.getElementById(sId+'SWindow');
+    evt = evt ? evt : window.event;
+
+    selectedObj = obj;
+
+    if (evt.clientX)
+    {
+        offsetX = evt.clientX;
+        offsetY = evt.clientY;
+    }
+    else if (evt.pageX)
+    {
+        offsetX = evt.pageX;
+        offsetY = evt.pageY;
+    }
+    offsetX -= selectedObj.offsetLeft;
+    offsetY -= selectedObj.offsetTop;
+    if(getDialogBox(sId).getContentPane().contentWindow)
+        clDialogBox=getDialogBox(sId).getContentPane().contentWindow;
+    else clDialogBox=getDialogBox(sId).getContentPane();
+    var clIframeDoc=clDialogBox.document;
+    bIsChildWindowEvent = false;
+    if(clIframeDoc )
+    {
+        objPrevMouseOverHandler=clIframeDoc.onmousemove;
+        objPrevMouseUpHandler=clIframeDoc.onmouseup;
+        clIframeDoc.onmousemove=function(evt)
+        {
+            bIsChildWindowEvent=true;
+            dragIt(evt);
+        };
+        clIframeDoc.onmouseup=function()
+        {
+            bIsChildWindowEvent=true;
+            release();
+        };
+    }
+    document.onmousemove = function(evt)
+    {
+        bIsChildWindowEvent=false;
+        dragIt(evt);
+    };
+    document.onmouseup = release;
+
+    if (typeof document.onselectstart != "undefined")
+        document.onselectstart = new Function("return false");
+    return false;
+}
+
+
+//Drag an element
+function dragIt(evt)
+{
+    var x,y;
+    if(bIsChildWindowEvent)
+    {
+        evt = (evt) ? evt : clDialogBox.event;
+        if (evt.clientX)
+        {
+            x= evt.clientX+selectedObj.offsetLeft;
+            y= evt.clientY+selectedObj.offsetTop;
+        }
+        else if (evt.pageX)
+        {
+            x= evt.pageX+selectedObj.offsetLeft;
+            y= evt.pageY+selectedObj.offsetTop;
+        }
+    }
+    else
+    {
+        evt = (evt) ? evt : window.event;
+        if (evt.clientX)
+        {
+            x = evt.clientX;
+            y = evt.clientY;
+        }
+        else if (evt.pageX)
+        {
+            x = evt.pageX;
+            y = evt.pageY;
+        }
+    }
+    shiftTo(selectedObj, (x - offsetX), (y - offsetY),true);
+    //writeToLog("11");
+    /*evt.returnValue=false;
+    evt.cancelBubble = true;*/
+    cross.cancelBubble(evt);
+    return false;
+}
+
+function release()
+{
+//    alert("rel")
+    selectedObj.zIndex = 1;
+    if(clDialogBox.document)
+    {
+        clDialogBox.document.onmousemove=objPrevMouseOverHandler;
+        clDialogBox.document.onmouseup=objPrevMouseUpHandler;
+    }
+    document.onmousemove = null;
+    document.onmouseup = null;
+    bIsChildWindowEvent=false;
+    isDragging=false;
+    document.onselectstart=null;
+    return false;
+}
+
+function shiftTo(elemDialogBox, x, y,isIgnoreScroll)
+{
+//    alert('vshiftTo  '+x+","+ y);
+    x = x > 0 ? x :0;
+    y = y > 0 ? y:0;
+    if(!isIgnoreScroll)
+    {
+        if(document.body.scrollLeft > 0)
+            x += document.body.scrollLeft;
+        if(document.body.scrollTop>0)
+            y += document.body.scrollTop;
+    }
+    elemDialogBox.style.left = x;
+    elemDialogBox.style.top = y;
+
+}
+
+
+/**
+ *    This method used to a register a instance while loading a screen and ll be removed when page or screen is reloaded or replace by other screen
+ */
+/*
+var clInstanceStore=null;
+function registerInstance(sInstanceId,clInstance,iScope)
+{
+
+   if(iScope!=Constants.SCOPE_APP)
+   {
+    if(!clInstanceStore)
+       clInstanceStore=new Array();
+       clInstanceStore[sInstanceId]=clInstance;
+   }
+
+}
+
+function removeAllInstancesFromStore()
+{
+    if(clInstanceStore)
+    {
+       var key;
+       var value;
+       for(key in clInstanceStore)
+          delete clInstanceStore[key];
+
+    }
+}*/
+
+/* creates HTML Dilaog
+ * resources needed:
+ *     <script type="text/javascript" src="res/scripts/dialog/SDialogAPI.js"></script>
+ *     <script type="text/javascript" src="res/scripts/dialog/SCustReportDialog.js"></script>
+ *     <script type="text/javascript" src="res/scripts/dialog/SDialogDrag.js"></script>
+ *     <script type="text/javascript" src="res/scripts/uifactory.js"></script>
+ *     <link rel="stylesheet" href="res/styles/dialogLayer_winxp.css">
+ *     res/images/closeBox_winxp.png
+ */
+
+/**
+ * Dialog tag heirarchy:
+ *  <DIV id=SWindow>
+ *      <DIV  id="titlebar" >
+ *          <img id="closebox"/>
+ *          <span id="STitlebar">STitlebar</span>
+ *      </DIV>
+ *      <IFRAME> or <DIV> id = contentFrame
+ *  </DIV>
+ */
+namespace("Focus.crm.view");
+
+Focus.crm.view.arrDialogBox=[];
+
+function createDialog(sId,sTitle,x,y,iWidth,iHeight,sUrl
+        ,isScrollable,arrActions,isResize,isExcludeJs,isGlobalDlg,ignoreAnimation,isActionsExist,ignoreMove)
+{
+     return new DialogBox(sId,sTitle,x,y,iWidth,iHeight,sUrl,false,null,isScrollable,true,arrActions,false,null,isResize,isExcludeJs,isGlobalDlg,false,ignoreAnimation,false,isActionsExist,ignoreMove);
+};
+
+function createDialogWithFrame(sId,sTitle,x,y,iWidth,iHeight,sUrl
+        ,isScrollable,arrActions,isResize,isExcludeJs,isGlobalDlg,ignoreAnimation,isActionsExist,ignoreMove)
+{
+     return new DialogBox(sId,sTitle,x,y,iWidth,iHeight,sUrl,true,null,isScrollable,true,arrActions,false,null,isResize,isExcludeJs,isGlobalDlg,false,ignoreAnimation,false,isActionsExist,ignoreMove);
+};
+
+function createSimpleDialog(sId,sTitle,x,y,iWidth,iHeight,sUrl
+        ,isScrollable,arrActions,isResize,isExcludeJs,isGlobalDlg,ignoreAnimation,isActionsExist,ignoreMove)
+{
+     return new DialogBox(sId,sTitle,x,y,iWidth,iHeight,sUrl,false,null,isScrollable,true,arrActions,false,null,isResize,isExcludeJs,isGlobalDlg,false,ignoreAnimation,true,isActionsExist,ignoreMove);
+};
+
+function createSimpleDialogWithFrame(sId,sTitle,x,y,iWidth,iHeight,sUrl
+        ,isScrollable,arrActions,isResize,isExcludeJs,isGlobalDlg,ignoreAnimation,isActionsExist,ignoreMove)
+{
+     return new DialogBox(sId,sTitle,x,y,iWidth,iHeight,sUrl,true,null,isScrollable,true,arrActions,false,null,isResize,isExcludeJs,isGlobalDlg,false,ignoreAnimation,true,isActionsExist,ignoreMove);
+};
+
+function createSimpleFullModeDialogWithFrame(sId,sTitle,sUrl,isScrollable,isDefaultTemplate,arrActions,isExcludeJs,isGlobalDlg,ignoreAnimation,isActionsExist)
+{
+    return new DialogBox(sId,sTitle,0,0,0,0,sUrl,true,null,isScrollable,isDefaultTemplate,arrActions,false,null,false,isExcludeJs,isGlobalDlg,false,ignoreAnimation,true,isActionsExist,true,true);
+};
+
+//var arrDialogBox=[];
+//var isDiv = false;
+function DialogBox(sId,sTitle,x,y,iWidth,iHeight,sUrl,isIFrame,sFormName,isScrollable,isDefaultTemplate,arrActions,isStoreObj,arrResizeIds,isResize,isExcludeJs,isGlobalDlg,isClearOnClose,ignoreAnimation,isSimple,
+                   isActionsExist,ignoreMove,isFullMode,isIFramePostReq,isDisableCloseAction,dontCloseOnCancel)
+{
+//    if(isStoreObj)
+
+    if(isFullMode)
+    {
+        x=15;
+        y=15;
+        iWidth=(document.body.clientWidth-30);
+        iHeight=(document.body.clientHeight-40);
+        util.addClass(document.body,"overflowHidden");
+        util.addClass(document.getElementById("containerDiv"),"overflowHidden");
+        util.addClass(document.getElementById("disableDlgBGImg"),"opacityOne");
+    }
+
+    Focus.crm.view.arrDialogBox[sId]=this;
+    var me=this;
+    this.isShowAfterPageLoad=false;
+    var minWidth=100;
+    var minHeight=100;
+    var currentWidth=0;
+    var currentHeight=0;
+    var currentClientX =0;
+    var currentClientY =0;
+    var newClientX =0;
+    var newClientY =0;
+    var direction='Released';
+//    var shade;
+    var position;
+    var clDialogBox1;
+    var bIsChildWindowEvent1 = false;
+    var objPrevMouseUpHandler1=null;
+    var objPrevMouseMoveHandler1=null;
+//    var isDiv = false;
+    var isIE = cross.isIE();//( /msie/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent) )
+    this.isIFrameLoaded=false;
+    this.sOnLoadScript=null;
+    this.objHandlerFns=[];
+    this.objHandlerFnParams=[];
+    this.sErrorHandler=null;
+    this.bHide=false;
+    var isIFramePostReq=(isIFramePostReq?isIFramePostReq:false);
+    if(isDefaultTemplate==null)
+        isDefaultTemplate = true;
+
+    if(isExcludeJs==null || isExcludeJs==undefined)
+        isExcludeJs = false;
+
+    if(isResize == undefined)
+        isResize = true;
+    if(isActionsExist == undefined)
+       isActionsExist = true;
+    if(isDisableCloseAction == undefined)
+        isDisableCloseAction = false;
+    if(dontCloseOnCancel == undefined)
+        dontCloseOnCancel = false;
+
+
+     var sActions="";
+    if(arrActions)
+    {
+        for(var i=0;i<arrActions.length;i++)
+        {
+            sActions+= arrActions[i];
+            if(i<(arrActions.length-1))
+            sActions+="$";
+        }
+
+    }
+    var sDlgBoxArgs={"id":sId,"title":sTitle,"x":x,"y":y,"width":iWidth,"height":iHeight,"url":sUrl,"isIFrame":isIFrame,"formName":sFormName,
+                     "isScrollable":isScrollable,"isDefaultTemplate":isDefaultTemplate,"actions":sActions,"isExcludeJs":isExcludeJs,
+                     "isClearOnClose":isClearOnClose,"isGlobalDlg":isGlobalDlg,"ignoreAnimation":ignoreAnimation,"isResize":isResize,"isActionsExist":isActionsExist,"isSimple":isSimple,"ignoreMove":ignoreMove,
+                    "isIFramePostReq":isIFramePostReq};
+        //"sOk":sOk,"sCancel":sCancel,"sOkHandler":sOk,"sCancelHandler":sCancel,
+
+
+    this.init = function()
+    {
+
+        this.sUrl = sUrl;
+        this.objContentArea=null; // either div or iframe object of dialogbox
+        this.sFormName=sFormName;
+        //this.sOnLoadScript="";
+        this.iWidth = iWidth;
+        this.iHeight = iHeight;
+
+        var iActionsHeight=0,iTitleHeight,iResizeHeight=0,iExtHeight=0;
+        iTitleHeight = 20;
+        iExtHeight=7; // assume top,bottom paddings
+        if(isActionsExist) iActionsHeight = 20;
+        if(isResize||!isSimple) iResizeHeight = 11; // img height
+
+        if(!document.getElementById(sId+"SWindow"))
+        {
+            var objDivWindow = document.createElement("div");
+//            shade = document.createElement('div');
+//            shade.setAttribute('id', 'shade');
+
+            objDivWindow.id = sId+"SWindow";
+            /*if(sTitle!=null)
+                objDivWindow.className = "SWindow";
+            else objDivWindow.className = "SWindow1";*/
+            //objDivWindow.innerHTML ="<img align='right'  id='"+sId+"closebox' src='"+app.getImagePath(true)+"blank.png' class="+(sTitle!=null?"'closebox sModule s-closeDlg'":"'closebox1 sModule s-cross_small'")+">";
+
+            if(isSimple)
+            {
+                objDivWindow.style.background="#ffffff";
+                //objDivWindow.style.border="2px solid #E7E7E7";
+            }
+            objDivWindow.className = "SWindow";
+
+            if(!isDisableCloseAction)
+                objDivWindow.innerHTML ="<span align='right' style='float: right;padding: 10px;margin-right: 10px;' id='"+sId+"closebox' src='"+app.getImagePath(true)+"blank.png' class='crm crm-close-dlg facrm-font-size-11'></span>";
+
+            //objDivWindow.innerHTML ="<span align='right' style='float: right;' id='"+sId+"closebox' src='"+app.getImagePath(true)+"blank.png' class='crm crm-square-cancel'></span>";
+            /*objDivWindow.innerHTML ="<img align='right'  id='"+sId+"closebox' src='"+app.getImagePath(true)+"blank.png' class="+(!isSimple?"'closebox sModule s-closeDlg'":"'closebox1'")+">";*/
+
+            var sInnerHTML="";
+            //if(sTitle!=null)
+            {
+                sInnerHTML="<div style='"+(ignoreMove?";cursor:default":"")+"'"+ (!isSimple?"class='dialogHeader'":"class='dialogSimpleHeader'") +"id='"+sId+"titlebar'>" + /*height:"+iTitleHeight+"px;*/
+                    " "+(sTitle!=null?"<span id='"+sId+"STitlebar' "+(!isSimple?"class='dialogHeaderTitle'":"class='dialogHeaderTitle2'")+">"+sTitle+"</span>":"")+
+                    "</div>";
+                /*sInnerHTML="<div style='height:"+iTitleHeight+"px;"+(ignoreMove?";cursor:default":"")+"' class='dialogHeader' id='"+sId+"titlebar'>" +
+                           " "+(sTitle!=null?"<span id='"+sId+"STitlebar' "+(!isSimple?"style='color:#ffffff;float:left'":"style='float:left'")+">"+sTitle+"</span>":"")+
+                           "</div>";*/
+            }
+            //align='center'
+            sInnerHTML=sInnerHTML+"<DIV id='"+sId+"centerContainer'  " +
+                       " class='centerContainer' style='height:"+(iHeight-(iTitleHeight+iResizeHeight+iExtHeight))+"px;"+(isSimple?'border:0':'')+"'>";
+
+	        sInnerHTML=sInnerHTML+"<DIV  id='"+sId+"centerData' "+(isIFrame?"class='loadingImg'":'')+" style='width:100%;padding-bottom:10px;height:"+(iHeight-(iTitleHeight+iActionsHeight+iResizeHeight+iExtHeight))+"px;"+((!isIFrame&&isScrollable)?"overflow-y:auto'":'overflow:hidden')+"'>";
+
+             if(isIFrame)
+            {
+               // alert(sId)
+                sInnerHTML+="<iframe onload='DialogBox.prototype.onIframeLoad(this,\""+sId+"\","+isIFramePostReq+")' "+(!isScrollable?" scrolling='no'":"")
+                        +" id='"+sId+"contentFrame' name='"+sId+"contentFrame' frameborder='0' style='display:none;width:"+iWidth
+                        +";height:"+iHeight+";' class='contentFrame'></iFrame>";
+            }
+            /*else if(!isIFrame && sUrl)
+            {
+
+                isDiv = true;
+                sInnerHTML+="<div id='"+sId+"contentFrame' style=' width:"+iWidth+";height:"+(iHeight-40)+";' ></div>";
+            }*/
+
+           else
+            {
+                isDiv = true;
+                var sButValue,sFnName="Ok",sAttribute=null,sButtonHTML="";
+
+                sInnerHTML+="<div id='"+sId+"contentFrame' style=' width:"+iWidth+";height:"+(iHeight-40)+";' ></div>";
+
+                if(isActionsExist)
+                {
+                    if(arrActions)
+                    {
+                        var sArrAction;
+                        for(var i=0;i<arrActions.length;i++)
+                        {
+                            sArrAction = arrActions[i].split("|");
+                            sButValue = sArrAction[0];
+                            sFnName = sArrAction[1];
+                            if(sArrAction.length>2)
+                                sAttribute =  sArrAction[2];
+
+                            //sButtonHTML+="<input type='button' "+ (sAttribute?sAttribute:'') +" style='margin-right:5px;width:50px;cursor:pointer;' class='nButton' id='"+sButValue+"' name='"+sButValue+"' value='"+sButValue+"' onclick='DialogBox.prototype.eventHandler(this,\""+sFnName+"\")'>";
+                            sButtonHTML+="<td><a  "+ (sAttribute?sAttribute:'') +" style='margin-right:5px' class='nPrimaryButton' id='btn_"+i+"' name='"+sButValue+"' href='javascript:void(0)'" +
+                                         " onclick='DialogBox.prototype.eventHandler(this,\""+sFnName+"\");' onmouseup='CLButtonUtil.onMouseUp(this);' onmousedown='CLButtonUtil.onMouseDown(this);' onmouseout='CLButtonUtil.onMouseOut(this);' onmouseover='CLButtonUtil.onMouseOver(this);'>"+sButValue+"</a></td>";
+                        }
+                    }
+
+                    //sButtonHTML="<div align='right' style='height:25px;"+(isSimple?"":"border-top:1px solid #B9CAD5;background:gainsboro")+"'><table><tr>"+sButtonHTML;
+                    sButtonHTML="<div align='right' style='height:25px;'><table><tr>"+sButtonHTML; /*"+(isSimple?"":"border-top:1px solid #B9CAD5;background:gainsboro")+"*/
+                    sButtonHTML+="</tr></table>";
+                    sButtonHTML+="</div>";
+                }
+            }
+            sInnerHTML=sInnerHTML+"&nbsp;</DIV>";  //End of Data Div
+
+            if(isActionsExist)
+            {
+                sInnerHTML=sInnerHTML+"<DIV id='"+sId+"frameActions'  class='bottomData'  "+(isSimple?"style='background-color:#fff;border:0'":"")+">";
+                if(sButtonHTML)
+                    sInnerHTML=sInnerHTML+sButtonHTML;
+
+                sInnerHTML=sInnerHTML+"</DIV></DIV>";    //End of Center Container
+            }
+
+            objDivWindow.innerHTML +=sInnerHTML;
+
+            //objDivWindow.innerHTML +="<img id='"+sId+"imgId' align=right src='"+app.getImagePath()+"drag.PNG' alt='Drag' style='MARGIN-TOP: 10px;position:relative;background:transparent;cursor:se-resize;'>";
+
+            if(isResize)
+                objDivWindow.innerHTML +="<img id='"+sId+"imgId' align=right src='"+app.getImagePath(true)+"blank.png' class='sPref s-drag'alt='Drag' " +
+                                     "style='position:absolute;cursor:se-resize;right:1px;bottom:1px;'>&nbsp;";
+
+
+
+            var ObjContainerDiv;
+            //if(!isGlobalDlg)
+             //   ObjContainerDiv =  document.getElementById("dvCenter");
+            //else
+                ObjContainerDiv =  document.getElementById("containerDiv");
+
+            if(ObjContainerDiv)
+                ObjContainerDiv.appendChild(objDivWindow);
+            else
+                window.document.body.appendChild(objDivWindow);
+
+            if(isResize)
+                document.getElementById(sId+"imgId").onmousedown=this.getDivPosition;
+            if(!isDisableCloseAction)
+                document.getElementById(sId+"closebox").onclick= this.hide;
+        }
+        else
+        {
+            if(!isDisableCloseAction)
+            {
+                var objImg = document.getElementById(sId + "closebox");
+                objImg.onclick = this.hide;
+            }
+            if(isIFrame && isResize)
+                document.getElementById(sId+"imgId").style.marginTop = (iHeight-30);
+        }
+
+        this.objContentArea=document.getElementById(sId+"contentFrame");
+
+        if(isIFrame)
+        {
+
+            util.addClass(this.objContentArea.parentNode,'loadingImg');
+            this.objContentArea.style.display="none";
+            this.objContentArea.style.width = iWidth;
+            this.objContentArea.style.height = iHeight;
+        }
+        else
+        {
+            util.removeClass(this.objContentArea.parentNode,'loadingImg');
+            cross.setVisible(this.objContentArea,true);
+            this.objContentArea.style.width = iWidth;
+            this.objContentArea.style.height = (iHeight-40);
+        }
+
+        if(!this.dialog)
+            this.dialog = new Dialog(sDlgBoxArgs);
+        if(!isIFrame && sUrl)
+            me.setDialogUI();
+
+        //alert("disableDlgBGImg=="+document.getElementById('disableDlgBGImg'));
+              //util.toggleDlgBackground(true,true); // todo: check
+
+    };
+
+    this.setDialogUI = function()
+    {
+
+         var sURL;
+        if(isIFramePostReq)
+            sURL = sDlgBoxArgs["url"];
+        else if(sDlgBoxArgs["url"])
+        {
+            var sUrl,sUrl2,sResult;
+            sUrl =sDlgBoxArgs["url"];
+
+            if(sUrl.indexOf("?")!=-1)
+            {
+                sUrl2 = sUrl.substring(0,sUrl.indexOf("?"));
+                sResult = sUrl.substring(sUrl.indexOf("?")+1);
+            }
+            else
+                sUrl2=sUrl;
+
+            if(sDlgBoxArgs["isDefaultTemplate"])
+            {
+                var sSrc=clAppBuffer.getContextPath()+"/dialogTemplate.action?url="+escape(sUrl2);
+                sSrc+="&actions="+sDlgBoxArgs["actions"]+"&"+sResult+"&dialogName="+sDlgBoxArgs["id"]+"&isIFrame="+false;
+                sSrc+="&dlgWidth="+sDlgBoxArgs["width"]+"&dlgHeight="+sDlgBoxArgs["height"]+"&isExcludeJs="+sDlgBoxArgs["isExcludeJs"];
+                sSrc+="&isDialog=true";
+                sURL = sSrc;
+            }
+            else
+                sURL = sDlgBoxArgs["url"];
+        }
+        var objContentPane;
+        objContentPane = me.getContentPane();
+        con.sendPostRequest(sURL,null,me.handleResponse,null,con.RESPONSE_HTML,objContentPane);
+    };
+
+    this.handleResponse = function(sResponse) {
+        if (isIFramePostReq)
+        {
+            window.frames[sId + "contentFrame"].clDialogHandler.handleResponse(sId, sResponse);
+            window.frames[sId + "contentFrame"].clAppBuffer.setReqToken(clAppBuffer.getReqToken());
+        }
+        else
+        {
+            initAllCombos=null;
+            var objContentPane;
+            objContentPane = me.getContentPane();
+
+            objContentPane.innerHTML=sResponse;
+            cross.setVisible(objContentPane,true);
+            loadResources(objContentPane,me.onScriptsLoad);
+        }
+    };
+
+    this.onScriptsLoad = function()
+    {
+        util.onScriptsLoad();
+        me.handleOnLoad();
+        //alert("disableDlgBGImg=="+document.getElementById('disableDlgBGImg'));
+        //util.toggleDlgBackground(true,true); /* todo : check*/
+    };
+
+    this.setCenter=function()
+    {
+        this.x = document.body.clientWidth / 2;
+        this.y = document.body.clientHeight / 2;
+        this.x-= this.iWidth / 2;//(640/2);
+        this.y-= this.iHeight / 2;//(410/2);
+
+        /*if(document.body.scrollLeft > 0)
+            this.x += document.body.scrollLeft;
+        if(document.body.scrollTop>0)
+            this.y += document.body.scrollTop;*/
+
+        this.dialog.setXY(this.x,this.y);
+    };
+
+    this.setOnClose= function(onClose)
+    {
+        this.onCloseFunc=onClose;
+    };
+
+    this.setTitle = function(sTitle)
+    {
+        if(sTitle!=null) {
+            var objSpan = document.getElementById(sId + "STitlebar");//this.objContentArea.parentNode.getElementsByTagName("SPAN")[0];
+            objSpan.innerHTML = sTitle;
+        }
+    };
+
+    this.setShowAfterPageLoad=function(isShowAfterPageLoad)
+    {
+        this.isShowAfterPageLoad=isShowAfterPageLoad;
+    };
+
+    this.setURL = function(sURL)
+    {
+        //alert("setUrl "+sURL)
+        this.sUrl = sURL;
+        if(this.dialog)
+            this.dialog.setURL(sURL);
+    };
+
+    this.setBounds=function(x,y,iWidth,iHeight)
+    {
+        this.iWidth=iWidth;
+        this.iHeight=iHeight;
+        me.dialog.setBounds("",x,y,iWidth,iHeight);
+    };
+
+    // Calls the function present in iframe document. if iframe window not loaded yet,
+    // then it stores the function calling script in variable 'sOnLoadScript' that needs to be evaluated on page load of iframe.
+    // params: 1 - handler name, 2 - fieldname, 3 - field value
+
+    /*this.setFldValue = function(handler,sFieldName,sFieldValue)
+    {
+        if(this.isIFrameLoaded)
+            eval("this.objContentArea.contentWindow."+handler+"('"+sFieldName+"','"+sFieldValue+"');");
+        else
+            this.sOnLoadScript = this.sOnLoadScript + handler+"('"+sFieldName+"','"+sFieldValue+"');";
+    };*/
+
+    /**
+     *  Adds form content to contentpane. This method must be called after appending elements to form.
+     **/
+    this.addFormContent = function(objForm,objContentPane)
+    {
+        objForm.appendChild(objContentPane.parentNode);
+    };
+
+    // Calls the javascript function in iframe by passing parameter.
+    // params : function name, parameters
+    this.callFn = function(handler,sParam,sTargetObj)
+    {
+        if(isIFrame)
+        {
+            var sDlgWindow='window.frames["'+sId + 'contentFrame"]';
+            if(this.isIFrameLoaded)
+                cross.callFunction(window.frames[sId + "contentFrame"],eval(sDlgWindow+"."+handler),sParam);
+            else
+            {
+                this.objHandlerFns[this.objHandlerFns.length]=sDlgWindow+"."+handler;
+                this.objHandlerFnParams[this.objHandlerFns.length-1]=sParam;
+            }
+        }
+        else //todo need to check....
+        {
+            this.objHandlerFns[this.objHandlerFns.length]=handler;
+            this.objHandlerFnParams[this.objHandlerFns.length-1]=sParam;
+        }
+    };
+
+    this.getContentPane = function()
+    {
+        return this.objContentArea;
+    };
+    this.getContentPaneWindow=function()
+    {
+        return  this.objContentArea.contentWindow;
+    };
+    this.getContentPaneDocument = function()
+    {
+        return this.objContentArea.contentWindow.document;
+    };
+
+   // shows dialog
+    this.show = function()
+    {
+        util.toggleDlgBackground(true,true);
+        me.dialog.sFormName = me.sFormName; //assigning form name to dialog box to disable fields
+        if(!this.isShowAfterPageLoad)
+            me.dialog.showDialog();
+    };
+
+    this.cancelHandler = function(btn,sHandler)
+    {
+        if(sHandler)
+        {
+            if(isIFrame)
+            {
+                var sDlgWindow='window.frames["'+sId + 'contentFrame"]';
+                cross.callFunction(window.frames[sId+"contentFrame"],eval(sDlgWindow+"."+sHandler));
+            }
+            else
+            {
+                var objFn = eval(sHandler);
+                objFn.apply(null,[btn]);
+            }
+        }
+        if(!dontCloseOnCancel)
+            this.hide();
+
+    };
+
+    this.getActionsDiv = function()
+    {
+        return document.getElementById(sId+"frameActions");
+    };
+
+    this.getActions = function()
+    {
+        var objTable=cross.getChildren(me.getActionsDiv())[0];
+        var arrCells=objTable.tBodies[0].rows[0].cells;
+        var arrActions=new Array();
+        for(var i=0;i<arrCells.length;i++)
+        {
+            arrActions[arrActions.length]=cross.getChildren(arrCells[i])[0];;
+        }
+        return arrActions;
+    };
+
+    // closes dialog
+    this.hide = function()
+    {
+        util.toggleDlgBackground(false,true);
+
+        if(isIFrame)
+            con.closeErrorDiv(window.frames[sId+"contentFrame"]);
+        //else
+           // con.closeErrorDiv(sId+"contentFrame");
+
+
+        if(me.dialog.objDialog.visible)
+          {
+            if(me.onCloseFunc)
+            {
+                if(typeof window[me.onCloseFunc]=="function") // looking for onclose function in the window where dialogbox is created
+                {
+                    me.onCloseFunc();
+                }
+                else
+                  eval(me.onCloseFunc)();
+
+            }
+            if(me.dialog)
+            {
+              //  me.dialog.closeDialog();
+                if(!ignoreAnimation)
+                    me.dialog.zoomOut();
+                else
+                    me.dialog.afterZoomOut();
+            }
+//              toggleBackground(false);
+               //me.dialog=null;
+          }
+
+        if(isFullMode)
+        {
+            util.removeClass(document.getElementById("disableDlgBGImg"),"opacityOne");
+            util.removeClass(document.body,"overflowHidden");
+            util.removeClass(document.getElementById("containerDiv"),"overflowHidden");
+        }
+        /*var objDivWindow=document.getElementById(sId+"SWindow");
+        objDivWindow.parentNode.removeChild(objDivWindow);*/
+
+    };
+
+    //resize related functions
+    this.getDivPosition = function(mouse)
+    {
+        //mouse=mouse?mouse:window.event;
+        direction='Pressed';
+        // Save the cursor position to its corresponding global variable
+        var arrMousePos=cross.getMousePos(mouse);
+        currentClientX=arrMousePos.x;
+        currentClientY=arrMousePos.y;
+        /*if(isIE)
+        {
+            currentClientX =(mouse.clientX);
+            currentClientY =(mouse.clientY);
+        }
+        else
+        {
+            currentClientX =(mouse.pageX+2);
+            currentClientY =(mouse.pageY+2);
+        }*/
+
+        // Save the Current Div height to a local variable
+        var tempHeight=document.getElementById(sId+"SWindow").style.height;
+        var tempWidth=document.getElementById(sId+"SWindow").style.width;
+
+        //  Remove the px from the value retrieved from above line of code
+        var widthArray=tempWidth.split('p');
+        var heightArray=tempHeight.split('p');
+        currentWidth = parseInt(widthArray[0]);
+        currentHeight = parseInt(heightArray[0]) ;
+
+        if(!isIE)
+        {
+            if(getDialogBox(sId).getContentPane().contentWindow)
+                clDialogBox1=getDialogBox(sId).getContentPane().contentWindow;
+            else
+                clDialogBox1=getDialogBox(sId).getContentPane();
+            var clIframeDoc=clDialogBox1.document;
+            bIsChildWindowEvent1 = false;
+            if(clIframeDoc )
+            {
+                objPrevMouseMoveHandler1=clIframeDoc.onmousemove;
+                objPrevMouseUpHandler1=clIframeDoc.onmouseup;
+                clIframeDoc.onmousemove=function(evt)
+                {
+                    bIsChildWindowEvent1=true;
+                    me.SetDivPosition(evt);
+                };
+                clIframeDoc.onmouseup=function()
+                {
+                    me.stopDrag();
+                };
+            }
+            document.onmousemove=function(evt)
+            {
+                bIsChildWindowEvent1=false;
+                me.SetDivPosition(evt);
+            };
+        }
+        else
+            document.onmousemove=me.SetDivPosition;
+        document.onmouseup=me.stopDrag;
+        return false;
+    };
+
+    this.SetDivPosition = function(evt)
+    {
+        var objWindow = document.getElementById(sId+"SWindow");
+        var arrMousePos=null;
+        if(bIsChildWindowEvent1)
+        {
+            evt = (evt) ? evt : clDialogBox1.event;
+            arrMousePos=cross.getMousePos(evt);
+            newClientX = arrMousePos.x;
+            newClientY = arrMousePos.y;
+            /*if (evt.clientX)
+            {
+                newClientX= evt.clientX+objWindow.offsetLeft;
+                newClientY= evt.clientY+objWindow.offsetTop;
+            }
+            else if (evt.pageX)
+            {
+                newClientX= evt.pageX+objWindow.offsetLeft;
+                newClientY= evt.pageY+objWindow.offsetTop;
+            }*/
+        }
+        else
+        {
+            arrMousePos=cross.getMousePos(evt);
+            newClientX = arrMousePos.x;
+            newClientY = arrMousePos.y;
+            /*evt = (evt) ? evt : window.event;
+            if (evt.clientX)
+            {
+                newClientX = evt.clientX;
+                newClientY = evt.clientY;
+            }
+            else if (evt.pageX)
+            {
+                newClientX = evt.pageX;
+                newClientY = evt.pageY;
+            }*/
+        }
+//            window.status = "newClientX     "+newClientX+"  newClientY  "+newClientY;
+
+        if(direction=='Pressed')
+        {
+
+            // Calculate The mouse movement in pixels
+            /*var moveToX_Axies=parseInt(newClientX-currentClientX)+document.body.scrollLeft;
+            var moveToY_Axies=parseInt(newClientY-currentClientY)+document.body.scrollTop;*/
+            var moveToX_Axies=parseInt(newClientX-currentClientX);
+            var moveToY_Axies=parseInt(newClientY-currentClientY);
+
+            // Add the mouse movement to the first div height
+            var newDivWidth=parseInt(currentWidth+moveToX_Axies);
+            var newDivHeight=parseInt(currentHeight+moveToY_Axies);
+
+            if(newDivHeight>minHeight && newDivWidth>minWidth)
+            {
+                // Set the Div Width and Height
+                //iHeight-iTitleHeight-iExtHeigh
+
+              //  objContainer.style.height= newDivHeight+'px';
+                objWindow.style.width= newDivWidth+'px';
+                objWindow.style.height= newDivHeight+'px';
+
+                if(isIFrame)
+                {
+                    document.getElementById(sId+"imgId").style.marginTop= (newDivHeight-31)+'px';
+
+                }
+                //else
+                  //  this.objContentArea.style.height= (newDivHeight-40)+'px';
+
+                document.getElementById(sId+"centerContainer").style.height=(newDivHeight-38);
+                document.getElementById(sId+"centerData").style.height=(newDivHeight-78);
+
+                if(arrResizeIds)
+                {
+                    for(var i=0; i<arrResizeIds.length;i++)
+                    {
+                        var objFld;
+                        objFld = window.frames[sId+ "contentFrame"].document.getElementById(arrResizeIds[i]);
+                        if(objFld && cross.isVisible(objFld))
+                        {
+
+
+                            if (!objFld.iActualWidth)
+                            {
+                                objFld.iActualWidth = objFld.offsetWidth;
+                                objFld.parentNode.iActualWidth = objFld.parentNode.offsetWidth;
+                                objFld.iActualHeight = objFld.offsetHeight;
+                                objFld.iActualWDiff = currentWidth-objFld.offsetWidth;
+                                objFld.iActualHDiff = currentHeight-objFld.offsetHeight;
+                            }
+                            objFld.style.width = (newDivWidth - objFld.iActualWDiff)+"px";
+                            objFld.style.height = (newDivHeight - (objFld.iActualHDiff))+"px";
+
+                            //util.writeToLog(currentWidth+" , "+moveToY_Axies);
+                            //util.writeToLog(i+" -->  w="+objFld.style.width+", h="+objFld.style.height);
+
+                            // objFld.style.width = objFld.iActualWidth + objFld.parentNode.offsetWidth - objFld.parentNode.iActualWidth;
+                            // objFld.style.height = objFld.iActualHeight + moveToY_Axies;
+                        }
+                    }
+                }
+                //centerContainer
+            }
+        }
+        return false;
+    };
+
+    this.stopDrag = function()
+    {
+        direction='Released';
+        if(!isIE)
+        {
+            if(objPrevMouseMoveHandler1!=null)
+            {
+                clDialogBox1.document.onmousemove=objPrevMouseMoveHandler1;
+                clDialogBox1.document.onmouseup=objPrevMouseUpHandler1;
+            }
+        }
+        bIsChildWindowEvent1=false;
+        document.onmousemove=null;
+        document.onmouseup=null;
+        return false;
+    };
+
+    this.onLoad = function(handler,sParam)
+    {
+          this.callFn(handler,sParam);
+     };
+
+    this.handleOnLoad = function()
+    {
+        if(this.objHandlerFns.length > 0)
+        {
+            for(var i=0; i < this.objHandlerFns .length; i++)
+            {
+                if(isIFrame)
+                    cross.callFunction(window.frames["'"+sId+ "contentFrame'"],eval(this.objHandlerFns[i]),this.objHandlerFnParams[i]);
+                else
+                    cross.callFunction(window,eval(this.objHandlerFns[i]),this.objHandlerFnParams[i]);
+            }
+        }
+        this.objHandlerFns=[];
+        this.objHandlerFnParams=[];
+        if(this.isShowAfterPageLoad)
+            me.dialog.showDialog();
+    };
+
+    this.onClose= function(onClose)
+    {
+       this.setOnClose(onClose);
+    };
+
+    this.init();
+
+    this.showExceptionMsgInDailog=function(sStatusCode,sStatusMsg)
+    {
+        if(this.sErrorHandler)
+            cross.callFunction(window,eval(this.sErrorHandler));
+        else
+        {
+            if(sStatusCode)
+            {
+                msg.showMessage(0,sStatusMsg,"Message");
+                me.dialog.afterZoomOut();
+                util.toggleDlgBackground(false,true);
+            }
+            else
+            {
+                if(this.bHide)
+                    this.show();
+            }
+        }
+    }
+
+    this.setErrorHandler=function(sErrorHandler)
+    {
+        this.sErrorHandler=sErrorHandler
+    }
+
+    this.isHide=function(bHide)
+    {
+        this.bHide=bHide
+    }
+}
+
+function getDialogBox(sId)
+{
+    return Focus.crm.view.arrDialogBox[sId];
+}
+
+DialogBox.prototype.onIframeLoad=function(objIframe,sDialogBoxId,isIFramePostReq)
+{
+    if(!objIframe.src)
+        return;
+    objIframe.style.display="";
+    util.removeClass(objIframe.parentNode,'loadingImg');
+   var objDialobox=Focus.crm.view.arrDialogBox[sDialogBoxId];
+//   alert("iframe loaded:"+objDialobox.sOnLoadScript);
+   objDialobox.isIFrameLoaded=true;
+
+    if(isIFramePostReq)
+        objDialobox.setDialogUI();
+    else
+        objDialobox.handleOnLoad();
+
+
+};
+
+/*
+function createCallback2(obj, fn, args)
+{
+//    var arrArguments=args;
+    return new function()
+    {
+
+        //alert(args.length+"--------"+(typeof args));
+        if(typeof args=="object")
+        {
+            fn.apply(obj, args);
+            */
+/*for (var i = 0; i < args.length; i++)
+            {
+                newargs.push(args[i]);
+            }*/
+/*
+        }
+        else
+        {
+            var newargs = [];
+            newargs.push(args);
+            //alert(fn+","+newargs)
+            fn.apply(obj, newargs);
+        }
+    };
+};
+*/
+
+DialogBox.prototype.eventHandler = function(bt,handler)
+{
+    if(handler.indexOf(".do")==-1)
+    {
+        var obj,sFnName;
+        obj = handler.substring(0,handler.indexOf("."));
+        sFnName = handler.substring(handler.indexOf(".")+1);
+        cross.callFunction(obj,eval(handler),[bt]);
+//        var objFn=eval(handler);
+//        objFn.apply(null,[]);
+    }
+      else
+        parent.document.getElementById("context").src=handler;
+};
+
+var clDialogHandler=new function()
+{
+    var me=this;
+
+    me.sDialogId=null;
+    this.handleResponse=function(sDialogId,sResponse)
+    {
+        me.sDialogId=sDialogId;
+        initAllCombos=null;
+        var objContentPane;
+
+        objContentPane=document.getElementById("dlgPostData");
+
+        objContentPane.innerHTML=sResponse;
+        cross.setVisible(objContentPane,true);
+        loadResources(objContentPane,me.onScriptsLoad);
+    };
+
+    this.onScriptsLoad=function()
+    {
+        util.onScriptsLoad();
+        var objDialobox=parent.Focus.crm.view.arrDialogBox[me.sDialogId];
+        objDialobox.handleOnLoad();
+    };
+
+};

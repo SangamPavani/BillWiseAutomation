@@ -1,0 +1,1213 @@
+/**
+/**
+ *
+ * ===> getView()
+ *
+ *      1. getAPITransId() -Returns transid in BigNumber Format
+ *          Required Parameters:
+ *              fnCallback - Callback function which will be invoked by API Framework for returning TransId
+ *              iTransId   - TransId
+ *              iModuleType- ModuleType
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - TransId
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      2. getAccessToken() - Returns accessToken
+ *          Required Parameters:
+ *              fnCallback - Callback function which will be invoked by API Framework for returning TransId
+ *              sClientId   - ClientId
+ *              sClientSecret- ClientSecret
+ *              isDefaultKey - 0 : key is encrypted
+ *                             1 : key is plain
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - Access Token
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      3. closeDialog() - close Dialog
+ *          Required Parameters: none
+ *          OUTPUT Parameters: none
+ *
+ *      4. showDialog() - open Dialog
+ *          Required Parameters:
+ *              fnCallback - Callback function which will be invoked by API Framework for returning TransId
+ *              sUrl - specify the url to be opened for dialog
+ *              iWidth - specify the width of the dialog to be opened
+ *              iHeight - specify the height of the dialog to be opened
+ *
+ *          OUTPUT Parameters: none
+ *
+ *      5. disableBackground() - Disable background
+ *          Required Parameters:
+ *              isDisable - true - for disable , false - for enable
+ *
+ *          OUTPUT Parameters: none
+ *
+ * ===> getExternalView() - Returns current view
+ *      1.closeDialog() - Returns current view reference for closing dialog
+ *      2.showDialog() - Open View Reference Dialog
+ *          Required Parameters:
+ *          fnCallback - Callback function which will be invoked by API Framework for returning TransId
+ *          sUrl - URL to open Dialogue
+ *          iWidth - Width
+ *          iHeight - Height
+ *
+ * ===> getListView() - Returns reference for invoking below given List View functions
+ *      1. getSelectedTransIds() - Returns selected transids as array
+ *          Required Parameters:
+ *              fnCallback - Callback function which will be invoked by API Framework for returning TransIds
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - List of Comma seperated selected transIds [111,222,333]
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      2. refreshListView() - This function can be used for refreshing current list view
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ * ===> getDetailedView() - Returns reference for invoking below given Detailed View functions
+ *      1. getTransId() - Returns current transId
+ *          Required Parameters:
+ *              fnCallback - Callback function which will be invoked by API Framework for returning TransId
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - TransId
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      2. refreshRelatedView() - This function can be used to refresh any related module data
+ *          Required Parameters:
+ *              iModuleId - Related moduleid for refreshing
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *
+ * ===> getEditView() - Returns reference for invoking below given Edit View functions
+ *      1. getFieldValue() - This function can be used to retrieve value of a given field id
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iFieldId - Field Id
+ *              iType - Optional Parameter required only in case of Combobox. For getting Name part from selected comboitem this value should be 1. For getting item value it is not required.
+ *              iComboType - Combo Type[0 - id(integer) ,1- value(String)]
+ *                           (if combo type not provided by default return id of field)
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              fieldId - Field Id
+ *              data - Field value
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *
+ *      2. setFieldValue() - This function can be used to set the value of a given field id
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iFieldId - Field Id
+ *              sValue - Value which will be set to the field
+ *              iComboType - Combo Type[0 - id(integer) ,1- value(String)]
+ *                           (if combo type not provided by default return id of field)
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              fieldId - Field Id
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      3. getBodyFieldValue() - This function can be used to retrieve value of a body table column
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iFieldId - Field Id
+ *              iRowIndex - Row Index (starts from 0)
+ *              iComboType - Combo Type[0 - id(integer) ,1- value(String)]
+ *                           (if combo type not provided by default return id of field)
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              fieldId - Field Id
+ *              rowIndex - Row Index (starts from 0)
+ *              data - Field value
+ *              message -If Status is 1 (Success) then message will be null.
+ *                       If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      4. setBodyFieldValue() - This function can be used to set the value of a body table column
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iFieldId - Field Id
+ *              iRowIndex - Row Index (starts from 0)
+ *              sValue - Value which will be set to the field at given row index
+ *              iComboType - Combo Type[0 - id(integer) ,1- value(String)]
+ *                           (if combo type not provided by default return id of field)
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              fieldId - Field Id
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      5. addBodyRow() - This function can be used to add row in body table
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iTableId - Table Id
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      6. addRowWithValues() -This function can be used to add row with cells filled in body table
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iTableId - Table Id
+ *              arrValues - [                            -- Array of 3 rows with 3 column values in each.
+ *                              [35133,"232",0],         -- Single Row with 3 column values.
+ *                              [35135,"xdgfdrgh",0],
+ *                              [35134,"2555",0]
+ *                          ]
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      7. setRowWithValues() - This function can be used to set cells with values in particular row
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iTableId - Table Id
+ *              iRowIndex - Row Index (starts from 0)
+ *              arrValues -[                        -- Array of 4 rows with 2 column values in each
+ *                              [35133,"232"],      -- Single Row with 2 column values.
+ *                              [35135,"xdgfdrgh"],
+ *                              [35134,"2555"],
+ *                              [300280,"987",1] -- 3Rd Param ComboType
+ *                              [300281,"txt.png",0,2] -- 4Th param AttachmentType
+ *                         ]
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      8. insertRowWithValues() - This function can be used to insert values in row
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iTableId - Table Id
+ *              iPosition - Row Index (starts from 0)
+ *              arrValues -[                        -- Array of 4 rows with 2 column values in each
+ *                              [35133,"232"],      -- Single Row with 2 column values.
+ *                              [35135,"xdgfdrgh"],
+ *                              [35134,"2555"],
+ *                              [300280,"987",1]
+ *                         ]
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      9. getCurrentRow() - This function can be used to get Current Row Index
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iTableId - Table Id
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - Row Number (starts from 0)
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      10. getTableRowCount() - This function can be used to get no. of rows in table
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iTableId - Table Id
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - Rows count
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      11. getTableRowValues() - This function can be used to get array of row values which are validated on Mandatory Fields.
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              arrFieldIds - N no. of FieldIds with comma separator
+ *              iFromRowIndex - Row Index (starts from 0)
+ *              iToRowIndex -  Row Index (starts from 0)
+ *              arrMandatoryFldIds - N no. of FieldIds with comma separator
+ *              iComboType - Combo Type[0 - id(integer) ,1- value(String)]
+ *                           (if combo type not provided by default return String of field)
+ *              isGetAPITransIds - get combo values in APITransIds.
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - Columns data of selected row are obtained with comma separators.
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      12. registerEventListener() -  This function is used to set the event for a given Field.
+ *                                     (The Event is set during the page on Load and the event is triggered on the field depending on the Event type provided)
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iFieId - Field Id
+ *              iEventType - Event Type for the field[onClick - 1, onBlur - 9, onFocus - 10]
+ *              iComboType - Combo Type[0 - id(integer) ,1- value(String)]
+ *                           (if combo type not provided by default return id of field)
+ *
+ *
+ *  ======> A) registerTableEventListener() -  This function is used to set the event for a given Table.
+ *                                     (The Event is set during the page on Load and the event is triggered on the table depending on the Event type provided)
+ *              Required Parameters:
+ *                  fnCallback - Callback function
+ *                  iTableId - Table Id
+ *                  iEventType - Event Type for the field[ onAddRow - 1, onDeleteRow - 2,onEnter - 3]
+ *                  isGetRowIndex - [true - Get row index]/[false - Ignore rowIndex]
+ *
+ *      13. deleteBodyRow() - This function is used to delete particular row of table
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iTableId - Table Id
+ *              iRowIndex - Row Index (starts from 0)
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      13. deleteAllBodyRows() - This function is used to delete all rows of the table
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iTableId - Table Id
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      14. doForceSave() - This function is used to save Printlayout
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *
+ *          OUTPUT Parameters:
+ *              status -
+ *              fieldId -
+ *              data -
+ *              message -
+ *
+ *      15. setFieldStyle() - This function is used to set css style to Field
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iFieldId - Field Id
+ *              sProperties - css properties to be set for any field which are separated by semicolon
+ *                            Example: color:#F60000;height:30px;
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              fieldId - Field Id
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      16. setFieldClass() - This function is used to set css Class to Field
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iFieldId - Field Id
+ *              sClassName - CSS Class Name
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              fieldId - Field Id
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      17. setBodyFieldStyle() - This function is used to set css style to column of table
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iFieldId - Field Id
+ *              iRowIndex - Row Index (starts from 0)
+ *              sProperties - css properties to be set for any field which are separated by semicolon
+ *                            Example: color:#F60000;height:30px;
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              fieldId - Field Id
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      18. setBodyFieldClass() - This function is used to set css class to column of table
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iFieldId - Field Id
+ *              iRowIndex - Row Index (starts from 0)
+ *              sClassName - CSS Class Name
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              fieldId - Field Id
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      19. setBodyRowStyle() - This function is used to set css style to row of table
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iTableId - TableId
+ *              iRowIndex - Row Index (starts from 0)
+ *              sProperties - css properties to be set for any field which are separated by semicolon
+ *                            Example: color:#F60000;height:30px;
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              fieldId - Field Id
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      20. setBodyRowClass() - This function is used to set css Class to row of table
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iTableId - TableId
+ *              iRowIndex - Row Index (starts from 0)
+ *              sClassName - CSS Class Name
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      21. removeFieldClass - This function is used to remove css Class to Field
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iFieldId - Field Id
+ *              sClassName - CSS Class Name
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              fieldId - Field Id
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      22. removeBodyFieldClass - This function is used to remove css class to column of table
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iFieldId - Field Id
+ *              iRowIndex - Row Index (starts from 0)
+ *              sClassName - CSS Class Name
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              fieldId - Field Id
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      23. removeBodyRowClass - This function is used to remove css Class to row of table
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iTableId - TableId
+ *              iRowIndex - Row Index (starts from 0)
+ *              sClassName - CSS Class Name
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      24. getNewRowIndex() - This function is used to return row index of table whose any mandatory fields are empty
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              arrMandatoryFldIds - N no. of FieldIds with comma separator
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      25. showMsg - This function is used to display global message
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              sMessage - Message to display globally
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - -1
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      26. FieldMsg - This function is used to display Field message
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iFieldId - Field Id
+ *              sMessage - Message to display globally
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              fieldId - Field Id
+ *              data - -1
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      27. AlertMsg - This function is used to show Alert Box
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              sMessage - Message to display globally
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - -1
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *
+ *      28. setFieldEnable - This function is used to Enable/Diable particular Field
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iFieldId - Field Id
+ *              isEnable - Enable (Enable - true , Diable - false)
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              fieldId - Field Id
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      29. setFieldsEnable - This function is used to Enable/Diable set of Fields.
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              arrFieldIds -  [FieldIds]
+ *              isEnable - Enable (Enable - true , Diable - false)
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *     30. setBodyFieldEnable - This function is used to Enable/Diable particular body Field
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iFieldId - Field Id
+ *              iRowIndex - Row Index
+ *              isEnable - Enable (Enable - true , Diable - false)
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              fieldId - Field Id
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *     31. setBodyFieldsEnable - This function is used to Enable/Diable set of body Fields.
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              arrFieldIds - [FieldIds]
+ *              iRowIndex - Row Index
+ *              isEnable - Enable (Enable - true , Diable - false)
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *     32. setBodyRowEnable - This function is used to Enable/Diable particular row.
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iTableId - Table ID
+ *              iRowIndex - Row Index
+ *              isEnable - Enable (Enable - true , Diable - false)
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - null
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      33. isColumnValueExists - This function is used to find duplicate value in any column.
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              iTableId - Table ID
+ *              iColIndex - Column Index
+ *              sValue - value
+ *              iComboType - 0-id 1- string
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - [No duplicate exists = -1 and Duplicate exists = Row Number]
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      34. showValidationMessage - This function is used to show business messages globally.
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              sMessage - Message to display
+ *              iMessageType - 1 - Info Message , 2 - Error Message , 3 - Success Message
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - [No duplicate exists = -1]
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      34. findDistance - This function is used to find the distance between two locations.
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *              Latitude-1 - Latitude of first location
+ *              Longitude-1 - Longitude of first location
+ *              Latitude-2 - Latitude of second location
+ *              Longitude-2 - Longitude of second location
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - distance
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *
+ * ===> getSchedulerView() - Returns Information required for scheduling a scheduler for external modules.
+ *
+ *      1. getFilterInfo  - This function is used get info of scheduler (Master Types) .
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - Master Types
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *      2. getSelectedEvent  - This function is used get info of scheduler (Date types).
+ *          Required Parameters:
+ *              fnCallback - Callback function
+ *
+ *          OUTPUT Parameters:
+ *              status - Status[1 - Success , 2 - Error ,3 - Validation Error]
+ *              data - Date type [Events start and end time]
+ *              message - If Status is 1 (Success) then message will be null.
+ *                        If Status is not 1  if(2 or 3) then error message is thrown in this parameter.
+ *
+ *
+
+ */
+
+//namespace("centra");
+
+if(typeof window["centra"]!= 'object')
+{
+    var centra = {};
+
+    centra.crmapi = new function ()
+    {
+        var me = this;
+        me.VIEW_TYPE_CURRENT_VIEW = 0;
+        me.VIEW_TYPE_LIST = 1;
+        me.VIEW_TYPE_EDIT = 2;
+        me.VIEW_TYPE_DETAILED = 3;
+        me.VIEW_TYPE_EVENT_REGISTRY = 4;
+        me.VIEW_TYPE_EVENT_REGISTRY_HANDLER = 5;
+        me.VIEW_TYPE_EXTERNAL = 6;
+        me.VIEW_TYPE_SCHEDULER = 7;
+
+        me.MSG_TYPE_REQUEST = 1;
+        me.MSG_TYPE_RESPONSE = 2;
+
+        //constants used in Field Events
+        //me.ACTION_TYPE_ON_FIELD_ENTER = 12; //Field ON_FOCUS
+        //me.ACTION_TYPE_ON_FIELD_EXIT = 13; //Field ON_EXIT
+
+        me.EVT_TYPE_FIELD_ONCLICK = 1;
+        me.EVT_TYPE_FIELD_ONBLUR = 9;
+        me.EVT_TYPE_FIELD_ONFOCUS = 10;
+
+
+        me.EVT_TYPE_TABLE_ON_ADD_ROW = 1;
+        me.EVT_TYPE_TABLE_ON_DELETE_ROW = 2;
+        me.EVT_TYPE_TABLE_ON_ENTER = 3;
+        me.EVT_TYPE_TABLE_BEFORE_DELETE_ROW = 4;
+
+
+        me.VALUE_TYPE_DEFAULT = 0;
+        me.VALUE_TYPE_COMBO_NAME = 1;
+        me.VALUE_TYPE_ATTACHMENT_NAME = 2;
+        me.VALUE_TYPE_ATTACHMENT_URL = 3;
+
+
+        me.Combo_Master_Name = 1;
+        me.Combo_Master_Value = 0;
+
+        me.STATUS_SUCCESS = 1;
+        me.STATUS_ERROR = 2;
+        me.STATUS_VALIDATION_ERROR = 3;
+
+        this.sArrCallbacks = {};
+
+
+        var isEnableJSModule = false;
+        if (document.currentScript)
+            isEnableJSModule = document.currentScript.getAttribute('isJsModule');
+
+
+        this.getView = function ()
+        {
+            return clView;
+        };
+
+        this.getListView = function ()
+        {
+            return clList;
+        };
+
+        this.getDetailedView = function ()
+        {
+            return clDetailed;
+        };
+
+        this.getEditView = function ()
+        {
+            return clEditView;
+        };
+
+        this.getSchedulerView = function ()
+        {
+            return clSchedulerView;
+        };
+
+        function getKeyName(sEventName, sModule)
+        {
+            return (parent.cross.isDefined(sModule) ? (sModule + "_" + sEventName) : sEventName);
+        }
+
+        this.subscribe = function (sEventName, sModule, fCallBackFunc, fStatusFunc)
+        {
+            if (!isEnableJSModule)
+            {
+                alert("Subscribtion for the CRM  events is allowed only for JSModule.");
+                return;
+            }
+
+
+            var sTargetFn = 'subscribe';
+            if (fStatusFunc)
+                me.sArrCallbacks[me.VIEW_TYPE_EVENT_REGISTRY + '_' + sTargetFn] = {"callback": fStatusFunc};
+
+            me.sArrCallbacks[me.VIEW_TYPE_EVENT_REGISTRY_HANDLER + '_' + getKeyName(sEventName, sModule)] = {"callback": fCallBackFunc};
+
+
+            //MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EVENT_REGISTRY,sTargetFn,"['"+sEventName+"','"+sModule+"',"+fCallBackFunc+"]","string");
+            MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EVENT_REGISTRY, sTargetFn, [sEventName, sModule]);
+
+
+        };
+
+        this.unsubscribe = function (sEventName, sModule, fCallBackFunc)
+        {
+            if (!isEnableJSModule)
+            {
+                alert("UnSubscribtion for the CRM  events is allowed only for JSModule.");
+                return;
+            }
+            var sTargetFn = 'unsubscribe';
+            me.sArrCallbacks[me.VIEW_TYPE_EVENT_REGISTRY + '_' + sTargetFn] = {"callback": fCallBackFunc};
+            MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EVENT_REGISTRY, sTargetFn, [sEventName, sModule]);
+
+        };
+
+        var clView = new function ()
+        {
+            this.getAPITransId=function(fnCallback,iTransId,iModuleType)
+            {
+                var sTargetFn = 'getAPITransId';
+                me.sArrCallbacks[me.VIEW_TYPE_CURRENT_VIEW + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_CURRENT_VIEW, sTargetFn, [iTransId, iModuleType]);
+            };
+
+            this.getAPILoginId=function(fnCallback)
+            {
+                var sTargetFn = 'getAPILoginId';
+                me.sArrCallbacks[me.VIEW_TYPE_CURRENT_VIEW + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_CURRENT_VIEW, sTargetFn);
+            };
+
+            this.closeDialog = function ()
+            {
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EXTERNAL, "closeDialog");
+            };
+            this.showDialog = function (fnCallback,sUrl,iWidth,iHeight)
+            {
+                var sTargetFn = 'showDialog';
+                me.sArrCallbacks[me.VIEW_TYPE_EXTERNAL + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EXTERNAL, sTargetFn,[sUrl,iWidth,iHeight]);
+            };
+
+            this.getAccessToken= function(fnCallback,sClientId,sClientSecret,iKeyType)
+            {
+                var sTargetFn = 'getAccessToken';
+                me.sArrCallbacks[me.VIEW_TYPE_EXTERNAL + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EXTERNAL, sTargetFn,[sClientId,sClientSecret,iKeyType]);
+            };
+
+            this.disableBackground = function (isDisable)
+            {
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EXTERNAL, "disableBackground",[isDisable]);
+            };
+        };
+
+        var clList = new function ()
+        {
+            this.getSelectedTransIds = function (fnCallback)
+            {
+                var sTargetFn = 'getAPITransIds';
+                me.sArrCallbacks[me.VIEW_TYPE_LIST + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_LIST, sTargetFn);
+            };
+
+            this.refreshListView = function (fnCallback)
+            {
+                var sTargetFn = 'refreshListView';
+                me.sArrCallbacks[me.VIEW_TYPE_LIST + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_LIST, sTargetFn, [null, 0, true]);
+            };
+        };
+
+        var clEditView = new function ()
+        {
+            this.getFieldValue = function (fnCallback, iFieldId, iComboType)
+            {
+                var sTargetFn = 'getFieldValue';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback, "fieldId": iFieldId};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iFieldId, iComboType]);
+            };
+
+            this.setFieldValue = function (fnCallback, iFieldId, sValue,iComboType)
+            {
+                var sTargetFn = 'setFieldValue';
+                if (sValue && typeof(sValue)=="string" && isNaN(sValue) && sValue.indexOf("\'") != -1)
+                    sValue = sValue.replace("\'", "\\\'");
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback, "fieldId": iFieldId};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iFieldId, sValue,iComboType]);
+            };
+
+            this.setBodyFieldValue = function (fnCallback, iFieldId, iRowIndex, sValue,iComboType)
+            {
+                var sTargetFn = 'setBodyFieldValue';
+                if (sValue && typeof(sValue)=="string" && isNaN(sValue) && sValue.indexOf("\'") != -1)
+                    sValue = sValue.replace("\'", "\\\'");
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback, "fieldId": iFieldId};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iFieldId, iRowIndex, sValue,iComboType]);
+            };
+
+            this.getBodyFieldValue = function (fnCallback, iFieldId, iRowIndex, iComboType)
+            {
+                var sTargetFn = 'getBodyFieldValue';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback, "fieldId": iFieldId, "rowIndex": iRowIndex};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iFieldId, iRowIndex, iComboType]);
+            };
+
+            this.addBodyRow = function (fnCallback, iTableId)
+            {
+                var sTargetFn = 'addBodyRow';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback, "tableId": iTableId};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iTableId]);
+            };
+
+            this.addRowWithValues= function (fnCallback,iTableId,arrValues) {
+                var sTargetFn = 'addRowWithValues';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback, "tableId": iTableId, "arrValues":arrValues};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iTableId,arrValues]);
+            };
+
+            this.addRowsWithValues= function (fnCallback,iTableId,arrTableData,iStartIndex) {
+                var sTargetFn = 'addRowsWithValues';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback, "tableId": iTableId, "arrValues":arrTableData};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iTableId,arrTableData,iStartIndex]);
+            };
+
+            this.setRowWithValues= function (fnCallback,iTableId,iRowIndex,arrValues) {
+                var sTargetFn = 'setRowWithValues';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback, "tableId": iTableId, "arrValues":arrValues};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iTableId,iRowIndex,arrValues]);
+            };
+
+            this.insertRowWithValues= function (fnCallback,iTableId,iPosition,arrValues) {
+                var sTargetFn = 'insertRowWithValues';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback, "tableId": iTableId, "arrValues":arrValues};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iTableId,iPosition,arrValues]);
+            };
+            this.getCurrentRow=function(fnCallback,iTableId)
+            {
+                var sTargetFn = 'getCurrentRow';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback, "tableId": iTableId};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iTableId]);
+            };
+
+            this.getTableRowCount=function(fnCallback,iTableId) {
+                var sTargetFn = 'getTableRowCount';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback, "tableId": iTableId};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iTableId]);
+            };
+
+            this.getTableRowValues=function(fnCallback,arrFieldIds,iFromRowIndex,iToRowIndex,arrMandatoryFldIds,iComboType,iAttachmentType,isGetAPITransIds){
+                var sTargetFn = 'getRowValues';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [arrFieldIds,iFromRowIndex,iToRowIndex,arrMandatoryFldIds,iComboType,iAttachmentType,isGetAPITransIds]);
+            };
+
+            this.registerEventListener = function(fnCallback,iFieldId,iEventType,iComboType)
+            {
+                var sTargetFn ='registerEventListener';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT+ '_' + sTargetFn+"_"+iFieldId] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn,[iFieldId,iEventType,iComboType]);
+            };
+
+            this.registerTableEventListener = function(fnCallback,iTableId,iTableEventType,isGetCurrentRow)
+            {
+                var sTargetFn ='registerTableEventListener';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT+ '_' + sTargetFn+"_"+iTableEventType] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn,[iTableId,iTableEventType,isGetCurrentRow]);
+            };
+
+
+            this.deleteBodyRow = function (fnCallback, iTableId, iRowIndex)
+            {
+                var sTargetFn = 'deleteBodyRow';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {
+                    "callback": fnCallback,
+                    "tableId": iTableId,
+                    "rowIndex": iRowIndex
+                };
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iTableId, iRowIndex]);
+            };
+
+            this.deleteAllBodyRows = function (fnCallback, iTableId)
+            {
+                var sTargetFn = 'deleteAllBodyRows';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {
+                    "callback": fnCallback,
+                    "tableId": iTableId
+                };
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iTableId]);
+            };
+
+            this.doForceSave = function (fnCallback)
+            {
+                var sTargetFn = 'doForceSave';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, null);
+            };
+
+            this.setFieldEnable = function (fnCallback, iFieldId, isEnable)
+            {
+                var sTargetFn = 'setFieldEnable';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback, "fieldId": iFieldId};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iFieldId,isEnable]);
+            };
+
+            this.setFieldsEnable = function (fnCallback, arrFieldIds, isEnable)
+            {
+                var sTargetFn = 'setFieldsEnable';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [arrFieldIds,isEnable]);
+            };
+
+            this.setFieldStyle = function (fnCallback, iFieldId, sProperties)
+            {
+                var sTargetFn = 'setFieldStyle';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback, "fieldId": iFieldId};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iFieldId,sProperties]);
+            };
+            this.setFieldClass = function (fnCallback, iFieldId, sClassName)
+            {
+                var sTargetFn = 'setFieldClass';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback, "fieldId": iFieldId};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iFieldId,sClassName]);
+            };
+
+            this.setBodyFieldEnable= function (fnCallback, iFieldId,iRowIndex, isEnable)
+            {
+                var sTargetFn = 'setBodyFieldEnable';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback, "fieldId": iFieldId};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iFieldId,iRowIndex,isEnable]);
+            };
+
+            this.setBodyFieldsEnable= function (fnCallback, arrFieldIds,iRowIndex, isEnable)
+            {
+                var sTargetFn = 'setBodyFieldsEnable';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [arrFieldIds,iRowIndex,isEnable]);
+            };
+
+            this.setBodyFieldStyle = function (fnCallback, iFieldId,iRowIndex, sProperties)
+            {
+                var sTargetFn = 'setBodyFieldStyle';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback, "fieldId": iFieldId};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iFieldId,iRowIndex,sProperties]);
+            };
+            this.setBodyFieldClass = function (fnCallback, iFieldId,iRowIndex, sClassName)
+            {
+                var sTargetFn = 'setBodyFieldClass';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback, "fieldId": iFieldId};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iFieldId,iRowIndex,sClassName]);
+            };
+
+
+
+
+
+            this.setBodyRowEnable = function (fnCallback,iTableId,IRowIndex,isEnable)
+            {
+                var sTargetFn = 'setBodyRowEnable';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iTableId, IRowIndex,isEnable]);
+            };
+
+            this.setBodyRowStyle = function (fnCallback,iTableId,IRowIndex,sProperties)
+            {
+                var sTargetFn = 'setBodyRowStyle';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iTableId, IRowIndex,sProperties]);
+            };
+
+
+            this.setBodyRowClass = function (fnCallback,iTableId,IRowIndex,sClassName)
+            {
+                var sTargetFn = 'setBodyRowClass';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iTableId, IRowIndex,sClassName]);
+            };
+
+            this.removeFieldClass = function (fnCallback, iFieldId, sClassName)
+            {
+                var sTargetFn = 'removeFieldClass';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback, "fieldId": iFieldId};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iFieldId,sClassName]);
+            };
+
+            this.removeBodyFieldClass = function (fnCallback, iFieldId,iRowIndex, sClassName)
+            {
+                var sTargetFn = 'removeBodyFieldClass';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback, "fieldId": iFieldId};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iFieldId,iRowIndex,sClassName]);
+            };
+
+            this.removeBodyRowClass = function (fnCallback,iTableId,IRowIndex,sClassName)
+            {
+                var sTargetFn = 'removeBodyRowClass';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iTableId, IRowIndex,sClassName]);
+            };
+
+            this.getNewRowIndex=function(fnCallback,arrMandatoryFldIds){
+                var sTargetFn = 'getNewRowIndex';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [arrMandatoryFldIds]);
+            };
+
+            this.showMsg=function(fnCallback,sMessage)
+            {
+                var sTargetFn = 'showMsg';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [sMessage]);
+            };
+            this.FieldMsg=function(fnCallback,iFieldId,sMessage)
+            {
+                var sTargetFn = 'FieldMsg';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback, "fieldId": iFieldId};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iFieldId,sMessage]);
+            };
+
+            this.AlertMsg=function(fnCallback,sMessage)  //,iMsgType
+            {
+                var sTargetFn = 'AlertMsg';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [sMessage]);  //iMsgType,
+            };
+            this.isColumnValueExists = function (fnCallback,iTableId,iColIndex,sValue,iComboType)
+            {
+                var sTargetFn = 'isColumnValueExists';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iTableId,iColIndex,sValue,iComboType]);
+            };
+
+            this.getTransId = function (fnCallback)
+            {
+                var sTargetFn = 'getTransId';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn);
+            };
+
+            this.showValidationMessage = function(fnCallback,sMessage,iMsgType)
+            {
+                var sTargetFn = 'showValidationMessage';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [sMessage,iMsgType]);
+
+            }
+
+            this.findDistance = function(fnCallback,iLatitude1,iLongitude1,iLatitude2,iLongitude2)
+            {
+                var sTargetFn = 'geoFindDistance';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iLatitude1,iLongitude1,iLatitude2,iLongitude2]);
+
+            }
+
+            this.hideModuleGroup = function(fnCallback,iFieldId,isBodyGrid)
+            {
+                var sTargetFn = 'hideModuleGroup';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iFieldId,isBodyGrid]);
+            };
+
+            this.showModuleGroup = function(fnCallback,iFieldId,isBodyGrid)
+            {
+                var sTargetFn = 'showModuleGroup';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iFieldId,isBodyGrid]);
+            };
+
+            this.disableModuleGroup = function(fnCallback,iFieldId,isBodyGrid)
+            {
+                var sTargetFn = 'disableModuleGroup';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iFieldId,isBodyGrid]);
+            };
+
+            this.enableModuleGroup = function(fnCallback,iFieldId,isBodyGrid)
+            {
+                var sTargetFn = 'enableModuleGroup';
+                me.sArrCallbacks[me.VIEW_TYPE_EDIT + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_EDIT, sTargetFn, [iFieldId,isBodyGrid]);
+            };
+        };
+
+        var clDetailed = new function ()
+        {
+            var sTargetFn = null;
+            this.getTransId = function (fnCallback)
+            {
+                sTargetFn = 'getDetailViewTransId';
+                me.sArrCallbacks[me.VIEW_TYPE_DETAILED + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_DETAILED, sTargetFn);
+            };
+
+            this.refreshRelatedView = function (fnCallback, iModuleId)
+            {
+                sTargetFn = 'refreshRelatedView';
+                me.sArrCallbacks[me.VIEW_TYPE_LIST + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_LIST, sTargetFn, [iModuleId]);
+            };
+        };
+
+        var MSG_COMMUNICATOR = new function ()
+        {
+            this.sendMessage = function (iViewType, sTargetFn, sArrParams)
+            {
+                if (!sArrParams)
+                    sArrParams = null;
+                var arrParams = {};
+                arrParams["viewType"] = iViewType;
+                arrParams["msgType"] = me.MSG_TYPE_REQUEST;
+                arrParams["target"] = sTargetFn;
+                arrParams["params"] = sArrParams;
+                if(iViewType==centra.crmapi.VIEW_TYPE_SCHEDULER)
+                {
+                    window.parent.postMessage(arrParams, "*");
+                }
+                else if (typeof window["clModuleAPI"] == "object")
+                    window.postMessage(arrParams, "*");
+                else
+                    window.parent.postMessage(arrParams, "*");
+                //window.parent.postMessage("{'viewType':"+iViewType+",'msgType':"+me.MSG_TYPE_REQUEST+",'target':'"+sTargetFn+"','params':"+sArrParams+"}","*");
+            };
+
+            this.onReceiveMessage = function (event)
+            {
+                //
+                console.log('received response:  ', event.data);
+                var objReturn = event.data;
+                if (objReturn["msgType"] == me.MSG_TYPE_RESPONSE)
+                {
+                    var objResponse = null, sMessage = null;
+                    var iStatus = objReturn["status"];
+                    var iViewType = objReturn["viewType"];
+                    var sTargetFn = objReturn["target"];
+                    var objCallback = me.sArrCallbacks[iViewType + "_" + sTargetFn];
+                    if (objCallback)
+                    {
+                        var sCallbackFn = objCallback["callback"];
+                        var objCallBackRes;
+                        var iFieldId = objCallback["fieldId"];
+                        var iRowIndex = objCallback["rowIndex"];
+                        if (iStatus == me.STATUS_SUCCESS)
+                            objResponse = objReturn["data"];
+                        else
+                        {
+                            sMessage = objReturn["data"];
+                            objResponse = null;
+                        }
+                        objCallBackRes = {
+                            "status": iStatus,
+                            "data": objResponse,
+                            "fieldId": iFieldId,
+                            "message": sMessage,
+                            "rowIndex": iRowIndex
+                        };
+                        if (typeof[sCallbackFn] == "object")
+                            sCallbackFn(objCallBackRes);
+                        else
+                            eval(sCallbackFn)(objCallBackRes);
+                    }
+                }
+            };
+        };
+
+        var clSchedulerView = new function ()
+        {
+            this.getFilterInfo = function (fnCallback)
+            {
+                var sTargetFn = 'getFilterInfo';
+                me.sArrCallbacks[me.VIEW_TYPE_SCHEDULER+ '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_SCHEDULER, sTargetFn);
+            };
+            this.getSelectedEvent = function (fnCallback)
+            {
+                var sTargetFn = 'getSelectedEvent';
+                me.sArrCallbacks[me.VIEW_TYPE_SCHEDULER + '_' + sTargetFn] = {"callback": fnCallback};
+                MSG_COMMUNICATOR.sendMessage(me.VIEW_TYPE_SCHEDULER, sTargetFn);
+            };
+
+        };
+
+        window.addEventListener('message', MSG_COMMUNICATOR.onReceiveMessage);
+    };
+
+}

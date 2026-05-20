@@ -1,0 +1,1511 @@
+namespace("Focus.crm");
+Focus.crm.Messages = new function()
+{
+    this.get=function(iMsgId,iActionId,iModuleId)
+    {
+        var sMsg="";
+        if(iMsgId > 0)
+        {
+            if(iMsgId<=MsgConstants.GENERAL_RANGE)
+                sMsg=getGeneralMsg(iMsgId,iActionId,iModuleId);
+            else
+            {
+                if(clAppBuffer.getLanguage()==Constants.ILANGUAGE_TYPE.ARABIC)
+                    sMsg=Focus.crm.MsgResources_ar.getResource(iMsgId);
+                else if(clAppBuffer.getLanguage()==Constants.ILANGUAGE_TYPE.PERSIAN)
+                    sMsg=Focus.crm.MsgResources_pr.getResource(iMsgId);
+                if(sMsg==undefined || sMsg.length==0)
+                    sMsg=Focus.crm.MsgResources.getResource(iMsgId);
+            }
+
+            /*else if(iMsgId<=MsgConstants.MKT_RANGE)
+            {
+               sMsg = getMktMsg(iMsgId);
+            }
+            else if(iMsgId<=MsgConstants.SALES_RANGE)
+            {
+
+            }
+            else if(iMsgId<=MsgConstants.SERVICE_DESK_RANGE)
+                sMsg=getSupportModuleMsg(iMsgId,iActionId);
+            else if(iMsgId<=MsgConstants.PREFERENCES_RANGE)
+               sMsg = getPreferencesMsg(iMsgId,iActionId);
+            else if(iMsgId<=MsgConstants.SECURITY_RANGE)
+                sMsg=getSecurityMsg(iMsgId,iActionId);
+           else if(iMsgId<=MsgConstants.LIST_VIEW_RANGE)
+                sMsg = getListviewMsg(iMsgId,iActionId);
+           else if(iMsgId<=MsgConstants.CALENDAR_RANGE)
+                sMsg = getCalendarMsg(iMsgId,iActionId);
+           else if(iMsgId<=MsgConstants.CUSTOMIZATION_RANGE)
+                sMsg=getCustomizationMsg(iMsgId,iActionId);
+           else if(iMsgId<=MsgConstants.PORTAL_RANGE)
+                sMsg = getPortalMsg(iMsgId,iActionId);
+            else if(iMsgId<=MsgConstants.CALENDAR_DEF_RANGE)
+                sMsg = getCalendar_DefMsg(iMsgId,iActionId);
+            else if(iMsgId<=MsgConstants.FIELD_CUSTOMIZATION_RANGE)
+                sMsg = getFieldCustMsgs(iMsgId,iActionId);
+            else if(iMsgId<=MsgConstants.SURVEY_RANGE)
+                sMsg = getSurveyMsgs(iMsgId,iActionId);
+            else if(iMsgId<=MsgConstants.CLIENT_SPECIFIC_RANGE)
+                sMsg = getClientSpecificMsgs(iMsgId,iActionId);
+            else if(iMsgId<=MsgConstants.DASHBOARD_RANGE)
+                sMsg = getDashboardMsgs(iMsgId,iActionId);
+             else if(iMsgId<=MsgConstants.PRICEMASTER_RANGE)
+                sMsg = getPriceMasterMsgs(iMsgId,iActionId);
+            else if(iMsgId<=MsgConstants.CMS_MSG_RANGE)
+                sMsg = getCMSMessages(iMsgId,iActionId);
+            else if(iMsgId<=MsgConstants.EMS_MSG_RANGE)
+                sMsg = getEMSMessages(iMsgId,iActionId);*/
+        }
+        else if(iActionId>0)
+        {
+            sMsg=this.getActionLabel(iActionId);
+        }
+        return sMsg;
+    };
+
+
+
+    function getGeneralMsg(iMsgId,iActionId,iModuleId)
+    {
+        var sMsg="";
+
+        if(clAppBuffer.getLanguage()==Constants.ILANGUAGE_TYPE.ARABIC)
+        {
+            if(iMsgId==MsgConstants.SELECT_RECORD)
+                sMsg="حدد أي سجل";//Select any record
+            else
+            {
+                sMsg = Focus.crm.MsgResources_ar.getResource(iMsgId);
+                switch (iMsgId)
+                {
+                    case MsgConstants.ADD_MODULE:
+                        return ((iModuleId > 0) ? clAppBuffer.getModuleCaption(iModuleId, true) : "") + sMsg;
+                    case MsgConstants.DETAILS:
+                        return sMsg + clAppBuffer.getModuleCaption(iModuleId, false);
+                    case MsgConstants.MY:
+                        return clAppBuffer.getModuleCaption(iModuleId, true) + sMsg;
+                    case MsgConstants.FOLDER:
+                        return sMsg + Focus.crm.Messages.getActionLabel(iActionId);
+                    //default:
+                    //    return sMsg;
+                }
+            }
+        }
+        else if(clAppBuffer.getLanguage()==Constants.ILANGUAGE_TYPE.PERSIAN)
+        {
+            if(iMsgId==MsgConstants.SELECT_RECORD)
+                sMsg="هر ضبط را انتخاب کنید";//Select any record
+            else
+            {
+                sMsg = Focus.crm.MsgResources_pr.getResource(iMsgId);
+                switch (iMsgId)
+                {
+                    case MsgConstants.ADD_MODULE:
+                        return ((iModuleId > 0) ? clAppBuffer.getModuleCaption(iModuleId, true) : "") + sMsg;
+                    case MsgConstants.DETAILS:
+                        return sMsg + clAppBuffer.getModuleCaption(iModuleId, false);
+                    case MsgConstants.MY:
+                        return clAppBuffer.getModuleCaption(iModuleId, true) + sMsg;
+                    case MsgConstants.FOLDER:
+                        return sMsg + Focus.crm.Messages.getActionLabel(iActionId);
+                    //default:
+                    //    return sMsg;
+                }
+            }
+        }
+        if(sMsg==undefined || sMsg.length==0)
+        {
+            //alert(iActionId)
+            if(iMsgId==MsgConstants.SELECT_RECORD)
+            {
+                if(iActionId>0)
+                {
+                    //sMsg="Select record to be ";
+                    sMsg="Select a record to perform ";
+                    sMsg+=Focus.crm.Messages.getActionLabel(iActionId,true).toLowerCase();
+                    sMsg+=" action."
+
+                }
+                else
+                    sMsg="Select a record to perform action.";
+
+            }
+            else
+            {
+                sMsg = Focus.crm.MsgResources.getResource(iMsgId);
+                switch (iMsgId)
+                {
+                    case MsgConstants.ADD_MODULE:
+                        return sMsg + ((iModuleId > 0) ? clAppBuffer.getModuleCaption(iModuleId, true) : "");
+                    case MsgConstants.DETAILS:
+                        return clAppBuffer.getModuleCaption(iModuleId, false) + sMsg;
+                    case MsgConstants.MY:
+                        return sMsg + clAppBuffer.getModuleCaption(iModuleId, true);
+                    case MsgConstants.FOLDER:
+                        return Focus.crm.Messages.getActionLabel(iActionId) + sMsg;
+                    default:
+                        return sMsg;
+                }
+            }
+        }
+
+        return sMsg;
+    }
+
+    function getPreferencesMsg(iMsgId,iActionId,iModuleId)
+    {
+        return Focus.crm.MsgResources.getResource(iMsgId);
+    }
+
+    function getSupportModuleMsg(iMsgId,iActionId,iModuleId)
+    {
+        return Focus.crm.MsgResources.getResource(iMsgId);
+    }
+
+    function getSecurityMsg(iMsgId,iActionId,iModuleId)
+    {
+        return Focus.crm.MsgResources.getResource(iMsgId);
+    }
+
+    function getCustomizationMsg(iMsgId,iActionId,iModuleId)
+    {
+        return Focus.crm.MsgResources.getResource(iMsgId);
+    }
+
+    function getPortalMsg(iMsgId,iActionId,iModuleId)
+    {
+        return Focus.crm.MsgResources.getResource(iMsgId);
+    }
+
+    function getListviewMsg(iMsgId,iActionId,iModuleId)
+    {
+        return Focus.crm.MsgResources.getResource(iMsgId);
+    }
+
+
+    function getMktMsg(iMsgId,iActionId,iModuleId)
+    {
+        return Focus.crm.MsgResources.getResource(iMsgId);
+    }
+
+    function getFieldCustMsgs(iMsgId,iActionId,iModuleId)
+    {
+        return Focus.crm.MsgResources.getResource(iMsgId);
+    }
+
+
+    function getCalendarMsg(iMsgId,iActionId,iModuleId)
+    {
+        return Focus.crm.MsgResources.getResource(iMsgId);
+    }
+
+    function getCalendar_DefMsg(iMsgId,iActionId,iModuleId)
+    {
+        return Focus.crm.MsgResources.getResource(iMsgId);
+    }
+
+    function getSurveyMsgs(iMsgId,iActionId,iModuleId)
+    {
+        return Focus.crm.MsgResources.getResource(iMsgId);
+    }
+
+
+    function getClientSpecificMsgs(iMsgId,iActionId,iModuleId)
+    {
+        return Focus.crm.MsgResources.getResource(iMsgId);
+    }
+
+    function getDashboardMsgs(iMsgId,iActionId,iModuleId)
+    {
+        return Focus.crm.MsgResources.getResource(iMsgId);
+    }
+     function getPriceMasterMsgs(iMsgId,iActionId,iModuleId)
+    {
+        return Focus.crm.MsgResources.getResource(iMsgId);
+    }
+    function getCMSMessages(iMsgId,iActionId,iModuleId)
+    {
+        return Focus.crm.MsgResources.getResource(iMsgId);
+    }
+     function getEMSMessages(iMsgId,iActionId,iModuleId)
+    {
+        return Focus.crm.MsgResources.getResource(iMsgId);
+    }
+    function getCRMAPIMessages(iMsgId,iActionId,iModuleId)
+    {
+        return Focus.crm.MsgResources.getResource(iMsgId);
+    }
+
+
+
+
+/*
+
+    //General messages
+    function getGeneralMsg_old(iMsgId,iActionId,iModuleId)
+    {
+        switch(iMsgId)
+        {
+            case MsgConstants.SELECT_RECORD:
+            {
+                var sMsg;
+                if(iActionId>0)
+                {
+                    sMsg="Select record to be ";
+                    sMsg+=Focus.crm.Messages.getActionLabel(iActionId,true).toLowerCase();
+                }
+                else
+                    sMsg="Select atleast one record";
+                return sMsg;
+            }
+            case MsgConstants.MULTI_SELECT_NOT_ALLOWED:
+                return Focus.crm.MsgResources.MULTI_SELECT_NOT_ALLOWED;
+            case MsgConstants.GREATER_THAN_EQUAL_TO:
+                return Focus.crm.MsgResources.GREATER_THAN_EQUAL_TO;
+             case MsgConstants.LESS_THAN_EQUAL_TO:
+                return Focus.crm.MsgResources.LESS_THAN_EQUAL_TO;
+            case MsgConstants.GREATER_THAN:
+                return Focus.crm.MsgResources.GREATER_THAN;
+            case MsgConstants.LESS_THAN:
+                return Focus.crm.MsgResources.LESS_THAN;
+            case MsgConstants.GREATER_THAN_ZERO:
+                return Focus.crm.MsgResources.GREATER_THAN_ZERO;
+            case MsgConstants.VALUE_BETWEEN:
+                return Focus.crm.MsgResources.VALUE_BETWEEN;
+            case MsgConstants.VALUE_MIN:
+                return Focus.crm.MsgResources.VALUE_MIN;
+            case MsgConstants.VALUE_MAX:
+                return Focus.crm.MsgResources.VALUE_MAX;
+            case MsgConstants.VALUE_MIN_MAX:
+                return Focus.crm.MsgResources.VALUE_MIN_MAX;
+            case MsgConstants.CONFIRM_DELETE:
+                return Focus.crm.MsgResources.CONFIRM_DELETE;
+            case MsgConstants.PRINT_LABEL:
+                return Focus.crm.MsgResources.PRINT_LABEL;
+            case MsgConstants.PASSWORDS_MATCHING:
+                return Focus.crm.MsgResources.PASSWORDS_MATCHING;
+            case MsgConstants.SELECT_ROLE:
+                return Focus.crm.MsgResources.SELECT_ROLE;
+            case MsgConstants.DO_NOT_MATCH_NEW_PASSWORD:
+                return Focus.crm.MsgResources.DO_NOT_MATCH_NEW_PASSWORD;
+            case MsgConstants.BCC:
+                return Focus.crm.MsgResources.BCC;
+            case MsgConstants.VALUE_MUST_ENTER:
+                return Focus.crm.MsgResources.VALUE_MUST_ENTER;
+            case MsgConstants.MANDATORY:
+                return Focus.crm.MsgResources.MANDATORY;
+            case MsgConstants.BEFORE_LAST_ROW_CONJUNCTION:
+                return Focus.crm.MsgResources.BEFORE_LAST_ROW_CONJUNCTION;
+            case MsgConstants.LAST_ROW_CONJUNCTION:
+                return Focus.crm.MsgResources.LAST_ROW_CONJUNCTION;
+            case MsgConstants.NO_ROWS_SELECTED:
+                return Focus.crm.MsgResources.NO_ROWS_SELECTED;
+            case MsgConstants.ADD_MODULE:
+                return "Add "+((iModuleId>0)?clAppBuffer.getModuleCaption(iModuleId,true):"");
+            case MsgConstants.DETAILS:
+                return clAppBuffer.getModuleCaption(iModuleId,false)+" Details";
+            case MsgConstants.GOOGLE_ACCOUNT:
+                return Focus.crm.MsgResources.GOOGLE_ACCOUNT;
+            case MsgConstants.FACEBOOK_ACCOUNT:
+                return Focus.crm.MsgResources.FACEBOOK_ACCOUNT;
+            case MsgConstants.TWITTER_ACCOUNT:
+                return Focus.crm.MsgResources.TWITTER_ACCOUNT;
+            case MsgConstants.APPROVE:
+                return Focus.crm.Messages.getActionLabel(iActionId);
+            case MsgConstants.REJECT:
+                return Focus.crm.Messages.getActionLabel(iActionId);
+            case MsgConstants.MY:
+                return "My "+clAppBuffer.getModuleCaption(iModuleId,true);
+            case MsgConstants.TEST_SMS_SENDING:
+                return Focus.crm.MsgResources.TEST_SMS_SENDING;
+            case MsgConstants.FOLDER:
+                return Focus.crm.Messages.getActionLabel(iActionId)+" Folder";
+            case MsgConstants.SELECT:
+                return Focus.crm.MsgResources.SELECT;
+            case MsgConstants.PURCHASE_DATE:
+                return Focus.crm.MsgResources.PURCHASE_DATE;
+            case MsgConstants.INSTALLATION_DATE:
+                return Focus.crm.MsgResources.INSTALLATION_DATE;
+            case MsgConstants.WARRANTY_DATE:
+                return Focus.crm.MsgResources.WARRANTY_DATE;
+            case MsgConstants.GUARANTEE_DATE:
+                return Focus.crm.MsgResources.GUARANTEE_DATE;
+            case MsgConstants.CUSTOMER:
+                return Focus.crm.MsgResources.CUSTOMER;
+            case MsgConstants.FROMDATE:
+                return Focus.crm.MsgResources.FROMDATE;
+            case MsgConstants.TODATE:
+                return Focus.crm.MsgResources.TODATE;
+            case MsgConstants.TODAY_DATE:
+                return Focus.crm.MsgResources.TODAY_DATE;
+            case MsgConstants.MESSAGE:
+                return Focus.crm.MsgResources.MESSAGE;
+            case MsgConstants.CHARACTERS:
+                return Focus.crm.MsgResources.CHARACTERS;
+            case MsgConstants.INVALID_BACKUP:
+                return Focus.crm.MsgResources.INVALID_BACKUP;
+            case MsgConstants.BACKUP_FILE:
+                return Focus.crm.MsgResources.BACKUP_FILE;
+            case MsgConstants.RESTORE_CONFIRM_MSG:
+                return Focus.crm.MsgResources.RESTORE_CONFIRM_MSG;
+            case MsgConstants.RESTORE_COMPANY:
+                return Focus.crm.MsgResources.RESTORE_COMPANY;
+            case MsgConstants.CONFIRM:
+                return Focus.crm.MsgResources.CONFIRM;
+            case MsgConstants.MSG_SUCCESS_RESTORE:
+                return Focus.crm.MsgResources.MSG_SUCCESS_RESTORE;
+            case MsgConstants.BACK_UP_TITLE:
+                return Focus.crm.MsgResources.BACK_UP_TITLE;
+            case MsgConstants.OK:
+                return Focus.crm.MsgResources.OK;
+            case MsgConstants.CANCEL:
+                return Focus.crm.MsgResources.CANCEL;
+            case MsgConstants.YES:
+                return Focus.crm.MsgResources.YES;
+            case MsgConstants.NO:
+                return Focus.crm.MsgResources.NO;
+            case MsgConstants.BACKUP_LINK:
+                return Focus.crm.MsgResources.BACKUP_LINK;
+            case MsgConstants.MSG_DISCONNECT:
+                return Focus.crm.MsgResources.MSG_DISCONNECT;
+            case MsgConstants.SELECTED_LIST_ITEM:
+                return Focus.crm.MsgResources.SELECTED_LIST_ITEM;
+            case MsgConstants.START_DATE:
+                return Focus.crm.MsgResources.START_DATE;
+            case MsgConstants.END_DATE:
+                return Focus.crm.MsgResources.END_DATE;
+            case MsgConstants.SELECT_ATLEAST:
+                return Focus.crm.MsgResources.SELECT_ATLEAST;
+            case MsgConstants.BODY:
+                return Focus.crm.MsgResources.BODY;
+            case MsgConstants.CREATE_ACTIVITY:
+                return Focus.crm.MsgResources.CREATE_ACTIVITY;
+            case MsgConstants.SEND:
+                return Focus.crm.MsgResources.SEND;
+            case MsgConstants.CURRENT_DATE_TIME:
+                return Focus.crm.MsgResources.CURRENT_DATE_TIME;
+            case MsgConstants.CURRENT_DATE:
+                return Focus.crm.MsgResources.CURRENT_DATE;
+            case MsgConstants.SCHEDULED_DATE_TIME:
+                return Focus.crm.MsgResources.SCHEDULED_DATE_TIME;
+            case MsgConstants.SCHEDULED_DATE:
+                return Focus.crm.MsgResources.SCHEDULED_DATE;
+            case MsgConstants.CHANGE:
+                return Focus.crm.MsgResources.CHANGE;
+            case MsgConstants.TRANSFER:
+                return Focus.crm.MsgResources.TRANSFER;
+            case MsgConstants.DURATION:
+                return Focus.crm.MsgResources.DURATION;
+            case MsgConstants.DATEFIELD:
+                return Focus.crm.MsgResources.DATEFIELD;
+            case MsgConstants.VALUE:
+                return Focus.crm.MsgResources.VALUE;
+            case MsgConstants.INVALID_VALUE:
+                return Focus.crm.MsgResources.INVALID_VALUE;
+            case MsgConstants.FILTER:
+                return Focus.crm.MsgResources.FILTER;
+            case MsgConstants.ROWS:
+                return Focus.crm.MsgResources.ROWS;
+            case MsgConstants.COLS:
+                return Focus.crm.MsgResources.COLS;
+            case MsgConstants.LAYOUT:
+                return Focus.crm.MsgResources.LAYOUT;
+            case MsgConstants.TEMPLATE:
+                return Focus.crm.MsgResources.TEMPLATE;
+            case MsgConstants.SAVE:
+                return Focus.crm.MsgResources.SAVE;
+            case MsgConstants.ERP_HEADERFLD:
+                return Focus.crm.MsgResources.ERP_HEADERFLD;
+            case MsgConstants.ERP_BODYFLD:
+                return Focus.crm.MsgResources.ERP_BODYFLD;
+            case MsgConstants.ERP_STRMLINEFLD:
+                return Focus.crm.MsgResources.ERP_STRMLINEFLD;
+            case MsgConstants.REQUIRED:
+                return Focus.crm.MsgResources.REQUIRED;
+            case MsgConstants.APPROVAL_PRECENTAGE:
+                return Focus.crm.MsgResources.APPROVAL_PRECENTAGE;
+            case MsgConstants.APPROVAL_USERS:
+                return clAppBuffer.getModuleCaption(Constants.USERS,true);
+            case MsgConstants.APPROVAL_ONE_LEVEL:
+                return Focus.crm.MsgResources.APPROVAL_ONE_LEVEL;
+            case MsgConstants.DISCOUNTS:
+                return Focus.crm.MsgResources.DISCOUNTS;
+            case MsgConstants.DISCOUNT_PRODUCT:
+                return Focus.crm.MsgResources.DISCOUNT_PRODUCT;
+            case MsgConstants.INVALID:
+                return Focus.crm.MsgResources.INVALID;
+            case MsgConstants.MINUTES:
+                return Focus.crm.MsgResources.MINUTES;
+            case MsgConstants.HOURS:
+                return Focus.crm.MsgResources.HOURS;
+            case MsgConstants.CANNOT_DEL_GRP:
+                return Focus.crm.MsgResources.CANNOT_DEL_GRP;
+            case MsgConstants.VAL_ALREADY_EXISTS:
+                return Focus.crm.MsgResources.VAL_ALREADY_EXISTS;
+            case MsgConstants.DELETE_EVENT:
+                return Focus.crm.MsgResources.DELETE_EVENT;
+            case MsgConstants.AND:
+                return Focus.crm.MsgResources.AND;
+            case MsgConstants.YOU_HAVE:
+                return Focus.crm.MsgResources.YOU_HAVE;
+            case MsgConstants.NOTIFICATIONS:
+                return Focus.crm.MsgResources.NOTIFICATIONS;
+            case MsgConstants.REMINDERS:
+                return Focus.crm.MsgResources.REMINDERS;
+            case MsgConstants.CLOSE:
+                return Focus.crm.MsgResources..CLOSE;
+            case MsgConstants.LENGTH:
+                return Focus.crm.MsgResources.LENGTH;
+            case MsgConstants.NUMBER:
+                return Focus.crm.MsgResources.NUMBER;
+            case MsgConstants.STRING:
+                return Focus.crm.MsgResources.STRING;
+            case MsgConstants.INTEGER:
+                return Focus.crm.MsgResources.INTEGER;
+            case MsgConstants.EMAIL:
+                return Focus.crm.MsgResources.EMAIL;
+            case MsgConstants.URL:
+                return Focus.crm.MsgResources.URL;
+            case MsgConstants.DATE_TIME:
+                return Focus.crm.MsgResources.DATE_TIME;
+            case MsgConstants.DATE:
+                return Focus.crm.MsgResources.DATE;
+            case MsgConstants.TIME:
+                return Focus.crm.MsgResources.TIME;
+            case MsgConstants.MAX_RANGE:
+                return Focus.crm.MsgResources.MAX_RANGE;
+            case MsgConstants.INVITE:
+                return Focus.crm.MsgResources.INVITE;
+            case MsgConstants.AS:
+                return Focus.crm.MsgResources.AS;
+            case MsgConstants.FROM_TIME:
+                return Focus.crm.MsgResources.FROM_TIME;
+            case MsgConstants.TO_TIME:
+                return Focus.crm.MsgResources.TO_TIME;
+            case MsgConstants.FROM_DATE:
+                return Focus.crm.MsgResources.FROM_DATE;
+            case MsgConstants.TO_DATE:
+                return Focus.crm.MsgResources.TO_DATE;
+            case MsgConstants.BACK:
+                return Focus.crm.MsgResources.BACK;
+            case MsgConstants.NEW:
+                return Focus.crm.MsgResources.NEW;//Focus.crm.Messages.getActionLabel(iActionId);
+            case MsgConstants.NOT_EMPTY:
+                return Focus.crm.MsgResources.NOT_EMPTY;
+            case MsgConstants.PREVIEW:
+                return Focus.crm.MsgResources.PREVIEW;
+            case MsgConstants.PRINT:
+                return Focus.crm.MsgResources.PRINT;
+            case MsgConstants.TRANSID:
+                return Focus.crm.MsgResources.TRANSID;
+            case MsgConstants.RATIO_LIMIT:
+                return Focus.crm.MsgResources.RATIO_LIMIT;
+                //return "Ratio value should not be more than 100 or less than or equal to 0";
+            case MsgConstants.CAN_NOT_DELETE_TAB:
+                return Focus.crm.MsgResources.CAN_NOT_DELETE_TAB;
+            case MsgConstants.GREATER_THAN_TODAY:
+                return Focus.crm.MsgResources.GREATER_THAN_TODAY;
+            case MsgConstants.REMOVE:
+                return Focus.crm.MsgResources.REMOVE;
+            case MsgConstants.SMS:
+                return Focus.crm.MsgResources.SMS;
+            case MsgConstants.TASK:
+                return Focus.crm.MsgResources.TASK;
+            case MsgConstants.UPDATEFIELD:
+                return Focus.crm.MsgResources.UPDATEFIELD;
+            case MsgConstants.EXTERNALMODULE:
+                return Focus.crm.MsgResources.EXTERNALMODULE;
+            case MsgConstants.FOLLOWUP:
+                return Focus.crm.MsgResources.FOLLOWUP;
+            case MsgConstants.FINISHED:
+                return Focus.crm.MsgResources.FINISHED;
+            case MsgConstants.SELECT_ICON:
+                return Focus.crm.MsgResources.SELECT_ICON;
+            case MsgConstants.SOURCE_FIELD:
+                return Focus.crm.MsgResources.SOURCE_FIELD;
+            case MsgConstants.OPERATOR:
+                return Focus.crm.MsgResources.OPERATOR;
+            case MsgConstants.TARGET_FIELD_VAL:
+                return Focus.crm.MsgResources.TARGET_FIELD_VAL;
+            case MsgConstants.ACTION_TARGET:
+                return Focus.crm.MsgResources.ACTION_TARGET;
+            case MsgConstants.TO:
+                return Focus.crm.MsgResources.TO;
+            case MsgConstants.PRODUCT_SERVICES:
+                return Focus.crm.MsgResources.PRODUCT_SERVICES;
+            case MsgConstants.IMAGE_PORTION:
+                return Focus.crm.MsgResources.IMAGE_PORTION;
+            case MsgConstants.IMAGE_PORTION_RANGE:
+                return Focus.crm.MsgResources.IMAGE_PORTION_RANGE;
+            case MsgConstants.CANNOT_CROP_IMAGE:
+                return Focus.crm.MsgResources.CANNOT_CROP_IMAGE;
+            case MsgConstants.SERVICE_LIST:
+                return Focus.crm.MsgResources.SERVICE_LIST;
+            case MsgConstants.ROLE:
+                return Focus.crm.MsgResources.ROLE;
+            case MsgConstants.TRUE:
+                return Focus.crm.MsgResources.TRUE;
+            case MsgConstants.FALSE:
+                return Focus.crm.MsgResources.FALSE;
+            case MsgConstants.INVITE_USER:
+                return Focus.crm.MsgResources.INVITE_USER;
+            case MsgConstants.USER:
+                return clAppBuffer.getModuleCaption(Constants.USERS,true);
+            case MsgConstants.MIN_FIELDS:
+                return Focus.crm.MsgResources.MIN_FIELDS;
+            case MsgConstants.MAX_FIELDS:
+                return Focus.crm.MsgResources.MAX_FIELDS;
+            case MsgConstants.FILE_MANDATAORY:
+                return Focus.crm.MsgResources.FILE_MANDATAORY;
+            case MsgConstants.MIN_CHARS_ALLOWED:
+                return Focus.crm.MsgResources.MIN_CHARS_ALLOWED;
+            case MsgConstants.SAVED_SUCCESSFULLY:
+                return Focus.crm.MsgResources.SAVED_SUCCESSFULLY;
+            case MsgConstants.MAP:
+                return Focus.crm.MsgResources.MAP;
+            case MsgConstants.NEW_EVENT:
+                return Focus.crm.MsgResources.NEW_EVENT;
+            case MsgConstants.USERS:
+                return clAppBuffer.getModuleCaption(Constants.USERS,false);
+            case MsgConstants.ENTER_VAL:
+                return Focus.crm.MsgResources.ENTER_VAL;
+            case MsgConstants.TASKSET:
+                return Focus.crm.MsgResources.TASKSET;
+            case MsgConstants.REASSIGN:
+                return Focus.crm.MsgResources.REASSIGN;
+            case MsgConstants.ALERT:
+                return Focus.crm.MsgResources.ALERT;
+            case MsgConstants.CHANGESTAGE:
+                return Focus.crm.MsgResources.CHANGESTAGE;
+            case MsgConstants.SENT:
+                return Focus.crm.MsgResources.SENT;
+            case MsgConstants.RECEIVE:
+                return Focus.crm.MsgResources.RECEIVE;
+            case MsgConstants.REQUIRED_PLU:
+                return Focus.crm.MsgResources.REQUIRED_PLU;
+            case MsgConstants.OF:
+                return Focus.crm.MsgResources.OF;
+            case MsgConstants.PREVIOUS_PAGE:
+                return Focus.crm.MsgResources.PREVIOUS_PAGE;
+            case MsgConstants.NEXT_PAGE:
+                return Focus.crm.MsgResources.NEXT_PAGE;
+            case MsgConstants.LEVEL:
+                return Focus.crm.MsgResources.LEVEL;
+            case MsgConstants.NOT_CONTAIN:
+                return Focus.crm.MsgResources.NOT_CONTAIN;
+            case MsgConstants.QUERY:
+                return Focus.crm.MsgResources.QUERY;
+            case MsgConstants.INSERT_STATEMENT:
+                return Focus.crm.MsgResources.INSERT_STATEMENT;
+            case MsgConstants.UPDATE_STATEMENT:
+                return Focus.crm.MsgResources.UPDATE_STATEMENT;
+            case MsgConstants.DELETE_STATEMENT:
+                return Focus.crm.MsgResources.DELETE_STATEMENT;
+            case MsgConstants.SELECT_LAYOUT:
+                return Focus.crm.MsgResources.SELECT_LAYOUT;
+            case MsgConstants.SUCCESSFULLY:
+                return Focus.crm.MsgResources.SUCCESSFULLY;
+            case MsgConstants.REMARKS:
+                return Focus.crm.MsgResources.REMARKS;
+            case MsgConstants.ADD:
+                return Focus.crm.MsgResources.ADD;
+            case MsgConstants.TEXT:
+                return Focus.crm.MsgResources.TEXT;
+            case MsgConstants.VARIABLE:
+                return Focus.crm.MsgResources.VARIABLE;
+            case MsgConstants.IMAGE:
+                return Focus.crm.MsgResources.IMAGE;
+            case MsgConstants.RECTANGLE:
+                return Focus.crm.MsgResources.RECTANGLE;
+            case MsgConstants.LABEL:
+                return Focus.crm.MsgResources.LABEL;
+           case MsgConstants.SCHEDULED_REMINDERS:
+                return Focus.crm.MsgResources.SCHEDULED_REMINDERS;
+            case MsgConstants.TEAM:
+                return Focus.crm.MsgResources.TEAM;
+            case MsgConstants.QUOTE:
+                return Focus.crm.MsgResources.QUOTE;
+            case MsgConstants.CONFIRM_SYNC:
+                return Focus.crm.MsgResources.CONFIRM_SYNC;
+            case MsgConstants.COPY_PASTE:
+                return Focus.crm.MsgResources.COPY_PASTE;
+            case MsgConstants.GROUP_NAME_MANDATORY:
+                return Focus.crm.MsgResources.GROUP_NAME_MANDATORY;
+            case MsgConstants.DELETE_RULE:
+                return Focus.crm.MsgResources.DELETE_RULE;
+            case MsgConstants.ALL:
+                return Focus.crm.MsgResources.ALL;
+            case MsgConstants.LOADING:
+                return Focus.crm.MsgResources.LOADING;
+            case MsgConstants.ABOUT:
+                return Focus.crm.MsgResources.ABOUT;
+            case MsgConstants.LOGIN:
+                return Focus.crm.MsgResources.LOGIN;
+            case MsgConstants.FORMULA_EDITOR:
+                return Focus.crm.MsgResources.FORMULA_EDITOR;
+            case MsgConstants.APPLY:
+                return Focus.crm.MsgResources.APPLY;
+            case MsgConstants.FONT_STYLE:
+                return Focus.crm.MsgResources.FONT_STYLE;
+            case MsgConstants.IMPORT:
+                return Focus.crm.MsgResources.IMPORT;
+            case MsgConstants.REMINDER:
+                return Focus.crm.MsgResources.REMINDER;
+            case MsgConstants.NOTIFICATION:
+                return Focus.crm.MsgResources.NOTIFICATION;
+            case MsgConstants.MENU:
+                return Focus.crm.MsgResources.MENU;
+            case MsgConstants.WIDGET:
+                return Focus.crm.MsgResources.WIDGET;
+            case MsgConstants.RIGHT_SECTION:
+                return Focus.crm.MsgResources.RIGHT_SECTION;
+            case MsgConstants.ANNOUNCEMENT:
+                return Focus.crm.MsgResources.ANNOUNCEMENT;
+            case MsgConstants.DETAILED:
+                return Focus.crm.MsgResources.DETAILED;
+            case MsgConstants.PROPERTIES:
+                return Focus.crm.MsgResources.PROPERTIES;
+            case MsgConstants.WARNING:
+                return Focus.crm.MsgResources.WARNING;
+            case MsgConstants.SELECTIMAGE:
+                return Focus.crm.MsgResources.SELECTIMAGE;
+            case MsgConstants.MAPNOTDEFINED:
+                return Focus.crm.MsgResources.MAPNOTDEFINED;
+            case MsgConstants.DONE:
+                return Focus.crm.MsgResources.DONE;
+            case MsgConstants.ERPMAPPING_ACTIVE:
+                return Focus.crm.MsgResources.ERPMAPPING_ACTIVE;
+            case MsgConstants.ERPMAPPING_INACTIVE:
+                return Focus.crm.MsgResources.ERPMAPPING_INACTIVE;
+            case MsgConstants.ACCESS_TYPE:
+                return Focus.crm.MsgResources.ACCESS_TYPE;
+            case MsgConstants.ATTACHMENTS_TITLE:
+                return Focus.crm.MsgResources.ATTACHMENTS_TITLE;
+            case MsgConstants.DOCUMENTS_TITLE:
+                return Focus.crm.MsgResources.DOCUMENTS_TITLE;
+            case MsgConstants.MAIL:
+                return Focus.crm.MsgResources.MAIL;
+            case MsgConstants.BOOKING:
+                return Focus.crm.MsgResources.BOOKING;
+            case MsgConstants.TRANFSER_DATE:
+                return Focus.crm.MsgResources.TRANFSER_DATE;
+            case MsgConstants.MERGE:
+                return Focus.crm.MsgResources.MERGE;
+            case MsgConstants.IMAGE_NOT_AVAILABLE:
+                return Focus.crm.MsgResources.IMAGE_NOT_AVAILABLE;
+            case MsgConstants.NEW_REQUEST:
+                return Focus.crm.MsgResources.NEW_REQUEST;
+            case MsgConstants.MSG_MULTI_CALL:
+                return Focus.crm.MsgResources.MSG_MULTI_CALL;
+            case MsgConstants.CAN:
+                return Focus.crm.MsgResources.CAN;
+            case MsgConstants.NOT:
+                return Focus.crm.MsgResources.NOT;
+            case MsgConstants.BE:
+                return Focus.crm.MsgResources.BE;
+            case MsgConstants.ON:
+                return Focus.crm.MsgResources.ON;
+            case MsgConstants.CAN_NOT_DELETE_DEFAULT_ROW:
+                return Focus.crm.MsgResources.CAN_NOT_DELETE_DEFAULT_ROW;
+            case MsgConstants.PAGING_ALIGNMENT:
+                return Focus.crm.MsgResources.PAGING_ALIGNMENT;
+            case MsgConstants.CHNG_UNITSTATUS:
+                return Focus.crm.MsgResources.CHNG_UNITSTATUS;
+            case MsgConstants.DELETED_SUCCESSFULLY:
+                return Focus.crm.MsgResources.DELETED_SUCCESSFULLY;
+            case MsgConstants.PREFERRED_DATE:
+                return Focus.crm.MsgResources.PREFERRED_DATE;
+            case MsgConstants.CREATED_DATE:
+                return Focus.crm.MsgResources.CREATED_DATE;
+            case MsgConstants.TAG_ALREADY_ATTACHED:
+                return Focus.crm.MsgResources.TAG_ALREADY_ATTACHED;
+            case MsgConstants.TAG_NAME:
+                return Focus.crm.MsgResources.TAG_NAME;
+            case MsgConstants.START_END_DATE:
+                return Focus.crm.MsgResources.START_END_DATE;
+            case MsgConstants.MASTER_TYPE:
+                return Focus.crm.MsgResources.MASTER_TYPE;
+
+        }
+        return null;
+    }
+
+    //Preferences messages
+    function getPreferencesMsg_old(iMsgId,iActionId)
+    {
+        switch(iMsgId)
+        {
+            case MsgConstants.DEFAULT_VALUE:
+                return Focus.crm.MsgResources.DEFAULT_VALUE;
+            case MsgConstants.ALREADY_EXISTS:
+                return Focus.crm.MsgResources.ALREADY_EXISTS;
+            case MsgConstants.WEB_FIELD_NAME:
+                return Focus.crm.MsgResources.WEB_FIELD_NAME;
+            case MsgConstants.INTRANET_MSGMAND:
+                return Focus.crm.MsgResources.INTRANET_MSGMAND;
+            case MsgConstants.INTRANET_TOADDRS:
+                return Focus.crm.MsgResources.INTRANET_TOADDRS;
+            case MsgConstants.INTRANET_DLGTITLE:
+                return Focus.crm.MsgResources.INTRANET_DLGTITLE;
+            case MsgConstants.INTRANET_DLGTITLE1:
+                return Focus.crm.MsgResources.INTRANET_DLGTITLE1;
+            case MsgConstants.REMINDER_DAYS:
+                return Focus.crm.MsgResources.REMINDER_DAYS;
+            case MsgConstants.REMINDER_TYPE:
+                return Focus.crm.MsgResources.REMINDER_TYPE;
+            case MsgConstants.REMINDER_TEMP:
+                return Focus.crm.MsgResources.REMINDER_TEMP;
+            case MsgConstants.DEFAULT:
+                return Focus.crm.MsgResources.DEFAULT;
+            case MsgConstants.MASS_EMAIL:
+                return Focus.crm.MsgResources.MASS_EMAIL;
+            case MsgConstants.FIRST_NAME:
+                return Focus.crm.MsgResources.FIRST_NAME;
+            case MsgConstants.SALUTATION:
+                return Focus.crm.MsgResources.SALUTATION;
+            case MsgConstants.SPECIAL_CHARS_CHECKING:
+                return Focus.crm.MsgResources.SPECIAL_CHARS_CHECKING;
+            case MsgConstants.QUEUE_ASSIGN_FLDS:
+                return Focus.crm.MsgResources.QUEUE_ASSIGN_FLDS;
+            case MsgConstants.INTRANET_MSG:
+                return Focus.crm.MsgResources.INTRANET_MSG;
+            case MsgConstants.REMARKS_EXCEEDS:
+                return Focus.crm.MsgResources.REMARKS_EXCEEDS;
+            case MsgConstants.COMMISSION_ON:
+                return Focus.crm.MsgResources.COMMISSION_ON;
+            case MsgConstants.STREAMLINE:
+                return Focus.crm.MsgResources.STREAMLINE;
+            case MsgConstants.EXTERNAL:
+                return Focus.crm.MsgResources.EXTERNAL;
+            case MsgConstants.PaymentSchedule:
+                return Focus.crm.MsgResources.PaymentSchedule;
+        }
+        return null;
+    }
+    //Support module messages
+    function getSupportModuleMsg_old(iMsgId,iActionId)
+    {
+        switch(iMsgId)
+        {
+            case MsgConstants.CANNOT_CLOSE_CALL:
+                return "Cannot close the "+clAppBuffer.getModuleCaption(Constants.REQUEST)+" when "+clAppBuffer.getModuleCaption(Constants.CALL_STATUS) +" is "+Focus.crm.Messages.getActionLabel(iActionId);
+            case MsgConstants.CANNOT_CLOSE_UNRESOLVED_CALL:
+                return Focus.crm.MsgResources.CANNOT_CLOSE_UNRESOLVED_CALL;
+            case MsgConstants.ASSIGN_BY_QUEUE:
+                return Focus.crm.MsgResources.ASSIGN_BY_QUEUE;
+            case MsgConstants.ASSIGN_ONLY_APPROVED:
+                return Focus.crm.MsgResources.ASSIGN_ONLY_APPROVED;
+            case MsgConstants.CANNOT_ASSIGN_RESOLVED:
+                return Focus.crm.MsgResources.CANNOT_ASSIGN_RESOLVED;
+            case MsgConstants.CALL_ALREADY_CLOSED:
+                return Focus.crm.MsgResources.CALL_ALREADY_CLOSED;
+            case MsgConstants.SERVICE_SCHEDULE:
+                return Focus.crm.MsgResources.SERVICE_SCHEDULE;
+            case MsgConstants.SELECT_SERVICE:
+                return Focus.crm.MsgResources.SELECT_SERVICE;
+            case MsgConstants.MAX_VISTS:
+                return Focus.crm.MsgResources.MAX_VISTS;
+            case MsgConstants.MAX_HOURS:
+                return Focus.crm.MsgResources.MAX_HOURS;
+            case MsgConstants.MANDATORY_VALUES:
+                return Focus.crm.MsgResources.MANDATORY_VALUES;
+            case MsgConstants.INVALID_SNO:
+                return Focus.crm.MsgResources.INVALID_SNO;
+            case MsgConstants.SNO_MAXLIMIT:
+                return Focus.crm.MsgResources.SNO_MAXLIMIT;
+            case MsgConstants.SNO_MAXQUANTITY:
+                return Focus.crm.MsgResources.SNO_MAXQUANTITY;
+            case MsgConstants.SNO_LIMIT:
+                return Focus.crm.MsgResources.SNO_LIMIT;
+            case MsgConstants.BUSINESS_RULE_NO_FILTER:
+                return Focus.crm.MsgResources.BUSINESS_RULE_NO_FILTER;
+            case MsgConstants.SEARCH_CRITERIA_REQ:
+                return Focus.crm.MsgResources.SEARCH_CRITERIA_REQ;
+            case MsgConstants.SEARCH_RESULT:
+                return Focus.crm.MsgResources.SEARCH_RESULT;
+            case MsgConstants.PICK:
+                return Focus.crm.MsgResources.PICK;
+            case MsgConstants.CLOSINGRULE_MSG:
+                return Focus.crm.MsgResources.CLOSINGRULE_MSG;
+            case MsgConstants.NUMBER_IS:
+                return Focus.crm.MsgResources.NUMBER_IS;
+            case MsgConstants.CUSTOMER_PREF_TIME_CONFIRM:
+                return Focus.crm.MsgResources.CUSTOMER_PREF_TIME_CONFIRM;
+            case MsgConstants.CANNOT_CLOSE_CALL_Status:
+                return Focus.crm.MsgResources.CANNOT_CLOSE_CALL_Status;
+            case MsgConstants.CANNOT_CLOSE_CALL_NEW:
+                return Focus.crm.MsgResources.CANNOT_CLOSE_CALL_NEW;
+            case MsgConstants.CANNOT_CLOSE_CALL_UNASSIGN:
+                return Focus.crm.MsgResources.CANNOT_CLOSE_CALL_UNASSIGN;
+            case MsgConstants.ADDOREDIT:
+                return Focus.crm.MsgResources.ADDOREDIT;
+            case MsgConstants.WORKLOG:
+                return clAppBuffer.getModuleCaption(Constants.CALL_WORKLOG,true);
+            case MsgConstants.NOTES:
+                return clAppBuffer.getModuleCaption(Constants.NOTES,false);
+            case MsgConstants.ATTACH:
+                return Focus.crm.MsgResources.ATTACH;
+            case MsgConstants.RESOLUTION:
+                return clAppBuffer.getModuleCaption(Constants.CALL_RESOLUTION,true);
+            case MsgConstants.PARTSREQUESTED:
+                return clAppBuffer.getModuleCaption(Constants.PARTS_REQUESTED,true);
+            case MsgConstants.PARTS_REPLACED:
+                return clAppBuffer.getModuleCaption(Constants.PARTS_REPLACED,true);
+            case MsgConstants.DELETERESO:
+                return Focus.crm.MsgResources.DELETERESO;
+            case MsgConstants.CALL_CANNOTCLOSE:
+                return Focus.crm.MsgResources.CALL_CANNOTCLOSE;
+            case MsgConstants.SURVEY_FORCALLS:
+                return Focus.crm.MsgResources.SURVEY_FORCALLS;
+            case MsgConstants.DEFINE_TIME_SLOT:
+                return Focus.crm.MsgResources.DEFINE_TIME_SLOT;
+            case MsgConstants.CANNOT_DELETE_TIME_SLOT:
+                return Focus.crm.MsgResources.CANNOT_DELETE_TIME_SLOT;
+            case MsgConstants.TIME_SLOT_DEFINED:
+                return Focus.crm.MsgResources.TIME_SLOT_DEFINED;
+            case MsgConstants.SURVEY_CANNOTOPEN:
+                return Focus.crm.MsgResources.SURVEY_CANNOTOPEN;
+            case MsgConstants.REQUEST_NOTCLOSED:
+                return Focus.crm.MsgResources.REQUEST_NOTCLOSED;
+            case MsgConstants.CHANGE_ISSUE:
+                return Focus.crm.MsgResources.CHANGE_ISSUE;
+            case MsgConstants.ISSUE:
+                return clAppBuffer.getModuleCaption(Constants.ISSUES,true);
+        }
+        return null;
+    }
+*/
+
+
+    /*//Security Messages
+    function getSecurityMsg_old(iMsgId,iActionId)
+    {
+        switch(iMsgId)
+        {
+            case MsgConstants.USER_ALREADY_ACTIVE:
+                return Focus.crm.MsgResources.USER_ALREADY_ACTIVE;
+            case MsgConstants.USER_ALREADY_INACTIVE:
+                return Focus.crm.MsgResources.USER_ALREADY_INACTIVE;
+            case MsgConstants.USERS_ASSIGNED_TO_TEAM:
+                return Focus.crm.MsgResources.USERS_ASSIGNED_TO_TEAM;
+            case MsgConstants.RESET_PWD:
+                return Focus.crm.MsgResources.RESET_PWD;
+            case MsgConstants.ACCOUNT_WITHOUT_CONTACTS:
+                return Focus.crm.MsgResources.ACCOUNT_WITHOUT_CONTACTS;
+            case MsgConstants.PWD_MISMATCH:
+                return Focus.crm.MsgResources.PWD_MISMATCH;
+            case MsgConstants.COMPANY:
+                return Focus.crm.MsgResources.COMPANY;
+            case MsgConstants.PWD_SENT:
+                return Focus.crm.MsgResources.PWD_SENT;
+            case MsgConstants.USERNAME_SENT:
+                return Focus.crm.MsgResources.USERNAME_SENT;
+            case MsgConstants.VALIDUSERNAME:
+                return Focus.crm.MsgResources.VALIDUSERNAME;
+            case MsgConstants.BLOCKUSERFRM:
+                return Focus.crm.MsgResources.BLOCKUSERFRM;
+            case MsgConstants.BLOCKUSERTO:
+                return Focus.crm.MsgResources.BLOCKUSERTO;
+            case MsgConstants.TAB:
+                return Focus.crm.MsgResources.TAB;
+            case MsgConstants.PROFILE_SELECTION:
+                return Focus.crm.MsgResources.PROFILE_SELECTION;
+            case MsgConstants.ACCESS_RIGHTS:
+                return Focus.crm.MsgResources.ACCESS_RIGHTS;
+            case MsgConstants.RIGHTS_RESTRICTION:
+                return Focus.crm.MsgResources.RIGHTS_RESTRICTION;
+            case MsgConstants.TAB_SELECTION:
+                return Focus.crm.MsgResources.TAB_SELECTION;
+            case MsgConstants.NODE_GRP:
+                return Focus.crm.MsgResources.NODE_GRP;
+            case MsgConstants.CANNOT_MOVE:
+                return Focus.crm.MsgResources.CANNOT_MOVE;
+            case MsgConstants.STRONG:
+                return Focus.crm.MsgResources.STRONG;
+            case MsgConstants.MEDIUM:
+                return Focus.crm.MsgResources.MEDIUM;
+            case MsgConstants.WEAK:
+                return Focus.crm.MsgResources.WEAK;
+            case MsgConstants.SECURITY_CONFIRM:
+                return Focus.crm.MsgResources.SECURITY_CONFIRM;
+            case MsgConstants.READ_ACCESS:
+                return Focus.crm.MsgResources.READ_ACCESS;
+            case MsgConstants.ASSIGN_USERS_TEAMS:
+                return Focus.crm.MsgResources.ASSIGN_USERS_TEAMS;
+            case MsgConstants.USRLOCATION_CHANGED:
+                return ss(Focus.crm.MsgResources.USRLOCATION_CHANGED,"User");
+            case MsgConstants.USRALRDY_ACTIVE:
+                return "Selected User(s) already Active";
+            case MsgConstants.USRALRDY_UNLOCKED:
+                return "Selected User(s) already Unlocked";
+        }
+        return null;
+    }
+*/
+/*
+     //Layout Customization Messages
+    function getCustomizationMsg_old(iMsgId,iActionId)
+    {
+        switch(iMsgId)
+        {
+            case MsgConstants.CUSTOMIZATION_SELECTAVLBFLDS:
+                return "Select field from available list";
+            case MsgConstants.LISTLAYOUT_SORTBYEXIST:
+                return "Sortby value already exist";
+            case MsgConstants.HOMEPAGELAYT_SELECTCOMP:
+                return "Select component";
+            case MsgConstants.LISTACCESS_SELECTVIEW:
+                return "Select atleast one View";
+            case MsgConstants.LISTACCESS_SHORTLIST:
+                return "Shortlist should not contain more than five layouts";
+            case MsgConstants.SELCETAVLBITEM:
+                return "Select item from available list";
+            case MsgConstants.CASCADING_RELATED_PARENT:
+                return "Parent and Related pick fields should not be same";
+            case MsgConstants.CASCADING_SELCTPICKLIST:
+                return "Select an item from picklist";
+            case MsgConstants.CAMPMEM_NOTSELCTD:
+                return "Members not selected";
+            case MsgConstants.CAMPMEM_REMOVE:
+                return "Are you sure you want to remove Members";
+            case MsgConstants.SELECT_REL_MODULE:
+                return "Select related modules from list";
+        }
+        return null;
+    }
+
+
+    //Portal Msg.
+    function getPortalMsg_old(iMsgId,iActionId)
+    {
+        switch(iMsgId)
+        {
+            case MsgConstants.MODULE:
+                return "module";
+            case MsgConstants.NO_ACTION_FOR_MODULE:
+                return "Cannot map module(s),No action(s) selected for the ";
+            case MsgConstants.NO_PAGE_LAYOUT_FOR_MODULE:
+                return "Cannot map module(s),No page layout selected for the ";
+            case MsgConstants.ATLEAST_ONE_MODULE:
+                return "Atleast one module to be mapped to CSS portal";
+            case MsgConstants.VIEW_ACCESS:
+                return "View access";
+            case MsgConstants.MODULE_MAPPED:
+                return " module was already added to CSS portal";
+             case MsgConstants.SUCCESS_CHANGE_PWD:
+                return "Password changed successfully";
+            case MsgConstants.DETAILED_VIEW:
+                return "Detail View";
+            case MsgConstants.CHANGE_PASSWORD:
+                return "Change Password";
+            case MsgConstants.USER_NAME:
+                return "* Username";
+            case MsgConstants.PASSWORD:
+                return "* Password";
+            case MsgConstants.NO_RECORDS_FOUND:
+                return "No records found";
+            case MsgConstants.COMMENTS_REQUIRED:
+                return "Comments required";
+            case MsgConstants.PWDLENGTHMSG:
+                return "Password length should not be greater than 10 characters";
+            case MsgConstants.ALPHA_NUMONLY:
+                return "Alphabets and Numerics";
+            case MsgConstants.SPECIALCHAR_NOTALLWD:
+                return "Special characters Not Allowed";
+            case MsgConstants.CSSMSG_LENGTH:
+                return "Length should not be greater than 30 characters";
+            case MsgConstants.EMAILID_NOTDEF:
+                return "EmailIds not defined";
+            case MsgConstants.USER_INV_SUCCESS:
+                return "User Invited Successfully";
+            case MsgConstants.INV_USERS_DLG:
+                return "Invite Users";
+            case MsgConstants.CSS_GENERAL_SURVEY:
+                return "General Survey";
+            case MsgConstants.CSS_CALL_SURVEY:
+                return "Call Feedback / Survey";
+            case MsgConstants.DUPLICATE_MODULE:
+                return "Selected module already mapped";
+            case MsgConstants.SAME_IMG:
+                return "Do you wish to continue with the same images in custom theme?";
+            case MsgConstants.COMPANY_LOGO:
+                return "Company Logo";
+            case MsgConstants.SECURITY_ANSWER:
+                return "Security Answer is required";
+            case MsgConstants.INVALID_EMAIL:
+                return "Invalid Email";
+            case MsgConstants.CSS_ACTIVE:
+                return "Selected #0#(s) is already active.";
+            case MsgConstants.CSS_INACTIVE:
+                return "Selected #0#(s) is already In-Active.";
+        }
+        return null;
+    }
+
+
+    function getListviewMsg_old(iMsgId,iActionId)
+    {
+        switch(iMsgId)
+        {
+            case MsgConstants.WANT_TO_DELETE:
+                return "Are you sure you want to delete?";
+            case MsgConstants.CAN_NOT_DELETE_DEFAULT:
+                return "Default #0# cannot be deleted";
+            case MsgConstants.FILTERED:
+                return "Filtered";
+            case MsgConstants.SEARCH_TEXT:
+                return "Search text";
+            case MsgConstants.SELECT_FIELD:
+                return "Select a field";
+            case MsgConstants.SELECT_OPERATOR:
+                return "Select operator";
+            case MsgConstants.LOOK_IN:
+                return "Look-in";
+            case MsgConstants.CUST_FILTER:
+                return "Custom filter";
+            case MsgConstants.EDIT_VAL:
+                return "Edit Value";
+        }
+        return null;
+    }
+
+
+    function getCalendarMsg_old(iMsgId,iActionId)
+    {
+        switch(iMsgId)
+        {
+            case MsgConstants.CANNOT_MOVE_TO_FUTURE:
+                return "Activity cannot be moved to future date";
+            case MsgConstants.BACKDATED_ENTRY_RESTRICT:
+                return "Backdated entry is allowed upto #0# day(s) only";
+            case MsgConstants.APPNT_PREV_DATE_RESTRICT:
+                return "Appointment cannot be moved to previous date";
+            case MsgConstants.TASK_PREV_DATE_RESTRICT:
+                return "Task cannot be moved to previous date";
+            case MsgConstants.EDIT_EVENT:
+                return Focus.crm.Messages.getActionLabel(Constants.EDIT)+" Event";
+            case MsgConstants.TASK_FINISH:
+                return "Selected user does not have required time to finish the task on selected date";
+            case MsgConstants.CALLTASK_DONE:
+                return "Call Task has been saved";
+            case MsgConstants.ASSIGN_CALL:
+                return "Assign Call";
+            case MsgConstants.REQ:
+                return "Req";
+            case MsgConstants.AM:
+                return "AM";
+            case MsgConstants.PM:
+                return "PM";
+            case MsgConstants.DUE_DATE:
+                return "Due date";
+            case MsgConstants.ACTIVITY_DATE:
+                return "Activity Date";
+
+        }
+        return null;
+    }
+
+
+    function getMktMsg_old(iMsgId,iActionId)
+    {
+       // alert(iMsgId)
+        switch(iMsgId)
+        {
+            case MsgConstants.ONE_SALESSTAGE_OPTION:
+                return "Atleast one stage should be without the option 'Allow on approved module only'";
+            case MsgConstants.RECIPIENT:
+                return "Recipient";
+            case MsgConstants.TYPE:
+                return "type";
+            case MsgConstants.PRODUCT_REPEATED:
+                return "Product is repeated";
+            case MsgConstants.NOOFATTEMPTS:
+                return "No. of Attempts";
+            case MsgConstants.STATUS_INFO:
+                return "Atleast one status info";
+            case MsgConstants.STATUS_CODE:
+                return "Status code";
+            case MsgConstants.NO_UPDATED_ACTIVITY:
+                return "(No Updated Activity)";
+            case MsgConstants.COL_LINENO:
+                return " 'Column names at line no. should be less than 'Start of body row' ";
+            case MsgConstants.COL_NAMELINENO:
+                return " As importing file is without heading then 'Column Names at Line no' should be -1 ";
+            case MsgConstants.ATTACHFILE:
+                return "Attach file";
+            case MsgConstants.DATE_TIME:
+                return "Date time";
+            case MsgConstants.EXE_LIMIT:
+                return "exceeded the limit";
+            case MsgConstants.APPOINTMENT_DATE:
+                return clAppBuffer.getModuleCaption(Constants.APPOINTMENTS,true)+" date";
+            case MsgConstants.NOT_YET_CONFIRMED:
+                return "Not yet confirmed";
+            case MsgConstants.EDIT_SCRIPT:
+                return Focus.crm.Messages.getActionLabel(Constants.EDIT)+" script";
+            case MsgConstants.DELETE_SCRIPT:
+                return Focus.crm.Messages.getActionLabel(Constants.DELETE)+" script";
+            case MsgConstants.AFTER_HOURS:
+                return " hours";
+            case MsgConstants.RETRY_IN:
+                return "Retry in ";
+            case MsgConstants.CALLBACK:
+                return "Callback Datetime";
+            case MsgConstants.CALL_APPOINT:
+                return "Appointment Datetime";
+            case MsgConstants.CUST_BUSS:
+                return "Customize Business Card";
+            case MsgConstants.RES_TIME_FILTER:
+                return "Response times must be defined for a business rule with no filter";
+            case MsgConstants.PRIORITY:
+                return "If Priority is";
+            case MsgConstants.AND:
+                return "and";
+            case MsgConstants.IF:
+                return "if";
+            case MsgConstants.CATEGORY:
+                return "Category is";
+            case MsgConstants.SUBCATEGORY:
+                return "SubCategory is";
+            case MsgConstants.DUP_REC_SKIP:
+                return "Duplicate and New Action Records skips must not be checked at a time";
+            case MsgConstants.MAPPING_DET:
+                return "Mapping Details";
+            case MsgConstants.DUP_RECORDS:
+                return "Duplicate Records";
+            case MsgConstants.MAPPING_DET_MOD:
+                return "#0# Mapping Details";
+            case MsgConstants.SELECT_QUOTE_FOR_SO:
+                return "Select Quote to raise the Sales Order";
+            case MsgConstants.SELECT_SERVICE_QUOTE_FOR_SO:
+                return "Select Service Quote to raise the Service Order";
+            case MsgConstants.GROSS:
+                return "Gross";
+            case MsgConstants.DISCOUNT:
+                return "Discount";
+             case MsgConstants.CREATE_ONE_SET:
+                return "Minimum one product set is required";
+
+        }
+        return null;
+    }
+
+    function getCalendar_DefMsg_old(iMsgId,iActionId)
+    {
+       // alert(iMsgId)
+        switch(iMsgId)
+        {
+           */
+/*case MsgConstants.WEEK_STARTSFROM:
+            {
+                return "WeekStartsfrom";
+            }*/
+/*
+
+            case MsgConstants.DAYS:
+                return "Days";
+            case MsgConstants.WEEKS:
+                return "Weeks";
+            case MsgConstants.MONTHS:
+                return "Months";
+            case MsgConstants.MANDATORY_PLU:
+                return "#0# are mandatory ";
+            case MsgConstants.WEEKDAY_WEEK:
+                return "Atleast select one, Weekday of the week";
+            case MsgConstants.SELECT_NOT_MORETHAN:
+                return "Cannot select more than number of #0# in a year";
+            case MsgConstants.SELECT_NOT_MORETHAN_DAYS:
+                return "Cannot select more than 31 days";
+            case MsgConstants.SELECT_NOT_MORETHAN_MON:
+                return "Cannot select more than 12 months";
+            case MsgConstants.HOLIDAY:
+                return "Holiday";
+            case MsgConstants.EXCEPTION:
+                return "Exception";
+            case MsgConstants.DATE_SAME_AS:
+                return "#0# must be same as the #1#";
+            case MsgConstants.END_RECURR_PATTERN:
+                return "End recurrence pattern";
+            case MsgConstants.RANGE_GREATERTHAN_CERTAIN_DAYS:
+                return "#0# should be #1# days greater than #2#";
+            case MsgConstants.ENDBY_DATE:
+                return "End-by date";
+            case MsgConstants.CAL_ALREADY_EXISTS:
+                return "#0# '#1#' already exists";
+            case MsgConstants.SELECT_ROW:
+                return "Select the row";
+            case MsgConstants.ATLEAST_ONE_SHIFT:
+                return "Atleast one shift working hours";
+            case MsgConstants.VALUE_NOT_LESS:
+                return "#0# should not be less";
+            case MsgConstants.VALUE_NOT_MORE:
+                return "#0# should not be more";
+            case MsgConstants.ATLEAST_ONE_REGULARSHIFT:
+                return "Atleast one regular shift working hours";
+            case MsgConstants.WORKWEEK:
+                return "Work week";
+            case MsgConstants.DAY:
+                return "Day";
+            case MsgConstants.WEEK:
+                return "Week";
+            case MsgConstants.MONTH:
+                return "Month";
+            case MsgConstants.YEAR:
+                return "Year";
+        }
+        return null;
+    }
+
+
+    function getFieldCustMsgs_old(iMsgId,iActionId)
+    {
+        switch(iMsgId)
+        {
+           case MsgConstants.APPLYON:
+                return "Atleast one '#0#' need to be checked";
+            case MsgConstants.TABLENAME:
+                return "Table name";
+            case MsgConstants.VALUE_FIELDS:
+                return "Value fields";
+            case MsgConstants.DISP_FIELDS:
+                return "Display fields";
+            case MsgConstants.VALID_VALUES:
+                return "Enter valid number of values(format:#0#,value)";
+            case MsgConstants.NUMBER_STRING_LIST_FORMAT:
+                return "Format is #0#,string";
+            case MsgConstants.VALUE_S:
+                return "value";
+            case MsgConstants.HEADER_FIELD:
+                return "header field";
+            case MsgConstants.BODY_FIELD:
+                return "body field";
+            case MsgConstants.TAGGED_TO_FIELD:
+                return "This group is already tagged to #0#";
+            case MsgConstants.MAX_SIZE:
+                return "Maxsize";
+            case MsgConstants.MIN_SIZE:
+                return "minsize";
+            case MsgConstants.ONE_FIELD_DELETE:
+                return "Select atleast one field to be deleted";
+            case MsgConstants.SURE_DELETE_FIELD:
+                return "Are you sure you want to delete field(s)?";
+            case MsgConstants.DELETE_FIELD:
+                return "Delete field";
+            case MsgConstants.DELETE_STANDARD_FIELD:
+                return "Standard fields cannot be deleted";
+            case MsgConstants.CLOSE_OPEN_BRACKETS:
+                return "CloseBrackets Greater than OpenBrackets";
+            case MsgConstants.CREATE_ONE_CONDITION:
+                return "Minimum one condition is required";
+            case MsgConstants.BRACKETS_OPEN:
+                return "Brackets should open from first editing row";
+            case MsgConstants.CLOSE_ONE_BRACKET:
+                return "Atleast one Bracket should close in last editing row";
+            case MsgConstants.PROPER_OPENCLOSE_BRACKETS:
+                return "Brackets not properly opened or closed";
+            case MsgConstants.LAST_ROW_FILTER:
+                return "Last row of Filter should end with Only";
+            case MsgConstants.INVALID_VAR:
+                return "Invalid Variable";
+            case MsgConstants.GRP_NODE:
+                return "Group Node is Not Allowed";
+            case MsgConstants.INVALID_FORMULA:
+                return "Invalid Formula";
+            case MsgConstants.REMOVE_ELSE:
+                return "Remove ELSE-IF";
+            case MsgConstants.ADD_ELSE:
+                return "Add ELSE-IF";
+            case MsgConstants.FIELD_REL_MSG:
+                return "Add related module in";
+            case MsgConstants.PAGE_LAYOUT:
+                return "page layout";
+            case MsgConstants.FIELD:
+                return "field";
+        }
+        return null;
+    }
+
+
+    function getSurveyMsgs_old(iMsgId,iActionId)
+    {
+        switch(iMsgId)
+        {
+            case MsgConstants.SURVEY_RANGE:
+                return "Survey";
+            case MsgConstants.QUSTN_DEL_CONFIRM:
+                return "This survey question has some responses, #0#.\nDo you want to continue? ";
+            case MsgConstants.QUSTN_DEL:
+                return MsgHandler.getMsg(MsgConstants.QUSTN_DEL_CONFIRM,0,0,"if you delete this question you will lose the responses");
+            case MsgConstants.QUSTN_VARIABLE_DEL:
+                return MsgHandler.getMsg(MsgConstants.QUSTN_DEL_CONFIRM,0,0,"if you delete this sub question you will lose the responses");
+            case MsgConstants.QUSTN_CHOICE_DEL:
+                return MsgHandler.getMsg(MsgConstants.QUSTN_DEL_CONFIRM,0,0,"if you delete this choice you will lose the responses");
+            case MsgConstants.QUSTN_VALIDATION_CHANGE:
+                return MsgHandler.getMsg(MsgConstants.QUSTN_DEL_CONFIRM,0,0,"if you change validation type response data will be lost");
+            case MsgConstants.PRECISION_NOT_EXCEED:
+                return "Precision cannot exceed #0#";
+            case MsgConstants.AND_PRECISION_NOT_EXCEED:
+                return "and precision cannot exceed #0#";
+            case MsgConstants.VARIABLE_PROPS:
+                return "Sub Question Properties";
+            case MsgConstants.CHOICE_PROPS:
+                return "Choice Properties";
+            case MsgConstants.QUSTN_OPTIONS:
+                return "Question Options";
+            case MsgConstants.DEACTIVE_SURVEY:
+                return "This survey is assigned. Are you sure want to deactive ?.";
+            case MsgConstants.CANNOT_CHANGE_FORMAT:
+                return "For #0# format , you should validate #1# only.";
+        }
+        return null;
+    }
+
+
+    function getClientSpecificMsgs_old(iMsgId,iActionId)
+    {
+        switch(iMsgId)
+        {
+            case MsgConstants.CDID_NOOFUSERS:
+                return "No of users should be greater than 0";
+            case MsgConstants.CDID:
+                return "Cdid";
+            case MsgConstants.SMEP_RANDOM:
+                return "Random Selection";
+            case MsgConstants.SMEP_MATCH:
+                return "Match Selection";
+        }
+
+        return null;
+    }
+
+*/
+
+    this.getActionLabel=function(iActionId,isGetPassTense)
+    {
+	if(clAppBuffer.getLanguage()==Constants.ILANGUAGE_TYPE.ARABIC)
+	       return Focus.crm.MsgResources_ar.getActionLabel(iActionId,isGetPassTense);
+    else if(clAppBuffer.getLanguage()==Constants.ILANGUAGE_TYPE.PERSIAN)
+	       return Focus.crm.MsgResources_pr.getActionLabel(iActionId,isGetPassTense);
+	else
+	       return Focus.crm.MsgResources.getActionLabel(iActionId,isGetPassTense);
+    };
+
+    this.getStatusMsg=function(iAppActionId)
+    {
+	if(clAppBuffer.getLanguage()==Constants.ILANGUAGE_TYPE.ARABIC)
+	       return Focus.crm.MsgResources_ar.getStatusMsg(iAppActionId);
+    else if(clAppBuffer.getLanguage()==Constants.ILANGUAGE_TYPE.PERSIAN)
+        return Focus.crm.MsgResources_pr.getStatusMsg(iAppActionId);
+	else
+	       return Focus.crm.MsgResources.getStatusMsg(iAppActionId);
+    };
+
+  /*  this.getActionLabel_old=function(iActionId,isGetPassTense)
+    {
+        var sLabel="";
+
+        switch(iActionId)
+        {
+            case Constants.NEW:
+            {
+                sLabel="New";
+                break;
+            }
+            case Constants.EDIT:
+            {
+                sLabel="Edit";
+                break;
+            }
+            case Constants.DELETE:
+            {
+                sLabel="Delete";
+                break;
+            }
+            case Constants.SHARE:
+            {
+                sLabel="Share";
+                break;
+            }
+            case Constants.ASSIGN:
+            {
+                sLabel="Assign";
+                break;
+            }
+            case Constants.APPROVE:
+            {
+                sLabel="Approve";
+                break;
+            }
+            case Constants.REJECT:
+            {
+                sLabel="Reject";
+                break;
+            }
+            case Constants.CLOSE:
+            {
+                sLabel="Close";
+                break;
+            }
+            case Constants.ADD:
+            {
+                sLabel="Add";
+                break;
+            }
+            case Constants.CHANGE_ISSUE:
+            {
+                sLabel="Change";
+                break;
+            }
+        }
+
+        if(sLabel!="" && isGetPassTense)
+        {
+            if(sLabel.endsWith(sLabel,"e"))
+                sLabel+="d";
+            else if(sLabel.endsWith(sLabel,"fy"))
+                sLabel=sLabel.substring(0,sLabel.length-2)+"fied";
+            else
+                sLabel+="ed";
+        }
+
+        return sLabel;
+    };
+*/
+
+    /**
+     * Returns status message for the user action
+     * @param iAppActionId - constants defined in app.js (separate action ids which are not related to regular action ids)
+     */
+   /* this.getStatusMsg_old=function(iAppActionId)
+    {
+         var sMessage=null;
+        if(iAppActionId==ACTION_SAVE)
+            sMessage="Saving...";
+        else if(iAppActionId==ACTION_DELETE)
+            sMessage="Deleting...";
+        else if(iAppActionId==ACTION_SORT)
+            sMessage="Sorting...";
+        else if(iAppActionId==ACTION_UPDATE)
+            sMessage="Updating...";
+        else if(iAppActionId==ACTION_DISPALY)
+            sMessage="Displaying...";
+        else if(iAppActionId==ACTION_CREATE)
+            sMessage="Creating...";
+       else if(iAppActionId==ACTION_CONVERT)
+            sMessage="Converting...";
+       else if(iAppActionId==ACTION_REINDEX)
+            sMessage="Reindexing...";
+        else if(iAppActionId==ACTION_SEARCH)
+            sMessage="Searching...";
+        else if(iAppActionId==ACTION_SENDING)
+            sMessage="Sending...";
+        else if(iAppActionId==ACTION_LOADING)
+            sMessage="Loading...";
+        else if(iAppActionId==ACTION_RESTORING)
+            sMessage="Restoring Company...";
+        return sMessage;
+    };*/
+
+};
+

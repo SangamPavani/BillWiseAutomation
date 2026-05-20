@@ -1,0 +1,851 @@
+
+namespace("Focus.crm");
+
+Focus.crm.extmodule=new function()
+{
+    // External module constants
+    var me=this;
+    this.SRC_URL=0;                     /// bSourceType in cCrm_LayoutActions
+    this.SRC_JAVASCRIPT=1;
+    this.SRC_JAVASERVICE=2;
+    this.SRC_WEBSERVICE=3;
+    this.SRC_PROCEDURE=4;
+    this.SRC_WORKFLOW=10;
+    this.SRC_EXTERNAL_GRID=11;
+    this.SRC_EXTERNAL_PRINT_LAYOUT=12;
+
+    this.DISP_CURRENT_WINDOW = 0;         /// iDisplayType in cCrm_LayoutActions
+    this.DISP_DIALOG = 1;
+    this.DISP_NEW_WINDOW = 2; //Focus.ext.DISP_NOHEADER = 2;
+    this.DISP_BACK_GROUND = 3;
+    this.DISP_OVERLAY = 4;
+
+    this.SAVE_BEFORE=1;
+    this.SAVE_AFTER=2;
+
+    this.ACTION_TYPE_ON_FIELD_ENTER=12;
+    this.ACTION_TYPE_ON_FIELD_EXIT=13;
+    this.ACTION_TYPE_ON_LOAD=14;
+
+    this.RESP_SUCCESS=1;
+
+    // functions for initializing
+    this.init=function(iModuleId,sArrModuleSaveActionDTOs,sArrExternalJSEvtHandlers)
+    {
+
+        if(sArrModuleSaveActionDTOs)
+        {
+            var clModuleCallback=moduleCallback.getInstance(iModuleId);
+            var clModuleSaveActionDTO;
+            sArrModuleSaveActionDTOs=eval(sArrModuleSaveActionDTOs);
+
+            //alert(sArrModuleSaveActionDTOs);
+
+            for(var i=0;i < sArrModuleSaveActionDTOs.length; i++)
+            {
+                clModuleSaveActionDTO=sArrModuleSaveActionDTOs[i];
+
+                if(clModuleSaveActionDTO.iSaveType==me.SAVE_BEFORE)
+                {
+                    me.handleBeforeSave.clModuleSaveActionDTO=clModuleSaveActionDTO;
+                    clModuleCallback.setScriptBeforeSave(me.handleBeforeSave);
+                }
+                else if(clModuleSaveActionDTO.iSaveType==me.SAVE_AFTER)
+                {
+                    me.handleAfterSave.clModuleSaveActionDTO=clModuleSaveActionDTO;
+                    clModuleCallback.setScriptAfterSave(me.handleAfterSave);
+                }
+            }
+        }
+
+        if(sArrExternalJSEvtHandlers)
+        {
+            sArrExternalJSEvtHandlers=eval(sArrExternalJSEvtHandlers);
+
+
+            for(var i=0;i < sArrExternalJSEvtHandlers.length; i++)
+            {
+                clModuleSaveActionDTO=sArrExternalJSEvtHandlers[i];
+
+                if(clModuleSaveActionDTO.iActionType==me.ACTION_TYPE_ON_LOAD)
+                {
+                    me.extModuleEvtCallback(null,clModuleSaveActionDTO.sSource,true);
+                }
+                else if(clModuleSaveActionDTO.iActionType==me.ACTION_TYPE_ON_FIELD_ENTER)
+                {
+                    me.addFieldListener("F"+clModuleSaveActionDTO.iFieldId,cross.EVENT_ONFOCUS,clModuleSaveActionDTO.sSource);
+                }
+                else if(clModuleSaveActionDTO.iActionType==me.ACTION_TYPE_ON_FIELD_EXIT)
+                {
+                    me.addFieldListener("F"+clModuleSaveActionDTO.iFieldId,cross.EVENT_ONBLUR,clModuleSaveActionDTO.sSource);
+                }
+            }
+        }
+    };
+
+    this.addFieldListener=function(sFieldId,iActionType,sCallback)
+    {
+        var objField=document.getElementById(sFieldId);
+
+        if(objField)
+        {
+            var iEvtType;
+            if(iActionType==me.ACTION_TYPE_ON_FIELD_ENTER)
+                iEvtType=cross.EVENT_ONFOCUS;
+            else
+                iEvtType=cross.EVENT_ONBLUR;
+
+            if (objField.getAttribute("ctrltype") == Constants.CONTROLTYPE_COMBOBOX
+                || objField.getAttribute("ctrltype") == Constants.CONTROLTYPE_OPTIONCTRL)
+            {
+                var objCombo = getComboInstance(sFieldId);
+                if (objCombo == null)
+                    objCombo = getComboInstance(sFieldId + "[0]");
+                if(iEvtType==cross.EVENT_ONFOCUS)
+                    objCombo.setOnFocusScript("Focus.crm.extmodule.extModuleEvtCallback(\"" + sFieldId + "\",\""+sCallback+"\",false,"+iActionType+",evt)"); //+",'"+sFieldId+"')");
+                else
+                    objCombo.setOnLostScript("Focus.crm.extmodule.extModuleEvtCallback(\"" + sFieldId + "\",\""+sCallback+"\",false,"+iActionType+",evt)"); //+",'"+sFieldId+"')");
+            }
+            else
+                cross.addListener(objField,iEvtType, me.extModuleEvtCallback, true, [sFieldId, sCallback,false,iActionType]);//cross.EVENT_ONBLUR
+        }
+    };
+
+    this.extModuleEvtCallback=function(sFieldId,sCallback,isOnLoad,iActionType,e)
+    {
+        //alert("in extModuleEvtCallback "+sFieldId);
+        //msg.showToastMsg("in extModuleEvtCallback "+sFieldId);
+        if(isOnLoad)
+            eval(sCallback)();
+        else
+            eval(sCallback)(sFieldId,iActionType);
+
+    };
+
+    this.handleAction=function(iModuleId,iBaseModuleId,byLayoutType,iSourceType,sSource,iDisplayType,sTitle,iWidth,iHeight,iActionId,iTransId)
+    {
+        //alert("iActionId====="+iActionId);
+        //alert("iActionId=="+iActionId+"      "+"CUSTOM_LINK_MODULE_ACTION=="+Constants.CUSTOM_LINK_MODULE_ACTION +"      "+(iActionId > Constants.CUSTOM_LINK_MODULE_ACTION));
+
+        if(iActionId > Constants.CUSTOM_LINK_MODULE_ACTION)
+        {
+            if(byLayoutType==Constants.LIST_LAYOUT) {
+                iTransId =listView.getTransId();
+                if(iTransId<=0)
+                {msg.showMessage(0,MsgHandler.getMsg(MsgConstants.SELECT_RECORD_TO_PERFORM_ACTION,null,null));
+                return;}
+            }
+            var sURL;
+            sURL = "/module/moduleView!getExtActionLinkModuleDetails.do?moduleId="+iModuleId+"&extActionId="+iActionId+"&transId="+iTransId;
+            //alert("sURL==="+sURL);
+            function handleResponse(response,iStatusCode)
+            {
+                //alert('iStatusCode=='+iStatusCode);
+                //if(iStatusCode==MSG_SUCCESS)
+                {
+                    var sLinkModuleDetails= eval(response);
+                    var iLinkModuleId,iLinkFieldVal,iBaseLinkActionId,sLinkURL;
+                    if(sLinkModuleDetails!=null)
+                    {
+                        if(sLinkModuleDetails[0])
+                            iLinkModuleId=sLinkModuleDetails[0];
+                        if(sLinkModuleDetails[3])
+                            iLinkFieldVal=sLinkModuleDetails[3];
+                        if(sLinkModuleDetails[4])
+                            iBaseLinkActionId=sLinkModuleDetails[4];
+                        if(sLinkModuleDetails[5])
+                            sLinkURL=sLinkModuleDetails[5];
+                        var iArrTransId=[];
+                        iArrTransId[0]=iLinkFieldVal;
+                        handler.handleAction(byLayoutType,iDisplayType,iLinkModuleId,iBaseLinkActionId,sLinkURL,iLinkModuleId,iArrTransId,iActionId);
+                        //listView.handlePaymentRequest(iBaseLinkActionId,iLinkModuleId,iArrTransId);
+                    }
+                }
+            }
+            con.sendPostRequest(sURL,null,null,handleResponse,null,0,null,true,false,ACTION_LOADING);
+        }
+        else
+        {
+            var isContinueExecution = false;
+
+            if (iSourceType == me.SRC_JAVASCRIPT)
+            {
+                isContinueExecution = eval(sSource)();
+            }
+            else if (iSourceType == me.SRC_WORKFLOW || iSourceType == me.SRC_PROCEDURE || iSourceType == me.SRC_EXTERNAL_PRINT_LAYOUT)
+            {
+                var arrTransIds=null;
+
+                if(byLayoutType==Constants.EDIT_LAYOUT || byLayoutType==Constants.DETAILED_LAYOUT)
+                {
+                    if(document.getElementById("transId"))
+                        iTransId = document.getElementById("transId").value;//moduleView.getTransId();
+                }
+                else if(byLayoutType==Constants.LIST_LAYOUT)
+                {
+                    arrTransIds=listView.getTransIds();
+                    if(!listHandler.validateRowSelection(arrTransIds,(iSourceType != me.SRC_EXTERNAL_PRINT_LAYOUT)))
+                        return;
+                    iTransId = 0;//arrTransIds[0];
+                }
+                else if(byLayoutType==Constants.RELATEDMODULE_LAYOUT)
+                {
+                    arrTransIds=listView.getTransIds("listReportTab_"+iModuleId);
+                    if(!listHandler.validateRowSelection(arrTransIds,(iSourceType != me.SRC_EXTERNAL_PRINT_LAYOUT)))
+                        return;
+                    iTransId=listView.getTransId("listReportTab_"+iModuleId);
+                }
+
+                if(iSourceType == me.SRC_WORKFLOW) {
+                    if(byLayoutType==Constants.LIST_LAYOUT)
+                        iTransId=arrTransIds[0];
+                    isContinueExecution = eval(sSource)(iActionId, byLayoutType, iModuleId, iTransId);
+                }
+                else if(iSourceType==me.SRC_EXTERNAL_PRINT_LAYOUT)
+                {
+                    if(byLayoutType==Constants.LIST_LAYOUT)
+                        iTransId=arrTransIds[0];
+
+                    var sUrl="module/moduleView!printExternalTemplate_nrf.do?moduleId="+iModuleId+"&transId="+iTransId+"&actionId="+(iActionId - Constants.STANDARD_ACTIONS_LIMIT);
+                    var objWindow = window.open(sUrl, "_blank", "toolbar=no,scrollbars=yes, titlebar=no, width=1100, height=595, left=100, top=40", true);
+                }
+                else
+                {
+                    me.executeProc(iActionId,byLayoutType,iModuleId,iTransId,iSourceType,sSource,arrTransIds);
+                    isContinueExecution=true;
+                }
+            }else if(iSourceType==me.SRC_EXTERNAL_GRID&&byLayoutType==Constants.EDIT_LAYOUT){
+                displayInOverlay(sSource,sTitle);
+
+            }
+            else
+            {
+                this.showView(iModuleId, iBaseModuleId, byLayoutType, iSourceType, sSource, null, iDisplayType, sTitle, iWidth, iHeight);
+                isContinueExecution = true;
+            }
+
+            if (isContinueExecution == undefined)
+                isContinueExecution = true;
+
+            return isContinueExecution;
+        }
+    };
+
+    this.executeProc=function(iActionId,byLayoutType,iModuleId,iTransId,iSourceType,sSource,arrTransIds)
+    {
+        function resHandler(sResponse)
+        {
+            util.toggleBackground(false);
+
+            //alert(sResponse);
+            if(sResponse)
+            {
+                var resp = JSON.parse(sResponse);
+
+                if(resp.status==2) //failure
+                    msg.showMessage(Validation.ERROR_MSG,resp.value,"Message",0,null,null,"red");
+                else if(resp.status==1)
+                {
+                    function fnMsgCallback()
+                    {
+                        msg.hideMsgDlg("dvMessage",false,null);
+
+                        if(byLayoutType==Constants.LIST_LAYOUT)
+                            listView.callListviewActions(null, null, null, null, null, null, null, null, null, null, null
+                                , null, true, null, null, null, Constants.IListView_Actions.REFRESH,false);
+
+                        //listView.getRefresh(null,true,false);
+
+                    }
+
+                    if(resp.value)
+                        msg.showMessage(Validation.INFO_MSG,resp.value,"Message",0,null,fnMsgCallback,"green");
+                    else
+                        msg.showMessage(Validation.INFO_MSG, "Procedure executed successfully", "Message",0,null,fnMsgCallback,"green");
+
+
+                }
+                else
+                    msg.showMessage(0,"Response: "+resp,"Message");
+            }
+            else
+                msg.showMessage(0,"Response: "+sResponse,"Error");
+        }
+
+        var sParams="moduleId="+iModuleId+"&sourceType="+iSourceType+"&source="+sSource;
+
+        if(byLayoutType===Constants.LIST_LAYOUT)
+        {
+            for(var i=0; i < arrTransIds.length; i++)
+                sParams+="&transIds="+arrTransIds[i];
+        }
+        else
+            sParams+="&transIds="+iTransId;
+
+        con.sendPostRequest("module/m!invokeExternalModule.do",sParams,null,resHandler,null,0,null,true,false,ACTION_LOADING);
+    };
+
+    //Function for displaying view. Invoked from button,Link,Action-List handler functions and module saving
+    this.showView=function(iModuleId,iBaseModuleId,byLayoutType,iSourceType,sSource,sSourceParams,iDisplayType,sTitle,iWidth,iHeight,iTransId)
+    {
+        //var iTransId=0;//=moduleView.getTransId();
+        if(byLayoutType==Constants.EDIT_LAYOUT || byLayoutType==Constants.DETAILED_LAYOUT)
+        {
+            if((!iTransId || iTransId<=0) && document.getElementById("transId"))
+                iTransId = document.getElementById("transId").value;//moduleView.getTransId();
+            iTransId = util.getAPITransId(iTransId,iModuleId,0);
+        }
+        else if(byLayoutType==Constants.LIST_LAYOUT)
+        {
+            var arrTransIds=listView.getTransIds();
+            if(arrTransIds)
+            {
+                var iListViewModuleId=listView.getModuleId();
+                var arrAPITransIds=[];
+                for(var i=0; i < arrTransIds.length; i++)
+                    arrAPITransIds[i]=util.getAPITransId(arrTransIds[i],iListViewModuleId,0);
+                iTransId=arrAPITransIds.join(",");
+            }
+        }
+        else if(byLayoutType==Constants.RELATEDMODULE_LAYOUT)
+        {
+            iTransId=listView.getTransId("listReportTab_"+iModuleId);
+            iTransId=util.getAPITransId(iTransId,iModuleId,0);
+
+           /* if(listView.getTransId("listReportTab_"+iModuleId)!=null && listView.getTransId("listReportTab_"+iModuleId)!=0)
+            {
+                if(!me.checkMultiRows("listReportTab_"+iModuleId))
+                   return false;
+            }
+            else
+            {
+                Validation.showMessage("Select atleast one record",Validation.ERROR_MSG,null,Validation.ERROR_MANDATORY,true);
+                return false;
+            }*/
+        }
+        var sUrl=null;
+        //alert(iSourceType+"---"+sSource+"---"+sSourceParams+"--"+iDisplayType)
+
+        if(iSourceType==me.SRC_URL)
+        {
+            /*sUrl+=(sUrl.indexOf("?")==-1)?"?":"&";
+            sUrl+="moduleId="+iModuleId+"&transId="+iTransId;*/
+
+            sUrl=sSource+(sSourceParams?sSourceParams:"");
+
+            if (sUrl.indexOf("getCloudUserRegistration") != -1)
+            {
+                var iTransIds=listHandler.getSelectedTransIds();
+                if (me.validateRowSelection(iTransIds, false)) {
+                    //iTransId=iTransIds[0];
+                    iTransId = util.getAPITransId(iTransIds[0], iListViewModuleId, 0);
+                }
+                else
+                    return false;
+            }
+            /*else if (sUrl.indexOf("getEmailWallet") != -1)
+             {
+
+                var iTransIds=listHandler.getSelectedTransIds();
+                if(me.validateRowSelection(iTransIds,false))
+                    iTransId=iTransIds[0];
+                else
+                    return false;
+            }*/
+
+            if(iTransId)
+                sUrl+="&transId="+iTransId;
+
+            if(byLayoutType==Constants.RELATEDMODULE_LAYOUT)
+            {
+                sUrl+="&baseModuleId="+iBaseModuleId;
+                sUrl+="&baseTransId="+util.getAPITransId(document.getElementById("transId").value,iBaseModuleId,0);//moduleView.getTransId()
+            }
+
+            //alert(sUrl);
+
+            if(iDisplayType==me.DISP_CURRENT_WINDOW)
+            {
+                displayInCurrentWindow(sUrl);
+            }
+            else if(iDisplayType==me.DISP_DIALOG)
+            {
+                displayInDialogbox(sUrl,sTitle,iWidth,iHeight);
+            }else if(iDisplayType == me.DISP_OVERLAY)
+            {
+                displayInOverlay(sUrl,sTitle);
+            }
+            else if(iDisplayType == me.DISP_NEW_WINDOW)
+            {
+                //var iModuleId=document.getElementById("moduleId").value;
+
+                /*sUrl+=(sUrl.indexOf("?")==-1)?"?":"&";
+                sUrl+="moduleId="+iModuleId+"&transId="+iTransId;*/
+
+
+                //sUrl="module/module!moveToView.do?moduleId="+iModuleId+"&transId="+iTransId+"&viewType="+iViewType;
+                if(sUrl.indexOf("www")==-1 && sUrl.indexOf("http")==-1)
+                    window.open(clAppBuffer.getContextPath()+"/"+sUrl);
+                else
+                    window.open(sUrl);
+            }
+        }
+        /*else if(iSourceType==me.SRC_JAVASCRIPT)
+        {
+            eval(sSource)();
+        }*/
+
+    };
+
+    this.checkMultiRows = function(sTableId)
+    {
+        var clTable = new sTable(sTableId);
+        var iRowCnt = clTable.getRowCount();
+        var iCount=0;
+        for(var i=0;i<iRowCnt;i++)
+        {
+            if(clTable.getValueAt(i,0))
+            {
+                iCount++;
+            }
+        }
+        if(iCount>1)
+        {
+            msg.showMessage(0,"Multiple record selection is not allowed for selected action.");
+            return false;
+        }
+        return true;
+    }
+
+    this.validateRowSelection=function(iTransIds,isAllowMultiple)
+    {
+        if(!iTransIds)
+            iTransIds=me.getSelectedTransIds();
+
+        if(!iTransIds || iTransIds.length==0)
+        {
+            msg.showMessage(0,"Select atleast one record.");
+            return false;
+        }
+        else if(iTransIds.length > 1 && !isAllowMultiple)
+        {
+            msg.showMessage(0,"Multiple record selection is not allowed for selected action.");
+            return false;
+        }
+        return true;
+    };
+
+    // Invoked before saving module data
+    this.handleBeforeSave=function()
+    {
+        var iModuleId=document.getElementById("moduleId").value;
+        var clModuleSaveActionDTO=me.handleBeforeSave.clModuleSaveActionDTO;
+        var isContinue=me.handleAction(iModuleId,0,Constants.EDIT_LAYOUT,clModuleSaveActionDTO.iSourceType,clModuleSaveActionDTO.sSource,clModuleSaveActionDTO.iDisplayType);
+        me.iSaveType=clModuleSaveActionDTO.iSaveType;
+        me.iDisplayType=clModuleSaveActionDTO.iDisplayType;
+        //this.isWaitForPositiveResp=isWaitForPositiveResp;
+
+        var arrReturn=null;
+        if(isContinue)
+        {
+            arrReturn[0]=Constants.IModule.STATUS_CONTINUE;
+        }
+        return arrReturn;
+    };
+
+    this.handleAfterSave=function(fnAfterSave)
+    {
+        var clModuleSaveActionDTO;
+        if(fnAfterSave)
+            clModuleSaveActionDTO=fnAfterSave;
+        else
+            clModuleSaveActionDTO=me.handleAfterSave.clModuleSaveActionDTO;
+
+        var iModuleId=document.getElementById("moduleId").value;
+        //alert(clModuleSaveActionDTO.iSourceType+"----------"+clModuleSaveActionDTO.sSource+"----------"+clModuleSaveActionDTO.iDisplayType)
+        me.handleAction(iModuleId,0,Constants.EDIT_LAYOUT,clModuleSaveActionDTO.iSourceType,clModuleSaveActionDTO.sSource,clModuleSaveActionDTO.iDisplayType,clModuleSaveActionDTO.sTitle);
+        me.iSaveType=clModuleSaveActionDTO.iSaveType;
+        me.iDisplayType=clModuleSaveActionDTO.iDisplayType;
+        //this.isWaitForPositiveResp=isWaitForPositiveResp;
+        return null;
+    };
+
+    this.handleResponse=function(iResponse)
+    {
+        //!this.isWaitForPositiveResp ||
+        if(iResponse==me.RESP_SUCCESS)
+        {
+            if(me.iSaveType==me.SAVE_BEFORE)
+            {
+                var isSaving=moduleView.doSave();
+                if(!isSaving)
+                    util.toggleBackground(false);
+            }
+            else
+            {
+                if(me.iDisplayType==me.DISP_DIALOG)
+                    getDialogBox("ext").hide();
+            }
+            //Invoke function to continue module saving
+        }
+    };
+
+    this.showExtModuleView=function(sResponse)
+    {
+        var dvContentView=document.getElementById("dvContentView");
+        var dvExtModuleView=document.getElementById("dvExtModuleView");
+        if(!dvExtModuleView)
+        {
+            dvExtModuleView=document.createElement("div");
+            dvExtModuleView.id="dvExtModuleView";
+            dvExtModuleView.style.display="none";
+            dvContentView.parentNode.insertBefore(dvExtModuleView,dvContentView);
+        }
+
+        initAllCombos=null;
+        dvContentView.style.display="none";
+        var sInnerHtml="<div align='left'><a href='javascript:void(0)' onclick='Focus.crm.extmodule.toggleView(false)'>Back to previous page</a></div>";
+        sInnerHtml+=sResponse;
+        dvExtModuleView.innerHTML=sInnerHtml;
+        loadResources(dvExtModuleView, util.onScriptsLoad); //TODO: clear previous resources
+        me.toggleView(true);
+    };
+    this.refreshListView = function(sResponse)
+    {
+        if(sResponse)
+        msg.showMessage(0,sResponse);
+        else
+            listView.getRefresh();
+    };
+    
+    this.toggleView=function(isShowExternalView)
+    {
+        if(isShowExternalView)
+        {
+            document.getElementById("dvContentView").style.display="none";
+            document.getElementById("dvExtModuleView").style.display="block";
+        }
+        else
+        {
+            document.getElementById("dvExtModuleView").style.display="none";
+            document.getElementById("dvContentView").style.display="block";
+        }
+    };
+
+     this.moveToView=function(iViewType)
+    {
+        me.closeDialog();
+        me.backtoView(iViewType);
+        /*var iModuleId=document.getElementById("moduleId").value;
+        var iTransId=moduleView.getTransId();
+        var sUrl="module/module!moveToView.do?moduleId="+iModuleId+"&transId="+iTransId+"&viewType="+iViewType;
+        //alert(sUrl)
+        home.setCenterUI(sUrl);*/
+    };
+
+    this.backtoView= function(iViewType)
+    {
+        var iModuleId=document.getElementById("moduleId").value;
+        var iTransId=document.getElementById("transId").value;//moduleView.getTransId();
+        var sUrl="module/module!moveToView.do?moduleId="+iModuleId+"&transId="+iTransId+"&viewType="+iViewType;
+        //alert(sUrl)
+        home.setCenterUI(sUrl);
+    };
+
+    this.closeDialog=function()
+    {
+        getDialogBox("ext").hide();
+    };
+
+    //// external Module for ErrorModule////////
+    this.onClkTransferError=function(sUrl)
+    {
+       this.onClkTransfer(sUrl,0);
+    };
+    
+    this.onClkTransferDevTask=function(sUrl)
+    {
+      this.onClkTransfer(sUrl,1);
+    };
+
+    this.onClkTransfer=function(sUrl,byFlag)
+    {
+      var iTransIds=listHandler.getSelectedTransIds();
+        if(listHandler.validateRowSelection(iTransIds,true))
+        {
+            var arrActions = new Array();
+            arrActions[0] = MsgHandler.getMsg(MsgConstants.TRANSFER,0,0)+"|clTransferErrors.onClkTransferErrors";//3rd param onwards===attributes
+            arrActions[1] = MsgHandler.getMsg(MsgConstants.CANCEL,0,0)+"|";
+
+            var sParam = "?transIds="+iTransIds;
+            sParam += "&moduleId="+listHandler.getModuleId();
+            sParam += "&flag="+byFlag;
+            var addRandomSelection;
+            addRandomSelection = new DialogBox("dlgTransferError",":. "+MsgHandler.getMsg(MsgConstants.TRANSFER)+" .:",140,160,370,260,sUrl+sParam,true,null,true,true,arrActions);
+
+            addRandomSelection.setCenter();
+            addRandomSelection.show();
+        }
+    }
+
+    /* Internal functions */
+
+    // Internal function displaying external link in main window
+    function displayInCurrentWindow(sUrl)
+    {
+        var bVendorStatus = sUrl.indexOf('updateVendorStatus')!=-1;
+        var bRepost = sUrl.indexOf('repostCartDetails')!=-1;
+        //todo need to remove once dynamic js file including is done !
+        var iTransIds;
+        if( sUrl.indexOf('hillview')!=-1 || bVendorStatus ||bRepost)
+        {
+            iTransIds=listView.getTransIds("listReportTab_1");
+            if(listHandler.validateRowSelection(iTransIds,false))
+            {
+                sUrl+=(sUrl.indexOf("?")==-1)?"?":"&";
+                sUrl+="transIds="+iTransIds;
+                if(bVendorStatus || bRepost)
+                    con.sendPostRequest(sUrl,null,null,Focus.crm.extmodule.refreshListView,false,null,null,false,true,bRepost?ACTION_POSTING:ACTION_UPDATE);
+                else
+                    home.setCenterUI(sUrl,null,true);
+            }
+        }
+        else if( sUrl.indexOf('getPlanUpgradeDet')!=-1)
+        {
+            iTransIds=listView.getTransIds("listReportTab_1");
+            if(listHandler.validateRowSelection(iTransIds,false))
+            {
+                sUrl+=(sUrl.indexOf("?")==-1)?"?":"&";
+                sUrl+="transIds="+iTransIds+"&isOppo=true";
+                home.setCenterUI(sUrl,null,true);
+            }
+        }
+        else
+           home.setCenterUI(sUrl,null,true);
+        //con.sendPostRequest(sUrl,null,null,"Focus.crm.extmodule.showExtModuleView");
+    }
+
+    // Internal function displaying external link in dialogbox
+    function displayInDialogbox(sUrl,sTitle,iWidth,iHeight)
+    {
+        if(!sTitle)
+            sTitle=" ";
+
+        var sOnCloseFunc=null;
+        var sDlgId="ext";
+        if(!iWidth || !iHeight)
+        {
+            iWidth=500,iHeight=500;
+
+            if(sUrl.indexOf("allotEntry")!=-1){
+                iWidth=640;
+                 iHeight=300;
+            }
+            else if(sUrl.indexOf("getQuoteDetails")!=-1)
+            {
+                 iWidth=300;
+                 iHeight=350;
+            }
+            else if(sUrl.indexOf("cdidDetails")!=-1 )
+            {
+                 iWidth=880;
+                 iHeight=600;
+            }
+            else if(sUrl.indexOf("getTransferError")!=-1)
+            {
+                 iWidth=500;
+                 iHeight=380;
+                sTitle = MsgHandler.getMsg(MsgConstants.TRANSFER)+" "+"Error(s)";
+            }
+            else if(sUrl.indexOf("multiCalls")!=-1)
+            {
+                 iWidth=800;
+                 iHeight=400;
+                sOnCloseFunc='window.frames["'+sDlgId + 'contentFrame"].Focus.crm.ext.service.onClkDialogClose';
+                //sOnCloseFunc = "Focus.crm.ext.service.moveToView";
+            }
+            else if(sUrl.indexOf("getUnitStatus")!=-1)
+                    {
+                         iWidth=490;
+                         iHeight=340;
+                        sTitle =MsgHandler.getMsg(MsgConstants.CHNG_UNITSTATUS);
+                    }
+            else if(sUrl.indexOf("merge")!=-1)
+            {
+                 iWidth=400;
+                 iHeight=280;
+                sTitle = MsgHandler.getMsg(MsgConstants.MERGE)+" "+clAppBuffer.getModuleCaption(Constants.ACCOUNTS,true);
+            }
+            else if(sUrl.indexOf("getOpportunity")!=-1)
+            {
+                 iWidth=500;
+                 iHeight=380;
+                sTitle = MsgHandler.getMsg(MsgConstants.TRANSFER)+" "+clAppBuffer.getModuleCaption(Constants.OPPORTUNITIES,true);
+            }
+            else if (sUrl.indexOf("getWallet") != -1)
+            {
+               //var iTransIds1 = listView.getTransIds()
+
+                var iTransIds=listView.getTransIds("listReportTab_1");
+                if(!listHandler.validateRowSelection(iTransIds,false))
+                    return false;
+                iWidth= 650;
+                iHeight=430;
+            }
+            else if (sUrl.indexOf("getEmailWallet") != -1)
+            {
+                iWidth=550;
+                iHeight=550;
+            }
+            else if(sUrl.indexOf("promoCode")!=-1)
+            {
+                iWidth=680;
+                iHeight=500;
+            }
+
+        }
+        //alert(sUrl)
+
+        var isDefaultTemplate=true;
+
+        if(sUrl.indexOf("www")!=-1 || sUrl.indexOf("http://")!=-1 || sUrl.indexOf("https://")!=-1)
+        {
+            if(sUrl.indexOf("http://")==-1 && sUrl.indexOf("https://")==-1)
+                sUrl="http://"+sUrl;
+            isDefaultTemplate=false;
+        }
+
+
+        var dlgExtModule=new DialogBox(sDlgId, sTitle, 80,50,iWidth,iHeight,sUrl,true,"frmMaster",true,isDefaultTemplate,null);
+
+        //var dlgExtModule=new DialogBox(sDlgId, sTitle, 80,50,iWidth,iHeight,sUrl,true,"frmMaster",true,false,null);
+        if(sOnCloseFunc)
+            dlgExtModule.setOnClose(sOnCloseFunc);
+
+        dlgExtModule.setCenter();
+//        dlgExtModule.isHide(true);
+        dlgExtModule.show();
+    }
+
+    function displayInOverlay(sUrl,sTitle)
+    {
+        if(!sTitle || sTitle == null || sTitle == "null")
+            sTitle=" ";
+        if(sUrl.indexOf("www")!=-1 || sUrl.indexOf("http://")!=-1 || sUrl.indexOf("https://")!=-1)
+        {
+            if(sUrl.indexOf("http://")==-1 && sUrl.indexOf("https://")==-1)
+                sUrl="http://"+sUrl;
+        }
+        var dvExternalReport = document.createElement("div");
+        dvExternalReport.id="dvExternalReportOverlay";
+        dvExternalReport.style.display="none";
+        document.body.appendChild(dvExternalReport);
+        clOverlay.showFrameOverlay("dvExternalReportOverlay",sUrl,"50%","95%",clOverlay.OVERLAY_RIGHT,
+            50,0,null,sTitle,"dvCenter",false,null,true,true);
+    }
+
+    this.showDialog=function()
+    {
+        getDialogBox("ext").show();
+    };
+
+};
+
+var clExternalAPI=new function()
+{
+    this.closeDialog=function()
+    {
+        getDialogBox("ext").hide();
+        return clCrmApiHandler.buildApiResponse(clCrmApiHandler.STATUS_SUCCESS,null);
+    };
+    this.showDialog=function(sUrl,iWidth,iHeight)
+    {
+        var sDlgId="ext";
+        var isDefaultTemplate=true;
+        if(sUrl.indexOf("www")!=-1 || sUrl.indexOf("http://")!=-1 || sUrl.indexOf("https://")!=-1)
+        {
+            if(sUrl.indexOf("http://")==-1 && sUrl.indexOf("https://")==-1)
+                sUrl="http://"+sUrl;
+            isDefaultTemplate=false;
+        }
+
+        var dlgExtModule=new DialogBox(sDlgId, "CRM API Dialog", 80,50,iWidth,iHeight,sUrl,true,"frmMaster",true,isDefaultTemplate,null);
+        dlgExtModule.setCenter();
+        dlgExtModule.show();
+
+        return clCrmApiHandler.buildApiResponse(clCrmApiHandler.STATUS_SUCCESS,null);
+    };
+
+    this.getAPITransId=function(iTransId,iModuleType)
+    {
+        clCrmApiHandler.buildApiResponse(clCrmApiHandler.STATUS_SUCCESS,util.getAPITransId(iTransId,iModuleType,0))
+    };
+
+    this.getAPILoginId = function()
+    {
+        clCrmApiHandler.buildApiResponse(clCrmApiHandler.STATUS_SUCCESS,util.getAPITransId(clAppBuffer.getLoginId(),Constants.USERS,0));
+    };
+
+    this.getAccessToken=function(sClientId,sClientSecret,iKeyType)
+    {
+        if(iKeyType!=1) {
+            sClientId = CryptoJS.AES.decrypt(sClientId, "crmapi").toString(CryptoJS.enc.Utf8);
+            sClientSecret = CryptoJS.AES.decrypt(sClientSecret, "crmapi").toString(CryptoJS.enc.Utf8);
+        }
+        var sAccessToken = null;
+
+        function resHandler(sResponse)
+        {
+            sAccessToken = sResponse;
+        }
+
+        var sSubmitData = "clientId="+sClientId+"&secretId="+sClientSecret;
+        con.sendPostRequest("login!getAccessTokenByClientDetails.do",sSubmitData,resHandler,null,con.RESPONSE_HTML,null,null,true);
+        return clCrmApiHandler.buildApiResponse(clCrmApiHandler.STATUS_SUCCESS,sAccessToken);
+    };
+
+    this.disableBackground=function(isDisable)
+    {
+        var isHideLoadStatus=false;
+
+        moduleView.setForceDisableBackground(isDisable);
+
+        if(isDisable)
+            util.toggleBackground(true,isHideLoadStatus);
+        else
+            util.toggleBackground(false,isHideLoadStatus);
+    };
+
+
+};
+
+function testExtModuleJSFunction()
+{
+    //alert("testExtModuleJSFunction");
+
+    var dlgExtModule=new DialogBox("ext", " Dialogbox title1  ",80,50,650,480,clAppBuffer.getContextPath()+"/TestExtModule.jsp",true,"frmMaster",true,false,null);
+    dlgExtModule.setCenter();
+    dlgExtModule.show();
+}
+
+
+function CLModuleSaveActionDTO(iSaveType,iDisplayType,iSourceType,sSource,isWaitForResponse,sTitle,iActionType,iFieldId)
+{
+    this.iSaveType=iSaveType;
+    this.iDisplayType=iDisplayType;
+    this.iSourceType=iSourceType;
+    this.sSource=sSource;
+    this.isWaitForResponse=isWaitForResponse;
+    this.sTitle=sTitle;
+    this.iActionType=iActionType;
+    this.iFieldId=iFieldId;
+}
+
+//alert(CLModuleSaveActionDTO)
+//alert("111111 "+focus.crm.extmodule)
+
+
+function test111()
+{
+    alert("from test111")
+}

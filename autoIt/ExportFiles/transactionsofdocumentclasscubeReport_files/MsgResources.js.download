@@ -1,0 +1,1310 @@
+namespace("Focus.crm");
+Focus.crm.MsgResources = new function()
+{
+    var me=this;
+    var msg={};
+    var actionMsg={};
+
+    actionMsg[Constants.NEW] = "New";
+    actionMsg[Constants.EDIT] = "Edit";
+    actionMsg[Constants.DELETE] ="Delete";
+    actionMsg[Constants.SHARE] = "Share";
+    actionMsg[Constants.ASSIGN] = "Assign";
+    actionMsg[Constants.APPROVE] = "Approve";
+    actionMsg[Constants.REJECT] = "Reject";
+    actionMsg[Constants.APPROVAL_FORWARD] = "Forward";
+    actionMsg[Constants.APPROVAL_RETURN] = "Return";
+    actionMsg[Constants.RETURN_TO_INITIATOR] = "Return To Initiator";
+    actionMsg[Constants.CLOSE] = "Close";
+    actionMsg[Constants.ADD] = "Add";
+    actionMsg[Constants.CHANGE_ISSUE] = "Change";
+
+    this.getActionLabel=function(iActionId,isGetPassTense)
+    {
+        var sLabel=actionMsg[iActionId];
+        if(sLabel!="" && isGetPassTense)
+        {
+            if(util.endsWith(sLabel,"e"))
+                sLabel+="d";
+            else if(util.endsWith(sLabel,"fy"))
+                sLabel=sLabel.substring(0,sLabel.length-2)+"fied";
+            else
+                sLabel+="ed";
+        }
+
+        return sLabel;
+    };
+
+
+
+
+
+    msg[MsgConstants.MULTI_SELECT_NOT_ALLOWED]="Multiple record selection is not allowed for selected action";
+    msg[MsgConstants.GREATER_THAN_EQUAL_TO ] = "#0# must be greater than or equal to #1#";
+    msg[MsgConstants.LESS_THAN_EQUAL_TO ] = "#0# must be less than or equal to #1#" ;
+    msg[MsgConstants.GREATER_THAN ] = "#0# must be greater than #1#";
+    msg[MsgConstants.LESS_THAN ] = "#0# must be less than #1#";
+    msg[MsgConstants.GREATER_THAN_ZERO ] = "#0# must be greater than zero";
+    msg[MsgConstants.VALUE_BETWEEN ] = "#0# between #1# , #2#";
+    msg[MsgConstants.VALUE_MIN ] = "#0# must be min : #1#";
+    msg[MsgConstants.VALUE_MAX ] = "#0# must be max : #1#";
+    msg[MsgConstants.VALUE_MIN_MAX ] = "#0# must be min : #1# and max : #2#";
+    msg[MsgConstants.CONFIRM_DELETE ] = "Are you sure you want to "+me.getActionLabel(Constants.DELETE).toLowerCase()+"?";;
+    msg[MsgConstants.PRINT_LABEL ] = "Print Label";
+    msg[MsgConstants.PASSWORDS_MATCHING ] = "New password and confirm password are not matching";
+    msg[MsgConstants.SELECT_ROLE ] = "Select atleast one role";
+    msg[MsgConstants.DO_NOT_MATCH_NEW_PASSWORD ] = "Old and new passwords should not be same";
+    msg[MsgConstants.BCC ] = "Automatic bcc ";
+    msg[MsgConstants.VALUE_MUST_ENTER ] = "Value must be entered";
+    msg[MsgConstants.MANDATORY ] = "#0# is mandatory";
+    msg[MsgConstants.BEFORE_LAST_ROW_CONJUNCTION ] = "Before last row should not have conjunction 'ONLY'";
+    msg[MsgConstants.LAST_ROW_CONJUNCTION ] = "Last row of filter should end with 'ONLY'";
+    msg[MsgConstants.NO_ROWS_SELECTED ] = "No rows selected";
+    msg[MsgConstants.ADD_MODULE] = "Add";
+    msg[MsgConstants.DETAILS ] = " Details";
+    msg[MsgConstants.GOOGLE_ACCOUNT ] = "Google Account";
+    msg[MsgConstants.FACEBOOK_ACCOUNT ] = "Facebook Account";
+    msg[MsgConstants.TWITTER_ACCOUNT ] = "Twitter Account";
+    msg[MsgConstants.MY] = "My ";
+    msg[MsgConstants.TEST_SMS_SENDING ] = "Test SMS Sending";
+    msg[MsgConstants.FOLDER ] = " Folder";
+    msg[MsgConstants.SELECT ] = "Select #0#";
+    msg[MsgConstants.PURCHASE_DATE ] = "Purchase date";
+    msg[MsgConstants.INSTALLATION_DATE ] = "Installation date";
+    msg[MsgConstants.WARRANTY_DATE ] = "Warranty date";
+    msg[MsgConstants.GUARANTEE_DATE ] = "Guarantee date";
+    msg[MsgConstants.CUSTOMER ] = "customer";
+    msg[MsgConstants.FROMDATE ] = "From date";
+    msg[MsgConstants.TODATE ] = "To date";
+    msg[MsgConstants.TODAY_DATE ] = "today's date";
+    msg[MsgConstants.MESSAGE ] = "Message";
+    msg[MsgConstants.CHARACTERS ] = "characters";
+    msg[MsgConstants.INVALID_BACKUP ] = "Invalid backup file";
+    msg[MsgConstants.BACKUP_FILE ] = "Backup file ";
+    msg[MsgConstants.RESTORE_CONFIRM_MSG ] = "All the logged in users will be disconnected. Do you want to continue?";
+    msg[MsgConstants.RESTORE_COMPANY ] = "Restore Company";
+    msg[MsgConstants.CONFIRM ] = "Confirm";
+    msg[MsgConstants.MSG_SUCCESS_RESTORE ] = "Restore company has been successful";
+    msg[MsgConstants.BACK_UP_TITLE ] = "New Backup";
+    msg[MsgConstants.OK ] = "Ok";
+    msg[MsgConstants.CANCEL ] = "Cancel";
+    msg[MsgConstants.YES ] = "Yes";
+    msg[MsgConstants.NO ] = "No";
+    msg[MsgConstants.BACKUP_LINK ] = "Backup Link";
+    msg[MsgConstants.MSG_DISCONNECT ] = "Are you sure want to disconnect?";
+    msg[MsgConstants.SELECTED_LIST_ITEM ] = "Selected list items are mandatory";
+    msg[MsgConstants.START_DATE ] = "Start date";
+    msg[MsgConstants.END_DATE ] = "End date";
+    msg[MsgConstants.SELECT_ATLEAST ] = "Select atleast one #0#";
+    msg[MsgConstants.BODY ] = "Body";
+    msg[MsgConstants.CREATE_ACTIVITY ] = "Create atleast one activity";
+    msg[MsgConstants.SEND ] = "Send";
+    msg[MsgConstants.CURRENT_DATE_TIME ] = "Current date time";
+    msg[MsgConstants.CURRENT_DATE ] = "Current date";
+    msg[MsgConstants.SCHEDULED_DATE_TIME ] = "Scheduled date time";
+    msg[MsgConstants.SCHEDULED_DATE ] = "Scheduled date";
+    msg[MsgConstants.CHANGE ] = "Change";
+    msg[MsgConstants.TRANSFER ] = "Transfer";
+    msg[MsgConstants.DURATION ] = "Duration";
+    msg[MsgConstants.DATEFIELD ] = "Date Field";
+    msg[MsgConstants.VALUE ] = "Value";
+    msg[MsgConstants.INVALID_VALUE ] = "Value is invalid";
+    msg[MsgConstants.FILTER ] = "Filter";
+    msg[MsgConstants.ROWS ] = "Rows";
+    msg[MsgConstants.COLS ] = "Cols";
+    msg[MsgConstants.LAYOUT ] = "Layout";
+    msg[MsgConstants.TEMPLATE ] = "Template";
+    msg[MsgConstants.SAVE ] = "Save";
+    msg[MsgConstants.ERP_HEADERFLD ] ="Atleast one field should be selected in header fields";
+    msg[MsgConstants.ERP_BODYFLD ] = "Atleast one field should be selected in body fields";
+    msg[MsgConstants.ERP_STRMLINEFLD ] = "Select Streamline field";
+    msg[MsgConstants.REQUIRED ] = "#0# is required";
+    msg[MsgConstants.APPROVAL_PRECENTAGE ] = "Percentage";
+    msg[MsgConstants.APPROVAL_USERS ] ="User";
+    msg[MsgConstants.APPROVAL_ONE_LEVEL ] = "Atleast one level is required";
+    msg[MsgConstants.DISCOUNTS ] = "Discounts";
+    msg[MsgConstants.DISCOUNT_PRODUCT ] ="Atleast one product info is mandatory";
+    msg[MsgConstants.INVALID ] ="#0# is invalid";
+    msg[MsgConstants.MINUTES ] = "Minutes";
+    msg[MsgConstants.HOURS ] = "Hours";
+    msg[MsgConstants.CANNOT_DEL_GRP ] = "Cannot delete the group";
+    msg[MsgConstants.VAL_ALREADY_EXISTS ] = "#0# '#1#' Already Exists";
+    msg[MsgConstants.DELETE_EVENT ] = "Delete Event";
+    msg[MsgConstants.AND ] = "and";
+    msg[MsgConstants.YOU_HAVE ] = "You have";
+    msg[MsgConstants.NOTIFICATIONS ] = "Notification(s)";
+    msg[MsgConstants.REMINDERS ] = "Reminder(s)";
+    msg[MsgConstants.CLOSE ] = "Close";
+    msg[MsgConstants.LENGTH ] = "Length";
+    msg[MsgConstants.NUMBER ] = "number";
+    msg[MsgConstants.STRING ] = "string";
+    msg[MsgConstants.INTEGER ] = "integer";
+    msg[MsgConstants.EMAIL ] = "Email";
+    msg[MsgConstants.URL ] = "Url";
+    msg[MsgConstants.DATE_TIME ] = "Date and Time";
+    msg[MsgConstants.DATE ] = "Date";
+    msg[MsgConstants.TIME ] = "Time";
+    msg[MsgConstants.MAX_RANGE ] ="#0# must be greater than #1#" ;
+//    msg[MsgConstants.INVITE ] = "#0# must be greater than #1#" ;
+    msg[MsgConstants.AS ] = "As";
+    msg[MsgConstants.FROM_TIME ] = "From Time";
+    msg[MsgConstants.TO_TIME ] = "To Time";
+    msg[MsgConstants.FROM_DATE ] = "From Date";
+    msg[MsgConstants.TO_DATE ] ="To Date";
+    msg[MsgConstants.BACK ] = "Back";
+    msg[MsgConstants.NEW ] = "New";
+    msg[MsgConstants.NOT_EMPTY ] = "#0# cannot be empty";
+    msg[MsgConstants.PREVIEW ] = "Preview";
+    msg[MsgConstants.PRINT ] ="Print";
+    msg[MsgConstants.TRANSID ] ="transid";
+    msg[MsgConstants.RATIO_LIMIT ] = "Ratio should be between 0-100";
+    msg[MsgConstants.CAN_NOT_DELETE_TAB ] = "Cannot delete first tab";
+    msg[MsgConstants.GREATER_THAN_TODAY ] ="#0# must be greater than or equal to "+msg[MsgConstants.TODAY_DATE ];
+    msg[MsgConstants.REMOVE ] = "Remove";
+    msg[MsgConstants.SMS ] = "Sms";
+    msg[MsgConstants.TASK ] = "Task";
+    msg[MsgConstants.UPDATEFIELD ] = "Update Module";
+    msg[MsgConstants.EXTERNALMODULE ] = "External Module";
+    msg[MsgConstants.FOLLOWUP ] = "FollowUp";
+    msg[MsgConstants.FINISHED ] ="Finished";
+    msg[MsgConstants.SELECT_ICON ] = "Select an icon";
+    msg[MsgConstants.SOURCE_FIELD ] = "Source field";
+    msg[MsgConstants.OPERATOR ] = "Operator";
+    msg[MsgConstants.TARGET_FIELD_VAL ] = "Target field / value";
+    msg[MsgConstants.ACTION_TARGET ] = "Action target field";
+    msg[MsgConstants.TO ] = "to";
+    msg[MsgConstants.PRODUCT_SERVICES ] = "Product services";
+    msg[MsgConstants.IMAGE_PORTION ] = "Select image portion";
+    msg[MsgConstants.IMAGE_PORTION_RANGE ] = "Select image portion with in the range of actual size of image";
+    msg[MsgConstants.CANNOT_CROP_IMAGE ] = "Image cannot be cropped";
+    msg[MsgConstants.SERVICE_LIST ] = "Services List";
+    msg[MsgConstants.ROLE ] = "Role";
+    msg[MsgConstants.TRUE ] = "True";
+    msg[MsgConstants.FALSE ] = "False";
+    msg[MsgConstants.INVITE] = "Invite";
+    msg[MsgConstants.USER] = "User";
+    msg[MsgConstants.MIN_FIELDS ] ="minimum 3 fields";
+    msg[MsgConstants.MAX_FIELDS ] ="Maximum 8 fields allowed";
+    msg[MsgConstants.FILE_MANDATAORY ] = "File must be uploaded";
+    msg[MsgConstants.MIN_CHARS_ALLOWED ] = "Minimum no. of characters allowed";
+    msg[MsgConstants.SAVED_SUCCESSFULLY ] = "Saved successfully";
+    msg[MsgConstants.MAP ] = "Map";
+    msg[MsgConstants.NEW_EVENT ] = "New Event";
+    msg[MsgConstants.USERS] = "Users";
+    msg[MsgConstants.ENTER_VAL ] ="Enter Any Value";
+    msg[MsgConstants.TASKSET ] = "TaskSet";
+    msg[MsgConstants.REASSIGN ] = "ReAssign";
+    msg[MsgConstants.ALERT ] = "Alert";
+    msg[MsgConstants.CHANGESTAGE ] = "ChangeStage";
+    msg[MsgConstants.SENT ] = "sent";
+    msg[MsgConstants.RECEIVE ] = "receive";
+    msg[MsgConstants.REQUIRED_PLU ] = "#0# are required";
+    msg[MsgConstants.OF ] = "of";
+    msg[MsgConstants.PREVIOUS_PAGE ] = "Previous Page";
+    msg[MsgConstants.NEXT_PAGE ] = "Next Page";
+    msg[MsgConstants.LEVEL ] ="Level";
+    msg[MsgConstants.NOT_CONTAIN ] ="#0# does not contain #1#";
+    msg[MsgConstants.QUERY ] = "query";
+    msg[MsgConstants.INSERT_STATEMENT ] = "insert statement";
+    msg[MsgConstants.UPDATE_STATEMENT ] ="update statement";
+    msg[MsgConstants.DELETE_STATEMENT ] = "delete statement";
+    msg[MsgConstants.SELECT_LAYOUT ] = "Select Layout";
+    msg[MsgConstants.SUCCESSFULLY ] = "successfully";
+    msg[MsgConstants.REMARKS ] ="Remarks";
+    msg[MsgConstants.ADD ] ="Add";
+    msg[MsgConstants.TEXT ] = "Text";
+    msg[MsgConstants.VARIABLE ] ="Variable";
+    msg[MsgConstants.IMAGE ] = "Image";
+    msg[MsgConstants.RECTANGLE ] ="Rectangle";
+    msg[MsgConstants.LABEL ] = "Label";
+    msg[MsgConstants.SCHEDULED_REMINDERS ] = "Scheduled Reminders";
+    msg[MsgConstants.TEAM ] = "Team";
+    msg[MsgConstants.QUOTE ] = "There is already another Quote syncing Overwrite with this Opportunity, if you click Yes, this Quote will be Synced with the Opportunity. <br>And the earlier one will be de-synced.";
+    msg[MsgConstants.CONFIRM_SYNC ] = "Confirm Sync";
+    msg[MsgConstants.COPY_PASTE ] = "Copy the data before paste";
+    msg[MsgConstants.GROUP_NAME_MANDATORY ] = "Group name mandatory for display type mandatory";
+    msg[MsgConstants.DELETE_RULE ] = "Delete Rule";
+    msg[MsgConstants.ALL ] = "All";
+    msg[MsgConstants.LOADING ] = "Loading...";
+    msg[MsgConstants.ABOUT ] = "About";
+    msg[MsgConstants.LOGIN ] = "Login";
+    msg[MsgConstants.FORMULA_EDITOR ] = "Formula Editor";
+    msg[MsgConstants.APPLY ] = "Apply";
+    msg[MsgConstants.ADDANDVERIFY ] = "Apply & verify";
+    msg[MsgConstants.FONT_STYLE ] = "Font Style";
+    msg[MsgConstants.IMPORT ] = "Import";
+    msg[MsgConstants.REMINDER ] = "Reminder";
+    msg[MsgConstants.NOTIFICATION ] = "Notification";
+    msg[MsgConstants.MENU ] = "Menu";
+    msg[MsgConstants.WIDGET ] = "Widget";
+    msg[MsgConstants.RIGHT_SECTION ] = "Right Section";
+    msg[MsgConstants.ANNOUNCEMENT ] = "Announcement";
+    msg[MsgConstants.DETAILED ] = "Detailed";
+    msg[MsgConstants.PROPERTIES ] = "Properties";
+    msg[MsgConstants.WARNING ] = "Warning";
+    msg[MsgConstants.SELECTIMAGE ] = "Select Image";
+    msg[MsgConstants.MAPNOTDEFINED ] = "Location co-ordinates are not defined for selected #0#(s) ";
+    msg[MsgConstants.DONE ] = "Done";
+    msg[MsgConstants.ERPMAPPING_ACTIVE ] = "Selected mapping(s) is already active";
+    msg[MsgConstants.ERPMAPPING_INACTIVE ] = "Selected mapping(s) is already In-active";
+    msg[MsgConstants.ACCESS_TYPE ] = "Access type";
+    msg[MsgConstants.ATTACHMENTS_TITLE ] = "Attachment";
+    msg[MsgConstants.DOCUMENTS_TITLE ] = "Document";
+    msg[MsgConstants.MAIL ] = "Mail";
+    msg[MsgConstants.BOOKING ] = "Booking";
+    msg[MsgConstants.TRANFSER_DATE ] = "Transfer date";
+    msg[MsgConstants.BOOKING ] = "Booking";
+    msg[MsgConstants.MERGE ] = "Merge";
+    msg[MsgConstants.IMAGE_NOT_AVAILABLE ] ="Image not available";
+    msg[MsgConstants.NEW_REQUEST ] = "New Request";
+    msg[MsgConstants.MSG_MULTI_CALL ] ="The following are the Call Ids booked ";
+    msg[MsgConstants.CAN ] = "can";
+    msg[MsgConstants.NOT ] = "not";
+    msg[MsgConstants.BE ] = "be";
+    msg[MsgConstants.ON ] = "on";
+    msg[MsgConstants.CAN_NOT_DELETE_DEFAULT_ROW ] = "Default row cannot be deleted";
+    msg[MsgConstants.PAGING_ALIGNMENT ] = "List view paging alignment";
+    msg[MsgConstants.CHNG_UNITSTATUS ] = "Change UnitStatus";
+    msg[MsgConstants.DELETED_SUCCESSFULLY ] = "Deleted successfully";
+    msg[MsgConstants.PREFERRED_DATE ] = "Preferred Date";
+    msg[MsgConstants.CREATED_DATE ] ="Created Date";
+    msg[MsgConstants.TAG_ALREADY_ATTACHED ] = "Tag already attached to this record";
+    msg[MsgConstants.TAG_NAME ] = "Tag name";
+    msg[MsgConstants.START_END_DATE ] = "iFromDate,iToDate";
+    msg[MsgConstants.MASTER_TYPE  ] = "Master type";
+    msg[MsgConstants.INTEGRATION_SETT_ACTIVE  ] = "Selected Integration Setting(s) is already active";
+    msg[MsgConstants.INTEGRATION_SETT_INACTIVE  ] = "Selected Integration Setting(s) is already In-active";
+    msg[MsgConstants.APPROVAL_LEVEL_LIMIT] = "Maximum #0# levels are allowed";
+    msg[MsgConstants.CRITERIA] = "Criteria";
+    msg[MsgConstants.SAME_CHEQUE_STATUS_RECORDS] = "Cheque status should be same for all the selected records";
+    msg[MsgConstants.CANNOT_CHANGE_CLEARED_CHEQUE_STATUS] = "Cannot change the cheque-status once it is marked as 'Cleared'";
+    msg[MsgConstants.CANNOT_CHANGE_RETURNON_SETTLEMENT_STATUS] = "Cannot change the cheque-status once it is marked as 'Return on settlement'";
+    msg[MsgConstants.SYNC] = "Sync";
+    msg[MsgConstants.ERP_SYNCMASTERS] = "Sync ERP-Masters";
+    msg[MsgConstants.MIN_TIME_NOTIFY] = "Minimum time to request notifications should be greater than 2 min and less than 60 min";
+    msg[MsgConstants.DELETE_CONFIRMATION] = "Delete #0# Confirmation";
+    msg[MsgConstants.DELETE_CONFIRMATION_MSG] = "Are you sure want to delete '#0#' *?";
+    msg[MsgConstants.REPORT] = "Report";
+    msg[MsgConstants.DUPLICATE_REPORT_NAME] = "Duplicate Report Name";
+    msg[MsgConstants.DUPLICATE_ESCALATION_NAME] = "Duplicate Escalation Name";
+    msg[MsgConstants.DUPLICATE_SPAREPART_NAME] = "Duplicate Part name";
+    msg[MsgConstants.DUPLICATE_FREQUENCY_NAME] = "Duplicate Frequency name";
+    msg[MsgConstants.INVALID_VERIFY_CODE] = "Invalid verification code or mismatch of mobile time with current time(hh:mm)";
+    msg[MsgConstants.NOTIFICATION_TYPE] = "Notification Type";
+    msg[MsgConstants.TEMPLATE_NAME] = "Template Name";
+    msg[MsgConstants.HEADER_CUSTOMIZATION_DONE] = "Header Customization Values Changed Successfully";
+
+
+    msg[MsgConstants.EXPIRY_DATE] = "Expiry Date";
+    msg[MsgConstants.DUPLICATE_FIELD] = "Selected field already exists";
+    msg[MsgConstants.DUPLICATE_SEARCH_GROUP] = "Selected group field name already exists";
+    msg[MsgConstants.ATLEAST_ONE_CUSTOMER] = "Select atleast one Customer";
+    msg[MsgConstants.ADD_GROUP_FIELD] = "Add Group Fields";
+    msg[MsgConstants.ATLEAST_BOX_LAYOUT] = "Atleast one box layout is required";
+    msg[MsgConstants.ADD_BOX_FIELD] = "Add Box Layout Field";
+    msg[MsgConstants.DUPLICATE_CRITERIA] = "Erp mapping is defined with search by '#0#' whereas duplicate criteria is defined on '#1#' for the module '#2#'. Do you want to continue?";
+    msg[MsgConstants.NO_DUPLICATE_CRITERIA] = "Erp mapping is defined with search by '#0#' whereas no duplicate criteria defined in crm for module '#1#'";
+    msg[MsgConstants.POSTING_PRICEBOOK] = "Price book posting"; 
+    msg[MsgConstants.DUPLICATE_TEMPLATE_NAME] = "Template name already exist";
+    msg[MsgConstants.PRODUCT_MANDATORY] = "Product is required";
+    msg[MsgConstants.RATE_MANDATORY] = "Rate is required ";
+    msg[MsgConstants.START_DATE_MANDATORY] = "Start date is required ";
+    msg[MsgConstants.ROW] = " Row";
+    msg[MsgConstants.NATURE_OF_VISIT] = "Nature of Visit";
+    msg[MsgConstants.NATURE_OF_CALL] = "Nature of Call";
+    msg[MsgConstants.REGISTER] = "Register ";
+    msg[MsgConstants.CDID_REGISTRATION] = " CDID Registration ";
+    msg[MsgConstants.SUBMIT] = "Submit";
+    msg[MsgConstants.CALL_CHARGES] = "Call Charges";
+    msg[MsgConstants.PREFERRED_DATE_TIME] = "Preferred date & time";
+    msg[MsgConstants.SPECIAL_REMARKS] = "Special Remarks";
+    msg[MsgConstants.PMS_OPTION_IRREVERSIBLE] = "This option is irreversible. Do you want to Continue?";
+    msg[MsgConstants.PROPERTY_DATE] = "Property or Date range ";
+    msg[MsgConstants.REVISIONS_LIST] = "Revisions";
+    msg[MsgConstants.REVISION] = "Revision";
+    msg[MsgConstants.REPLY] = "Reply";
+    msg[MsgConstants.REPLY_ALL] = "Reply All";
+    msg[MsgConstants.ACTION ] = "action";
+    msg[MsgConstants.SPAREPARTS_ALREADY_RAISED ] = "Some #0# request already raised for selected #1# record";
+    msg[MsgConstants.SPAREPARTS_ALREADY_REQUESTED ] = "Some #0# replace already requested for selected #1# record";
+    msg[MsgConstants.RESTRICT_PARTS_REQ_DELETION ] = "Cannot delete selected record, Selected parts is already replaced.";
+    msg[MsgConstants.RESTRICT_ESTIMATION_DELETION ] = "Cannot delete selected record, Selected parts is already requested.";
+    msg[MsgConstants.MUST_BE_UNIQUE] = "#0# must be unique";
+    msg[MsgConstants.NO_PRODUCTS_DEFINED] = "No Products defined for the selected #0#";
+    msg[MsgConstants.INSTALLATION_COMPLETED] = "Installation completed for the selected #0#";
+    msg[MsgConstants.FIELD_OF] = "Field of";
+    msg[MsgConstants.LOOKUP_SEARCH] = "Look-up Search";
+    msg[MsgConstants.LINK_FIELD] = "Link Field";
+    msg[MsgConstants.FIELDS] = "Fields";
+    msg[MsgConstants.SALESORDER ] = "There is already another SalesOrder syncing Overwrite with this Opportunity, if you click Yes, this SalesOrder will be Synced with the Opportunity. <br>And the earlier one will be de-synced.";
+    msg[MsgConstants.ATLEAST_ONE_DAY] = "Select Atleast One Day";
+    msg[MsgConstants.ATLEAST_ONE_MONTH] = "Select Atleast One Month";
+    msg[MsgConstants.PERIODIC] = "Minimum value for periodic frequency is 10 minutes";
+    msg[MsgConstants.ATTACHMENTS_ALREADY_EXTS] = "already selected";
+    msg[MsgConstants.SHARE] = "Share";
+    msg[MsgConstants.ATLEAST_SHORTLIST_MANDATORY_LISTACCESS] = "Atleast one layout in shortlist is mandatory";
+    msg[MsgConstants.MASS_TRANSFER] = "Mass Transfer";
+    msg[MsgConstants.RECORDLOCATION_CHANGED] = "Do you want to change all the records pertaining to the #0# to the new location of the #0# ?";
+    //msg[MsgConstants.MOD_PENDING_ACCESS_PENDING] = "#0# is pending #1# access is denied";
+    msg[MsgConstants.MOD_PENDING_ACCESS_PENDING] = "#0# authorization status is 'Pending', #1# access denied.";
+    msg[MsgConstants.DETAILED_VIEW] = "Detailed View";
+    msg[MsgConstants.FUNCTION] = "Function #0#";
+    msg[MsgConstants.MOD_PENDING_ACTION_DENIED] = "#0# authorization status is 'Pending', #1# action denied.";
+    msg[MsgConstants.MOD_STATUS_ACTION_DENIED] = "#0# status is '#1#', #2# action denied.";
+    msg[MsgConstants.TERMINATE] = "Terminate";
+    msg[MsgConstants.LEGAL_CASE] = "Legalcase";
+    msg[MsgConstants.RENEWAL] = "Renewal";
+    msg[MsgConstants.CONTRACT_CLOSE] = "Close";
+    msg[MsgConstants.RENEWED] = "Renew";
+    msg[MsgConstants.PENDING_TELE_LEADS_NOT_CONVERTED] = "Pending Tele-Leads Cannot be Converted";
+    msg[MsgConstants.UPDATE_GEO_LOC] = "Update Geo Locations";
+    msg[MsgConstants.CONTRACT_TERMINATE] = "Do you really want to terminate the #0#, all future PMC Calls will be cancelled on termination.";
+    msg[MsgConstants.SELECT_LOC_AND_SHIFT] = "select any Location and Shift";
+    msg[MsgConstants.DOWNLOAD] = "Download";
+    msg[MsgConstants.DELETE] = "Delete";
+    msg[MsgConstants.WANT_TO_DISMISS] = "Are you sure you want to dismiss reminder?";
+    msg[MsgConstants.WANT_TO_DISMISS_ALL] = "Are you sure you want to dismiss all reminders?";
+    msg[MsgConstants.SNOOZE] = "Snooze";
+    msg[MsgConstants.DISMISS] = "Dismiss";
+    msg[MsgConstants.PAYMENT_GATEWAY_CONFIRM_MSG] = "If any payment gateway is enable,that will be disable.Would you like to continue? ";
+    msg[MsgConstants.CURRENCY] = "Currency";
+    msg[MsgConstants.PAYMENT_MODE] = "Payment Mode";
+    msg[MsgConstants.SOURCE] = "Source";
+    msg[MsgConstants.INSERT_IMAGE] = "Insert Image";
+    msg[MsgConstants.EDIT_IMAGE] = "Edit Image";
+    msg[MsgConstants.EXPORTING] = "Exporting...";
+    msg[MsgConstants.IMPORTING] = "Importing...";
+    msg[MsgConstants.CAMPAIGN_NAME] = "Campaign name";
+    msg[MsgConstants.ASSIGNED_TO] = "Assigned to";
+    msg[MsgConstants.ACCOUNT_NAME] = "Account name";
+    msg[MsgConstants.MAILCHIMP_LIST] = "MailChimp list";
+    msg[MsgConstants.EXPORT_TO_MAILCHIMP] = "Export To MailChimp";
+    msg[MsgConstants.IMPORT_TO_MAILCHIMP] = "Import From MailChimp";
+    msg[MsgConstants.EXPORT] = "Export";
+    msg[MsgConstants.SIGNATURE] = "Signature";
+    msg[MsgConstants.AT_LEAST_ONE_SIGNATURE_SHOULD_BE_DEFAULT] = "Atleast one signature should be Default";
+    msg[MsgConstants.DEFAULT_SIGNATURE_ALREADY_DEFINED_DO_YOU_WANT_TO_CONTINUE] = "Default signature has already defined.Do you want to continue ?";
+    msg[MsgConstants.IMPORT_SCHEDULE_MAILCHIMP] = "Schedule Import From MailChimp";
+    msg[MsgConstants.EDIT_SCHEDULE_MAILCHIMP_IMPORT] = "Edit Scheduled Import";
+    msg[MsgConstants.SCHEDULING] = "Scheduling...";
+    msg[MsgConstants.IMPORTED_FROM_MAILCHIMP] = "Successfully Imported Contact(s) from Mailchimp";
+    msg[MsgConstants.EXPORTED_TO_MAILCHIMP] = "Successfully Exported Contact(s) to Mailchimp";
+    msg[MsgConstants.CENTRA_CRM_MODULE] = "Centra CRM Module";
+    msg[MsgConstants.MAILCHIMP_IMPORT_SCHEDULED] = "Mailchimp import scheduled successfully";
+    msg[MsgConstants.ENDDATE_MUST_BE_MORE_THAN_STARTDATE] = "End Date must be more than Start Date";
+    msg[MsgConstants.PLEASE_SELECT_ONEDAY] = "Please select one day";
+    msg[MsgConstants.SCHEDULE_MAILCHIMP_IMPORT] = "Schedule MailChimp Import";
+    msg[MsgConstants.DELETED_SCHEDULE_MAILCHIMP_IMPORT] = "Deleted Schedule MailChimp Import";
+    msg[MsgConstants.MSG_USERS_LICENSE_ATTACH] = "Attach license to users";
+    msg[MsgConstants.NO_CHANGES_USER_LICENSE_ALLOCATION]="No changes detected for user allocation.";
+    msg[MsgConstants.MSG_USER_LICENSE_ALLOCATION_SUCCESS]="User license allocated successfully";
+    msg[MsgConstants.MSG_USER_LICENSE_ALLOCATION_FAIL]="Failed to allot user license";
+    msg[MsgConstants.DETACH_USER_LICENSE_ALLOCATION]="Are you sure do you want to detach user license.";
+    msg[MsgConstants.RECIPIENT_EMAILID] = "RECIPIENT_EMAILID";
+    msg[MsgConstants.RECIPIENT_PHONE] = "RECIPIENT_PHONE";
+    msg[MsgConstants.RECIPIENT_MOBILE] = "RECIPIENT_MOBILE";
+    msg[MsgConstants.RECIPIENT_DESIGNATION] = "RECIPIENT_DESIGNATION";
+    msg[MsgConstants.RECIPIENT_ADDRESS] = "RECIPIENT_ADDRESS";
+    msg[MsgConstants.RECIPIENT_NAME] = "RECIPIENT_NAME";
+    //msg[MsgConstants.RECEPIENT_LAST_NAME] = "RECEPIENT_LAST_NAME";
+    msg[MsgConstants.RECIPIENT_ROLE] = "RECIPIENT_ROLE";
+    msg[MsgConstants.FROM] = "From";
+    msg[MsgConstants.UPDATED_SUCCESSFULLY] = " updated successfully";
+    msg[MsgConstants.LICENSED_USER_CANNOT_REDUCED] = "Licensed user count can not be reduced";
+    msg[MsgConstants.PLAN_DETAILS_NOT_CHANGED] = "Plan details not changed";
+    msg[MsgConstants.SELECT_LEAST_ONE_ADD_ONS] = "Select at least one Add-Ons";
+    msg[MsgConstants.AMOUNT_MUSTBE_GREATERTHAN_ZERO] = "Subscription amount must be greater than zero";
+    msg[MsgConstants.ROW_DELETE_CONFIRM] = "Are you sure you want to delete the row?";
+    msg[MsgConstants.TERMS_CONDITIONS] = "Please select the terms and conditions";
+    msg[MsgConstants.DRAFT_RECORD_ACTION] = "Selected action cannot be performed when #0# status is 'Draft'";
+    msg[MsgConstants.PAYMENT_RECORD_ACTION] = "Payment already received against selected #0#";
+    msg[MsgConstants.CART_ITEM_MANDATARY]="Cart Item ";
+    msg[MsgConstants.BRAND_NAME_MANDATARY]="Brand Name ";
+    msg[MsgConstants.SEARCH_KEYWORDS_MANDATARY]="Search Keywords ";
+    msg[MsgConstants.AVAILABLE_DATE_MANDATARY]="Available Date ";
+    msg[MsgConstants.MIN_ORDER_MANDATARY]="Min Order ";
+    msg[MsgConstants.MAX_ORDER_MANDATARY]="Max Order ";
+    msg[MsgConstants.DESCROPTION_TYPE_MANDATARY]="Description Type ";
+    msg[MsgConstants.DESCRIPTION_MANDATARY]="Description ";
+    msg[MsgConstants.PRODUCT_CART_MANDATARY]="Product ";
+    msg[MsgConstants.POSTING_CART_ITEMS]="Cart Items Posting"
+
+
+
+    //Preferences messages
+
+    msg[MsgConstants.DEFAULT_VALUE ] = "Default value";
+    msg[MsgConstants.ALREADY_EXISTS ] = "already exists";
+    msg[MsgConstants.WEB_FIELD_NAME ] = "Web field name";
+    msg[MsgConstants.INTRANET_MSGMAND ] = "Message is mandatory";
+    msg[MsgConstants.INTRANET_TOADDRS ] = "To Address is mandatory";
+    msg[MsgConstants.INTRANET_DLGTITLE ] = "Save Password";
+    msg[MsgConstants.INTRANET_DLGTITLE1 ] = "Add Recipients";
+    msg[MsgConstants.REMINDER_DAYS ] = "#0# Reminder Days";
+    msg[MsgConstants.REMINDER_TYPE ] ="#0# Reminder Type";
+    msg[MsgConstants.REMINDER_TEMP ] = "Reminder Template Type";
+    msg[MsgConstants.DEFAULT ] = "Default";
+    msg[MsgConstants.MASS_EMAIL ] = "Mass Email preview";
+    msg[MsgConstants.FIRST_NAME ] = "First Name";
+    msg[MsgConstants.SALUTATION ] = "Salutation";
+    msg[MsgConstants.SPECIAL_CHARS_CHECKING ] = "Special characters are not allowed in module names";
+    msg[MsgConstants.SPECIAL_CHARS_VALIDATING ] = "Special characters are not allowed";
+    msg[MsgConstants.QUEUE_ASSIGN_FLDS ] = "Queue and assigned to fields";
+    msg[MsgConstants.INTRANET_MSG ] = "Intranet Message";
+    msg[MsgConstants.REMARKS_EXCEEDS ] = "Remarks exceeds maximum limit ";
+    msg[MsgConstants.COMMISSION_ON ] = "Commission on";
+    msg[MsgConstants.STREAMLINE ] = "Streamline";
+    msg[MsgConstants.EXTERNAL ] = "External";
+    msg[MsgConstants.PaymentSchedule ] = "Payment Schedule";
+    msg[MsgConstants.VARIABLE_NAME ] = "Variable Name";
+    msg[MsgConstants.INTRANET_PRINTLAYOUTDESIGNER ] = "Print layout designer not enabled in your licence.";
+    msg[MsgConstants.INTRANET_QUOTENOTAPPROVED ] = "Quote is not approved";
+    msg[MsgConstants.INTRANET_CANNOTREPLY ] = "You cannot reply to this email";
+    msg[MsgConstants.GENERAL_ROUNDOFF ] = "General round off";
+    msg[MsgConstants.DENOMINATION_DETAILS ] = "Denomination details";
+    msg[MsgConstants.DENOMINATION_VALUE ] = "Denomination value";
+    msg[MsgConstants.EFFECTIVE_DATE ] = "Effective date";
+    msg[MsgConstants.SELECT_EFFECTIVE_DATE ] = "Select base currency or effective date";
+    msg[MsgConstants.DUPLICATE_COMPANY] = "Duplicate Company";
+    msg[MsgConstants.TOTAL_SEL_FIELDS] = "Total selected fileds should be 16 or less.";
+    msg[MsgConstants.PULL_ERP_MODULE_TO_CRM] = "Pull ERP Module to CRM Saved Successfully.";
+    msg[MsgConstants.TRACK_ACTIVITIES_AGAINST_CUSTOM_MODULE] = "This option is required only if you want to track Appointments, Tasks, Visits or Plans against this Custom module, if you still want to continue click 'Yes' else 'No'";
+    msg[MsgConstants.ALLOWED_FILE_TYPES] = "Allowed File Types";
+
+    //Support module messages
+
+    //msg[MsgConstants.CANNOT_CLOSE_CALL
+
+    msg[MsgConstants.CANNOT_CLOSE_UNRESOLVED_CALL ] = "Request cannot be "+me.getActionLabel(Constants.CLOSE,true)
+                                                +" if it is not resolved";
+    msg[MsgConstants.ASSIGN_BY_QUEUE] = "Assign by queue";
+    msg[MsgConstants.ASSIGN_ONLY_APPROVED ] = "Only approved  Request can be assigned";
+    msg[MsgConstants.ASSIGN_ONLY_ACTIVE ] = "Only active  Request can be assigned";
+    msg[MsgConstants.IN_ACTIVE_MSG] = "Selected Action can't performed when call status is In-Active";
+    msg[MsgConstants.PENDING_REC_CANT_CONVERTED] = "Pending records can't be converted";
+    msg[MsgConstants.CANNOT_ASSIGN_RESOLVED ] = "Resolved & closed request cannot be assigned";
+   // msg[MsgConstants.CALL_ALREADY_CLOSED ] = "Request already closed";
+    msg[MsgConstants.SERVICE_SCHEDULE ] = "Service schedule";
+    msg[MsgConstants.SELECT_SERVICE ] =  "Atleast one service should be selected for a scheduled service date";
+    msg[MsgConstants.MAX_VISTS ] = "Warn visits should be less than max visits";
+    msg[MsgConstants.MAX_HOURS ] = "Warn hours should be less than max hours";
+    msg[MsgConstants.MANDATORY_VALUES ] = "Mandatory values are missing in product list";
+    msg[MsgConstants.INVALID_SNO] = "Invalid serial number";
+    msg[MsgConstants.SNO_MAXLIMIT ] = "Serial number exceeds max limit";
+    msg[MsgConstants.SNO_MAXQUANTITY ] = "Serial number exceeds max quantity";
+    msg[MsgConstants.SNO_LIMIT ] = "Serial number should not exceed";
+    msg[MsgConstants.BUSINESS_RULE_NO_FILTER ] = "Response times must be defined for a business rule with no filter";
+    msg[MsgConstants.SEARCH_CRITERIA_REQ ] = "Search criteria is required";
+    msg[MsgConstants.SEARCH_RESULT ] = "Search Result";
+    msg[MsgConstants.PICK ] = "pick";
+    msg[MsgConstants.CLOSINGRULE_MSG ] = " Resolved request will be closed maximum of 30 days";
+    msg[MsgConstants.NUMBER_IS ] ="Number is";
+    msg[MsgConstants.CUSTOMER_PREF_TIME_CONFIRM ] = "Customer preferred time: #0# \n        Assign time: #1#  \n        Do you want to continue?";
+    msg[MsgConstants.CANNOT_CLOSE_CALL_Status ] = "Cannot close the call when the ";
+    msg[MsgConstants.CANNOT_CLOSE_CALL_NEW ] = "status is New ";
+    msg[MsgConstants.CANNOT_CLOSE_CALL_UNASSIGN ] = "state is Un-assigned";
+    msg[MsgConstants.SEARCHACCOUNTLIST ] = " List";
+    msg[MsgConstants.LOCATIONACCESSNOTALLOWED ] = " Location access not allowed";
+    //msg[MsgConstants.ADDOREDIT ] = "Add or Edit ";
+
+
+    msg[MsgConstants.ADDOREDIT] = "Cannot  add or edit  '#0#' when #1# status is '#2#' ";
+    msg[MsgConstants.ADDOREDIT_CUSTOM] = "Cannot  add or edit  '#0#' for current '#1#' status";
+    msg[MsgConstants.WORKLOG ] = "WorkLog";
+    msg[MsgConstants.NOTES ] = "Notes";
+    msg[MsgConstants.ATTACH ] ="Attach";
+    msg[MsgConstants.RESOLUTION ] = "Resolution";
+    msg[MsgConstants.PARTSREQUESTED ] = "Parts Requested";
+    msg[MsgConstants.PARTSREPLACED ] = "Parts Replaced";
+    msg[MsgConstants.DELETERESO ] = "Delete Resolution ";
+    msg[MsgConstants.CALL_CANNOTCLOSE ] = "Only resolved #0# is allowed to close.";
+    msg[MsgConstants.SURVEY_FORCALLS ] = "Could not open survey details, survey is allowed only for closed request.";
+    msg[MsgConstants.DEFINE_TIME_SLOT ] = "Define atleast one time-slot";
+    msg[MsgConstants.CANNOT_DELETE_TIME_SLOT ] = "Slot cannot be deleted";
+    msg[MsgConstants.TIME_SLOT_DEFINED ] = "Time-Slot is already defined for";
+    msg[MsgConstants.SURVEY_CANNOTOPEN ] = "Could not open survey details for the selected request status";
+    //msg[MsgConstants.REQUEST_NOTCLOSED ] = "Request is not closed yet do you want to close,Agree or disagree (yes or no)? ";
+    msg[MsgConstants.REQUEST_NOTCLOSED ] = "Request is not yet closed, click 'Yes' to close the same and open survey or 'No' to re-open the request.";
+    msg[MsgConstants.CHANGE_ISSUE ] = "Change Issue";
+    msg[MsgConstants.ISSUE ] = "Issue";
+    msg[MsgConstants.CURRENT_AND_FUTUREDATES ] = "Only current and future dates are allowed";
+    msg[MsgConstants.SERVICE_BLOCKED ] = "Atleast one service is mandatory";
+    msg[MsgConstants.CALL_ALREADY_CLOSED] = "Already #0# has been closed.";
+    msg[MsgConstants.RE_OPEN] = "Re-Open";
+    msg[MsgConstants.REQUEST_ALREADYCLOSED] = "Request is already closed. 'Yes' to re-open the request  or 'No' to open the survey.";
+    msg[MsgConstants.FLAT_RATE]="Flat Rate";
+    msg[MsgConstants.NEVER_BILL_LESS_THAN]="Never Bill Less Than";
+    msg[MsgConstants.NEVER_BILL_MORE_THAN]="Never Bill More Than";
+    msg[MsgConstants.CHANGE_STATUS_MSG]="Selected row(s) status should be same to change status";
+    msg[MsgConstants.CHANGE_STATUS]="Change Status";
+    /*msg[MsgConstants.STATUS_UNCHANGE]="Status can't be changed";*/
+
+    // security
+
+    msg[MsgConstants.USER_ALREADY_ACTIVE ] = "Selected user #0# is already active";
+    msg[MsgConstants.USER_ALREADY_INACTIVE ] = "Selected user #0# is already inactive";
+    msg[MsgConstants.USERS_ASSIGNED_TO_TEAM ] = "Users assigned to team";
+    msg[MsgConstants.RESET_PWD ] = "Reset Password";
+    msg[MsgConstants.RESET_EMAIL ] = "Reset Email";
+    msg[MsgConstants.ACCOUNT_WITHOUT_CONTACTS ] = "No Contacts for this Account";
+    msg[MsgConstants.PWD_MISMATCH ] = "Passwords does not match";
+    msg[MsgConstants.COMPANY ] = "Company";
+    msg[MsgConstants.PWD_SENT ] = "Password has been sent to your email address";
+    msg[MsgConstants.USERNAME_SENT ] = "User name has been sent to your email address";
+    msg[MsgConstants.VALIDUSERNAME ] = "Enter valid user name";
+    msg[MsgConstants.BLOCKUSERFRM ] = "Select block user from";
+    msg[MsgConstants.BLOCKUSERTO ] = "Block user to";
+    msg[MsgConstants.TAB ] = "tab";
+    msg[MsgConstants.PROFILE_SELECTION ] = "Profile selection";
+    msg[MsgConstants.ACCESS_RIGHTS ] = "Access rights";
+    msg[MsgConstants.RIGHTS_RESTRICTION ] = "#0# module 'Restriction#1#' is repeated";
+    msg[MsgConstants.TAB_SELECTION ] = "Tab selection";
+    msg[MsgConstants.NODE_GRP ] = "Group node cannot be deleted";
+    msg[MsgConstants.CANNOT_MOVE ] = "Cannot Move: Destination and Source nodes are same";
+    msg[MsgConstants.STRONG ] = "Strong";
+    msg[MsgConstants.MEDIUM ] = "Medium";
+    msg[MsgConstants.WEAK ] = "Weak";
+    msg[MsgConstants.SECURITY_CONFIRM ] = "Security question and answer already defined. Do you want to change?";
+    msg[MsgConstants.READ_ACCESS ] = "Read Access";
+    msg[MsgConstants.ASSIGN_USERS_TEAMS ] = "Assign Users To Team";
+    msg[MsgConstants.USRLOCATION_CHANGED ] = "Do you want to change all the records pertaining to the user to the new location of the user?";
+    msg[MsgConstants.USRALRDY_ACTIVE ] = "Selected User(s) already Active";
+    msg[MsgConstants.USRALRDY_UNLOCKED ] = "Selected User(s) already Unlocked";
+    msg[MsgConstants.USRALRDY_INACTIVE ] = "Selected User(s) already In-Active";
+    msg[MsgConstants.GROUP_ACTIVATE ] = "Do you want to #0# entire group, if you click yes group is activated otherwise node is activated?";
+    msg[MsgConstants.NODE_ACTIVATE ] = "Do you want to #0# node?";
+    msg[MsgConstants.ACTIVATE ] = "Activate";
+    msg[MsgConstants.DEACTIVATE ] = "Deactivate";
+    msg[MsgConstants.INVALID_IP] = "Invalid Ip Address";
+    msg[MsgConstants.ENDIP_GREATERTHAN_STARTIP] = "End IP address is greater than Start IP address ";
+    msg[MsgConstants.ROLE_RESTR_MANDATORY_MSG] = "Role is mandatory for assigning Role Restrictions.";
+    msg[MsgConstants.CANNOT_UNLCK_INACTIVE] = "Selected User(s) is In-Active, cannot unlock In-Active user(s)";
+    msg[MsgConstants.MSG_MAXIMUM_REPORT_FOR_CAL_LITE_FEATURE] ="Maximum two Reports will be allowed for Lite feature" ;
+    msg[MsgConstants.MSG_MAXIMUM_TWO_MODULE_LITE_FEATUIRE]="Maximum two Modules will be allowed for Lite feature";
+    msg[MsgConstants.MSG_SELECT_ATLEAST_ONE_LICENSEID]="Select at least one License Id";
+
+    //Layout Customization Messages
+
+    msg[MsgConstants.CUSTOMIZATION_SELECTAVLBFLDS ] = "Select field from available list";
+    msg[MsgConstants.LISTLAYOUT_SORTBYEXIST ] = "Sortby value already exist";
+    msg[MsgConstants.HOMEPAGELAYT_SELECTCOMP ] = "Select component";
+    msg[MsgConstants.LISTACCESS_SELECTVIEW ] = "Select atleast one View";
+    msg[MsgConstants.LISTACCESS_SHORTLIST ] = "Shortlist should not contain more than five layouts";
+    msg[MsgConstants.SELCETAVLBITEM ] ="Select item from available list";
+    msg[MsgConstants.CASCADING_RELATED_PARENT ] = "Parent and Related pick fields should not be same";
+    msg[MsgConstants.CASCADING_SELCTPICKLIST ] = "Select an item from picklist";
+    msg[MsgConstants.CAMPMEM_NOTSELCTD ] = "Members not selected";
+    msg[MsgConstants.CAMPMEM_REMOVE ] = "Are you sure you want to remove Members";
+    msg[MsgConstants.SELECT_REL_MODULE] ="Select related modules from list";
+    msg[MsgConstants.RANGE_EXIST] ="Selected range already exist";
+    msg[MsgConstants.NORMAL] ="Normal";
+    msg[MsgConstants.MINMAX] ="Min-Max Range";
+    msg[MsgConstants.STARTENDRANGE] ="Start-End Range";
+    msg[MsgConstants.NAMEDDATES] ="Named Dates";
+    msg[MsgConstants.MULTISELEC] ="MultiSelection";
+    msg[MsgConstants.SEARCH_INPUTFLD_DOCFLD_VALIMSG] ="Docviewer Field(s) and Picture field(s) are restricted in Search Input Fields";
+    msg[MsgConstants.SEARCH_INPUTFLD_BODYFLD_MSG] ="Search fields are restricted to only one body, cannot search on multiple body fields";
+
+    //Portal Msg.
+
+    msg[MsgConstants.MODULE] = "module";
+    msg[MsgConstants.NO_ACTION_FOR_MODULE] = "Cannot map module(s),No action(s) selected for the ";
+    msg[MsgConstants.NO_PAGE_LAYOUT_FOR_MODULE] = "Cannot map module(s),No page layout selected for the ";
+    msg[MsgConstants.ATLEAST_ONE_MODULE] = "Atleast one module to be mapped to CSS portal";
+    msg[MsgConstants.VIEW_ACCESS] = "View access";
+    msg[MsgConstants.SUCCESS_CHANGE_PWD] = "Password changed successfully";
+    msg[MsgConstants.CHANGE_PASSWORD] = "Change Password";
+    msg[MsgConstants.USER_NAME] = "* Username";
+    msg[MsgConstants.PASSWORD] = "* Password";
+    msg[MsgConstants.NO_RECORDS_FOUND] ="No records found";
+    msg[MsgConstants.COMMENTS_REQUIRED] ="Comments required";
+    msg[MsgConstants.PWDLENGTHMSG] = "Password length should not be greater than 10 characters";
+    msg[MsgConstants.ALPHA_NUMONLY] = "Alphabets and Numerics";
+    msg[MsgConstants.SPECIALCHAR_NOTALLWD] = "Special characters Not Allowed";
+    msg[MsgConstants.CSSMSG_LENGTH] = "Length should not be greater than 30 characters";
+    msg[MsgConstants.EMAILID_NOTDEF] = "EmailIds not defined";
+    msg[MsgConstants.USER_INV_SUCCESS] = "User Invited Successfully";
+    msg[MsgConstants.PROMO_ASSIGNED_SUCCESS] = "Promo code assigned successfully";
+    msg[MsgConstants.INV_USERS_DLG] = "Invite Users";
+    msg[MsgConstants.CSS_GENERAL_SURVEY] = "General Survey";
+    msg[MsgConstants.CSS_CALL_SURVEY] = "Call Feedback / Survey";
+    msg[MsgConstants.DUPLICATE_MODULE] ="Selected module already mapped";
+    msg[MsgConstants.SAME_IMG] = "Do you wish to continue with the same images in custom theme?";
+    msg[MsgConstants.COMPANY_LOGO] = "Company logo #0#";
+    msg[MsgConstants.SECURITY_ANSWER] = "Security Answer is required";
+    msg[MsgConstants.INVALID_EMAIL] = "Invalid Email";
+    msg[MsgConstants.CSS_ACTIVE] = "Selected #0#(s) is already active.";
+    msg[MsgConstants.CSS_UNLOCKED] = "Selected #0#(s) is already unlocked.";
+    msg[MsgConstants.CSS_INACTIVE] = "Selected #0#(s) is already In-Active.";
+    msg[MsgConstants.CSS_CUSTOM_FIELDS_EMPTY] = "Field(s) are empty";
+
+    msg[MsgConstants.USERNAME_MOBILE]="UserName or Mobile No."
+
+    // listview
+    msg[MsgConstants.WANT_TO_DELETE] = "Are you sure want to delete?";
+    msg[MsgConstants.WANT_TO_DELETE_WAS] = "Are you sure you want to revoke whatsapp support ?";
+    msg[MsgConstants.WANT_TO_DELETE_CURRENT_PAGE] = "Are you sure want to delete current page?";
+    msg[MsgConstants.MODULE_NAME]="Module name";
+    msg[MsgConstants.CAN_NOT_DELETE_DEFAULT] = "Default #0# cannot be deleted";
+    msg[MsgConstants.FILTERED] = "Filtered";
+    msg[MsgConstants.SEARCH_TEXT] = "Search text";
+    msg[MsgConstants.SELECT_FIELD] = "Select a field";
+    msg[MsgConstants.SELECT_OPERATOR] = "Select operator";
+    msg[MsgConstants.LOOK_IN] = "Look-in";
+    msg[MsgConstants.CUST_FILTER] = "Custom filter";
+    msg[MsgConstants.EDIT_VAL] ="Edit ";
+    msg[MsgConstants.WANT_TO_DISABLE] = "Are you sure you want to disable ?";
+
+    msg[MsgConstants.LINK_MODULENAME] = "LinkModule Name";
+    msg[MsgConstants.MAPPER_NAME] = "Mapper name is mandatory";
+
+    // Calendar
+
+    msg[MsgConstants.CANNOT_MOVE_TO_FUTURE] ="Activity cannot be moved to future date";
+    msg[MsgConstants.BACKDATED_ENTRY_RESTRICT] ="Backdated entry is allowed upto #0# day(s) only";
+    msg[MsgConstants.APPNT_PREV_DATE_RESTRICT] ="Appointment cannot be moved to previous date";
+    msg[MsgConstants.TASK_PREV_DATE_RESTRICT] ="Task cannot be moved to previous date";
+    msg[MsgConstants.EDIT_EVENT] =me.getActionLabel(Constants.EDIT)+" Event";
+    msg[MsgConstants.TASK_FINISH] ="Selected user does not have required time to finish the task on selected date";
+    msg[MsgConstants.CALLTASK_DONE] ="Call Task has been saved";
+    msg[MsgConstants.ASSIGN_CALL] ="Assign Call";
+    msg[MsgConstants.REQ] ="Req";
+    msg[MsgConstants.AM] ="AM";
+    msg[MsgConstants.PM] ="PM";
+    msg[MsgConstants.DUE_DATE] ="Due date";
+    msg[MsgConstants.ACTIVITY_DATE] ="Activity Date";
+
+    // Marketing
+
+    msg[MsgConstants.ONE_SALESSTAGE_OPTION] ="Atleast one stage should be without the option 'Allow on approved module only'";
+    msg[MsgConstants.RECIPIENT] ="Recipient";
+    msg[MsgConstants.TYPE] ="type";
+    msg[MsgConstants.PRODUCT_REPEATED] ="Product is repeated";
+    msg[MsgConstants.NOOFATTEMPTS] ="No. of Attempts";
+    msg[MsgConstants.STATUS_INFO] ="Atleast one status info";
+    msg[MsgConstants.STATUS_CODE] ="Status code";
+    msg[MsgConstants.NO_UPDATED_ACTIVITY] ="(No Updated Activity)";
+    msg[MsgConstants.COL_LINENO] =" 'Column names at line no. should be less than 'Start of body row' ";
+    msg[MsgConstants.COL_NAMELINENO] =" As importing file is without heading then 'Column Names at Line no' should be -1 ";
+    msg[MsgConstants.ATTACHFILE] = "Attach file";
+    msg[MsgConstants.DATE_TIME] = "Date time";
+    msg[MsgConstants.EXE_LIMIT] = "exceeded the limit";
+    msg[MsgConstants.APPOINTMENT_DATE] = "Appointment date";  /*clAppBuffer.getModuleCaption(Constants.APPOINTMENTS,true)+*/
+    msg[MsgConstants.NOT_YET_CONFIRMED] = "Not yet confirmed";
+    msg[MsgConstants.EDIT_SCRIPT] = me.getActionLabel(Constants.EDIT)+" script";
+    msg[MsgConstants.DELETE_SCRIPT] = me.getActionLabel(Constants.DELETE)+" script";
+    msg[MsgConstants.AFTER_HOURS] = " hours";
+    msg[MsgConstants.RETRY_IN] = "Retry in ";
+    msg[MsgConstants.CALLBACK] = "Call-back Datetime";
+    msg[MsgConstants.CALL_APPOINT] = "Appointment Datetime";
+    msg[MsgConstants.CUST_BUSS] = "Customize Business Card";
+    msg[MsgConstants.RES_TIME_FILTER] = "Response times must be defined for a business rule with no filter";
+    msg[MsgConstants.PRIORITY] = "If Priority is";
+    msg[MsgConstants.AND] = "and";
+    msg[MsgConstants.IF] = "if";
+    msg[MsgConstants.CATEGORY] = "Category ";
+    msg[MsgConstants.SUBCATEGORY] = "SubCategory ";
+    msg[MsgConstants.DUP_REC_SKIP] = "Duplicate and New Action Records skips must not be checked at a time";
+    msg[MsgConstants.MAPPING_DET] = "Mapping Details";
+    msg[MsgConstants.DUP_RECORDS] = "Duplicate Records";
+    msg[MsgConstants.MAPPING_DET_MOD] = "#0# Mapping Details";
+    msg[MsgConstants.SELECT_QUOTE_FOR_SO] = "Select Quote to raise the Sales Order";
+    msg[MsgConstants.SELECT_SERVICE_QUOTE_FOR_SO] = "Select Service Quote to raise the Service Order";
+    msg[MsgConstants.GROSS_AMOUNT] = "Gross Amount";
+    msg[MsgConstants.DISCOUNT] = "Discount";
+    msg[MsgConstants.CREATE_ONE_SET] = "Minimum one product set is required";
+    msg[MsgConstants.FIXED_AMOUNT] = "Fixed Amount";
+    msg[MsgConstants.QUANTITY] = "Quantity";
+    msg[MsgConstants.MEETING] = "Meeting";
+    msg[MsgConstants.APPROVED_LEADS_TO_CONVERT_OPPORTUNITY] = "only approved leads should be converted to opportunity";
+    msg[MsgConstants.CALLER_SCREEN_RESPONSE] = "Response";
+    msg[MsgConstants.NOOFMINUTES] ="No. of Minutes";
+    msg[MsgConstants.NOOF_UNREACHABLE_ATTEMPTS] ="No. of UnReachable Attempts";
+    msg[MsgConstants.LEAD_ALREADY_CONVERTED] = "Selected lead is already converted";
+    msg[MsgConstants.SELECT_ATLEAST_ONE_FILE] = "Select atleast one file";
+    msg[MsgConstants.IMPORT_BODYFLD] = "Atleast one body field mapping is mandatory";
+    msg[MsgConstants.LEAD_CONVERT_UNQUALIFIED] = "Cannot convert the selected lead, as it is in unqualified state";
+    msg[MsgConstants.LEAD_ASSIGN_UNQUALIFIED] = "Cannot assign the selected lead(s), as it is in unqualified state";
+    msg[MsgConstants.DUPLICATE_CREATEMODULE] = "Create Module already defined for selected destination module";
+    msg[MsgConstants.DUPLICATE_LINKMODULE] = "Link Module already defined for selected field";
+    msg[MsgConstants.MODULE_AUTHORIZATION_PENDING_FOR_PRINTING]="#0# authorization status is 'Pending', print access denied";
+    msg[MsgConstants.INCIDENT_ALREADY_CONVERTED] = "Selected incident is already converted";
+    msg[MsgConstants.ATTACHMENT_FIELD] = "Attachment Field";
+    msg[MsgConstants.SWITCHING_APPLICATION] = "Switching Application";
+    msg[MsgConstants.ENABLE_SFG] = "On selecting this option SFG20, related Catalogue, Assets, Schedules and Service master modules will be enabled. This option is irreversible. Do you want to Continue? ";
+    msg[MsgConstants.CAPTURE_BALANCE] = "On selecting this option Captures balance duration, preferred date fields will be enabled. This option is irreversible. Do you want to Continue? ";
+    msg[MsgConstants.CALCLUATING_DISTANCE] = "Calculating distance";
+    msg[MsgConstants.HEADER_FLD_MANDATORY] = "Atleast one header field should be mapped";
+    msg[MsgConstants.LIST_LAYOUT_ALREADY_SELECTED] = "List Layout already selected";
+    msg[MsgConstants.SUCCESS_DEL_SAMPLE_DATA] = "Delete sample data has been successful";
+    msg[MsgConstants.FAIL_DEL_SAMPLE_DATA] = "Delete sample data has been Failed";
+    msg[MsgConstants.SUCCESS_RESET_COMP_SETTINGS] = "Delete and reset company data has been successful";
+    msg[MsgConstants.FAIL_RESET_COMP_SETTINGS] = "Delete and reset company data has been Failed";
+    msg[MsgConstants.TYPE_SHOULD_TO] = 'Atleast one Type should be "To"';
+    msg[MsgConstants.WANT_TO] = "Are you sure you want to #0#";
+    msg[MsgConstants.UNLINK] = "unlink";
+    msg[MsgConstants.ACCOUNT] = "#0# account";
+    msg[MsgConstants.DUPLICATE] = "Duplicate #0#";
+    msg[MsgConstants.NOT_ALLOWED] = "#0# not allowed";
+    msg[MsgConstants.SOCIAL_TYPE] = "Social type";
+    msg[MsgConstants.GMAIL] = "GMail";
+    msg[MsgConstants.FACEBOOK] = "Facebook";
+    msg[MsgConstants.TWITTER] = "Twitter";
+    msg[MsgConstants.LINKEDIN] = "LinkedIn";
+    msg[MsgConstants.SOCIAL_LINK] = "Social link #0#";
+    msg[MsgConstants.SCHEDULE_DATE_NOT_EMPTY] = "Schedule date should not be empty";
+    msg[MsgConstants.CONTRACT_SERVICE_CHECK_LIST] = "Check List";
+    msg[MsgConstants.CONTRACT_SERVICE_SPARE_PARTS] = "Spare Parts";
+    msg[MsgConstants.CONTRACT_SERVICE_TOOLS] = "Tools";
+    msg[MsgConstants.CONTRACT_SERVICE_CONSUMABLES] = "Consumables";
+    msg[MsgConstants.CONTRACT_SERVICE_HEALTH_SAFETY] = "Health & Safety";
+    msg[MsgConstants.SCLECT_ONE_SERVICE] = "Pick atleast one services.";
+
+
+
+
+    //CalendarDef
+
+    msg[MsgConstants.DAYS] = "Days";
+    msg[MsgConstants.WEEKS] = "Weeks";
+    msg[MsgConstants.MONTHS] = "Months";
+    msg[MsgConstants.MANDATORY_PLU] = "#0# are mandatory ";
+    msg[MsgConstants.WEEKDAY_WEEK] = "Atleast select one, Weekday of the week";
+    msg[MsgConstants.SELECT_NOT_MORETHAN] = "Cannot select more than number of #0# in a year";
+    msg[MsgConstants.SELECT_NOT_MORETHAN_DAYS] = "Cannot select more than 31 days";
+    msg[MsgConstants.SELECT_NOT_MORETHAN_MON] = "Cannot select more than 12 months";
+    msg[MsgConstants.HOLIDAY] = "Holiday";
+    msg[MsgConstants.EXCEPTION] = "Exception";
+    msg[MsgConstants.DATE_SAME_AS] = "#0# must be same as the #1#";
+    msg[MsgConstants.END_RECURR_PATTERN] = "End recurrence pattern";
+    msg[MsgConstants.RANGE_GREATERTHAN_CERTAIN_DAYS] = "#0# should be #1# days greater than #2#";
+    msg[MsgConstants.ENDBY_DATE] = "End-by date";
+    msg[MsgConstants.CAL_ALREADY_EXISTS] = "#0# '#1#' already exists";
+    msg[MsgConstants.SELECT_ROW] = "Select the row";
+    msg[MsgConstants.ATLEAST_ONE_SHIFT] = "Atleast one shift working hours";
+    msg[MsgConstants.VALUE_NOT_LESS] = "#0# should not be less";
+    msg[MsgConstants.VALUE_NOT_MORE] = "#0# should not be more";
+    msg[MsgConstants.ATLEAST_ONE_REGULARSHIFT] = "Atleast one regular shift working hours";
+    msg[MsgConstants.WORKWEEK] = "Work week";
+    msg[MsgConstants.DAY] = "Day";
+    msg[MsgConstants.WEEK] = "Week";
+    msg[MsgConstants.MONTH] = "Month";
+    msg[MsgConstants.YEAR] = "Year";
+
+    //FieldCustMsgs
+
+    msg[MsgConstants.APPLYON] = "Atleast one '#0#' need to be checked";
+    msg[MsgConstants.TABLENAME] = "Table name";
+    msg[MsgConstants.VALUE_FIELDS] = "Value fields";
+    msg[MsgConstants.DISP_FIELDS] = "Display fields";
+    msg[MsgConstants.VALID_VALUES] = "Enter valid number of values(format:#0#,value)";
+    msg[MsgConstants.NUMBER_STRING_LIST_FORMAT] = "Format is #0#,string";
+    msg[MsgConstants.VALUE_S] = "value";
+    msg[MsgConstants.HEADER_FIELD] = "header field";
+    msg[MsgConstants.BODY_FIELD] = "body field";
+    msg[MsgConstants.TAGGED_TO_FIELD] = "This group is already tagged to #0#";
+    msg[MsgConstants.MAX_SIZE] = "Maxsize";
+    msg[MsgConstants.MIN_SIZE] = "minsize";
+    msg[MsgConstants.ONE_FIELD_DELETE] = "Select atleast one field to be deleted";
+    msg[MsgConstants.SURE_DELETE_FIELD] = "Are you sure you want to delete field(s)?";
+    msg[MsgConstants.DELETE_FIELD] = "Delete field";
+    msg[MsgConstants.DELETE_STANDARD_FIELD] = "Standard fields cannot be deleted";
+    msg[MsgConstants.CLOSE_OPEN_BRACKETS] = "CloseBrackets Greater than OpenBrackets";
+    msg[MsgConstants.CREATE_ONE_CONDITION] = "Minimum one condition is required";
+    msg[MsgConstants.BRACKETS_OPEN] = "Brackets should open from first editing row";
+    msg[MsgConstants.CLOSE_ONE_BRACKET] = "Atleast one Bracket should close in last editing row";
+    msg[MsgConstants.PROPER_OPENCLOSE_BRACKETS] = "Brackets not properly opened or closed";
+    msg[MsgConstants.LAST_ROW_FILTER] = "Last row of Filter should end with Only";
+    msg[MsgConstants.INVALID_VAR] = "Invalid Variable";
+    msg[MsgConstants.GRP_NODE] = "Group Node is Not Allowed";
+    msg[MsgConstants.INVALID_FORMULA] = "Invalid Formula";
+    msg[MsgConstants.REMOVE_ELSE] = "Remove ELSE-IF";
+    msg[MsgConstants.ADD_ELSE] = "Add ELSE-IF";
+    msg[MsgConstants.FIELD_REL_MSG] = "Add related module in";
+    msg[MsgConstants.PAGE_LAYOUT] = "page layout";
+    msg[MsgConstants.FIELD] = "field";
+    msg[MsgConstants.CAPTION] = "Caption";
+    msg[MsgConstants.FIELD_NAME] = "#0# should start with an alphabet";
+    msg[MsgConstants.NAME] = "Name";
+    msg[MsgConstants.FIELD_NAME_APOS] = "#0# should not contain apostrophe( ' )";
+    msg[MsgConstants.ONE_RULE] = "Select atleast one rule";;
+    msg[MsgConstants.ONE_RECORD] = "Select only one record";;
+    msg[MsgConstants.VALUES] = "Values";;
+    msg[MsgConstants.EXTERNAL_DETAILS] = "External Details";;
+    msg[MsgConstants.MASTER_DETAILS] = "Master Details";;
+    msg[MsgConstants.STRING_LIST] = "String List";;
+    msg[MsgConstants.NUMBER_LIST] = "Number List";;
+    msg[MsgConstants.FORMULA_BRACES] = "Formula must be enclosed in braces";;
+    msg[MsgConstants.CHAR_COUNT] = "Char Count";
+    msg[MsgConstants.CLONE_INTERNAL_FIELDS] = "Selected fields contain internal fields which cannot be cloned";
+
+    //Survey
+
+    msg[MsgConstants.SURVEY_RANGE] = "Survey";
+    msg[MsgConstants.QUSTN_DEL_CONFIRM] = "This survey question has some responses, #0#.\nDo you want to continue? ";
+    msg[MsgConstants.QUSTN_DEL] = "if you delete this question you will lose the responses";
+    msg[MsgConstants.QUSTN_VARIABLE_DEL] ="if you delete this sub question you will lose the responses";
+    msg[MsgConstants.QUSTN_CHOICE_DEL] = "if you delete this choice you will lose the responses";
+    msg[MsgConstants.QUSTN_VALIDATION_CHANGE] = "if you change validation type response data will be lost";
+    msg[MsgConstants.PRECISION_NOT_EXCEED] = "Precision cannot exceed #0#";
+    msg[MsgConstants.AND_PRECISION_NOT_EXCEED] = "and precision cannot exceed #0#";
+    msg[MsgConstants.VARIABLE_PROPS] = "Sub Question Properties";
+    msg[MsgConstants.CHOICE_PROPS] ="Choice Properties";
+    msg[MsgConstants.QUSTN_OPTIONS] ="Question Options";
+    msg[MsgConstants.DEACTIVE_SURVEY] = "This survey is assigned. Are you sure want to deactive ?.";
+    msg[MsgConstants.CANNOT_CHANGE_FORMAT] ="For #0# format , you should validate #1# only.";
+
+    // Client spec
+
+    msg[MsgConstants.CDID_NOOFUSERS] = "No of users should be greater than 0";
+    msg[MsgConstants.CDID] = "Cdid";
+    msg[MsgConstants.SMEP_RANDOM] = "Random Selection";
+    msg[MsgConstants.SMEP_MATCH] = "Match Selection";
+    msg[MsgConstants.ONE_MEASURE] = "one measure graph is displayed";
+    msg[MsgConstants.ONE_DIMENSION_AND_MEASURE] = "one dimension and one measure graph is displayed";
+    msg[MsgConstants.TWO_MEASURE] = "Guage graph must have two measures";
+    msg[MsgConstants.REPLACE_DASHLET] = "Replace Dashlet";
+    msg[MsgConstants.REPLACE_NEW_DASHLET] = "Replace existing dashlet with new dashlet?";
+    msg[MsgConstants.ADD_NEW_ROW] = "Add in New Row";
+    msg[MsgConstants.LOAD_CHART] = "Unable to load the chart";
+
+    msg[MsgConstants.MIN_PRICE_DEFINITION]="Minimum one price definition ";
+    msg[MsgConstants.MAX_WEIGHT]="Maximun Weight";
+    msg[MsgConstants.MIN_WEIGHT]="Minimum Weight";
+    msg[MsgConstants.CALCULATION_TYPE]="Calculation Type";
+    msg[MsgConstants.AMOUNT]="Amount";
+    msg[MsgConstants.SHOULD_GREATER_THAN]="should be greater than";
+    msg[MsgConstants.PRICE]="Price";
+    msg[MsgConstants.PRICE_CLASS]="Price Class";
+    msg[MsgConstants.MIN_PALLET]="Minimum Pallet";
+    msg[MsgConstants.MAX_PALLET]="Maximum Pallet";
+    msg[MsgConstants.MIN_BOX]= "Minimum Box";
+    msg[MsgConstants.MAX_BOX]="Maximum Box";
+    msg[MsgConstants.FREIGHT_CHARGE]="Freight Charge";
+    msg[MsgConstants.SERVICE_TYPE]="Minimum one Service Type";
+    msg[MsgConstants.NUMBER_OF_PALLETS]="No. of Pallets";
+    msg[MsgConstants.NUMBER_OF_CLASSES]="No. of Classes";
+    msg[MsgConstants.LENGTH] = "Length";
+    msg[MsgConstants.WIDTH] = "Width";
+    msg[MsgConstants.HEIGHT]= "Height";
+    msg[MsgConstants.MAX_PALLET_WEIGHT] = "Max Pallet weight";
+    msg[MsgConstants.MAX_PALLET_IN_ONE_DYNA] = "Max Pallet In One Dyne";
+    msg[MsgConstants.MAX_PALLET_HEIGHT] = "Max Pallet Height";
+    msg[MsgConstants.DYNA_RATE] = "Dyna Rate";
+
+    /*EMS Messages */
+    msg[MsgConstants.MAXIMUM_COURSES] = "Selected Courses count reaches the maximum limit";
+    msg[MsgConstants.NOT_AN_ACCEPTED_APPLICATION]= "Only accepted application can take admission";
+    msg[MsgConstants.ACCEPTED_APPLICATION]= "Only new Applications can be accepted";
+    msg[MsgConstants.REJECTED_APPLICATION]= "Accepted applications can only be rejected";
+    msg[MsgConstants.CONVERT_TO_APPLICATION]= "Aleady converted to application";
+    msg[MsgConstants.NOT_AN_NEW_APPLICATION]= "Only new Applicants can pay Admission Fee";
+    msg[MsgConstants.APPLICATION_FEE_NOT_DEFINED]= "Application Fee is not defined for this course";
+
+    /*CMS Action*/
+    msg[MsgConstants.CMS_ASSIGN_EXCUTIVE]="Assign Courier";
+    msg[MsgConstants.CMS_ASSIGN_VALID_BOOKING]="Assignment is allowed for Valid Shipments";
+    msg[MsgConstants.CMS_CANCEL_BOOKING]="Cancel Booking";
+    msg[MsgConstants.CMS_CANCEL_SELECTED_RECORD]="Selected record cannot be cancelled";
+    msg[MsgConstants.CMS_MISSING_PICKUPS]="Missing Pickups";
+    msg[MsgConstants.CMS_MISSING_ASSIGN_SHIPMENTS]="Pick-up Missing is allowed for Assigned Shipments";
+    msg[MsgConstants.CMS_PICKEDUP_ASSIGN_SHIPMENTS]="Picked-up is allowed for Assigned or Ready to Recieve Shipments";
+    msg[MsgConstants.CMS_CLOSING_DISPATCH]="Closing Dispatch";
+    msg[MsgConstants.CMS_CANCEL_DISPATCH]="Cancel Dispatch";
+    msg[MsgConstants.CMS_VALIDATE_DISPATCH]="Validate Dispatch";
+    msg[MsgConstants.CMS_TRUCK_CHANGE]="Truck Change";
+    msg[MsgConstants.CMS_DRIVER_CHANGE]="Driver Change";
+    msg[MsgConstants.CMS_SHIPMENT_RETURN]="Shipment Return";
+    msg[MsgConstants.CMS_DAMAGE_SHIPMENT]="Damage Shipment";
+    msg[MsgConstants.CMS_VALIDATE_SAVE_MESSAGE]="Some Shipments are not scanned ! Do You want to continue to save?";
+    msg[MsgConstants.CMS_ERROR_MESSAGE]="Error Message";
+    msg[MsgConstants.CMS_BARCODE_SCANNED]="Selected Shipment already Scanned";
+    msg[MsgConstants.CMS_BARCODE_NOT_VALID]="Invalid Barcode";
+    msg[MsgConstants.CMS_BARCODE_SCANNED_EXIT]="Scanned Barcode does not exist";
+    msg[MsgConstants.CMS_BARCODE_ADDED_TO_MANIFEST]="Shipment already added to Manifest";
+    msg[MsgConstants.CMS_ATLEAST_ONE_BARCODE]="Atleast one Barcode should be scanned";
+    msg[MsgConstants.CMS_SHIPMNT_VALIDATED]="Shipment(s) Validated";
+    msg[MsgConstants.CMS_SHIPMNT_PICKD_UP]="Shipment(s) PickedUp";
+    msg[MsgConstants.CMS_SHIPMNT_ASSIGNED]="Shipment(s) Assigned";
+    msg[MsgConstants.CMS_SHIPMNT_CANCEL]="Shipment(s) Cancelled";
+    msg[MsgConstants.CMS_SHIPMNT_MISSING]="Shipment(s) Missing";
+    msg[MsgConstants.CMS_VALIDATE_PENDING_STAUTS]="Validation is allowed Only for Pending Shipment";
+    msg[MsgConstants.CMS_VALIDATE_DISPATCH_MSG]="Dispatch Validated";
+    msg[MsgConstants.CMS_CANCEL_DISPATCH_MSG]="Dispatch Cancelled";
+    msg[MsgConstants.CMS_CLOSE_DISPATCH_MSG]="Dispatch Closed";
+    msg[MsgConstants.CMS_DRIVER_CHNG_DISPATCH_MSG]="Driver Changed";
+    msg[MsgConstants.CMS_VEHICLE_CHNG_DISPATCH_MSG]="Vehicle Changed";
+    msg[MsgConstants.CMS_BARCODE_NOT_SAME_ROUTE]="Barcode doesn't belongs to the selected Route";
+    msg[MsgConstants.CMS_TRUCK_DRIVER_CHANGE]="Truck and Driver change";
+    msg[MsgConstants.CMS_DAMAGE_SHIPMENT_SAVED]="Damage Shipment saved";
+    msg[MsgConstants.CMS_SHIPMENT_RETURN_SAVED]="shipment Return saved";
+    msg[MsgConstants.CMS_VALIDATE_DELIVERY]="Delivery Assignment Validated";
+    msg[MsgConstants.CMS_DISPATCH_CLOSE]="Dispatch Closing is allowed for Validated Dispatches";
+    msg[MsgConstants.CMS_DISPATCH_VALIDATE]="Dispatch Validation is allowed after Dispatch Prepared";
+    msg[MsgConstants.CMS_DISPATCH_CHANGE]="Vehicle/ Driver change is allowed after Dispatch Close";
+    msg[MsgConstants.CMS_DISPATCH_CANCEL]="Selected record cannot be cancelled";
+    msg[MsgConstants.CMS_DELIVERIES_SHIPRETURN]="Shipment Return is allowed after Delivery Assignment or Ready to Collect";
+    msg[MsgConstants.CMS_DELIVERIES_DAMAGESHIPMENT]="Shipment Damage is not allowed for DELIVERED/ CLOSE Shipments";
+    msg[MsgConstants.CMS_DELIVERIES_DELCLOSE]="Delivery Closing is allowed for ASSIGNED or Ready to Collect Shipments";
+    msg[MsgConstants.CMS_DELIVERIES_ROUTECHNG]="Route Change is not allowed at this stage";
+    msg[MsgConstants.CMS_DELIVERIES_RETURNWAYBL]="Waybill Return is not allowed at this stage";
+    msg[MsgConstants.CMS_REASONMNDTRY]="Either Reason Type or Reason is mandatory";
+    msg[MsgConstants.CMS_NOOFPALLETS]="No of Pallets";
+    msg[MsgConstants.CMS_VOLUMETRICWGHT]="Volumetric Weight";
+    msg[MsgConstants.CMS_ALL_SHIPMNT_NOT_SCANNED]="All shipments are not scanned completely";
+    msg[MsgConstants.CMS_SCANNED]="Scanned";
+    msg[MsgConstants.CMS_PENDING]="Pending";
+    msg[MsgConstants.CMS_ARRIVAL_VALIDATE]="Arrival Validation is allowed after Arrival Prepared";
+    msg[MsgConstants.CMS_VALIDATE_ARRIVAL_MSG]="Arrival Validated";
+    msg[MsgConstants.CMS_VALIDATE_ARRIVAL]="Validate Arrivals";
+    msg[MsgConstants.CMS_CONSIGNEE_COLLECTED]="Shipment status changed to Consignee will collect";
+    msg[MsgConstants.CMS_CONSIGNEE_WILCOLLECT]="Ready to Collect";
+    msg[MsgConstants.CMS_RETURN_WAYBILL]="Return Waybill";
+    msg[MsgConstants.CMS_ROUTE_CHANGE]="Route Change";
+    msg[MsgConstants.CMS_DELIVERY_CLOSE]="Delivery Close";
+    msg[MsgConstants.CMS_NO_SHP_DEL]="No shipment for selected delivery";
+    msg[MsgConstants.CMS_STARTDATE_VAL]="Start date cannot be less than current date";
+    msg[MsgConstants.CMS_REQUESTED_TO_DELIVER]="Requested to deliver";
+    msg[MsgConstants.CMS_VALIDATE_REQUESTED_TO_DELIVER]="Only Ready to Collect status shipments are allowed";
+    msg[MsgConstants.CMS_ALL_BARCODE_MANDATORY]="Cancel dispatch is allowed only when all the Shipments are scanned related to that dispatch";
+    msg[MsgConstants.CMS_CANCEL_MANIFEST]="Manifest Cancelled";
+    msg[MsgConstants.CMS_SHIPMENT_MSG]="Shipment Details records must be Equal to No Of Packages";
+    msg[MsgConstants.CMS_ADDRESS]="Address";
+    msg[MsgConstants.CMS_STREET]="Street";
+    msg[MsgConstants.CMS_CITY]="City";
+    msg[MsgConstants.CMS_STATE]="State";
+    msg[MsgConstants.CMS_COUNTRY]="Country";
+    msg[MsgConstants.CMS_PINCODE]="Pincode";
+    msg[MsgConstants.CMS_NAME]="Pincode";
+    msg[MsgConstants.CMS_ALL_STICKER_NOT_SCANNED]="All sticker id's are not scanned completely,Do you want to continue saving?";
+    msg[MsgConstants.CMS_STICKER_NOT_VALID]="Invalid Sticker";
+    msg[MsgConstants.CMS_CONFIRMSHIPMENT]="Confirm Shipment";
+    msg[MsgConstants.CMS_PAYMENT_PROCESS_VAL]="Payment process is allowed Only for Payment process is awaited";
+    msg[MsgConstants.CMS_STICKERVALMSG]="Value(s) is required in Shipment Details at row ";
+    msg[MsgConstants.CMS_STICKERNOTVALID]="Sticker Not Valid";
+    msg[MsgConstants.CMS_DATE_TIME]="Dispatch Data and Time";
+    msg[MsgConstants.CMS_FIELD]="Field";
+    msg[MsgConstants.CMS_TRUCKDISPATCHED]="Truck Dispatched";
+    msg[MsgConstants.CMS_VALIDMSG_TRUCKDISPATCHED]="Only Closed shipments are allowed";
+    msg[MsgConstants.CMS_DISPATCH_ACCIDENT]="Accident status is allowed only after Dispatch Close";
+    msg[MsgConstants.CMS_PERSON_NAME]="Hold Person Name";
+    msg[MsgConstants.CMS_HOLD_BY]="Hold By";
+    msg[MsgConstants.CMS_HOLD_REASON]="Hold Reason";
+    msg[MsgConstants.CMS_HOLD_VALIDATION]="Hold is not allowed to the selected shipment status";
+    msg[MsgConstants.CMS_HOLD_BOOKING]="Hold Booking";
+    msg[MsgConstants.CMS_RELEASE_VALIDATION]="Release is not allowed for the selected shipment status";
+    msg[MsgConstants.CMS_CONFIRM_SHIPMENT_VAL]="Confirm shipment is allowed only for picked up and hold status";
+    msg[MsgConstants.CMS_STICKERID_SAME]="Sticker Id's must be unique";
+    msg[MsgConstants.CMS_PAYMENT_PROCESSED]="Payment Processed";
+    msg[MsgConstants.CMS_CONFIRM_DELIVERY]="Only Delivered and Partially delivered status are allowed";
+    msg[MsgConstants.CMS_VIEWADDADDRESS]="View/Add New Address";
+    msg[MsgConstants.CRMAPI_INVALID_TABLE] ="Invalid TableId";
+    msg[MsgConstants.CRMAPI_INVALID_ROW] ="Invalid Row Index";
+    msg[MsgConstants.CRMAPI_INVALID_DISTANCE_PARAMS] ="Invalid Latitude and longitude (lat,lng)";
+    msg[MsgConstants.CRMAPI_INVALID_FIELD] ="Invalid FieldId";
+    msg[MsgConstants.CRMAPI_INVALID_VALUE] ="Invalid Value";
+    msg[MsgConstants.CRMAPI_SELECTION] ="Select any record";
+    msg[MsgConstants.CRMAPI_MANDATORY_VALUE] ="Value is Mandatory";
+
+    msg[MsgConstants.CMS_BARCODE_DISPATCH_PREPARED] ="This Shipment is already added to other Dispatch";
+    msg[MsgConstants.CMS_BARCODE_DISPATCH_VALIDATED] ="Dispatch validation is done for the scanned barcode";
+    msg[MsgConstants.CMS_BARCODE_DISPATCHED] ="This Shipment is already Dispatched";
+    msg[MsgConstants.CMS_BARCODE_ARRIVED] ="This Shipment is already Arrived at Destination";
+    msg[MsgConstants.CMS_BARCODE_DELIVERED] ="This Shipment is already Delivered";
+
+    msg[MsgConstants.CMS_ALREADY_ASSIGNED_FOR_DELIVERY] ="This Shipment is already Assigned to Courier for Delivery";
+    msg[MsgConstants.CMS_ALREADY_ASSIGNED_AND_VALIDATED] ="This Shipment is already Assigned to Courier and validated by Checker";
+    msg[MsgConstants.CMS_ALREADY_CONFIRM_BY_COURIER] ="This Shipment is already Assigned for delivery and confirmed by Courier";
+    msg[MsgConstants.CMS_ALREADY_CLOSED] ="This Shipment is already Delivered and Closed";
+    msg[MsgConstants.CMS_CONSIGNEE_WILL_COLLECT] ="This shipment will be collected by Consignee";
+    msg[MsgConstants.CMS_RETURN_INITIATED] ="Cannot assign as this shipment as it is in return process";
+    msg[MsgConstants.CMS_ROUTE_CHANGED] ="Cannot assign as this shipment route has been changed";
+    msg[MsgConstants.CMS_DELIVERY_CANCEL_TO_WAH] ="Delivery cancel to warehouse";
+    msg[MsgConstants.CMS_RETURN_TO_WH] ="There are some cancel shipments to be return to warehouse";
+    msg[MsgConstants.CMS_RETURN_TO_WH_SUCCESS] ="All the cancel shipments are return to warehouse";
+    msg[MsgConstants.CMS_SHIPMENT_ON_HOLD] ="Cannot be assigned as the Shipment is ON-HOLD";
+    msg[MsgConstants.CMS_SCAN_BARCODE_LABELS] ="Scan Pickup Barcodes";
+    msg[MsgConstants.CMS_SCAN_BARCODE_LABELS_DONE] ="Pickup Barcodes scanning done successfully";
+    msg[MsgConstants.CMS_VALIDATE_CONFIRM_BOOKINGS] ="Customer Status must be 'Available for Delivery'";
+    msg[MsgConstants.CMS_STICKER_ID_ALREADY_SCANNED] ="Sticker Id already scanned";
+    /*msg[MsgConstants.CMS_SHIPMENT_VALIDATION] ="Atleast one Shipment info is mandatory";*/
+
+    //scheduling
+
+    msg[MsgConstants.SCHEDULING_NOT_SAME_ROW_COLUMN_VALUE] = "row and column values must not be same";
+    msg[MsgConstants.DATE_NOT_ALLOWED] = "date not allowed";
+    msg[MsgConstants.DAY_NOT_ALLOWED] = "day not allowed";
+    msg[MsgConstants.PERIODS_MUST_BE_LOADDED] = "Periods must be loaded";
+    msg[MsgConstants.SELECT_SCHEDULE_AGAINST] = "Book Select Schedule Against Module";
+    msg[MsgConstants.DAY_OR_DATE_MUST_BE_SELECTED] = "Day or Date must be selected";
+    msg[MsgConstants.FLD_IDS_MUST_NOT_SAME] = "Start and EndDate Field id's must not be same";
+    msg[MsgConstants.SELECT_MODULE_AGAINST_BOOKING] = "Select module against which booking to be scheduled";
+
+    //ldap server
+    msg[MsgConstants.ASSIGN] = "Assign";
+    msg[MsgConstants.ASSIGN_ROLE] = "Assign Role";
+    msg[MsgConstants.LDAP_SERVER] = "LDAP Server";
+    msg[MsgConstants.LDAP_IMPORT_USERS] = "Import Users";
+    msg[MsgConstants.NO_RECORDS_TO_IMPORT] = "No records to import";
+    msg[MsgConstants.NO_RECORDS_TO_ASSIGN] = "No records to assign";
+    msg[MsgConstants.SEARCH_BEFORE_IMPORT] = "Search for users before import";
+    msg[MsgConstants.SEARCH_BEFORE_ASSIGN] = "Search for users before assign";
+
+    //mapping templates
+    msg[MsgConstants.MAIL_ALREADY_CHOSEN] = "The Mail you have chosen is already configured in another module Mapping Template";
+
+
+    //Route plan
+    msg[MsgConstants.CONFIRM_COMPANY_WORK_AREA_ACCOUNTS] = "Configure company address in company information to show selected workarea account(s)";
+    msg[MsgConstants.COMPANY_ADDRESS_NEEDS] ="Company address needs to be configured";
+    msg[MsgConstants.ACCOUNT_NOT_SELECTED_WORK_AREA] ="Account(s) not defined for selected work area";
+    msg[MsgConstants.ATLEAST_ONE_ACCOUNT_IS_MANADATORY] ="Atleast one Account is mandatory";
+    msg[MsgConstants.FAILED_TO_GET_ADDRESS] ="Failed to to get address ";
+    msg[MsgConstants.CONFIGURE_USER_ADDRESS_FOR_OWNER] ="Configure user address for owner #0# to show selected workarea account(s)";
+    msg[MsgConstants.NO_LIST_LAYOUT_FOR_MODULE] = "Cannot map module(s),No list layout selected for the ";
+
+
+    /*PENDING LINKS*/
+    msg[MsgConstants.SELECT_BASE_MODULE] = "Select Base Module ";
+    msg[MsgConstants.PENDING_LINKS] = "Pending Links";
+    msg[MsgConstants.CUSTOMIZE_HEADERS] = "Customize Headers";
+    msg[MsgConstants.UNABLE_TO_ADD_LINK] = "Unable to Add the Selected Row(s)";
+    msg[MsgConstants.AVAILABLE_LESSER_REQUIRED] = "Total Available is Less than Required at Row Index";
+    msg[MsgConstants.CONFIRM_REPLACE] = "Are you sure to replace this value";
+    msg[MsgConstants.CONFIRM_CLOSE] = "Are you sure want to close the link(s)";
+    msg[MsgConstants.CLOSE_LINKS] = "Close Links";
+    msg[MsgConstants.CLOSE_LINK] = "Close Link";
+
+
+    /*location tracker*/
+    msg[MsgConstants.INACCURATE_ACTIVITIES] = "Inaccurate Locations";
+
+    msg[MsgConstants.ALERT_TIME_TYPE] = "Alert time type";
+    msg[MsgConstants.REMINDER_DATE_TIME] = "Reminder date time";
+
+
+
+    //Activity Stream
+    msg[MsgConstants.ACTIVITY_STREAM] = "Activity Stream";
+
+    //user timeline
+    msg[MsgConstants.MY_ACTIVITY_STREAM] = " My Activity Stream";
+
+    //dashlet customization
+    msg[MsgConstants.ONLY_TWO_MEASURES_ALLOWED] = "Only  two measures  are supported  with two dimensions by the application";
+    msg[MsgConstants.ONLY_TWO_DIMENSIONS_ALLOWED] = "Only  two dimensions are supported by the application";
+    msg[MsgConstants.SOURCE_TARGET_MODULE_SHOULD_NOT_SAME] = "Source module and Target Module should not be same";
+    msg[MsgConstants.ATLEAST_ONE_FIELD] = "Select atleast one field to clone";
+    msg[MsgConstants.LOAD_CHART] = "Unable to load chart";
+
+    //report track
+    msg[MsgConstants.REPORT_LIST] = "Report List";
+    msg[MsgConstants.TRACK_REPORT] = "Track Report";
+    msg[MsgConstants.TRACK_QUERY_REPORT] = "Track Query Report";
+    msg[MsgConstants.TRACK_MODULE_REPORTS] = "Track Module Report";
+    msg[MsgConstants.REPORT_COLUMNS] = "report columns";
+    msg[MsgConstants.TRACK_FIELD_MANDATORY] = "Track field is mandatory";
+    msg[MsgConstants.ATLEAST_ONE_ROW_MANDATORY] = "Atleast one row is mandatory";
+    msg[MsgConstants.SELECTED_REPORTS] = "Selected Reports";
+    msg[MsgConstants.SWITCH_LIST] = "Switch Report";
+    msg[MsgConstants.HOME] = "Home";
+    msg[MsgConstants.SAME_FIELDS_NOT_ALLOWED] = "Same reports with same field is not allowed";
+
+    /*email cloud settings*/
+    msg[MsgConstants.VERIFIED] = "Verified";
+    msg[MsgConstants.FAILED] = "Failed";
+    msg[MsgConstants.DOMAINS_VALUES_MANDATORY] = "Domains values are mandatory";
+    msg[MsgConstants.DOMAINS_VERIFICATION_MANDATORY] = "Domains verification is mandatory";
+
+    /* Payment Gateway */
+    msg[MsgConstants.NO_MAIL_FOUND] = "does not have email address";
+    msg[MsgConstants.PAYMENT_CONFIRMATION] = "Would you like to send payment request URL to";
+    msg[MsgConstants.PAYMENT_SEND_CONFIRMATION] = "Payment request URL has been sent to";
+    msg[MsgConstants.EMAIL_FIELD_MANDATORY] = "Atleast one emailId is mandatory";
+    msg[MsgConstants.SELECT_RECORD_TO_PERFORM_ACTION] = "Select a record to perform action";
+    msg[MsgConstants.SELECT_ONLY_SINGLE_RECORD] = "Multiple record selection is not allowed for selected action";
+    msg[MsgConstants.NO_EMAIL_FIELD_FOUND] = "does not have email field";
+    msg[MsgConstants.NO_EMAIL_SETTINGS_DEFINED] = "Email Settings are not defined";
+    msg[MsgConstants.PAYMENT_ALREADY_DONE] = "Payment already completed for";
+    msg[MsgConstants.PAYMENT_SEND_SUCCESSFULLY] = "Payment request has been sent successfully";
+    msg[MsgConstants.PAYMENT_STATUS_RESTRICTION] = "Payment request can only be send to selected #0# whose transaction status is either open or partially adjusted";
+
+
+    msg[MsgConstants.RETURN_REQUEST_DELIVERED_ACTION] = "Selected action cannot be performed on this record";
+    msg[MsgConstants.RECORD_VERIFIED] = "Selected record is already verified";
+
+   /*CSS Portal @CORONA@*/
+    msg[MsgConstants.MODULE_MAPPED]="module was already added to CSS portal";
+
+    msg[MsgConstants.STATUS_PAYMENT_CANCELLED]="Status : Payment Cancelled";
+    msg[MsgConstants.STATUS_UNABLE_TO_CANCEL]="Error : Unable to cancel payment";
+    msg[MsgConstants.INFO]="Info";
+    msg[MsgConstants.STATUS_PROCESSING]="Status : Processing..";
+    msg[MsgConstants.ERROR]="Error";
+    msg[MsgConstants.STATUS]="Status";
+    msg[MsgConstants.PLEASE_ACTIVE_AT_LEAST_ONE]="Please configure/active at least one #0#";
+    msg[MsgConstants.PAYMENT_GATEWAY]="Payment gateway #0#";
+
+    /*Shipping Zones*/
+    msg[MsgConstants.FLATRATE] = "Flat Rate";
+    msg[MsgConstants.LOCALPICKUP] = "Local Pickup";
+    msg[MsgConstants.TABLERATE] = "Table Rate";
+    msg[MsgConstants.ADDMETHOD] = "ADD METHOD";
+    msg[MsgConstants.ZONENAME] = "Zone Name";
+    msg[MsgConstants.PINCODE] = "Pincode";
+    msg[MsgConstants.ONE_SHIPPING_METHOD] = "Atleast one shipping method is mandatory";
+    msg[MsgConstants.INVALID_PINCODE]="Invalid pincode #0#";
+    msg[MsgConstants.INVALID_RANGE] = "Invalid range";
+    msg[MsgConstants.DUPLICATE_RANGE] = "Duplicate range";
+    msg[MsgConstants.SHIPPING_METHOD] = "Shipping Method";
+    msg[MsgConstants.METHOD_TITLE] = "Method Title";
+    msg[MsgConstants.TAX_STATUS] = "Tax";
+    msg[MsgConstants.COST] = "Cost";
+    msg[MsgConstants.HANDLING_COST] = "Handling Cost";
+    msg[MsgConstants.CALUCALATION_TYPE] = "Calculation Type";
+    msg[MsgConstants.SHIPMENT_SELECTED] = "Shipment method already selected";
+    msg[MsgConstants.MIN_VALUE] = "Min value";
+    msg[MsgConstants.MAX_VALUE] = "Max value";
+    msg[MsgConstants.DUPLICATE_ROW_FIELDS]= "Duplicate row for mandatory fields";
+    msg[MsgConstants.SHIPPING_CLASS] ="Shipping class";
+    msg[MsgConstants.CONDITION] = "Condition";
+    //msg[MsgConstants.TAX_STATUS] ="Tax Status";
+    msg[MsgConstants.SHIPMENT_TYPE] ="Shipment Type";
+    msg[MsgConstants.WHATSAPP] ="WhatsApp";
+    msg[MsgConstants.RATE_PER_HOUR_MANDATORY] ="Rate Per Hour is Mandatory for";
+    msg[MsgConstants.SELECT_ATLEAST_ONE_ROLE] ="Select atleast one Role";
+    msg[MsgConstants.PARENT_MODULE_AND_SUB_PARENT_MODULE_SHOULD_NOT_BE_SAME] = "Parent Module And Sub-Parent Module Should Not Be Same";
+    msg[MsgConstants.GLOBALCASCADING_HAS_BEEN_SAVED] = "GlobalCascading Has Been Saved";
+    msg[MsgConstants.GLOBAL_CASCADING] = "Global Cascading";
+    msg[MsgConstants.LABEL_CAN_NOT_BE_NULL] = "Display Label is mandatory";
+    msg[MsgConstants.REPLACE] = "Replace";
+    msg[MsgConstants.RETURN] = "Return";
+    msg[MsgConstants.ATLEAST_ONE_DAYOFMONTH] = "Atleast one day of the month should be selected ";
+    msg[MsgConstants.ATLEAST_ONE_DAYOFWEEK] = "Atleast one day of the week should be selected ";
+
+
+    msg[MsgConstants.VERIFY_ADD] = "Verify Add";
+    msg[MsgConstants.PHONE_10_DIGIT] = "Phone number must be 10 digit";
+    msg[MsgConstants.OTP_SEND] = "OTP send successfully";
+    msg[MsgConstants.FAIED_OTP] = "Failed to send OTP";
+    msg[MsgConstants.FRIST_OTP] = "First Need To Send Otp";
+    msg[MsgConstants.WAS_SUCCESSFULLY] = "Your whatsapp bussiness account added successfully";
+    msg[MsgConstants.FAILED_WAS_OTP] = "Failed to add your account,Invalid OTP";
+    msg[MsgConstants.WAS_REMOVE] = "Your WhatsApp business account removed successfully";
+    msg[MsgConstants.SUCCESSFULLY_ACTIVATED] = "Successfully activated license details";
+    msg[MsgConstants.FAIL_TO_ACTIVATION] = "Fail to activate license details";
+    msg[MsgConstants.SUCCESSFULLY_REACTIVATED] = "Successfully reactivated license details";
+    msg[MsgConstants.FAIL_TO_REACTIVATE] = "Fail to reactivate license details";
+    msg[MsgConstants.ACTIVATE] = "Activate";
+    msg[MsgConstants.RE_ACTIVATE]= "ReActivate";
+    msg[MsgConstants.EMAILS_CANNOT_BE_EDITED]= "Email cannot be edited";
+    msg[MsgConstants.CYAN_PRIMARY] = "Cyan";
+    msg[MsgConstants.GREEN_PRIMARY] = "Green";
+    msg[MsgConstants.TEAL_PRIMARY] = "Teal";
+    msg[MsgConstants.NAVY_BLUE_PRIMARY] = "Navy Blue";
+    msg[MsgConstants.ORANGE_PRIMARY] = "Orange";
+    msg[MsgConstants.LIGHT_BLUE_PRIMARY] = "Light Blue";
+    msg[MsgConstants.AMBER_PRIMARY] = "Amber";
+    msg[MsgConstants.DARK_GRAY_PRIMARY] = "Blue";
+    msg[MsgConstants.DARK_PINK_PRIMARY] = "Dark Pink";
+
+
+
+    msg[MsgConstants.Request] = "Request";
+
+    /*Integration Setting*/
+    msg[MsgConstants.INTEGRATION_SETTING_HAS_BEEN_SAVED] = "Integration Setting Has Been Saved";
+
+
+    msg[MsgConstants.EDIT_COLLECTION] ="Edit Collection";
+    msg[MsgConstants.EDIT_OFFER] ="Edit Offer";
+    msg[MsgConstants.CANNOT_DELETE_GROUP_NODE] ="You cannot delete Group node";
+    msg[MsgConstants.PUBLISH_COLECTION_ON] ="Publish collection on";
+    msg[MsgConstants.PUBLISH_ON_SHOULD_BE_GREATER] ="Publish on should be greater than or equal to currentDate";
+    msg[MsgConstants.MODULE_FIELDS_MAPPING] ="Module fields mapping for ";
+    msg[MsgConstants.SEND_WHATSAPP] ="Send WhatsApp Message";
+    msg[MsgConstants.WHATS_APP_MSG] = "WhatsApp Message ";
+    msg[MsgConstants.SEND_SUCCESSFULLY] = "sent successfully";
+
+    /*data policy*/
+    msg[MsgConstants.EDIT_MASK] = "Edit";
+    msg[MsgConstants.MASK_IN] = "Mask Field";
+    msg[MsgConstants.ENCRYPTION_IN] = "Encrypt Field";
+    msg[MsgConstants.MASK_TYPE] = "Mask type";
+    msg[MsgConstants.MASK_CHARACTER] = "Mask character";
+    msg[MsgConstants.EDIT_ENCRYPTION] = "Edit";
+    msg[MsgConstants.ENCRYPTION_TYPE] = "Encryption type";
+    msg[MsgConstants.ENABLE] = "Enable";
+    msg[MsgConstants.ENCRYPTION_DELETED] = "encryption settings deleted successfully";
+    msg[MsgConstants.MASK_DELETED] = "mask settings deleted successfully";
+    msg[MsgConstants.EXTENSION] = "Extension";
+    msg[MsgConstants.USER_ALREADY_SELECTED] = "User already selected";
+    msg[MsgConstants.INVALID_MODULEID] = "Invalid ModuleId";
+    msg[MsgConstants.AT_LEASET_ONE_FIELD_MANDATORY] = "Atleast one field is mandatory";
+
+    msg[MsgConstants.METRIC_TYPE] = "Metric Type";
+    msg[MsgConstants.METRIC_COLUMN] = "Metric Column";
+    msg[MsgConstants.GROUP_BY] = "Group By";
+    msg[MsgConstants.PARAMETER_NAME] = "Parameter Name";
+    msg[MsgConstants.TARGET_FOR] = "Target For";
+    msg[MsgConstants.TARGET] = "Target";
+    msg[MsgConstants.COMPARATOR] = "Comparator";
+    msg[MsgConstants.ATLEAST_ONE_PARAM] = "Atleast one parameter";
+    msg[MsgConstants.MAXRANGE] = "Max Range";
+    msg[MsgConstants.RESET] = "Reset";
+    msg[MsgConstants.CHECKING_IMPORT_DATA] = "Checking import data";
+    msg[MsgConstants.VALIDATING_IMPORT_DATA] = "Validating import data";
+    msg[MsgConstants.USER_FIELD] = "User Field";
+    msg[MsgConstants.MONTH_FIELD] = "Month Field";
+    msg[MsgConstants.YEAR_FIELD] = "Year Field";
+    msg[MsgConstants.TARGET_AMOUNT] = "Target Amount";
+    msg[MsgConstants.OVERALL] = "Overall";
+    msg[MsgConstants.MODULE_TYPE] = "Module Type";
+    msg[MsgConstants.DATASET_TYPE] = "Dataset Type";
+    msg[MsgConstants.LIST_VIEW_COLUMNS]="list view columns";
+    msg[MsgConstants.COLUMN_NAME_SHOULD_NOT_BE_EMPTY]="Column name should  not be  empty";
+    msg[MsgConstants.SPECIAL_CHARACTERS_NOT_ALLOWED_IN_COLUMNS]="Special characters not allowed in columns";
+    this.getResource=function(iMsgId)
+    {
+        return msg[iMsgId];
+    };
+
+
+
+
+    var statusMsg={};
+    statusMsg[ACTION_SAVE] = "Saving...";
+    statusMsg[ACTION_DELETE] = "Deleting...";
+    statusMsg[ACTION_SORT] = "Sorting...";
+    statusMsg[ACTION_UPDATE] = "Updating...";
+    statusMsg[ACTION_DISPALY] = "Displaying...";
+    statusMsg[ACTION_CREATE] = "Creating...";
+    statusMsg[ACTION_CONVERT] = "Converting...";
+    statusMsg[ACTION_REINDEX] = "Reindexing...";
+    statusMsg[ACTION_SEARCH] = "Searching...";
+    statusMsg[ACTION_SENDING] = "Sending...";
+    statusMsg[ACTION_LOADING] = "Loading...";
+    statusMsg[ACTION_RESTORING] = "Restoring Company...";
+
+    statusMsg[ACTION_TRANSFERRING] = "Transferring...";
+    statusMsg[ACTION_PROCESSING] = "Processing...";
+    statusMsg[ACTION_CHANGING] = "Changing...";
+    statusMsg[ACTION_REGISTERING] = "Registering...";
+    statusMsg[ACTION_SYNCING] = "Syncing...";
+    statusMsg[ACTION_BACKUP] = "Backup in progress...";
+    statusMsg[ACTION_POSTING] = "Posting...";
+    statusMsg[ACTION_IMPORT] = "Importing...";
+    statusMsg[ACTION_REPOSTING] = "Reposting...";
+    statusMsg[ACTION_EXPORTING] = "Exporting...";
+
+
+    this.getStatusMsg=function(iAppActionId)
+    {
+        return statusMsg[iAppActionId];
+    };
+
+    //CMS
+//    var CMSValidationMsg={};
+
+
+};
