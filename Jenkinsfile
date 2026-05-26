@@ -18,7 +18,7 @@ pipeline {
     environment {
 
         PATCH_FOLDER = 'G:/Patches'
-        PROJECT_PATH = 'F:\FocusXBillWise1\BillWise'
+        PROJECT_PATH = 'F:/FocusXBillWise1/BillWise'
 
     }
 
