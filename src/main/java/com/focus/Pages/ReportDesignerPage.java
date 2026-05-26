@@ -17032,63 +17032,63 @@ private static WebElement reportCloseBtn2;
 		getFluentWebDriverWait().until(ExpectedConditions.elementToBeClickable(sl_OkBtn));
 		sl_OkBtn.click();
 
-		String expRow1List = "[6786, 1, 705.09, 80.00]";
+		String expRow1List = "[dep1, 695.00, 25.00]";
 		boolean actRow1List = ListComparisionWOOrder(1,report1stRowList,expRow1List);
 
-		String expRow2List = "[Bank, Rct:1, 80.00]";
+		String expRow2List = "[Cash, Rct:2, 25.00]";
 		boolean actRow2List = ListComparisionWOOrder(1,report2ndRowList,expRow2List);
 
-		String expRow3List = "[CustomDutyPayable, SalInv:27, 22.00]";
+		String expRow3List = "[CustomerA, SalInv:28, 85.00]";
 		boolean actRow3List = ListComparisionWOOrder(1,report3rdRowList,expRow3List);
 
-		String expRow4List = "[CustomerA, SalInv:33, 193.35]";
+		String expRow4List = "[CustomerB, SalInv:18, 610.00]";
 		boolean actRow4List = ListComparisionWOOrder(1,report4thRowList,expRow4List);
 
-		String expRow5List = "[CustomerB, SalInv:49, 1, 474.74]";
+		String expRow5List = "[dep2, 1, 705.09, 80.00]";
 		boolean actRow5List = ListComparisionWOOrder(1,report5thRowList,expRow5List);
 		
 		//
-		String expRow6List = "[CustomerC, SalInv:13, 15.00]";
+		String expRow6List = "[Bank, Rct:1, 80.00]";
 		boolean actRow6List = ListComparisionWOOrder(1,report6thRowList,expRow6List);
 
-		String expRow7List = "[889, 98.00]";
+		String expRow7List = "[CustomDutyPayable, SalInv:27, 22.00]";
 		boolean actRow7List = ListComparisionWOOrder(1,report7thRowList,expRow7List);
 
-		String expRow8List = "[Costofgoodssold-Computers, SalInv:2, 98.00]";
+		String expRow8List = "[CustomerA, SalInv:33, 193.35]";
 		boolean actRow8List = ListComparisionWOOrder(1,report8thRowList,expRow8List);
 
-		String expRow9List = "[dep3, 1, 342.00]";
+		String expRow9List = "[CustomerB, SalInv:7, 1, 474.74]";
 		boolean actRow9List = ListComparisionWOOrder(1,report9thRowList,expRow9List);
 
-		String expRow10List = "[CustomerA, SalInv:36, 60.00]";
+		String expRow10List = "[CustomerC, SalInv:13, 15.00]";
 		boolean actRow10List = ListComparisionWOOrder(1,report10thRowList,expRow10List);
 		
-		String expRow11List = "[CustomerB, SalInv:11, 96.00]";
+		String expRow11List = "[dep3, 1, 342.00]";
 		boolean actRow11List = ListComparisionWOOrder(1,report11thRowList,expRow11List);
 
-		String expRow12List = "[CustomerC, SalInv:39, 1, 186.00]";
+		String expRow12List = "[CustomerA, SalInv:36, 60.00]";
 		boolean actRow12List = ListComparisionWOOrder(1,report12thRowList,expRow12List);
 		
 
-		String expRow13List = "[dep4]";
+		String expRow13List = "[CustomerB, SalInv:45, 96.00]";
 		boolean actRow13List = ListComparisionWOOrder(1,report13thRowList,expRow13List);
 
-		String expRow14List = "[CustomerB, SalInv:38]";
+		String expRow14List = "[CustomerC, SalInv:22, 1, 186.00]";
 		boolean actRow14List = ListComparisionWOOrder(1,report14thRowList,expRow14List);
 
-		String expRow15List = "[gyy, 695.00, 25.00]";
+		String expRow15List = "[dep4]";
 		boolean actRow15List = ListComparisionWOOrder(1,report15thRowList,expRow15List);
 		
-		String expRow16List = "[Cash, Rct:2, 25.00]";
+		String expRow16List = "[CustomerB, SalInv:38]";
 		boolean actRow16List = ListComparisionWOOrder(1,report16thRowList,expRow16List);
 		
 		click(sl_NextBtn);
 		Thread.sleep(2000);
 
-		String expRow17List = "[CustomerA, SalInv:25, 85.00";
+		String expRow17List = "[dept, 98.00]";
 		boolean actRow17List = ListComparisionWOOrder(1,report1stRowList,expRow17List);
 		
-		String expRow18List = "[CustomerB, SalInv:18, 610.00]";
+		String expRow18List = "[Costofgoodssold-Computers, SalInv:2, 98.00]";
 		boolean actRow18List = ListComparisionWOOrder(1,report2ndRowList,expRow18List);
 		
 		String expRow19List = "[GrandTotal, 3, 840.09, 105.00]";

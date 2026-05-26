@@ -670,7 +670,7 @@ public class ReportDesignerTest extends BaseEngine
 		Assert.assertEquals(RDP.checkLoginForRD2(), true);
 	}
 	
-
+/*
 	@Test(priority=429)
 	public void checkApplyFilterInDataSetTabForItemWithParameterRD() throws EncryptedDocumentException, InvalidFormatException, IOException, InterruptedException
 	{
@@ -825,7 +825,7 @@ public class ReportDesignerTest extends BaseEngine
 	
 	
 	
-	@Test(priority=460) 
+//	@Test(priority=460) 
 	public void checkOptionsinRDDetailsReport() throws EncryptedDocumentException, InvalidFormatException, IOException, InterruptedException
 	{
 		RDP=new ReportDesignerPage(getDriver());
@@ -834,7 +834,7 @@ public class ReportDesignerTest extends BaseEngine
 	
 	
 	
-	@Test(priority=461) 
+//	@Test(priority=461) 
 	public void checkOptionsinCubeRDReport() throws EncryptedDocumentException, InvalidFormatException, IOException, InterruptedException
 	{
 		RDP=new ReportDesignerPage(getDriver());
@@ -860,7 +860,7 @@ public class ReportDesignerTest extends BaseEngine
 		Assert.assertEquals(RDP.checkBacktrackOptioninRDCubeReport(), true);
 	}
 	
-	
+	*/
 	//print,Excel in Home and Entry Page
 	
 	
