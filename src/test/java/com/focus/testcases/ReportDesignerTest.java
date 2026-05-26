@@ -527,67 +527,12 @@ public class ReportDesignerTest extends BaseEngine
 	
 	
 	
-/*
 
-	@Test(priority=212)//doubt
-	public void checkAddingReportDesginerWithdataTypeCubeType() throws EncryptedDocumentException, InvalidFormatException, IOException, InterruptedException
-	{
-		RDP=new ReportDesignerPage(getDriver());
-		Assert.assertEquals(RDP.checkAddingReportDesginerWithdataTypeCubeType(), true);
-	}
-
-
-	@Test(priority=213)
-	public void checkReportOFReportWithQuarryForCubeType() throws EncryptedDocumentException, InvalidFormatException, IOException, InterruptedException
-	{
-		RDP=new ReportDesignerPage(getDriver());
-		Assert.assertEquals(RDP.checkReportOFReportWithQuarryForCubeType(), true);
-	}
-
-
-
-   @Test(priority=214)
-	public void checkSavingRDReportsWihParameterOFtypeCube() throws EncryptedDocumentException, InvalidFormatException, IOException, InterruptedException
-	{
-		RDP=new ReportDesignerPage(getDriver());
-		Assert.assertEquals(RDP.checkSavingRDReportsWihParameterOFtypeCube(), true);
-	}
-
-
-	@Test(priority=215)
-	public void checkReportSavedWithCubeTypeParmeter() throws EncryptedDocumentException, InvalidFormatException, IOException, InterruptedException
-	{
-		RDP=new ReportDesignerPage(getDriver());
-		Assert.assertEquals(RDP.checkReportSavedWithCubeTypeParmeter(), true);
-	}
-
-	@Test(priority=216)
-	public void checkAddingAndDeletingParameterWithDataTypeCubes() throws EncryptedDocumentException, InvalidFormatException, IOException, InterruptedException
-	{
-		RDP=new ReportDesignerPage(getDriver());
-		Assert.assertEquals(RDP.checkAddingAndDeletingParameterWithDataTypeCubes(), true);
-	}
-
-	@Test(priority=217)
-	public void checkResetOptionAndSaveWithOutSelectingDisplayReportinReportDesginer() throws EncryptedDocumentException, InvalidFormatException, IOException, InterruptedException
-	{
-		RDP=new ReportDesignerPage(getDriver());
-		Assert.assertEquals(RDP.checkResetOptionAndSaveWithOutSelectingDisplayReportinReportDesginer(), true);
-	}
-
-
-	@Test(priority=218)
-	public void checkRdWithCubesTypeAddingProgrammableFiled() throws EncryptedDocumentException, InvalidFormatException, IOException, InterruptedException
-	{
-		RDP=new ReportDesignerPage(getDriver());
-		Assert.assertEquals(RDP.checkRdWithCubesTypeAddingProgrammableFiled(), true);
-	}
-*/
 
 ////////////////Filter and Prgramming Fields with Formula///////////////////////////////////////////////////////////////////////////////////////////
 
 
-/*	
+
 	@Test(priority=220)
 	public void CheckAddingFilterInFiledsCreatedCustomizationTab() throws EncryptedDocumentException, InvalidFormatException, IOException, InterruptedException
 	{
@@ -724,7 +669,7 @@ public class ReportDesignerTest extends BaseEngine
 		RDP=new ReportDesignerPage(getDriver());
 		Assert.assertEquals(RDP.checkLoginForRD2(), true);
 	}
-	/*
+	
 
 	@Test(priority=429)
 	public void checkApplyFilterInDataSetTabForItemWithParameterRD() throws EncryptedDocumentException, InvalidFormatException, IOException, InterruptedException
@@ -915,7 +860,7 @@ public class ReportDesignerTest extends BaseEngine
 		Assert.assertEquals(RDP.checkBacktrackOptioninRDCubeReport(), true);
 	}
 	
-	*/
+	
 	//print,Excel in Home and Entry Page
 	
 	

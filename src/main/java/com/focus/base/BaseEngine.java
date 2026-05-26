@@ -1580,7 +1580,7 @@ public class BaseEngine extends WebElements {
 
 		lp.clickOnSignInBtn();
 
-		Thread.sleep(45000);
+		Thread.sleep(75000);
 		
 		try {
 			if (reindexingPopupCancelBtn.isDisplayed()) {

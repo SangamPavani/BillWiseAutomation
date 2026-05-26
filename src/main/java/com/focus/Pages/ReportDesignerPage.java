@@ -11608,7 +11608,7 @@ private static WebElement reportCloseBtn2;
 			}
 		}
 		String actRow1List1 = reportsRow1ListArray1.toString();
-		String expRow1List1 = "[STD RATE COGS ITEM, STD RATE COGS ITEM, STD RATE COGS ITEM]";
+		String expRow1List1 = "[Dozs, Dozs, Dozs]";
 
 
 		int report2ndRowListCount1 = reportCol6List.size();
@@ -11622,7 +11622,7 @@ private static WebElement reportCloseBtn2;
 			}
 		}
 		String actRow2List1 = report2ndRowListArray1.toString();
-		String expRow2List1 = "[Dozs, Dozs, Dozs]";
+		String expRow2List1 = "[5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 15]";
 
 
 		int report2ndRowListCount7 = reportCol7List.size();
@@ -11636,7 +11636,7 @@ private static WebElement reportCloseBtn2;
 			}
 		}
 		String actRow2List7 = report2ndRowListArray7.toString();
-		String expRow2List7 = "[5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 15]";
+		String expRow2List7 = "[10, 10, 10, 10, 10]";
 
 
 		Thread.sleep(2000);
@@ -11652,7 +11652,7 @@ private static WebElement reportCloseBtn2;
 			}
 		}
 		String actRow2List8 = report2ndRowListArray8.toString();
-		String expRow2List8 = "[10, 10, 10, 10, 10]";
+		String expRow2List8 = "[15, 15, 15, 15, 5, 5, 5, 5, 5, 5, 5, 5, 25]";
 
 		
 		Thread.sleep(2000);
@@ -15918,6 +15918,12 @@ private static WebElement reportCloseBtn2;
 	@FindBy(xpath="(//span[@class='icon-close icon-font6'])[2]")
 	public static WebElement removeFilterIcon;
 	
+	@FindBy(xpath="//*[@id='FOption_0_0_DefaultFilter_0']")
+	public static WebElement filter_AccTxt;
+	
+	
+	@FindBy(xpath="//*[@id='a']")
+	public static WebElement filter_AdvncFilter;
 	
 	
 	public static boolean checkApplyFilterInDataSetTabForItemWithParameterRD() throws InterruptedException, EncryptedDocumentException, InvalidFormatException, IOException
@@ -15943,14 +15949,18 @@ private static WebElement reportCloseBtn2;
 		dataSetTab.click();
 		
 		Thread.sleep(1000);
-		click(changeToDefFilterIcon);
-		if(removeFilterIcon.isDisplayed()==true)
+		
+		if(filter_AccTxt.isDisplayed()==true)
+		{
+			click(changeToDefFilterIcon);
+		}
+	/*	if(removeFilterIcon.isDisplayed()==true)
 		{
 			System.out.println("Remove filter");
 			click(removeFilterIcon);
 		}
 		
-		click(changeToDefFilterIcon);
+		click(changeToDefFilterIcon);*/
 		Thread.sleep(2500);
 		/*else
 		{

@@ -28,7 +28,7 @@ public class VoucherOptionsTest extends BaseEngine {
 		Assert.assertEquals(vop.checkLogin(), true);
 	}
 
-//	@Test(priority = 100)
+	@Test(priority = 100)
 	public void checkRestoreCompany()
 			throws InterruptedException, EncryptedDocumentException, InvalidFormatException, IOException, AWTException {
 		vop = new VoucherOptionsPage(getDriver());
