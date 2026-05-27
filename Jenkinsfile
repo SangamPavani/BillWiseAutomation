@@ -17,7 +17,7 @@ pipeline {
 
     triggers {
 
-        cron('0 19 * * *')
+        cron('H/30 * * * *')
 
     }
 
@@ -108,25 +108,27 @@ pipeline {
             }
         }
         
-        stage('Stop IIS') {
+       stage('Stop IIS') {
+steps {
+script {
 
-    steps {
 
-        bat '''
+        def status = bat(
+            script: 'iisreset /stop',
+            returnStatus: true
+        )
 
-        echo =========================
-        echo STOPPING IIS
-        echo =========================
-
-        iisreset /stop
-
-        taskkill /F /IM w3wp.exe 2>nul
-
-        echo IIS STOPPED SUCCESSFULLY
-
-        '''
+        if(status == 0){
+            echo "IIS stopped successfully"
+        } else {
+            error("Failed to stop IIS")
+        }
     }
 }
+
+
+}
+
 
       stage('Install Latest Patch') {
 
