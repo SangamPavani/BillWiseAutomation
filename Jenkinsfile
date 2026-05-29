@@ -195,59 +195,51 @@ script {
 
 stage('Install Latest Patch') {
 
+    steps {
 
-steps {
+        script {
 
-    script {
+            def latestPatch = bat(
+                script: '''
+                @echo off
 
-        def latestPatch = bat(
+                for /f "delims=" %%f in ('dir G:\\Patches\\*.exe /b /o-d /t:c ^| findstr /v "PatchHandler.exe"') do (
+                    echo %%f
+                    goto :done
+                )
 
-            script: '''
-            @echo off
+                :done
+                ''',
+                returnStdout: true
+            ).trim()
 
-            for /f "delims=" %%f in ('dir G:\\Patches\\*.exe /b /o-d /t:c ^| findstr /v "PatchHandler.exe"') do (
-                echo %%f
-                goto :done
-            )
+            env.PATCH_NAME = latestPatch
 
-            :done
-            ''',
+            bat """
 
-            returnStdout: true
+            cd /d G:\\Patches
 
-        ).trim()
+            echo =========================
+            echo INSTALLING LATEST PATCH
+            echo =========================
 
-        env.PATCH_NAME = latestPatch
+            echo Executing Patch : ${env.PATCH_NAME}
 
-        bat """
+            start "" "${env.PATCH_NAME}"
 
-        cd /d G:\\Patches
+            timeout /t 20
 
-        echo =========================
-        echo INSTALLING PATCH
-        echo =========================
+            powershell -command "$wshell = New-Object -ComObject WScript.Shell; $wshell.SendKeys('{ENTER}')"
 
-        start "" "${env.PATCH_NAME}"
+            timeout /t 10
 
-        timeout /t 20
+            powershell -command "$wshell = New-Object -ComObject WScript.Shell; $wshell.SendKeys('%{F4}')"
 
-        powershell -Command ^
-        "$wshell = New-Object -ComObject wscript.shell; ^
-        $wshell.AppActivate('User Account Control'); ^
-        Start-Sleep -Seconds 2; ^
-        $wshell.SendKeys('{LEFT}'); ^
-        Start-Sleep -Milliseconds 500; ^
-        $wshell.SendKeys('{ENTER}'); ^
-        Start-Sleep -Seconds 10; ^
-        $wshell.SendKeys('%{F4}')"
+            echo PATCH INSTALLATION COMPLETED
 
-        echo PATCH INSTALLATION COMPLETED
-
-        """
+            """
+        }
     }
-}
-
-
 }
 
        stage('Start IIS') {
