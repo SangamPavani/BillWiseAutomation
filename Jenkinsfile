@@ -235,7 +235,7 @@ do { ^
     $found = $wshell.AppActivate('FocusX Web Patch'); ^
 } until ($found); ^
 
-	Start-Sleep -Seconds 90; ^
+	Start-Sleep -Seconds 200; ^
     $wshell.AppActivate('FocusX Web Patch'); ^
     Start-Sleep -Milliseconds 200; ^
     $wshell.SendKeys('%y'); ^
