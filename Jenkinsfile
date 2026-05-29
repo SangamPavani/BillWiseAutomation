@@ -215,27 +215,28 @@ stage('Install Latest Patch') {
 
             env.PATCH_NAME = latestPatch
 
-           bat """
-cd /d G:\\Patches
+           bat '''
+cd /d G:\Patches
 
 echo =========================
 echo INSTALLING LATEST PATCH
 echo =========================
 
-echo Executing Patch : ${env.PATCH_NAME}
+echo Executing Patch : %PATCH_NAME%
 
-start "" "${env.PATCH_NAME}"
+start "" "%PATCH_NAME%"
 
 timeout /t 20
 
-powershell -ExecutionPolicy Bypass -Command "$\$wshell = New-Object -ComObject WScript.Shell; Start-Sleep -Seconds 2; $\$wshell.SendKeys('{ENTER}')"
+powershell -ExecutionPolicy Bypass -Command "$wshell = New-Object -ComObject WScript.Shell; Start-Sleep -Seconds 2; $wshell.SendKeys('{ENTER}')"
 
 timeout /t 10
 
-powershell -ExecutionPolicy Bypass -Command "$\$wshell = New-Object -ComObject WScript.Shell; Start-Sleep -Seconds 2; $\$wshell.SendKeys('%{F4}')"
+powershell -ExecutionPolicy Bypass -Command "$wshell = New-Object -ComObject WScript.Shell; Start-Sleep -Seconds 2; $wshell.SendKeys('%{F4}')"
 
 echo PATCH INSTALLATION COMPLETED
-"""
+'''
+}
 
     }
 }
