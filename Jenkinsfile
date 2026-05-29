@@ -226,16 +226,20 @@ echo Executing Patch : %PATCH_NAME%
 
 start "" "%PATCH_NAME%"
 
-ping 127.0.0.1 -n 20 > nul
+timeout /t 25
 
 echo Pressing ALT+Y
-            powershell -ExecutionPolicy Bypass -Command ^
-            "Add-Type -AssemblyName System.Windows.Forms; ^
-            [System.Windows.Forms.SendKeys]::SendWait('%y')"
+powershell -ExecutionPolicy Bypass -Command "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SendKeys]::SendWait('%y')"
 
-ping 127.0.0.1 -n 20 > nul
+timeout /t 5
 
-powershell -ExecutionPolicy Bypass -Command "$wshell = New-Object -ComObject WScript.Shell; Start-Sleep -Seconds 2; $wshell.SendKeys('%{F4}')"
+echo Pressing ENTER
+powershell -ExecutionPolicy Bypass -Command "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SendKeys]::SendWait('{ENTER}')"
+
+timeout /t 60
+
+echo Closing installer
+powershell -ExecutionPolicy Bypass -Command "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SendKeys]::SendWait('%{F4}')"
 
 echo PATCH INSTALLATION COMPLETED
 '''
