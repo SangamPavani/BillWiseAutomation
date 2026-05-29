@@ -229,7 +229,7 @@ start "" "%PATCH_NAME%"
  echo Waiting for popup...
             ping 127.0.0.1 -n 20 > nul
 
-           start "" "G:\\Patches\\ClickYes.exe"
+           start "" "G://Patches//ClickYes.exe"
 echo PATCH INSTALLATION COMPLETED
 '''
 }
