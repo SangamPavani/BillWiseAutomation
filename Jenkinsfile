@@ -234,14 +234,15 @@ do { ^
     Start-Sleep -Seconds 2; ^
     $found = $wshell.AppActivate('FocusX Web Patch'); ^
 } until ($found); ^
-for($i=0; $i -lt 90; $i++) { ^
+
+	Start-Sleep -Seconds 2; ^
     $wshell.AppActivate('FocusX Web Patch'); ^
     Start-Sleep -Milliseconds 200; ^
     $wshell.SendKeys('%y'); ^
     Start-Sleep -Milliseconds 200; ^
     $wshell.SendKeys('{ENTER}'); ^
     Start-Sleep -Seconds 5; ^
-}"
+"
 echo PATCH INSTALLATION COMPLETED
 '''
 }
