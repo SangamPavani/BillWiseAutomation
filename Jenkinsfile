@@ -230,14 +230,17 @@ stage('Install Latest Patch') {
             timeout /t 20
 
           
-			  powershell -ExecutionPolicy Bypass -Command ^
-            "$wsh = New-Object -ComObject WScript.Shell; Start-Sleep -Seconds 2; $wsh.SendKeys('{ENTER}')"
+			   powershell -ExecutionPolicy Bypass -Command ^
+            "^$wshell = New-Object -ComObject WScript.Shell; ^
+            Start-Sleep -Seconds 2; ^
+            ^$wshell.SendKeys('{ENTER}')"
 
             timeout /t 10
 
             powershell -ExecutionPolicy Bypass -Command ^
-            "$wsh = New-Object -ComObject WScript.Shell; Start-Sleep -Seconds 2; $wsh.SendKeys('%{F4}')"
-
+            "^$wshell = New-Object -ComObject WScript.Shell; ^
+            Start-Sleep -Seconds 2; ^
+            ^$wshell.SendKeys('%{F4}')"
             echo PATCH INSTALLATION COMPLETED
 
             """
