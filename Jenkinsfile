@@ -233,7 +233,7 @@ stage('Install Latest Patch') {
 			powershell -command "\$wshell = New-Object -ComObject WScript.Shell; \$wshell.SendKeys('{ENTER}')"
             timeout /t 10
 
-            powershell -command "$wshell = New-Object -ComObject WScript.Shell; $wshell.SendKeys('%{F4}')"
+            powershell -command "\$wshell = New-Object -ComObject WScript.Shell; \$wshell.SendKeys('%{F4}')"
 
             echo PATCH INSTALLATION COMPLETED
 
