@@ -17,7 +17,7 @@ pipeline {
 
     triggers {
 
-        cron('H/30 * * * *')
+        cron('H 19 * * *')
 
     }
 
@@ -128,7 +128,7 @@ script {
 
 
 }
-
+/*
 
       stage('Install Latest Patch') {
 
@@ -165,13 +165,89 @@ script {
 
             echo Executing Patch : ${env.PATCH_NAME}
 
-            start /wait "" "${env.PATCH_NAME}"
-
+           // start /wait "" "${env.PATCH_NAME}"
+           start "" "${env.PATCH_NAME}"
+            
+         /*   // Wait for popup to appear 
+            sleep(time: 20, unit: 'SECONDS') 
+            def robot = new java.awt.Robot() 
+            // Press ENTER for YES popup 
+             robot.keyPress(java.awt.event.KeyEvent.VK_ENTER)
+             robot.keyRelease(java.awt.event.KeyEvent.VK_ENTER) 
+             // Wait for installation 
+             sleep(time: 30, unit: 'SECONDS') 
+             // Press ENTER again to close completion popup 
+             robot.keyPress(java.awt.event.KeyEvent.VK_ENTER) 
+             robot.keyRelease(java.awt.event.KeyEvent.VK_ENTER)
+*/
+	/*		timeout /t 20 
+			echo Set WshShell = CreateObject("WScript.Shell") > press_enter.vbs 
+			echo WScript.Sleep 3000 >> press_enter.vbs 
+			echo WshShell.SendKeys "{ENTER}" >> press_enter.vbs 
+			cscript //nologo press_enter.vbs
             echo PATCH INSTALLATION COMPLETED
 
             """
         }
     }
+}
+*/
+
+stage('Install Latest Patch') {
+
+```
+steps {
+
+    script {
+
+        def latestPatch = bat(
+
+            script: '''
+            @echo off
+
+            for /f "delims=" %%f in ('dir G:\\Patches\\*.exe /b /o-d /t:c ^| findstr /v "PatchHandler.exe"') do (
+                echo %%f
+                goto :done
+            )
+
+            :done
+            ''',
+
+            returnStdout: true
+
+        ).trim()
+
+        env.PATCH_NAME = latestPatch
+
+        bat """
+
+        cd /d G:\\Patches
+
+        echo =========================
+        echo INSTALLING PATCH
+        echo =========================
+
+        start "" "${env.PATCH_NAME}"
+
+        timeout /t 20
+
+        powershell -Command ^
+        "$wshell = New-Object -ComObject wscript.shell; ^
+        $wshell.AppActivate('User Account Control'); ^
+        Start-Sleep -Seconds 2; ^
+        $wshell.SendKeys('{LEFT}'); ^
+        Start-Sleep -Milliseconds 500; ^
+        $wshell.SendKeys('{ENTER}'); ^
+        Start-Sleep -Seconds 10; ^
+        $wshell.SendKeys('%{F4}')"
+
+        echo PATCH INSTALLATION COMPLETED
+
+        """
+    }
+}
+```
+
 }
 
        stage('Start IIS') {
