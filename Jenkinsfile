@@ -229,15 +229,7 @@ start "" "%PATCH_NAME%"
  echo Waiting for popup...
             ping 127.0.0.1 -n 20 > nul
 
-            echo Pressing TAB
-            powershell -ExecutionPolicy Bypass -Command "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SendKeys]::SendWait('{TAB}')"
-
-            ping 127.0.0.1 -n 2 > nul
-
-            echo Pressing ENTER
-            powershell -ExecutionPolicy Bypass -Command "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SendKeys]::SendWait('{ENTER}')"
-
-            echo Patch Installed
+           start "" "G:\\Patches\\ClickYes.exe"
 echo PATCH INSTALLATION COMPLETED
 '''
 }
