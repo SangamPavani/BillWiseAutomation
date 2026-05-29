@@ -228,7 +228,10 @@ start "" "%PATCH_NAME%"
 
 ping 127.0.0.1 -n 20 > nul
 
-powershell -ExecutionPolicy Bypass -Command "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SendKeys]::SendWait('%y')"
+echo Pressing ALT+Y
+            powershell -ExecutionPolicy Bypass -Command ^
+            "Add-Type -AssemblyName System.Windows.Forms; ^
+            [System.Windows.Forms.SendKeys]::SendWait('%y')"
 
 ping 127.0.0.1 -n 20 > nul
 
