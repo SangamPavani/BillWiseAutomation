@@ -216,7 +216,7 @@ stage('Install Latest Patch') {
             env.PATCH_NAME = latestPatch
 
            bat '''
-cd /d G:\Patches
+cd /d G:/Patches
 
 echo =========================
 echo INSTALLING LATEST PATCH
