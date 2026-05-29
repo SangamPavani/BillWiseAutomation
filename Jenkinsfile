@@ -239,7 +239,8 @@ $wshell.SendKeys('{TAB}'); ^
 Start-Sleep -Seconds 1; ^
 $wshell.SendKeys('{ENTER}'); ^
 Write-Host 'Yes button clicked'; ^
-Wait-Process -Name '${env.PATCH_NAME}'.Replace('.exe','') -ErrorAction SilentlyContinue"
+Start-Sleep -Seconds 30"
+
 
 echo PATCH INSTALLATION COMPLETED
 '''
