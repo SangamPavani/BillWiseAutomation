@@ -229,22 +229,19 @@ start "" "%PATCH_NAME%"
  echo Waiting for popup...
 
 powershell -ExecutionPolicy Bypass -Command ^
-            "$wshell = New-Object -ComObject WScript.Shell; ^
-            do { ^
-                Start-Sleep -Seconds 2; ^
-                $found = $wshell.AppActivate('FocusX Web Patch'); ^
-            } until ($found); ^
-            for($i=0; $i -lt 120; $i++) { ^
-                $wshell.AppActivate('FocusX Web Patch'); ^
-                Start-Sleep -Milliseconds 500; ^
-                $wshell.SendKeys('%y'); ^
-                Start-Sleep -Milliseconds 500; ^
-                $wshell.SendKeys('{ENTER}'); ^
-                Start-Sleep -Seconds 5; ^
-            }"
-
-
-
+"$wshell = New-Object -ComObject WScript.Shell; ^
+do { ^
+    Start-Sleep -Seconds 2; ^
+    $found = $wshell.AppActivate('FocusX Web Patch'); ^
+} until ($found); ^
+for($i=0; $i -lt 120; $i++) { ^
+    $wshell.AppActivate('FocusX Web Patch'); ^
+    Start-Sleep -Milliseconds 500; ^
+    $wshell.SendKeys('%y'); ^
+    Start-Sleep -Milliseconds 500; ^
+    $wshell.SendKeys('{ENTER}'); ^
+    Start-Sleep -Seconds 5; ^
+}"
 echo PATCH INSTALLATION COMPLETED
 '''
 }
