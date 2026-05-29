@@ -246,8 +246,7 @@ do { ^
 
 	# Close installer ^
 	$wshell.SendKeys('%{F4}'); ^
-
-    Start-Sleep -Seconds 5; ^
+	
 "
 echo PATCH INSTALLATION COMPLETED
 '''
