@@ -229,7 +229,15 @@ start "" "%PATCH_NAME%"
  echo Waiting for popup...
             ping 127.0.0.1 -n 20 > nul
 
-           start "" "G://Patches//ClickYes.exe"
+          powershell -ExecutionPolicy Bypass -Command ^
+"$wshell = New-Object -ComObject WScript.Shell; ^
+$wshell.AppActivate('FocusX Web Patch'); ^
+Start-Sleep -Seconds 2; ^
+$wshell.SendKeys('{TAB}'); ^
+Start-Sleep -Seconds 1; ^
+$wshell.SendKeys('{ENTER}'); ^
+Start-Sleep -Seconds 10; ^
+$wshell.SendKeys('%{F4}')"
 echo PATCH INSTALLATION COMPLETED
 '''
 }
