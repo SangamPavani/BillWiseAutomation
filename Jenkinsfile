@@ -241,6 +241,8 @@ do { ^
     $wshell.SendKeys('%y'); ^
     Start-Sleep -Milliseconds 200; ^
     $wshell.SendKeys('{ENTER}'); ^
+    Start-Sleep -Milliseconds 200; ^
+    $wshell.SendKeys('{ENTER}'); ^
     Start-Sleep -Seconds 5; ^
 "
 echo PATCH INSTALLATION COMPLETED
