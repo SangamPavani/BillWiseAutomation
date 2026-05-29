@@ -229,7 +229,7 @@ stage('Install Latest Patch') {
 
             timeout /t 20
 
-            REM powershell -command "$wshell = New-Object -ComObject WScript.Shell; $wshell.SendKeys('{ENTER}')"
+          
 			powershell -command "\$wshell = New-Object -ComObject WScript.Shell; \$wshell.SendKeys('{ENTER}')"
             timeout /t 10
 
