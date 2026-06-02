@@ -292,7 +292,7 @@ echo PATCH INSTALLATION COMPLETED
     }
 }
 
-       stage('Start IIS') {
+/*       stage('Start IIS') {
 
     steps {
 
@@ -307,6 +307,42 @@ echo PATCH INSTALLATION COMPLETED
         echo IIS STARTED SUCCESSFULLY
 
         '''
+    }
+}
+       */
+       
+       stage('Start IIS') {
+    steps {
+        script {
+
+            int maxRetries = 2
+            int attempt = 0
+            boolean started = false
+
+            while (attempt < maxRetries && !started) {
+
+                attempt++
+
+                echo "Starting IIS - Attempt ${attempt}"
+
+                def status = bat(
+                    script: 'iisreset /start',
+                    returnStatus: true
+                )
+
+                if (status == 0) {
+                    started = true
+                    echo "IIS started successfully"
+                } else {
+                    echo "IIS start failed. Waiting 10 seconds before retry..."
+                    sleep(time: 10, unit: 'SECONDS')
+                }
+            }
+
+            if (!started) {
+                error("Unable to start IIS after ${maxRetries} attempts")
+            }
+        }
     }
 }
         stage('Execute Automation') {
