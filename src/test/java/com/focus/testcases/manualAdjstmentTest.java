@@ -25,7 +25,7 @@ public class manualAdjstmentTest extends BaseEngine
 		map.checkLoginToManualAdjsuments();
 	}
 	
-	//@Test(priority = 01)
+	@Test(priority = 01)
 	public void BcheckRestoreOptionInManualAdjustment()
 			throws InterruptedException, EncryptedDocumentException, InvalidFormatException, IOException, AWTException {
 		map = new ManualAdjustmentsPage(getDriver());

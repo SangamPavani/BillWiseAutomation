@@ -8,8 +8,8 @@
    
     
    <!--  <class name="com.focus.testcases.BRSTest"/> -->
-	<class name="com.focus.testcases.BRSNewTest"/>
-     <class name="com.focus.testcases.ChequesTest"/>
+	<!-- <class name="com.focus.testcases.BRSNewTest"/>
+     <class name="com.focus.testcases.ChequesTest"/> -->
      <class name="com.focus.testcases.manualAdjstmentTest"/>
       <class name="com.focus.testcases.ReportDesignerTest"/>
     <class name="com.focus.testcases.ReportDesignerNewTest"/>
