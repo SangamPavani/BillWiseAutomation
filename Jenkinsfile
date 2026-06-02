@@ -108,7 +108,7 @@ pipeline {
             }
         }
         
-       stage('Stop IIS') {
+      /* stage('Stop IIS') {
 steps {
 script {
 
@@ -127,7 +127,45 @@ script {
 }
 
 
+}*/
+
+
+stage('Stop IIS') {
+    steps {
+        script {
+
+            int maxRetries = 2
+            int attempt = 0
+            boolean stopped = false
+
+            while (attempt < maxRetries && !stopped) {
+
+                attempt++
+
+                echo "Stopping IIS - Attempt ${attempt}"
+
+                def status = bat(
+                    script: 'iisreset /stop',
+                    returnStatus: true
+                )
+
+                if (status == 0) {
+                    stopped = true
+                    echo "IIS stopped successfully"
+                } else {
+                    echo "IIS stop failed. Waiting 10 seconds before retry..."
+                    sleep(time: 10, unit: 'SECONDS')
+                }
+            }
+
+            if (!stopped) {
+                error("Unable to stop IIS after ${maxRetries} attempts")
+            }
+        }
+    }
 }
+
+
 /*
 
       stage('Install Latest Patch') {
