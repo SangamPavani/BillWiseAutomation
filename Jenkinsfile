@@ -366,6 +366,51 @@ echo PATCH INSTALLATION COMPLETED
 }
 
 
+stage('Restart IIS and Pronghorn Service') {
+
+    steps {
+
+        script {
+
+            echo "========================="
+            echo "RESTARTING PRONGHORN SERVICE"
+            echo "========================="
+
+            bat 'net stop "PronghornService"'
+            sleep(time: 10, unit: 'SECONDS')
+
+            def pronghornStatus = bat(
+                script: 'net start "PronghornService"',
+                returnStatus: true
+            )
+
+            if (pronghornStatus != 0) {
+                error("Failed to start Pronghorn Service")
+            }
+
+            echo "Pronghorn Service restarted successfully"
+            
+             echo "========================="
+            echo "RESTARTING IIS"
+            echo "========================="
+
+            def iisStatus = bat(
+                script: 'iisreset /restart',
+                returnStatus: true
+            )
+
+            if (iisStatus != 0) {
+                error("Failed to restart IIS")
+            }
+
+            echo "IIS restarted successfully"
+
+            echo "Waiting for application startup..."
+            sleep(time: 60, unit: 'SECONDS')
+        }
+    }
+}
+
 stage('Verify Application') {
     steps {
         bat '''
