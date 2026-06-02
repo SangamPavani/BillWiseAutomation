@@ -239,13 +239,14 @@ do { ^
     $wshell.AppActivate('FocusX Web Patch'); ^
     Start-Sleep -Milliseconds 200; ^
     $wshell.SendKeys('%y'); ^
-    Start-Sleep -Milliseconds 200; ^
-    $wshell.SendKeys('{ENTER}'); ^
-    Start-Sleep -Seconds 3; ^
+    Write-Host 'Yes Sent';^
 
-	$wshell.SendKeys('%{F4}');"
-	
+	Start-Sleep -Seconds 5;^
 
+	$wshell.SendKeys('{ENTER}');^
+
+	Write-Host 'Enter Sent';"
+    
 echo PATCH INSTALLATION COMPLETED
 '''
 }
