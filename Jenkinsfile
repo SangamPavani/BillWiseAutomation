@@ -130,6 +130,25 @@ script {
 }*/
 
 
+stage('Stop Pronghorn Service') {
+    steps {
+        script {
+
+            def status = bat(
+                script: 'net stop "PronghornService"',
+                returnStatus: true
+            )
+
+            if (status == 0) {
+                echo "Pronghorn Service stopped successfully"
+            } else {
+                error("Failed to stop Pronghorn Service")
+            }
+        }
+    }
+}
+
+
 stage('Stop IIS') {
     steps {
         script {
@@ -343,6 +362,16 @@ echo PATCH INSTALLATION COMPLETED
                 error("Unable to start IIS after ${maxRetries} attempts")
             }
         }
+    }
+}
+
+
+stage('Verify Application') {
+    steps {
+        bat '''
+        sc query PronghornService
+        iisreset /status
+        '''
     }
 }
         stage('Execute Automation') {
