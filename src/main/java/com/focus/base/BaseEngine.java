@@ -1494,7 +1494,7 @@ public class BaseEngine extends WebElements {
 		// options.addArguments("--Incognito");
 
 		// options.addArguments("headless");
-
+		options.setExperimentalOption("detach", true);
 		options.setExperimentalOption("useAutomationExtension", false);
 		options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
 
