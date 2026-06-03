@@ -281,7 +281,7 @@ echo =========================
 
 echo Executing Patch : %PATCH_NAME%
 
-start /wait "" "%PATCH_NAME%"
+start "" "%PATCH_NAME%"
 
  echo Waiting for popup...
 
@@ -303,6 +303,16 @@ do { ^
 	$wshell.SendKeys('{ENTER}');^
 
 	Write-Host 'Enter Sent';"
+	
+	REM Wait until EXE disappears
+:waitPatch
+tasklist | findstr /i "FocusX" >nul
+if %errorlevel%==0 (
+    timeout /t 10 >nul
+    goto waitPatch
+)
+
+echo PATCH INSTALLATION COMPLETED
     
 echo PATCH INSTALLATION COMPLETED
 '''
