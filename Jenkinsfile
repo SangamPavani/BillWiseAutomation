@@ -306,10 +306,15 @@ do { ^
 	
 	echo Waiting for patch installation to complete...
 
-powershell -Command ^
-"while (Get-Process | Where-Object {$_.ProcessName -like '*FocusX*'}) { ^
-    Start-Sleep -Seconds 10 ^
-}"
+:waitPatch
+
+tasklist | findstr /i "FocusX Update.exe" >nul
+
+if not errorlevel 1 (
+    echo Patch still running...
+    timeout /t 10 >nul
+    goto waitPatch
+)
 
 echo Patch installation completed
     
