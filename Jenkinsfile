@@ -311,11 +311,6 @@ echo PATCH INSTALLATION COMPLETED
     }
 }
 
-echo Checking installer process
-
-tasklist | findstr /i "Update.exe"
-tasklist | findstr /i "FocusX"
-tasklist | findstr /i "Patch"
 
 /*       stage('Start IIS') {
 
