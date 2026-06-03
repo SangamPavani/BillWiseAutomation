@@ -1,6 +1,6 @@
 ﻿,,,,,,Testing 22
 ,,,,,,RD Detail
-,,,,,,[As on date 01/06/2026]
+,,,,,,[As on date 03/06/2026]
 DocNo,Date,Account.Name,Account2.Name,Voucher name,Item.Name,Quantity,Rate,Gross,Department.Name,Warehouse.Name,T1,T2
 Focus_3,20/11/2020,,,Opening Stocks,RMA1,12.00,6.00,72.00,,wh4,,12.00
 Focus_19,20/11/2020,,,Opening Stocks,RMA3,1.00,5.00,5.00,,wh1,,1.00
