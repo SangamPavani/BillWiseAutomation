@@ -304,15 +304,14 @@ do { ^
 
 	Write-Host 'Enter Sent';"
 	
-	REM Wait until EXE disappears
-:waitPatch
-tasklist | findstr /i "FocusX" >nul
-if %errorlevel%==0 (
-    timeout /t 10 >nul
-    goto waitPatch
-)
+	echo Waiting for patch installation to complete...
 
-echo PATCH INSTALLATION COMPLETED
+powershell -Command ^
+"while (Get-Process | Where-Object {$_.ProcessName -like '*FocusX*'}) { ^
+    Start-Sleep -Seconds 10 ^
+}"
+
+echo Patch installation completed
     
 echo PATCH INSTALLATION COMPLETED
 '''
