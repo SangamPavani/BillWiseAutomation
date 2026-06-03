@@ -311,7 +311,7 @@ echo PATCH INSTALLATION COMPLETED
     }
 }
 
-echo Checking installer process...
+echo Checking installer process
 
 tasklist | findstr /i "Update.exe"
 tasklist | findstr /i "FocusX"
