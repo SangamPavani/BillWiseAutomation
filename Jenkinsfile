@@ -532,11 +532,21 @@ stage('Final Restart Pronghorn') {
         bat '''
         sc stop PronghornService
 
-        ping 127.0.0.1 -n 20 >nul
+ping 127.0.0.1 -n 30 >nul
 
-        sc start PronghornService
+sc start PronghornService
 
-        echo FINAL PRONGHORN RESTART COMPLETED
+:waitPronghorn
+
+sc query PronghornService | find "RUNNING" >nul
+
+if errorlevel 1 (
+    echo Waiting for Pronghorn to become RUNNING...
+    ping 127.0.0.1 -n 10 >nul
+    goto waitPronghorn
+)
+
+echo Pronghorn is RUNNING
         '''
     }
 }
@@ -545,6 +555,18 @@ stage('Final Restart IIS') {
     steps {
         bat '''
         iisreset /restart
+        
+        :waitIIS
+
+iisreset /status | find "Running" >nul
+
+if errorlevel 1 (
+    echo Waiting for IIS...
+    ping 127.0.0.1 -n 10 >nul
+    goto waitIIS
+)
+
+echo IIS is RUNNING
         '''
     }
 }
