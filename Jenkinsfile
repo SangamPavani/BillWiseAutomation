@@ -312,7 +312,7 @@ tasklist | findstr /i "FocusX Update.exe" >nul
 
 if not errorlevel 1 (
     echo Patch still running...
-    timeout /t 10 >nul
+   ping 127.0.0.1 -n 11 >nul
     goto waitPatch
 )
 

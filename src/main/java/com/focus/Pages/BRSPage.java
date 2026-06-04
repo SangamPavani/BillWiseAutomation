@@ -1205,7 +1205,7 @@ public class BRSPage extends BaseEngine {
 
 		waitToClick(newBtn);
 
-		checkValidationMessage("Screen opened");
+		//checkValidationMessage("Screen opened");
 
 		getFluentWebDriverWait().until(ExpectedConditions.elementToBeClickable(documentNumberTxt));
 

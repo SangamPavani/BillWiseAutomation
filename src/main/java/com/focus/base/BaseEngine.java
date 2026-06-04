@@ -2648,6 +2648,8 @@ public class BaseEngine extends WebElements {
 
 		getFluentWebDriverWait().until(ExpectedConditions.elementToBeClickable(restoreCompanyBtn));
 		restoreCompanyBtn.click();
+		
+		Thread.sleep(5000);
 
 		try {
 			getFluentWebDriverWait().until(ExpectedConditions.elementToBeClickable(overRideYesBtn));
