@@ -430,7 +430,7 @@ echo PATCH INSTALLATION COMPLETED
     }
 }
 */
-
+/*
 stage('Restart Pronghorn Service') {
     steps {
         bat '''
@@ -509,7 +509,7 @@ stage('Restart IIS') {
         }
     }
 }
-
+*/
 stage('Verify Application') {
     steps {
         bat '''
