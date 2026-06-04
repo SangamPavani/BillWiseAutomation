@@ -349,7 +349,7 @@ echo PATCH INSTALLATION COMPLETED
 }
        */
        
-       stage('Start IIS') {
+ /*      stage('Start IIS') {
     steps {
         script {
 
@@ -383,7 +383,7 @@ echo PATCH INSTALLATION COMPLETED
         }
     }
 }
-
+*/
 
 /*stage('Restart IIS and Pronghorn Service') {
 
