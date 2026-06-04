@@ -81,32 +81,28 @@ pipeline {
 }
 
         stage('Clear Temp Cache') {
+    steps {
+        bat '''
+        echo =========================
+        echo CLEARING TEMP CACHE
+        echo =========================
 
-            steps {
+        REM User Temp
+        del /s /f /q "%TEMP%\\*.*" 2>nul
+        for /d %%x in ("%TEMP%\\*") do (
+            rd /s /q "%%x" 2>nul
+        )
 
-                bat '''
+        REM Windows Temp
+        del /s /f /q "C:\\Windows\\Temp\\*.*" 2>nul
+        for /d %%x in ("C:\\Windows\\Temp\\*") do (
+            rd /s /q "%%x" 2>nul
+        )
 
-                echo =========================
-                echo CLEARING TEMP CACHE
-                echo =========================
-
-                del /s /f /q "%TEMP%\\*.*" 2>nul
-
-                for /d %%x in ("%TEMP%\\*") do (
-                    rd /s /q "%%x" 2>nul
-                )
-
-                del /s /f /q "%TMP%\\*.*" 2>nul
-
-                for /d %%x in ("%TMP%\\*") do (
-                    rd /s /q "%%x" 2>nul
-                )
-
-                echo TEMP Cache Cleared
-
-                '''
-            }
-        }
+        echo TEMP Cache Cleared
+        '''
+    }
+}
         
       /* stage('Stop IIS') {
 steps {
