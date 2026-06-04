@@ -522,7 +522,7 @@ stage('Wait For Application Startup') {
     }
 }
 
-
+/*
 stage('Final Restart Pronghorn') {
     steps {
         bat '''
@@ -572,7 +572,7 @@ stage('Wait After Final Restart') {
         echo "Waiting after final restart..."
         sleep(time: 2, unit: 'MINUTES')
     }
-}
+}*/
         stage('Execute Automation') {
 
             steps {
