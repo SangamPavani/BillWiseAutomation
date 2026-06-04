@@ -316,7 +316,11 @@ if not errorlevel 1 (
     goto waitPatch
 )
 
-echo Patch installation completed
+echo Last ErrorLevel = %ERRORLEVEL%
+
+echo PATCH INSTALLATION COMPLETED
+
+exit /b 0
     
 echo PATCH INSTALLATION COMPLETED
 '''
