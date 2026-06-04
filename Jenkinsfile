@@ -330,7 +330,7 @@ echo PATCH INSTALLATION COMPLETED
 }
 
 
-/*       stage('Start IIS') {
+       stage('Start IIS') {
 
     steps {
 
@@ -347,7 +347,7 @@ echo PATCH INSTALLATION COMPLETED
         '''
     }
 }
-       */
+       
        
  /*      stage('Start IIS') {
     steps {
