@@ -508,6 +508,13 @@ stage('Verify Application') {
         '''
     }
 }
+
+stage('Wait For Application Startup') {
+    steps {
+        echo "Waiting for application startup..."
+        sleep(time: 120, unit: 'SECONDS')
+    }
+}
         stage('Execute Automation') {
 
             steps {
