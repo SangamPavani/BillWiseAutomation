@@ -608,27 +608,28 @@ stage('Wait After Final Restart') {
 
     }
 
-    post {
+   post {
+    always {
 
-        always {
+        dir("${PROJECT_PATH}") {
+			
+			allure([
+    includeProperties: false,
+    jdk: '',
+    results: [[path: 'target/allure-results']]
+])
 
-            dir("${PROJECT_PATH}") {
+            publishHTML([
+    allowMissing: true,
+    alwaysLinkToLastBuild: true,
+    keepAll: true,
+    reportDir: 'test-output',
+    reportFiles: 'index.html',
+    reportName: 'Automation Report'
+])
 
-                publishHTML([
-
-                    allowMissing: true,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true,
-                    reportDir: 'test-output',
-                    reportFiles: 'index.html',
-                    reportName: 'Automation Report'
-
-                ])
-
-                archiveArtifacts artifacts: 'Screenshots/*.png',
-                allowEmptyArchive: true
-
-            }
+           archiveArtifacts artifacts: 'target/surefire-reports/*', 
+           allowEmptyArchive: true
         }
     }
 }
