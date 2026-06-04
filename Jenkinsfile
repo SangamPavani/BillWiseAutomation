@@ -512,7 +512,7 @@ stage('Verify Application') {
 stage('Wait For Application Startup') {
     steps {
         echo "Waiting for application startup..."
-        sleep(time: 120, unit: 'SECONDS')
+         sleep(time: 5, unit: 'MINUTES')
     }
 }
         stage('Execute Automation') {
