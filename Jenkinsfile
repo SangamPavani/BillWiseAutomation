@@ -525,6 +525,36 @@ stage('Wait For Application Startup') {
          sleep(time: 5, unit: 'MINUTES')
     }
 }
+
+
+stage('Final Restart Pronghorn') {
+    steps {
+        bat '''
+        sc stop PronghornService
+
+        ping 127.0.0.1 -n 20 >nul
+
+        sc start PronghornService
+
+        echo FINAL PRONGHORN RESTART COMPLETED
+        '''
+    }
+}
+
+stage('Final Restart IIS') {
+    steps {
+        bat '''
+        iisreset /restart
+        '''
+    }
+}
+
+stage('Wait After Final Restart') {
+    steps {
+        echo "Waiting after final restart..."
+        sleep(time: 2, unit: 'MINUTES')
+    }
+}
         stage('Execute Automation') {
 
             steps {
