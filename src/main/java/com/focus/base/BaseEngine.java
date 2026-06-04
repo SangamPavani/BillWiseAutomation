@@ -267,7 +267,7 @@ public class BaseEngine extends WebElements {
 			getLogger().info("Test Case is Failed : " + tcName + "So Taking the Screenshot");
 			extentTest.log(Status.FAIL, MarkupHelper.createLabel(result.getName() + " FAILED ", ExtentColor.RED));
 		    // PRINT ACTUAL EXCEPTION
-		    Throwable error = result.getThrowable();
+		/*    Throwable error = result.getThrowable();
 
 		    if (error != null) {
 
@@ -276,8 +276,8 @@ public class BaseEngine extends WebElements {
 
 		        extentTest.fail(error);
 		    }
-
-			takeSnapShot();
+*/
+		//	takeSnapShot();
 			System.err.println("Fail : Test Case Is Failed After Method Execution : " + tcName);
 			System.err.println(" *****************************************************TEST case Failed: " + tcName);
 
