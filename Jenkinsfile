@@ -629,29 +629,26 @@ stage('Wait After Final Restart') {
         }
         
         emailext(
-    to: 'emailvalidationone@gmail.com,s.pavani@focussoftnet.com',
-    subject: "Jenkins Build #${BUILD_NUMBER} - ${currentBuild.currentResult}",
-    mimeType: 'text/html',
-    body: """
-    <h2>Build Status: ${currentBuild.currentResult}</h2>
+            subject: "Jenkins Build #${BUILD_NUMBER} - ${currentBuild.currentResult}",
+            body: """
+            Build Status: ${currentBuild.currentResult}
 
-    <p>Job Name: ${JOB_NAME}</p>
-    <p>Build Number: ${BUILD_NUMBER}</p>
+            Job Name: ${JOB_NAME}
+            Build Number: ${BUILD_NUMBER}
 
-    <p>
-    <a href="${BUILD_URL}">Open Build</a>
-    </p>
+            Build URL:
+            ${BUILD_URL}
 
-    <p>
-    <a href="${BUILD_URL}Automation_20Report/">Automation Report</a>
-    </p>
+            HTML Report:
+            ${BUILD_URL}Automation_20Report/
 
-    <p>
-    <a href="${BUILD_URL}allure/">Allure Report</a>
-    </p>
-    """,
-    attachLog: true
-)
+            Allure Report:
+            ${BUILD_URL}allure/
+
+            """,
+            to: 'emailvalidationone@gmail.com'
+        )
+    
 
     }
 }
