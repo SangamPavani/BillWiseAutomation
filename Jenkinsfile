@@ -612,20 +612,23 @@ stage('Wait After Final Restart') {
     always {
 
         dir("${PROJECT_PATH}") {
+			
+			allure([
+    includeProperties: false,
+    jdk: '',
+    results: [[path: 'target/allure-results']]
+])
 
             publishHTML([
-                allowMissing: true,
+                allowMissing: false,
                 alwaysLinkToLastBuild: true,
                 keepAll: true,
                 reportDir: 'target/surefire-reports/Suite',
-                reportFiles: 'index.html',
+                reportFiles: '*.html',
                 reportName: 'Automation Report'
             ])
-
-            archiveArtifacts artifacts: '''
-                target/surefire-reports/**/*,
-                Screenshots/*.png
-            ''',
+            
+            archiveArtifacts artifacts: 'reports/**/*.*',
             allowEmptyArchive: true
         }
     }

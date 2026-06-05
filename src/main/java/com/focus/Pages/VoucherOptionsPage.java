@@ -189,7 +189,7 @@ public class VoucherOptionsPage extends BaseEngine {
 
 		lp.clickOnSignInBtn();
 
-		Thread.sleep(10000);
+		Thread.sleep(15000);
 
 		if (homeMenu.isDisplayed()) 
 		{
