@@ -39,6 +39,8 @@ pipeline {
                     bat '''
                     if exist test-output rmdir /s /q test-output
                     if exist target rmdir /s /q target
+                     if exist allure-results rmdir /s /q allure-results
+            		 if exist allure-report rmdir /s /q allure-report
                     '''
 
                 }
@@ -518,7 +520,7 @@ stage('Verify Application') {
 stage('Wait For Application Startup') {
     steps {
         echo "Waiting for application startup..."
-         sleep(time: 2, unit: 'MINUTES')
+         sleep(time: 1, unit: 'MINUTES')
     }
 }
 

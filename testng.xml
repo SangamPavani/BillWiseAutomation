@@ -14,7 +14,7 @@
     <class name="com.focus.testcases.ReportDesignerTestNew"/>  
     <class name="com.focus.testcases.ReportDesignerNew1Test"/>  -->
     
-  <!--   <class name="com.focus.testcases.VoucherOptionsTest"/> -->
+    <class name="com.focus.testcases.VoucherOptionsTest"/>
   
    <!--   <class name="com.focus.testcases.preferenceMiscellinousOptionTest"/> --> 
      
