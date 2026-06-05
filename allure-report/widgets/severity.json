@@ -1,1 +1,1 @@
-[]
+[{"uid":"a1f493e52196cb17","name":"verifyBrowserOpen","time":{"start":1780656048789,"stop":1780656065828,"duration":17039},"status":"passed","severity":"normal"},{"uid":"c1245ae23723d41e","name":"checkLogin","time":{"start":1780656167193,"stop":1780656232327,"duration":65134},"status":"broken","severity":"normal"},{"uid":"434ed9aa73091727","name":"verifyLoginScreenTitleByInputUrl","time":{"start":1780656065883,"stop":1780656167173,"duration":101290},"status":"passed","severity":"normal"}]
