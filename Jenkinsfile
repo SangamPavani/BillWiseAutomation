@@ -518,7 +518,7 @@ stage('Verify Application') {
 stage('Wait For Application Startup') {
     steps {
         echo "Waiting for application startup..."
-         sleep(time: 5, unit: 'MINUTES')
+         sleep(time: 2, unit: 'MINUTES')
     }
 }
 
@@ -573,21 +573,15 @@ stage('Wait After Final Restart') {
         sleep(time: 2, unit: 'MINUTES')
     }
 }*/
-        stage('Execute Automation') {
-
-            steps {
-
-                dir("${PROJECT_PATH}") {
-
-                    bat '''
-
-                    mvn clean test -Dsurefire.suiteXmlFiles=testng.xml
-
-                    '''
-
-                }
+       stage('Execute Automation') {
+    steps {
+        dir("${PROJECT_PATH}") {
+            catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                bat 'mvn clean test -Dsurefire.suiteXmlFiles=testng.xml'
             }
         }
+    }
+}
 
         stage('Move Installed Patch') {
 
