@@ -627,6 +627,29 @@ stage('Wait After Final Restart') {
             archiveArtifacts artifacts: 'reports/**/*.*',
             allowEmptyArchive: true
         }
+        
+        emailext(
+            subject: "Jenkins Build #${BUILD_NUMBER} - ${currentBuild.currentResult}",
+            body: """
+            Build Status: ${currentBuild.currentResult}
+
+            Job Name: ${JOB_NAME}
+            Build Number: ${BUILD_NUMBER}
+
+            Build URL:
+            ${BUILD_URL}
+
+            HTML Report:
+            ${BUILD_URL}Automation_20Report/
+
+            Allure Report:
+            ${BUILD_URL}allure/
+
+            """,
+            to: 'emailvalidationone@gmail.com'
+        )
+    
+
     }
 }
 }
