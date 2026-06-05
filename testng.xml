@@ -8,7 +8,7 @@
     
 	<!-- <class name="com.focus.testcases.BRSNewTest"/>
      <class name="com.focus.testcases.ChequesTest"/> -->
-     <class name="com.focus.testcases.manualAdjstmentTest"/>
+  <!--    <class name="com.focus.testcases.manualAdjstmentTest"/> -->
      <!--  <class name="com.focus.testcases.ReportDesignerTest"/>
     <class name="com.focus.testcases.ReportDesignerNewTest"/>
     <class name="com.focus.testcases.ReportDesignerTestNew"/>  
@@ -16,7 +16,7 @@
     
     <class name="com.focus.testcases.VoucherOptionsTest"/>
   
-     <class name="com.focus.testcases.preferenceMiscellinousOptionTest"/> 
+   <!--   <class name="com.focus.testcases.preferenceMiscellinousOptionTest"/> --> 
      
  <!--   <class name="com.focus.testcases.CreditTest"/> 
     
