@@ -258,7 +258,7 @@ stage('Install Latest Patch') {
                 script: '''
                 @echo off
 
-                for /f "delims=" %%f in ('dir G://Patches//*.exe /b /o-d /t:c ^| findstr /v "PatchHandler.exe"') do (
+                for /f "delims=" %%f in ('dir G:\\Patches\\*.exe /b /o-d /t:c ^| findstr /v "PatchHandler.exe"') do (
                     echo %%f
                     goto :done
                 )
