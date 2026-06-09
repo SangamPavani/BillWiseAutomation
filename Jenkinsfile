@@ -254,19 +254,21 @@ stage('Install Latest Patch') {
 
         script {
 
-            def latestPatch = bat(
-                script: '''
-                @echo off
+           def latestPatch = bat(
+    script: '''
+    @echo off
+    for /f "delims=" %%f in ('dir /b /o-d G:\\Patches\\*.exe') do (
+        echo %%f
+        goto :done
+    )
+    :done
+    ''',
+    returnStdout: true
+).trim()
 
-                for /f "delims=" %%f in ('dir G:\\Patches\\*.exe /b /o-d /t:c ^| findstr /v "PatchHandler.exe"') do (
-                    echo %%f
-                    goto :done
-                )
+echo "Latest Patch Found = [${latestPatch}]"
 
-                :done
-                ''',
-                returnStdout: true
-            ).trim()
+env.PATCH_NAME = latestPatch
 
            /* env.PATCH_NAME = latestPatch*/
            if (!latestPatch?.trim()) {
