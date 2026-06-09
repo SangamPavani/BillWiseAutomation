@@ -258,7 +258,7 @@ stage('Install Latest Patch') {
                 script: '''
                 @echo off
 
-                for /f "delims=" %%f in ('dir G:\\Patches\\*.exe /b /o-d /t:c ^| findstr /v "PatchHandler.exe"') do (
+                for /f "delims=" %%f in ('dir G://Patches//*.exe /b /o-d /t:c ^| findstr /v "PatchHandler.exe"') do (
                     echo %%f
                     goto :done
                 )
@@ -268,7 +268,10 @@ stage('Install Latest Patch') {
                 returnStdout: true
             ).trim()
 
-            env.PATCH_NAME = latestPatch
+           /* env.PATCH_NAME = latestPatch*/
+           if (!latestPatch?.trim()) {
+    error "No patch found in G://Patches"
+}
 
            bat '''
 cd /d G:/Patches
