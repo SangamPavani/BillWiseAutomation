@@ -128,7 +128,7 @@ script {
 }*/
 
 
-stage('Stop Pronghorn Service') {
+/*stage('Stop Pronghorn Service') {
     steps {
         script {
 
@@ -143,6 +143,34 @@ stage('Stop Pronghorn Service') {
                 error("Failed to stop Pronghorn Service")
             }
         }
+    }
+}*/
+
+
+
+stage('Stop Pronghorn Service') {
+    steps {
+        bat '''
+        echo Stopping Pronghorn Service...
+
+        net stop "PronghornService"
+
+        sc query "PronghornService"
+
+        timeout /t 10 /nobreak >nul
+
+        sc query "PronghornService" | find "STOPPED" >nul
+
+        if errorlevel 1 (
+            echo Service did not stop. Killing process...
+
+            for /f "tokens=2 delims=: " %%a in ('sc queryex "PronghornService" ^| find "PID"') do (
+                taskkill /F /PID %%a
+            )
+        )
+
+        echo Pronghorn Service Stopped
+        '''
     }
 }
 
