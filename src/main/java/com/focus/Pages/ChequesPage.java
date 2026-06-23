@@ -1938,9 +1938,9 @@ public class ChequesPage extends BaseEngine {
 		
 		Thread.sleep(2569);
 
-		getWebDriverWait().until(ExpectedConditions.elementToBeClickable(toggleBtn));
-		toggleBtn.click();
-
+		//getWebDriverWait().until(ExpectedConditions.elementToBeClickable(toggleBtn));
+		//toggleBtn.click();
+		ClickUsingJs(toggleBtn);
 		Thread.sleep(1000);
 
 		getWebDriverWait().until(ExpectedConditions.elementToBeClickable(rasieAChqueReturnBtn));

@@ -145,6 +145,7 @@ public class CreditTest extends BaseEngine {
 		Assert.assertEquals(cp.checkResavingSalesInvoiceVoucherAfterConsumingLesserThanCreditLimit(), true);
 
 	}
+	
 
 	@Test(priority = 111)
 	public void checkEntringDateAfterDateOF1stVoucherInSalesInvoice()

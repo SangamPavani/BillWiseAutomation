@@ -1,5 +1,8 @@
 target/
 test-output/
+allure-results/
+allure-report/
+test-output/
 reports/
 ScreenShots/
 drivers/

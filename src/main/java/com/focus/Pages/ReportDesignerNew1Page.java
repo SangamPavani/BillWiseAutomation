@@ -323,12 +323,20 @@ public class ReportDesignerNew1Page  extends BaseEngine{
 	@FindBy(xpath="//*[@id='dvReportDetails']//table/tbody/tr[1]/td[10]")
 	public static WebElement report1stRow9thCol;
 	
+	@FindBy(xpath="//*[@id='selectAllMasters_']/../span")
+	public static WebElement report_SelectAllChkBoxSelected;
+	
+	@FindBy(xpath="//*[@id='selectAllMasters_']")
+	public static WebElement report_SelectAllChkBox;
+	
 	
 	
 	public boolean checkRDItemWiseDataReport() throws InterruptedException
 	{
 		focusMainSearch("RD item wise Data");
 		Thread.sleep(4000);
+		
+		click(report_SelectAllChkBoxSelected);
 		
 		click(sl_OkBtn);
 		Thread.sleep(4000);

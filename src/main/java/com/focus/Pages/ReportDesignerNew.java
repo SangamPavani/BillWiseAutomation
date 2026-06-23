@@ -819,14 +819,14 @@ public class ReportDesignerNew extends BaseEngine{
 		@FindBy(xpath="(//*[text()='Extra Fields'])[1]")
 		private static WebElement ExtraFieldExpBtn;
 		
-		@FindBy(xpath="(//*[text()='Department'])[3]/../i")
+		@FindBy(xpath="(//*[text()='Department'])[4]/../i")
 		private static WebElement DeptExpBtn;
 		
 		//@FindBy(xpath="((//..//span[contains(text(),'Department')])[7]//following::ul//li//*[text()='Name'])[1]")
 		@FindBy(xpath="((//span[text()='Department'])[2]//following::ul//li//span[text()='Name'])[1]")
 		private static WebElement DeptNameBt;
 		
-		@FindBy(xpath="(//..//span[contains(text(),'Warehouse')])[3]")
+		@FindBy(xpath="(//..//span[contains(text(),'Warehouse')])[4]")
 		private static WebElement WarehouseExpBtn;
 		
 		@FindBy(xpath="(//..//span[contains(text(),'Date')])[13]")
@@ -848,7 +848,7 @@ public class ReportDesignerNew extends BaseEngine{
 		private static WebElement Account2NameBtn;
 		
 				
-		@FindBy(xpath="((//..//span[contains(text(),'Warehouse')])[3]//following::ul//li//*[text()='Name'])[1]")
+		@FindBy(xpath="((//..//span[contains(text(),'Warehouse')])[4]//following::ul//li//*[text()='Name'])[1]")
 		private static WebElement WarehouseNameBtn;
 		
 	public boolean checkCreatingRDCubeReportforDepartmentParameter() throws InterruptedException, EncryptedDocumentException, InvalidFormatException, IOException

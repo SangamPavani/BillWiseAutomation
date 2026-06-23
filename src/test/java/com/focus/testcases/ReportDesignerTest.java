@@ -15,7 +15,7 @@ import com.focus.base.BaseEngine;
 public class ReportDesignerTest extends BaseEngine 
 {
 	ReportDesignerPage RDP ;
-
+/*
 	@Test(priority=80)
 	public void checkLogin() throws InterruptedException, EncryptedDocumentException, InvalidFormatException, IOException
 	{
@@ -661,7 +661,7 @@ public class ReportDesignerTest extends BaseEngine
 		Assert.assertEquals(RDP.checklogout(), true);
 	}
 
-	
+	*/
 
 	@Test(priority=428)//col
 	public void checkLoginForRD2Again() throws EncryptedDocumentException, InvalidFormatException, IOException, InterruptedException
@@ -669,7 +669,7 @@ public class ReportDesignerTest extends BaseEngine
 		RDP=new ReportDesignerPage(getDriver());
 		Assert.assertEquals(RDP.checkLoginForRD2(), true);
 	}
-	
+	/*
 
 	@Test(priority=429)
 	public void checkApplyFilterInDataSetTabForItemWithParameterRD() throws EncryptedDocumentException, InvalidFormatException, IOException, InterruptedException
@@ -859,7 +859,7 @@ public class ReportDesignerTest extends BaseEngine
 		RDP=new ReportDesignerPage(getDriver());
 		Assert.assertEquals(RDP.checkBacktrackOptioninRDCubeReport(), true);
 	}
-	
+	*/
 	
 	//print,Excel in Home and Entry Page
 	

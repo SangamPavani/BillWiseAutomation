@@ -2482,14 +2482,14 @@ public class ManualAdjustmentsPage extends BaseEngine {
 
 		Thread.sleep(4000);
 
-		click(toggleBtn);
+		ClickUsingJs(toggleBtn);
 		Thread.sleep(1500);
 		
 		click(copytoClipboardBtn);
 
 		Thread.sleep(2000);
 
-		click(toggleBtn);
+		ClickUsingJs(toggleBtn);
 
 		click(pastefromClipboardBtn);
 
@@ -4444,12 +4444,14 @@ public class ManualAdjustmentsPage extends BaseEngine {
 			throws EncryptedDocumentException, InvalidFormatException, InterruptedException, IOException, AWTException {
 
 		Thread.sleep(2000);
+		getDriver().navigate().refresh();
+		
 
 		// re_LunchBrowser();
 
 		//Thread.sleep(2000);
 
-		//Thread.sleep(3000);
+		Thread.sleep(4000);
 
 		eraseAllTransactions();
 
@@ -4846,7 +4848,7 @@ public class ManualAdjustmentsPage extends BaseEngine {
 		Thread.sleep(2000);
 
 		String actRow1 = listOfElements(entryPageRow1List);
-		String expRow1 = "[1, Customer A, Std Rate, 1000.00, NDT55:1 : " + getCurrentdateDayFormat()+", 47.62]";
+		String expRow1 = "[1, Customer A, Std Rate, 1,000.00, NDT55:1 : " + getCurrentdateDayFormat()+", New Reference, 47.62]";
 
 		System.err.println("  ACT Row1 List: " + actRow1);
 		System.err.println("  EXP Row1 List: " + expRow1);
@@ -8398,7 +8400,7 @@ public class ManualAdjustmentsPage extends BaseEngine {
 
 		Thread.sleep(2000);
 
-		click(toggleBtn);
+		ClickUsingJs(toggleBtn);
 
 		click(postingDetailsBtn);
 
@@ -8630,7 +8632,7 @@ public class ManualAdjustmentsPage extends BaseEngine {
 
 		Thread.sleep(8965);
 
-		click(toggleBtn);
+		ClickUsingJs(toggleBtn);
 
 		click(postingDetailsBtn);
 

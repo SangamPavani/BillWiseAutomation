@@ -303,12 +303,14 @@ public class manualAdjstmentTest extends BaseEngine
 		Assert.assertEquals(map.chekSavingPVVATWithMultiple(), true);
 	}
 
+	
 	@Test(priority = 51)
 	public void chekSavingPaymentsVATWithMultiple()
 			throws InterruptedException, EncryptedDocumentException, InvalidFormatException, IOException, AWTException {
 		map = new ManualAdjustmentsPage(getDriver());
 		Assert.assertEquals(map.chekSavingPaymentsVATWithMultiple(), true);
 	}
+	
 
 	@Test(priority = 52)
 	public void checkManualAdjustmentWithMultipleCreditAndMultipleDebitWithAP()
@@ -373,6 +375,7 @@ public class manualAdjstmentTest extends BaseEngine
 		map = new ManualAdjustmentsPage(getDriver());
 		Assert.assertEquals(map.checkNonAdjsutedVoucherINReceiptsVAT(), true);
 	}
+	
 
 	@Test(priority = 70)
 	public void chekSavingSalesAndrecepitsVATWithHigherAnLowerAmount()
