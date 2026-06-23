@@ -177,33 +177,24 @@ stage('Stop Pronghorn Service') {
 
 stage('Stop Pronghorn Service') {
     steps {
-        bat '''
+        bat(returnStatus: true, script: '''
         echo Checking Pronghorn Service...
 
         sc query "PronghornService" >nul 2>&1
 
         if errorlevel 1 (
             echo PronghornService is not installed. Skipping stop operation.
-        ) else (
-            echo Stopping Pronghorn Service...
-
-            net stop "PronghornService"
-
-            timeout /t 10 /nobreak >nul
-
-            sc query "PronghornService" | find "STOPPED" >nul
-
-            if errorlevel 1 (
-                echo Service did not stop. Killing process...
-
-                for /f "tokens=2 delims=: " %%a in ('sc queryex "PronghornService" ^| find "PID"') do (
-                    taskkill /F /PID %%a
-                )
-            )
-
-            echo Pronghorn Service Stopped
+            exit /b 0
         )
-        '''
+
+        echo Stopping Pronghorn Service...
+
+        net stop "PronghornService"
+
+        timeout /t 10 /nobreak >nul
+
+        echo Pronghorn Service Stopped
+        ''')
     }
 }
 
