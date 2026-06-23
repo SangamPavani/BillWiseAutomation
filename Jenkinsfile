@@ -349,8 +349,15 @@ do { ^
 	Start-Sleep -Seconds 200; ^
     $wshell.AppActivate('FocusX Web Patch'); ^
     Start-Sleep -Milliseconds 200; ^
-    $wshell.SendKeys('%y'); ^
-    Write-Host 'Yes Sent';^
+   $wshell.AppActivate('FocusX Web Patch')^
+Start-Sleep -Seconds 1^
+
+$wshell.SendKeys('{LEFT}')^
+Start-Sleep -Milliseconds 500^
+
+$wshell.SendKeys('{ENTER}')^
+
+Write-Host 'Yes Clicked'
 
 	Start-Sleep -Seconds 5;^
 
