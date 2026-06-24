@@ -424,68 +424,9 @@ stage('Install Latest Patch') {
 
             start "" "%PATCH_NAME%"
             
-           powershell -ExecutionPolicy Bypass -Command ^
-"Start-Sleep -Seconds 15; ^
-Get-Process ^| Where-Object {$_.MainWindowTitle -ne ''} ^| ^
-Select-Object ProcessName,MainWindowTitle ^| ^
-Sort-Object ProcessName ^| ^
-Format-Table -AutoSize"
-
             echo Waiting for popup...
 
-            powershell -ExecutionPolicy Bypass -Command ^
-            "$wshell = New-Object -ComObject WScript.Shell; ^
-
-            Add-Type @'
-using System;
-using System.Runtime.InteropServices;
-public class Win32 {
-    [DllImport(\"user32.dll\")]
-    public static extern bool ShowWindowAsync(System.IntPtr hWnd, int nCmdShow);
-}
-'@; ^
-
-            do { ^
-                Start-Sleep -Seconds 2; ^
-                $p = Get-Process ^| Where-Object {$_.MainWindowTitle -like '*FocusX Web Patch*'}; ^
-            } until ($p); ^
-
-            Write-Host 'Patch Window Found'; ^
-
-            [Win32]::ShowWindowAsync($p.MainWindowHandle,9); ^
-
-            Start-Sleep -Seconds 2; ^
-
-            $wshell.AppActivate('FocusX Web Patch'); ^
-
-            Start-Sleep -Seconds 1; ^
-
-            $wshell.SendKeys('{LEFT}'); ^
-
-            Start-Sleep -Milliseconds 500; ^
-
-            $wshell.SendKeys('{ENTER}'); ^
-
-            Write-Host 'Yes Clicked'; ^
-
-            Start-Sleep -Seconds 5; ^
-
-            $wshell.SendKeys('{ENTER}'); ^
-
-            Write-Host 'Enter Sent';"
-
-            echo Waiting for patch installation to complete...
-
-            :waitPatch
-
-            tasklist | findstr /i "FocusX Update.exe" >nul
-
-            if not errorlevel 1 (
-                echo Patch still running...
-                ping 127.0.0.1 -n 11 >nul
-                goto waitPatch
-            )
-
+powershell -ExecutionPolicy Bypass -Command "$wshell = New-Object -ComObject WScript.Shell; Start-Sleep -Seconds 15; $wshell.AppActivate('FocusX Web Patch: Installing'); Start-Sleep -Seconds 2; $wshell.SendKeys('%% '); Start-Sleep -Seconds 1; $wshell.SendKeys('x'); Start-Sleep -Seconds 2; $wshell.SendKeys('{LEFT}'); Start-Sleep -Milliseconds 500; $wshell.SendKeys('{ENTER}'); Write-Host 'Yes Clicked'"
             echo PATCH INSTALLATION COMPLETED
 
             exit /b 0
