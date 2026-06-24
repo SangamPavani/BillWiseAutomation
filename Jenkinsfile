@@ -426,7 +426,27 @@ stage('Install Latest Patch') {
 
 powershell -ExecutionPolicy Bypass -File G:/Patches/maximize.ps1
 
+echo Waiting for popup...
 
+powershell -ExecutionPolicy Bypass -Command ^
+"$wshell = New-Object -ComObject WScript.Shell; ^
+do { ^
+    Start-Sleep -Seconds 2; ^
+    $found = $wshell.AppActivate('FocusX Web Patch'); ^
+} until ($found); ^
+
+	Start-Sleep -Seconds 200; ^
+    $wshell.AppActivate('FocusX Web Patch'); ^
+    Start-Sleep -Milliseconds 200; ^
+    $wshell.SendKeys('%y'); ^
+    Write-Host 'Yes Sent';^
+
+	Start-Sleep -Seconds 5;^
+
+	$wshell.SendKeys('{ENTER}');^
+
+	Write-Host 'Enter Sent';"
+	
 
 
 
