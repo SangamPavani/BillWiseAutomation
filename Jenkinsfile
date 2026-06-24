@@ -426,16 +426,12 @@ stage('Install Latest Patch') {
             
             powershell -ExecutionPolicy Bypass -Command ^
 "$wshell = New-Object -ComObject WScript.Shell; ^
-do { ^
-    Start-Sleep -Seconds 2; ^
-    $p = Get-Process | Where-Object {$_.ProcessName -like '*FocusX*'}; ^
-} until ($p); ^
-$wshell.AppActivate($p.Id); ^
+Start-Sleep -Seconds 5; ^
+$wshell.AppActivate('FocusX Web Patch: Installing'); ^
 Start-Sleep -Seconds 1; ^
-$wshell.SendKeys('% '); ^
+$wshell.SendKeys('%% '); ^
 Start-Sleep -Milliseconds 500; ^
-$wshell.SendKeys('x'); ^
-Write-Host 'Window Maximized';"
+$wshell.SendKeys('x');"
             
             echo Waiting for popup...
 
