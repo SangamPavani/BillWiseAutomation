@@ -299,7 +299,7 @@ stage('Stop IIS') {
 }
 */
 
-stage('Install Latest Patch') {
+/*stage('Install Latest Patch') {
 
     steps {
 
@@ -322,7 +322,7 @@ echo "Latest Patch Found = [${latestPatch}]"
 env.PATCH_NAME = latestPatch
 
            /* env.PATCH_NAME = latestPatch*/
-           if (!latestPatch?.trim()) {
+ /*          if (!latestPatch?.trim()) {
     error "No patch found in G://Patches"
 }
 
@@ -349,15 +349,8 @@ do { ^
 	Start-Sleep -Seconds 200; ^
     $wshell.AppActivate('FocusX Web Patch'); ^
     Start-Sleep -Milliseconds 200; ^
-   $wshell.AppActivate('FocusX Web Patch')^
-Start-Sleep -Seconds 1^
-
-$wshell.SendKeys('{LEFT}')^
-Start-Sleep -Milliseconds 500^
-
-$wshell.SendKeys('{ENTER}')^
-
-Write-Host 'Yes Clicked'
+    $wshell.SendKeys('%y'); ^
+    Write-Host 'Yes Sent';^
 
 	Start-Sleep -Seconds 5;^
 
@@ -389,7 +382,110 @@ echo PATCH INSTALLATION COMPLETED
 
     }
 }
+*/
 
+
+stage('Install Latest Patch') {
+
+    steps {
+
+        script {
+
+            def latestPatch = bat(
+                script: '''
+                @echo off
+                for /f "delims=" %%f in ('dir /b /o-d G:\\Patches\\*.exe') do (
+                    echo %%f
+                    goto :done
+                )
+                :done
+                ''',
+                returnStdout: true
+            ).trim()
+
+            echo "Latest Patch Found = [${latestPatch}]"
+
+            env.PATCH_NAME = latestPatch
+
+            if (!latestPatch?.trim()) {
+                error "No patch found in G:\\Patches"
+            }
+
+            bat '''
+            @echo off
+
+            cd /d G:\\Patches
+
+            echo =========================
+            echo INSTALLING LATEST PATCH
+            echo =========================
+
+            echo Executing Patch : %PATCH_NAME%
+
+            start "" "%PATCH_NAME%"
+
+            echo Waiting for popup...
+
+            powershell -ExecutionPolicy Bypass -Command ^
+            "$wshell = New-Object -ComObject WScript.Shell; ^
+
+            Add-Type @'
+using System;
+using System.Runtime.InteropServices;
+public class Win32 {
+    [DllImport(\"user32.dll\")]
+    public static extern bool ShowWindowAsync(System.IntPtr hWnd, int nCmdShow);
+}
+'@; ^
+
+            do { ^
+                Start-Sleep -Seconds 2; ^
+                $p = Get-Process ^| Where-Object {$_.MainWindowTitle -like '*FocusX Web Patch*'}; ^
+            } until ($p); ^
+
+            Write-Host 'Patch Window Found'; ^
+
+            [Win32]::ShowWindowAsync($p.MainWindowHandle,9); ^
+
+            Start-Sleep -Seconds 2; ^
+
+            $wshell.AppActivate('FocusX Web Patch'); ^
+
+            Start-Sleep -Seconds 1; ^
+
+            $wshell.SendKeys('{LEFT}'); ^
+
+            Start-Sleep -Milliseconds 500; ^
+
+            $wshell.SendKeys('{ENTER}'); ^
+
+            Write-Host 'Yes Clicked'; ^
+
+            Start-Sleep -Seconds 5; ^
+
+            $wshell.SendKeys('{ENTER}'); ^
+
+            Write-Host 'Enter Sent';"
+
+            echo Waiting for patch installation to complete...
+
+            :waitPatch
+
+            tasklist | findstr /i "FocusX Update.exe" >nul
+
+            if not errorlevel 1 (
+                echo Patch still running...
+                ping 127.0.0.1 -n 11 >nul
+                goto waitPatch
+            )
+
+            echo PATCH INSTALLATION COMPLETED
+
+            exit /b 0
+            '''
+        }
+    }
+}
 
        stage('Start IIS') {
 
