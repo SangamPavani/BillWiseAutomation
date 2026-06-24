@@ -424,7 +424,38 @@ stage('Install Latest Patch') {
 
             echo Waiting for patch window...
 
-          powershell -ExecutionPolicy Bypass -Command "$ws=New-Object -ComObject WScript.Shell; Start-Sleep 2; $ws.SendKeys('% d'); Start-Sleep 2; while(-not $ws.AppActivate('FocusX Web Patch')){Start-Sleep 2}; Start-Sleep 3; for($i=0;$i -lt 5;$i++){ $ws.AppActivate('FocusX Web Patch'); Start-Sleep -Milliseconds 700 }; $ws.SendKeys('%y'); Start-Sleep 2; $ws.SendKeys('{ENTER}')"
+powershell -ExecutionPolicy Bypass -Command ^
+"$code=@'
+using System;
+using System.Runtime.InteropServices;
+
+public class Win {
+    [DllImport(/"user32.dll/")]
+    public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
+
+    [DllImport(/"user32.dll/")]
+    public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+}
+'@;
+Add-Type $code;
+$ws = New-Object -ComObject WScript.Shell;
+
+# Wait for patch window
+while(-not $ws.AppActivate('FocusX Web Patch')){
+    Start-Sleep -Seconds 2
+}
+
+Start-Sleep -Seconds 2
+
+# Get window handle
+$h = [Win]::FindWindow($null, 'FocusX Web Patch')
+
+if ($h -ne 0) {
+    [Win]::ShowWindowAsync($h, 9)  # Restore if minimized
+    Start-Sleep -Milliseconds 500
+    [Win]::ShowWindowAsync($h, 3)  # Maximize
+}
+"
 
 
 
