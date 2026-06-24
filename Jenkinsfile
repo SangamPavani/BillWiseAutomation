@@ -424,7 +424,7 @@ stage('Install Latest Patch') {
 
             echo Waiting for patch window...
 
-          powershell -ExecutionPolicy Bypass -Command "$ws=New-Object -ComObject WScript.Shell; do{Start-Sleep 2; $activated=$ws.AppActivate('FocusX Web Patch')}while(-not $activated); Start-Sleep 3; for($i=0;$i -lt 5;$i++){ $ws.AppActivate('FocusX Web Patch'); Start-Sleep -Milliseconds 700 }; $ws.SendKeys('%y'); Start-Sleep 2; $ws.SendKeys('{ENTER}')"
+          powershell -ExecutionPolicy Bypass -Command "$ws=New-Object -ComObject WScript.Shell; Start-Sleep 2; $ws.SendKeys('% d'); Start-Sleep 2; while(-not $ws.AppActivate('FocusX Web Patch')){Start-Sleep 2}; Start-Sleep 3; for($i=0;$i -lt 5;$i++){ $ws.AppActivate('FocusX Web Patch'); Start-Sleep -Milliseconds 700 }; $ws.SendKeys('%y'); Start-Sleep 2; $ws.SendKeys('{ENTER}')"
 
 
 
