@@ -424,7 +424,8 @@ stage('Install Latest Patch') {
 
             echo Waiting for patch window...
 
-powershell -ExecutionPolicy Bypass -Command "$ws=New-Object -ComObject WScript.Shell; while(-not $ws.AppActivate('FocusX Web Patch')){Start-Sleep 2}; Start-Sleep 2; Add-Type 'using System; using System.Runtime.InteropServices; public class Win{[DllImport(/"user32.dll/")] public static extern bool ShowWindowAsync(System.IntPtr hWnd,int nCmdShow);[DllImport(/"user32.dll/")] public static extern System.IntPtr FindWindow(string a,string b);}'; $h=[Win]::FindWindow($null,'FocusX Web Patch'); if($h -ne 0){[Win]::ShowWindowAsync($h,9); Start-Sleep 500; [Win]::ShowWindowAsync($h,3)}"
+powershell -ExecutionPolicy Bypass -File G:/Patches/maximize.ps1
+
 
 
 
