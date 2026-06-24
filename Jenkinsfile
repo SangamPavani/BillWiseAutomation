@@ -423,6 +423,11 @@ stage('Install Latest Patch') {
             echo Executing Patch : %PATCH_NAME%
 
             start "" "%PATCH_NAME%"
+            
+            powershell -Command ^
+"Start-Sleep -Seconds 15; ^
+Get-Process | Where-Object {$_.MainWindowTitle -ne ''} | ^
+Select ProcessName,MainWindowTitle | Sort-Object ProcessName | Format-Table -AutoSize"
 
             echo Waiting for popup...
 
