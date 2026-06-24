@@ -426,18 +426,6 @@ stage('Install Latest Patch') {
             
             powershell -ExecutionPolicy Bypass -Command ^
 "$wshell = New-Object -ComObject WScript.Shell; ^
-Start-Sleep -Seconds 35; ^
-$wshell.AppActivate('FocusX Web Patch: Installing'); ^
-Start-Sleep -Seconds 1; ^
-$wshell.SendKeys('%% '); ^
-Start-Sleep -Milliseconds 500; ^
-$wshell.SendKeys('x');"
-            
-            echo Waiting for popup...
-
-powershell -ExecutionPolicy Bypass -Command ^
-"$wshell = New-Object -ComObject WScript.Shell; ^
-Write-Host 'Waiting for Replace Web.Config popup...'; ^
 do { ^
     Start-Sleep -Seconds 2; ^
     $found = $wshell.AppActivate('FocusX Web Patch'); ^
@@ -446,8 +434,7 @@ Write-Host 'Popup Found'; ^
 Start-Sleep -Seconds 1; ^
 $wshell.SendKeys('{LEFT}'); ^
 Start-Sleep -Milliseconds 500; ^
-$wshell.SendKeys('{ENTER}'); ^
-Write-Host 'Yes Clicked';"
+$wshell.SendKeys('{ENTER}');"
             echo PATCH INSTALLATION COMPLETED
 
             exit /b 0
