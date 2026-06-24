@@ -426,7 +426,7 @@ stage('Install Latest Patch') {
             
             powershell -ExecutionPolicy Bypass -Command ^
 "$wshell = New-Object -ComObject WScript.Shell; ^
-Start-Sleep -Seconds 5; ^
+Start-Sleep -Seconds 35; ^
 $wshell.AppActivate('FocusX Web Patch: Installing'); ^
 Start-Sleep -Seconds 1; ^
 $wshell.SendKeys('%% '); ^
