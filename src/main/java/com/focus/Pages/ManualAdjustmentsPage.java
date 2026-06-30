@@ -4848,7 +4848,7 @@ public class ManualAdjustmentsPage extends BaseEngine {
 		Thread.sleep(2000);
 
 		String actRow1 = listOfElements(entryPageRow1List);
-		String expRow1 = "[1, Customer A, Std Rate, 1,000.00, NDT55:1 : " + getCurrentdateDayFormat()+", New Reference, 47.62]";
+		String expRow1 = "[1, Customer A, Std Rate, 1,000.00, NDT55:1 : " + getCurrentdateDayFormat()+";New Reference, 47.62]";
 
 		System.err.println("  ACT Row1 List: " + actRow1);
 		System.err.println("  EXP Row1 List: " + expRow1);
