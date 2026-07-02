@@ -15,7 +15,7 @@ import com.focus.base.BaseEngine;
 public class ReportDesignerTest extends BaseEngine 
 {
 	ReportDesignerPage RDP ;
-/*
+
 	@Test(priority=80)
 	public void checkLogin() throws InterruptedException, EncryptedDocumentException, InvalidFormatException, IOException
 	{
@@ -601,7 +601,7 @@ public class ReportDesignerTest extends BaseEngine
 		Assert.assertEquals(RDP.checklogout(), true);
 	}
 	
-*/
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	

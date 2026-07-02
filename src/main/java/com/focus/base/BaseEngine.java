@@ -146,7 +146,7 @@ public class BaseEngine extends WebElements {
 			// options.addArguments("--Incognito");
 
 			// options.addArguments("headless");
-
+			options.addArguments("start-maximized");
 			options.setExperimentalOption("prefs", chromePrefs);
 			DesiredCapabilities cap = DesiredCapabilities.chrome();
 			cap.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
@@ -2923,7 +2923,7 @@ public class BaseEngine extends WebElements {
 	   {
 		   
 		   Calendar cal=Calendar.getInstance();
-			SimpleDateFormat todayDate = new SimpleDateFormat("dd MM yyyy");
+			SimpleDateFormat todayDate = new SimpleDateFormat("dd MMM yyyy");
 			String currentMonth = todayDate.format(cal.getTime());
 			return currentMonth;
 	   }
